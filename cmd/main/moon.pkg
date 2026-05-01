@@ -1,0 +1,7 @@
+// import {
+//   "morning-start/mbtgraph" @lib,
+// }
+
+options(
+  "is-main": true,
+)
