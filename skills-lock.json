@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "moonbit-skills": {
+      "source": "morning-start/book-skills",
+      "sourceType": "github",
+      "skillPath": "moonbit-skills/SKILL.md",
+      "computedHash": "dec12e3854fb232984defae0ef301509fd77485836fcc2b0c2d815342eab477a"
+    }
+  }
+}
