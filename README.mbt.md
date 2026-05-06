@@ -39,7 +39,7 @@
 
 ### 快速开始
 
-```moonbit
+```moonbit nocheck
 // 导入核心模块
 use morning-start/mbtgraph/core::DirectedGraph
 use morning-start/mbtgraph/algo/traverse::bfs
