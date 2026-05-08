@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "hermes-agent-config": {
+      "source": "morning-start/book-skills",
+      "sourceType": "github",
+      "skillPath": "agent-skill/SKILL.md",
+      "computedHash": "579834fe368ff8a5bf0f7ec508ed9dd0a09ee6b8da85fe5c1a195923a14fc176"
+    },
     "moonbit-skills": {
       "source": "morning-start/book-skills",
       "sourceType": "github",
