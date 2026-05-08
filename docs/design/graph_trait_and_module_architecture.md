@@ -12,7 +12,9 @@ tags: \["graph", "trait", "module", "architecture", "design"]
 traceability:
 source:
 \- "docs/design/graph\_storage\_survey.md"
-\- "src/core/graph.mbt"
+\- "src/core/types.mbt"
+\- "src/core/traits.mbt"
+\- "src/core/error.mbt"
 targets:
 \- "src/core/"
 \- "src/storage/"
@@ -41,9 +43,10 @@ targets:
 ### 1.2 设计目标
 
 1. **SOLID 原则**: 遵循单一职责、开放封闭、里氏替换、接口隔离、依赖倒置
-2. **MoonBit 语法适配**: 使用 `pub(open) trait B: A` 继承语法，`impl Trait for Type with ...` 实现
+2. **MoonBit 语法适配**: 使用 `pub trait B: A` 继承语法，`pub impl Trait for Type with ...` 实现
 3. **算法与存储解耦**: 算法依赖 trait 而非具体类型
 4. **渐进式实现**: 先核心 trait + 邻接表，再逐步扩展
+5. **数据类型简化**: MVP 阶段节点/边数据使用 `Double`，后续再泛型化
 
 ### 1.3 参考项目
 
@@ -79,7 +82,7 @@ targets:
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
 │  ┌─────────────────────────────────────────────────┐   │
-│  │         GraphReadable[N, E]                      │   │
+│  │         GraphReadable                            │   │
 │  │         (基础只读接口 — 所有存储都实现)           │   │
 │  │                                                  │   │
 │  │  · node_count / edge_count                       │   │
@@ -93,7 +96,6 @@ targets:
 │     ▼             ▼      ▼            ▼                │
 │  ┌──────────────────┐ ┌──────────────────┐            │
 │  │ GraphWritable    │ │ GraphDirected    │            │
-│  │ [N, E]           │ │ [N, E]           │            │
 │  │ (可写 — 动态存储) │ │ (有向 — 入边查询) │            │
 │  │                  │ │                  │            │
 │  │ · add_node       │ │ · in_neighbors   │            │
@@ -106,7 +108,7 @@ targets:
 │            └────────┬───────────┘                       │
 │                     ▼                                   │
 │  ┌─────────────────────────────────────────────────┐   │
-│  │         GraphFull[N, E]                          │   │
+│  │         GraphFull                                │   │
 │  │         = GraphWritable + GraphDirected          │   │
 │  │         (完整图 — 便捷别名)                       │   │
 │  └─────────────────────────────────────────────────┘   │
@@ -122,80 +124,81 @@ targets:
 
 ### 2.3 详细 Trait 定义
 
-#### Layer 1: GraphReadable\[N, E] — 基础只读接口
+#### Layer 1: GraphReadable — 基础只读接口
 
 ```moonbit
 ///|
 /// 图只读接口
 /// 所有存储实现的最低要求，符合接口隔离原则 (ISP)
 /// 只包含所有实现都能提供的方法
-pub trait GraphReadable[N, E] {
+pub trait GraphReadable {
   /// 节点数量
-  fn node_count(Self) -> Int
+  node_count(Self) -> Int
 
   /// 边数量
-  fn edge_count(Self) -> Int
+  edge_count(Self) -> Int
 
   /// 检查节点是否存在
-  fn contains_node(Self, NodeId) -> Bool
+  contains_node(Self, NodeId) -> Bool
 
   /// 检查边是否存在
-  fn contains_edge(Self, NodeId, NodeId) -> Bool
+  contains_edge(Self, NodeId, NodeId) -> Bool
 
   /// 获取节点数据
-  fn get_node(Self, NodeId) -> Option[N]
+  get_node(Self, NodeId) -> Double?
 
   /// 获取边数据
-  fn get_edge(Self, NodeId, NodeId) -> Option[E]
+  get_edge(Self, NodeId, NodeId) -> Double?
 
   /// 获取邻居节点（出边目标）
-  fn neighbors(Self, NodeId) -> Iterator[NodeId]
+  neighbors(Self, NodeId) -> Iter[NodeId]
 
   /// 节点度（无向图）或出度（有向图）
-  fn degree(Self, NodeId) -> Int
+  degree(Self, NodeId) -> Int
 
   /// 是否为有向图
-  fn is_directed(Self) -> Bool
+  is_directed(Self) -> Bool
 
   /// 是否为空图
-  fn is_empty(Self) -> Bool
+  is_empty(Self) -> Bool
 
   /// 迭代所有节点 ID
-  fn node_ids(Self) -> Iterator[NodeId]
+  node_ids(Self) -> Iter[NodeId]
 
   /// 迭代所有边 (from, to, weight)
-  fn edges(Self) -> Iterator[(NodeId, NodeId, E)]
+  edges(Self) -> Iter[(NodeId, NodeId, Double)]
 }
 ```
 
 **设计决策**:
 
-- `neighbors` 返回 `Iterator[NodeId]` 而非 `Array[NodeId]`，零分配、惰性求值
+- `neighbors` 返回 `Iter[NodeId]` 而非 `Array[NodeId]`，零分配、惰性求值
 - 提供 `node_ids` 和 `edges` 迭代器，方便算法遍历
 - `is_directed` 用于算法判断图类型
+- MVP 阶段节点/边数据固定为 `Double`，后续可泛型化
 
-#### Layer 2A: GraphWritable\[N, E] — 可写接口
+#### Layer 2A: GraphWritable — 可写接口
 
 ```moonbit
 ///|
 /// 图可写接口
 /// 仅适用于支持动态修改的存储（邻接表、邻接矩阵、混合图）
 /// CSR 等只读存储不实现此 trait，符合里氏替换原则 (LSP)
-pub trait GraphWritable[N, E] : GraphReadable[N, E] {
+pub trait GraphWritable: GraphReadable {
   /// 添加节点，返回其 ID
-  fn add_node(Self, N) -> NodeId
+  add_node(Self, Double) -> NodeId
 
   /// 删除节点及其关联的所有边
-  fn remove_node(Self, NodeId) -> Bool
+  remove_node(Self, NodeId) -> Bool
 
   /// 添加边
-  fn add_edge(Self, NodeId, NodeId, E) -> Result[Unit, GraphError]
+  add_edge(Self, NodeId, NodeId, Double) -> Result[Unit, GraphError]
 
   /// 删除边
-  fn remove_edge(Self, NodeId, NodeId) -> Bool
+  remove_edge(Self, NodeId, NodeId) -> Bool
 
   /// 清空图
-  fn clear(Self) -> Unit
+  clear(Self) -> Unit
 }
 ```
 
@@ -205,30 +208,30 @@ pub trait GraphWritable[N, E] : GraphReadable[N, E] {
 - `add_edge` 返回 `Result`，可处理节点不存在等错误
 - CSR 不实现此 trait，避免抛出 `NotImplementedError`
 
-#### Layer 2B: GraphDirected\[N, E] — 有向图扩展
+#### Layer 2B: GraphDirected — 有向图扩展
 
 ```moonbit
 ///|
 /// 有向图扩展接口
 /// 提供入边查询能力，邻接表需维护反向索引
-pub trait GraphDirected[N, E] : GraphReadable[N, E] {
+pub trait GraphDirected: GraphReadable {
   /// 获取前驱节点（入边源）
-  fn in_neighbors(Self, NodeId) -> Iterator[NodeId]
+  in_neighbors(Self, NodeId) -> Iter[NodeId]
 
   /// 获取后继节点（出边目标）
-  fn out_neighbors(Self, NodeId) -> Iterator[NodeId]
+  out_neighbors(Self, NodeId) -> Iter[NodeId]
 
   /// 入度
-  fn in_degree(Self, NodeId) -> Int
+  in_degree(Self, NodeId) -> Int
 
   /// 出度
-  fn out_degree(Self, NodeId) -> Int
+  out_degree(Self, NodeId) -> Int
 
   /// 前驱边 (源节点, 边数据)
-  fn predecessors(Self, NodeId) -> Iterator[(NodeId, E)]
+  predecessors(Self, NodeId) -> Iter[(NodeId, Double)]
 
   /// 后继边 (目标节点, 边数据)
-  fn successors(Self, NodeId) -> Iterator[(NodeId, E)]
+  successors(Self, NodeId) -> Iter[(NodeId, Double)]
 }
 ```
 
@@ -237,13 +240,13 @@ pub trait GraphDirected[N, E] : GraphReadable[N, E] {
 - 有向图需要区分入边/出边
 - 无向图的 `in_neighbors` 等价于 `neighbors`，可直接委托
 
-#### Layer 3: GraphFull\[N, E] — 完整图别名
+#### Layer 3: GraphFull — 完整图别名
 
 ```moonbit
 ///|
 /// 完整图接口别名
 /// 组合可写 + 有向图能力，适用于邻接表等通用实现
-pub trait GraphFull[N, E] : GraphWritable[N, E] + GraphDirected[N, E] {
+pub trait GraphFull: GraphWritable + GraphDirected {
   // 无需额外方法，仅作类型约束的便捷别名
 }
 ```
@@ -254,20 +257,20 @@ pub trait GraphFull[N, E] : GraphWritable[N, E] + GraphDirected[N, E] {
 ///|
 /// CSR 批量读取接口
 /// 提供批量处理优化，适合大图计算
-pub trait GraphBatchReadable[N, E] : GraphReadable[N, E] {
+pub trait GraphBatchReadable: GraphReadable {
   /// 批量获取邻居
-  fn batch_neighbors(Self, Array[NodeId]) -> Array[Array[NodeId]]
+  batch_neighbors(Self, Array[NodeId]) -> Array[Array[NodeId]]
 
   /// 批量获取边数据
-  fn batch_edges(Self, Array[(NodeId, NodeId)]) -> Array[Option[E]]
+  batch_edges(Self, Array[(NodeId, NodeId)]) -> Array[Double?]
 }
 
 ///|
 /// 边遍历优化接口
-/// 适用于边集数组，提供边排序能力
-pub trait GraphEdgeIterable[N, E] : GraphReadable[N, E] {
+/// 适用于边集数组，提供边排序能力 
+pub trait GraphEdgeIterable: GraphReadable {
   /// 按权重排序的边迭代器
-  fn edges_sorted(Self) -> Iterator[(NodeId, NodeId, E)]
+  edges_sorted(Self) -> Iter[(NodeId, NodeId, Double)]
 }
 ```
 
@@ -277,21 +280,21 @@ pub trait GraphEdgeIterable[N, E] : GraphReadable[N, E] {
 ┌──────────────────────────────────────────────────────────────┐
 │  存储类型        │ 实现的 Traits                              │
 ├──────────────────────────────────────────────────────────────┤
-│  AdjacencyList   │ GraphFull[N, E]                            │
-│  (邻接表)        │ + GraphEdgeIterable[N, E]                  │
+│  AdjacencyList   │ GraphFull                                  │
+│  (邻接表)        │ + GraphEdgeIterable                        │
 ├──────────────────────────────────────────────────────────────┤
-│  AdjacencyMatrix │ GraphFull[N, E]                            │
+│  AdjacencyMatrix │ GraphFull                                  │
 │  (邻接矩阵)      │                                           │
 ├──────────────────────────────────────────────────────────────┤
-│  CSR             │ GraphReadable[N, E]                        │
-│  (压缩稀疏行)    │ + GraphBatchReadable[N, E]                 │
-│                  │ + GraphDirected[N, E] (需同时建 CSC)        │
+│  CSR             │ GraphReadable                              │
+│  (压缩稀疏行)    │ + GraphBatchReadable                       │
+│                  │ + GraphDirected (需同时建 CSC)              │
 ├──────────────────────────────────────────────────────────────┤
-│  EdgeList        │ GraphReadable[N, E]                        │
-│  (边集数组)      │ + GraphEdgeIterable[N, E]                  │
-│                  │ + GraphWritable[N, E]                      │
+│  EdgeList        │ GraphReadable                              │
+│  (边集数组)      │ + GraphEdgeIterable                        │
+│                  │ + GraphWritable                            │
 ├──────────────────────────────────────────────────────────────┤
-│  Hybrid          │ GraphFull[N, E]                            │
+│  Hybrid          │ GraphFull                                  │
 │  (混合图)        │                                           │
 └──────────────────────────────────────────────────────────────┘
 ```
@@ -315,7 +318,13 @@ pub trait GraphEdgeIterable[N, E] : GraphReadable[N, E] {
 ```moonbit
 ///|
 /// 节点唯一标识符（整数索引）
-pub struct NodeId(Int) derive(Debug, Eq, Show)
+pub struct NodeId(Int) derive(Debug, Eq)
+
+///|
+/// NodeId Show 实现
+impl Show for NodeId with to_string(self : NodeId) -> String {
+  self.0.to_string()
+}
 ```
 
 **ID 管理策略**:
@@ -323,28 +332,51 @@ pub struct NodeId(Int) derive(Debug, Eq, Show)
 - 默认自增：0, 1, 2, ...
 - 可选回收：维护 `freed_ids: Array[NodeId]` 池
 
-### 3.2 Node\[N]
+### 3.2 Node
 
 ```moonbit
 ///|
 /// 带数据的节点
-pub struct Node[N] {
-  id: NodeId
-  data: N
+pub(all) struct Node {
+  id : NodeId
+  data : Double
 } derive(Debug)
+
+///|
+/// Node Show 实现
+pub impl Show for Node with to_string(self : Node) -> String {
+  "Node { id: \{self.id}, data: \{self.data} }"
+}
 ```
 
-### 3.3 Edge\[E]
+**设计说明**:
+
+- 使用 `pub(all)` 可见性，允许模块内其他包构造节点
+- MVP 阶段数据固定为 `Double`，后续可泛型化为 `Node[T]`
+- Show 实现标记为 `pub`，确保跨包可用
+
+### 3.3 Edge
 
 ```moonbit
 ///|
 /// 带数据的边
-pub struct Edge[E] {
-  from: NodeId
-  to: NodeId
-  data: E
+pub(all) struct Edge {
+  from : NodeId
+  to : NodeId
+  data : Double
 } derive(Debug)
+
+///|
+/// Edge Show 实现
+pub impl Show for Edge with to_string(self : Edge) -> String {
+  "Edge { from: \{self.from}, to: \{self.to}, data: \{self.data} }"
+}
 ```
+
+**设计说明**:
+
+- 使用 `pub(all)` 可见性，允许模块内其他包构造边
+- MVP 阶段数据固定为 `Double`，后续可泛型化为 `Edge[T]`
 
 ### 3.4 GraphError
 
@@ -355,7 +387,17 @@ pub enum GraphError {
   NodeNotFound(NodeId)
   EdgeAlreadyExists(NodeId, NodeId)
   InvalidNodeId
-} derive(Debug, Eq, Show)
+} derive(Debug, Eq)
+
+///|
+/// GraphError Show 实现
+pub impl Show for GraphError with to_string(self : GraphError) -> String {
+    match self {
+      NodeNotFound(id) => "NodeNotFound(\{id})"
+      EdgeAlreadyExists(from, to) => "EdgeAlreadyExists(\{from}, \{to})"
+      InvalidNodeId => "InvalidNodeId"
+    }
+}
 ```
 
 ***
@@ -369,24 +411,24 @@ pub enum GraphError {
 ```
 src/
 ├── core/                          # 核心抽象层
-│   ├── moon.pkg.json
-│   ├── types.mbt                  # NodeId, Node[N], Edge[E]
+│   ├── moon.pkg
+│   ├── types.mbt                  # NodeId, Node, Edge
 │   ├── error.mbt                  # GraphError
 │   ├── traits.mbt                 # 所有 trait 定义
 │   └── core_wbtest.mbt            # 白盒测试
 │
 ├── storage/                       # 存储实现层 (单包平铺)
-│   ├── moon.pkg.json
-│   ├── adjacency_list.mbt         # AdjacencyListGraph[N, E]
-│   ├── adjacency_matrix.mbt       # AdjacencyMatrixGraph[N, E]
-│   ├── csr.mbt                    # CSRGraph[N, E] + CSRBuilder
-│   ├── edge_list.mbt              # EdgeListGraph[N, E]
+│   ├── moon.pkg
+│   ├── adjacency_list.mbt         # AdjacencyListGraph
+│   ├── adjacency_matrix.mbt       # AdjacencyMatrixGraph
+│   ├── csr.mbt                    # CSRGraph + CSRBuilder
+│   ├── edge_list.mbt              # EdgeListGraph
 │   ├── converter.mbt              # 格式转换器
 │   ├── mod.mbt                    # 统一导出
 │   └── storage_wbtest.mbt         # 存储层集成测试
 │
 ├── algorithms/                    # 算法层
-│   ├── moon.pkg.json
+│   ├── moon.pkg
 │   ├── traversal.mbt              # BFS/DFS
 │   ├── shortest_path.mbt          # Dijkstra/Bellman-Ford (延后)
 │   ├── mst.mbt                    # Kruskal/Prim (延后)
@@ -396,7 +438,7 @@ src/
 │   └── algo_test.mbt              # 黑盒测试
 │
 ├── generators/                    # 图生成器
-│   ├── moon.pkg.json
+│   ├── moon.pkg
 │   ├── classic.mbt                # 完全图、环、路径等
 │   ├── random.mbt                 # 随机图
 │   ├── mod.mbt
@@ -448,48 +490,42 @@ src/
 
 **关键简化**: storage 层从 5 个子包合并为 1 个包，所有存储实现在同一命名空间下，无需子包间依赖。
 
-### 4.3 moon.pkg.json 配置
+### 4.3 moon.pkg 配置
 
-**src/core/moon.pkg.json**
+**src/core/moon.pkg**
 
-```json
-{
-  "is-main": false
-}
+```
+options(
+  "is-main": false,
+)
 ```
 
-**src/storage/moon.pkg.json**
+**src/storage/moon.pkg**
 
-```json
-{
+```
+options(
   "is-main": false,
-  "import": {
-    "mbtgraph/src/core": []
-  }
-}
+)
+import "mbtgraph/src/core"
 ```
 
-**src/algorithms/moon.pkg.json**
+**src/algorithms/moon.pkg**
 
-```json
-{
+```
+options(
   "is-main": false,
-  "import": {
-    "mbtgraph/src/core": []
-  }
-}
+)
+import "mbtgraph/src/core"
 ```
 
-**src/generators/moon.pkg.json**
+**src/generators/moon.pkg**
 
-```json
-{
+```
+options(
   "is-main": false,
-  "import": {
-    "mbtgraph/src/core": [],
-    "mbtgraph/src/storage": []
-  }
-}
+)
+import "mbtgraph/src/core"
+import "mbtgraph/src/storage"
 ```
 
 ### 4.4 模块导出
@@ -534,7 +570,7 @@ pub use "topology" { topological_sort }
 
 **src/lib.mbt**
 
-````moonbit
+```moonbit
 /// mbtgraph — MoonBit 图算法库
 ///
 /// # 快速开始
@@ -561,43 +597,43 @@ pub use "algorithms/mod" *
 
 // 生成器导出
 pub use "generators/mod" *
-````
+```
 
 ***
 
 ## 5. 存储实现设计
 
-### 5.1 邻接表 (AdjacencyListGraph\[N, E])
+### 5.1 邻接表 (AdjacencyListGraph)
 
 **数据结构**:
 
 ```moonbit
-pub struct AdjacencyListGraph[N, E] {
+pub struct AdjacencyListGraph {
   mut next_id: Int
-  nodes: Array[Node[N]]
+  nodes: Array[Node]
   // adj[i] = [(target_id, edge_data), ...]
-  adj: Array[Array[(NodeId, E)]]
+  adj: Array[Array[(NodeId, Double)]]
   // 反向邻接（有向图入边查询）
   mut directed: Bool
-  rev_adj: Array[Array[(NodeId, E)]]
+  rev_adj: Array[Array[(NodeId, Double)]]
 }
 ```
 
 **配套方法**:
 
 ```moonbit
-impl[N, E] AdjacencyListGraph[N, E] {
+impl AdjacencyListGraph {
   /// 创建新图
-  pub fn new(directed: Bool) -> AdjacencyListGraph[N, E]
+  pub fn new(directed: Bool) -> AdjacencyListGraph
 
   /// 批量添加节点
-  pub fn add_nodes(self, Array[N]) -> Array[NodeId]
+  pub fn add_nodes(self, Array[Double]) -> Array[NodeId]
 
   /// 查找匹配的节点
-  pub fn find_nodes(self, (N) -> Bool) -> Array[NodeId]
+  pub fn find_nodes(self, (Double) -> Bool) -> Array[NodeId]
 
   /// 提取子图
-  pub fn subgraph(self, Array[NodeId]) -> AdjacencyListGraph[N, E]
+  pub fn subgraph(self, Array[NodeId]) -> AdjacencyListGraph
 
   /// 图的密度
   pub fn density(self) -> Double
@@ -610,16 +646,16 @@ impl[N, E] AdjacencyListGraph[N, E] {
 - 无向图：添加边时同时更新 `adj` 和 `rev_adj`
 - 删除节点时压缩数组（可选：或标记删除+ID 回收）
 
-### 5.2 邻接矩阵 (AdjacencyMatrixGraph\[N, E])
+### 5.2 邻接矩阵 (AdjacencyMatrixGraph)
 
 **数据结构**:
 
 ```moonbit
-pub struct AdjacencyMatrixGraph[N, E] {
+pub struct AdjacencyMatrixGraph {
   mut size: Int
   capacity: Int
-  nodes: Array[Option[N]]
-  matrix: Array[Array[Option[E]]]
+  nodes: Array[Option[Node]]
+  matrix: Array[Array[Option[Double]]]
   directed: Bool
 }
 ```
@@ -627,8 +663,8 @@ pub struct AdjacencyMatrixGraph[N, E] {
 **配套方法**:
 
 ```moonbit
-impl[N, E] AdjacencyMatrixGraph[N, E] {
-  pub fn new(capacity: Int, directed: Bool) -> AdjacencyMatrixGraph[N, E]
+impl AdjacencyMatrixGraph {
+  pub fn new(capacity: Int, directed: Bool) -> AdjacencyMatrixGraph
 
   /// 扩容
   fn resize(self, Int) -> Unit
@@ -641,16 +677,16 @@ impl[N, E] AdjacencyMatrixGraph[N, E] {
 - `resize` 时重新分配（成本高，仅在必要时调用）
 - 适合 V < 1000 的稠密图
 
-### 5.3 CSR 格式 (CSRGraph\[N, E])
+### 5.3 CSR 格式 (CSRGraph)
 
 **数据结构**:
 
 ```moonbit
-pub struct CSRGraph[N, E] {
-  nodes: Array[Node[N]]
+pub struct CSRGraph {
+  nodes: Array[Node]
   row_ptr: Array[Int]
   col_idx: Array[NodeId]
-  values: Array[E]
+  values: Array[Double]
   directed: Bool
 }
 ```
@@ -658,34 +694,34 @@ pub struct CSRGraph[N, E] {
 **构建器模式**:
 
 ```moonbit
-pub struct CSRBuilder[N, E] {
-  mut nodes: Array[Node[N]]
-  mut edges: Array[(NodeId, NodeId, E)]
+pub struct CSRBuilder {
+  mut nodes: Array[Node]
+  mut edges: Array[(NodeId, NodeId, Double)]
 }
 
-impl[N, E] CSRBuilder[N, E] {
-  pub fn new() -> CSRBuilder[N, E]
-  pub fn add_node(self, NodeId, N) -> Unit
-  pub fn add_edge(self, NodeId, NodeId, E) -> Unit
-  pub fn build(self) -> CSRGraph[N, E]
+impl CSRBuilder {
+  pub fn new() -> CSRBuilder
+  pub fn add_node(self, NodeId, Double) -> Unit
+  pub fn add_edge(self, NodeId, NodeId, Double) -> Unit
+  pub fn build(self) -> CSRGraph
 }
 ```
 
 **实现策略**:
 
 - 只读格式，通过 CSRBuilder 构建
-- 构建时排序边，计算 row\_ptr
+- 构建时排序边，计算 row_ptr
 - 可选同时构建 CSC 用于入边查询
 
-### 5.4 边集数组 (EdgeListGraph\[N, E])
+### 5.4 边集数组 (EdgeListGraph)
 
 **数据结构**:
 
 ```moonbit
-pub struct EdgeListGraph[N, E] {
+pub struct EdgeListGraph {
   mut next_id: Int
-  nodes: Array[Node[N]]
-  edges: Array[Edge[E]]
+  nodes: Array[Node]
+  edges: Array[Edge]
 }
 ```
 
@@ -702,28 +738,28 @@ pub struct GraphConverter
 
 impl GraphConverter {
   /// 任意可迭代图 -> 邻接表
-  pub fn to_adjacency_list[N, E](
-    GraphReadable[N, E],
+  pub fn to_adjacency_list(
+    GraphReadable,
     Bool
-  ) -> AdjacencyListGraph[N, E]
+  ) -> AdjacencyListGraph
 
   /// 任意可迭代图 -> CSR
-  pub fn to_csr[N, E](
-    GraphReadable[N, E]
-  ) -> CSRGraph[N, E]
+  pub fn to_csr(
+    GraphReadable
+  ) -> CSRGraph
 
   /// 任意可迭代图 -> 邻接矩阵
-  pub fn to_adjacency_matrix[N, E](
-    GraphReadable[N, E],
+  pub fn to_adjacency_matrix(
+    GraphReadable,
     Int
-  ) -> AdjacencyMatrixGraph[N, E]
+  ) -> AdjacencyMatrixGraph
 
   /// 边集 -> 任意格式
-  pub fn from_edges[N, E](
-    Array[Node[N]],
-    Array[(NodeId, NodeId, E)],
+  pub fn from_edges(
+    Array[Node],
+    Array[(NodeId, NodeId, Double)],
     Bool
-  ) -> AdjacencyListGraph[N, E]
+  ) -> AdjacencyListGraph
 }
 ```
 
@@ -737,19 +773,19 @@ impl GraphConverter {
 
 ```moonbit
 /// BFS — 只需要 GraphReadable
-pub fn bfs[G: GraphReadable[N, E], N, E](
+pub fn bfs[G: GraphReadable](
   graph: G,
   start: NodeId
-) -> Iterator[NodeId]
+) -> Iter[NodeId]
 
 /// Dijkstra — 需要 GraphReadable，边数据需为数值类型
-pub fn dijkstra[G: GraphReadable[N, Double], N](
+pub fn dijkstra[G: GraphReadable](
   graph: G,
   start: NodeId
 ) -> Map[NodeId, Double]
 
 /// Kruskal — 需要边排序能力
-pub fn kruskal[G: GraphReadable[Unit, Double] + GraphEdgeIterable[Unit, Double]](
+pub fn kruskal[G: GraphReadable + GraphEdgeIterable](
   graph: G
 ) -> Array[(NodeId, NodeId, Double)]
 ```
@@ -759,8 +795,8 @@ pub fn kruskal[G: GraphReadable[Unit, Double] + GraphEdgeIterable[Unit, Double]]
 | 算法类别         | 文件                 | 所需 Trait                          | 复杂度           |
 | ------------ | ------------------ | --------------------------------- | ------------- |
 | BFS/DFS      | traversal.mbt      | GraphReadable                     | O(V+E)        |
-| Dijkstra     | shortest\_path.mbt | GraphReadable                     | O((V+E)log V) |
-| Bellman-Ford | shortest\_path.mbt | GraphReadable + GraphEdgeIterable | O(VE)         |
+| Dijkstra     | shortest_path.mbt | GraphReadable                     | O((V+E)log V) |
+| Bellman-Ford | shortest_path.mbt | GraphReadable + GraphEdgeIterable | O(VE)         |
 | Kruskal      | mst.mbt            | GraphReadable + GraphEdgeIterable | O(E log E)    |
 | Prim         | mst.mbt            | GraphReadable                     | O((V+E)log V) |
 | 连通分量         | connectivity.mbt   | GraphReadable                     | O(V+E)        |
@@ -770,9 +806,9 @@ pub fn kruskal[G: GraphReadable[Unit, Double] + GraphEdgeIterable[Unit, Double]]
 
 | 算法           | 返回类型                                | 理由          |
 | ------------ | ----------------------------------- | ----------- |
-| BFS/DFS      | `Iterator[NodeId]`                  | 惰性求值，避免全量分配 |
+| BFS/DFS      | `Iter[NodeId]`                      | 惰性求值，避免全量分配 |
 | Dijkstra     | `Map[NodeId, Double]`               | 需要随机访问距离    |
-| Kruskal/Prim | `Array[(NodeId, NodeId, E)]`        | 返回边集，需多次遍历  |
+| Kruskal/Prim | `Array[(NodeId, NodeId, Double)]`   | 返回边集，需多次遍历  |
 | 连通分量         | `Array[Array[NodeId]]`              | 分量集合        |
 | 拓扑排序         | `Result[Array[NodeId], GraphError]` | 可能有环        |
 
@@ -785,22 +821,22 @@ pub fn kruskal[G: GraphReadable[Unit, Double] + GraphEdgeIterable[Unit, Double]]
 ```moonbit
 pub mod classic {
   /// 完全图 K_n
-  pub fn complete_graph(n: Int) -> AdjacencyListGraph[Unit, Unit]
+  pub fn complete_graph(n: Int) -> AdjacencyListGraph
 
   /// 环图 C_n
-  pub fn cycle_graph(n: Int) -> AdjacencyListGraph[Unit, Unit]
+  pub fn cycle_graph(n: Int) -> AdjacencyListGraph
 
   /// 路径图 P_n
-  pub fn path_graph(n: Int) -> AdjacencyListGraph[Unit, Unit]
+  pub fn path_graph(n: Int) -> AdjacencyListGraph
 
   /// 星型图
-  pub fn star_graph(n: Int) -> AdjacencyListGraph[Unit, Unit]
+  pub fn star_graph(n: Int) -> AdjacencyListGraph
 
   /// 网格图 m × n
-  pub fn grid_graph(m: Int, n: Int) -> AdjacencyListGraph[Unit, Unit]
+  pub fn grid_graph(m: Int, n: Int) -> AdjacencyListGraph
 
   /// 完全二分图 K_{m,n}
-  pub fn complete_bipartite_graph(m: Int, n: Int) -> AdjacencyListGraph[Unit, Unit]
+  pub fn complete_bipartite_graph(m: Int, n: Int) -> AdjacencyListGraph
 }
 ```
 
@@ -809,10 +845,10 @@ pub mod classic {
 ```moonbit
 pub mod random {
   /// Erdős–Rényi 随机图 G(n, p)
-  pub fn erdos_renyi_graph(n: Int, p: Double) -> AdjacencyListGraph[Unit, Unit]
+  pub fn erdos_renyi_graph(n: Int, p: Double) -> AdjacencyListGraph
 
   /// Barabási–Albert 偏好连接图
-  pub fn barabasi_albert_graph(n: Int, m: Int) -> AdjacencyListGraph[Unit, Unit]
+  pub fn barabasi_albert_graph(n: Int, m: Int) -> AdjacencyListGraph
 }
 ```
 
@@ -830,9 +866,9 @@ fn main {
   let graph = AdjacencyListGraph::new(true)
 
   // 添加节点
-  let a = GraphWritable::add_node(graph, "A")
-  let b = GraphWritable::add_node(graph, "B")
-  let c = GraphWritable::add_node(graph, "C")
+  let a = GraphWritable::add_node(graph, 1.0)
+  let b = GraphWritable::add_node(graph, 2.0)
+  let c = GraphWritable::add_node(graph, 3.0)
 
   // 添加边
   GraphWritable::add_edge(graph, a, b, 1.0)
@@ -851,8 +887,8 @@ use mbtgraph::{AdjacencyListGraph, GraphWritable, bfs, dijkstra}
 
 fn main {
   let graph = AdjacencyListGraph::new(true)
-  let s = GraphWritable::add_node(graph, "S")
-  let t = GraphWritable::add_node(graph, "T")
+  let s = GraphWritable::add_node(graph, 1.0)
+  let t = GraphWritable::add_node(graph, 2.0)
 
   // BFS 遍历
   for node_id in bfs(graph, s) {
@@ -895,17 +931,17 @@ fn main {
 **方案**: 使用 trait 继承
 
 ```moonbit
-pub trait GraphWritable[N, E] : GraphReadable[N, E] { ... }
+pub trait GraphWritable: GraphReadable { ... }
 ```
 
 ### 决策 2: neighbors 返回类型
 
 | 方案                 | 优点            | 缺点     |
 | ------------------ | ------------- | ------ |
-| `Iterator[NodeId]` | 零分配、惰性求值、大图友好 | 只能遍历一次 |
+| `Iter[NodeId]` | 零分配、惰性求值、大图友好 | 只能遍历一次 |
 | `Array[NodeId]`    | 可多次遍历、支持索引    | 额外内存分配 |
 
-**决定**: 默认返回 `Iterator[NodeId]`，在存储实现上提供辅助方法 `collect_neighbors(self, NodeId) -> Array[NodeId]`。
+**决定**: 默认返回 `Iter[NodeId]`，在存储实现上提供辅助方法 `collect_neighbors(self, NodeId) -> Array[NodeId]`。
 
 ### 决策 3: 有向图/无向图处理
 
@@ -919,7 +955,7 @@ pub trait GraphWritable[N, E] : GraphReadable[N, E] { ... }
 **方案**: 自增 ID + 可选回收池
 
 ```moonbit
-pub struct AdjacencyListGraph[N, E] {
+pub struct AdjacencyListGraph {
   mut next_id: Int
   freed_ids: Array[NodeId]  // 可选：删除节点后 ID 回收
   // ...
@@ -935,13 +971,33 @@ pub struct AdjacencyListGraph[N, E] {
 
 ```moonbit
 // 推荐：依赖 trait
-pub fn bfs[G: GraphReadable[N, E], N, E](graph: G, start: NodeId) -> ...
+pub fn bfs[G: GraphReadable](graph: G, start: NodeId) -> ...
 
 // 不推荐：依赖具体类型
-pub fn bfs(graph: AdjacencyListGraph[N, E], start: NodeId) -> ...
+pub fn bfs(graph: AdjacencyListGraph, start: NodeId) -> ...
 ```
 
 通过 `inline` 关键字可优化虚调用开销。
+
+### 决策 6: 数据类型策略
+
+**MVP 阶段**: 节点/边数据固定为 `Double`
+
+```moonbit
+pub struct Node {
+  id : NodeId
+  data : Double
+} derive(Debug)
+```
+
+**后续泛型化**: 支持任意类型
+
+```moonbit
+pub struct Node[T] {
+  id : NodeId
+  data : T
+} derive(Debug)
+```
 
 ***
 
@@ -954,13 +1010,12 @@ pub fn bfs(graph: AdjacencyListGraph[N, E], start: NodeId) -> ...
 | 定义 NodeId, Node, Edge | types.mbt                  | 从现有 graph.mbt 重构                     |
 | 定义 GraphError         | error.mbt                  | 错误类型                                 |
 | 定义 4 个基础 trait        | traits.mbt                 | GraphReadable/Writable/Directed/Full |
-| 实现 GraphReadable impl | traits.mbt                 | 含默认方法                                |
 
 ### 阶段 2: 邻接表实现 (P1)
 
 | 任务               | 文件                             | 说明                        |
 | ---------------- | ------------------------------ | ------------------------- |
-| 邻接表结构定义          | storage/adjacency_list.mbt     | AdjacencyListGraph\[N, E] |
+| 邻接表结构定义          | storage/adjacency_list.mbt     | AdjacencyListGraph        |
 | 实现 GraphWritable | storage/adjacency_list.mbt     | 增删节点/边                    |
 | 实现 GraphDirected | storage/adjacency_list.mbt     | 入边/出边查询                   |
 | 单元测试             | storage/storage_wbtest.mbt     | 覆盖核心功能                    |
@@ -977,11 +1032,11 @@ pub fn bfs(graph: AdjacencyListGraph[N, E], start: NodeId) -> ...
 
 | 任务                    | 文件              | 说明                    |
 | --------------------- | --------------- | --------------------- |
-| CSR 结构                | storage/csr.mbt   | CSRGraph\[N, E]       |
+| CSR 结构                | storage/csr.mbt   | CSRGraph              |
 | CSRBuilder            | storage/csr.mbt | 构建器模式 (同一文件)         |
 | 实现 GraphReadable      | storage/csr.mbt   | 只读接口                  |
 | 实现 GraphBatchReadable | storage/csr.mbt   | 批量优化                  |
-| 转换器                   | storage/converter.mbt   | to\_csr / from\_edges |
+| 转换器                   | storage/converter.mbt   | to_csr / from_edges |
 
 ### 阶段 5: 扩展 (P4+)
 
@@ -1000,11 +1055,11 @@ pub fn bfs(graph: AdjacencyListGraph[N, E], start: NodeId) -> ...
 
 ### 11.1 当前状态
 
-现有 `src/core/graph.mbt` 包含：
+现有 `src/core/` 目录包含：
 
-- `NodeId`, `Node`, `Edge` 定义（固定 `Double` 类型）
-- `Graph` trait（单一接口）
-- `AdjGraph` 实现（邻接表）
+- `types.mbt`: `NodeId`, `Node`, `Edge` 定义（MVP 使用 `Double`）
+- `traits.mbt`: 分层 trait 定义（已实现）
+- `error.mbt`: `GraphError` 枚举
 
 ### 11.2 迁移步骤
 
@@ -1018,16 +1073,16 @@ graph.mbt (现有)
 │    - error.mbt   → GraphError
 │    - traits.mbt  → 分层 trait      │
 ├──────────────────────────────────┤
-│ 2. 泛型化                         │
-│    Node[Double] → Node[N]         │
-│    Edge[Double] → Edge[E]         │
+│ 2. 数据类型                       │
+│    MVP: Double 固定类型             │
+│    后续: 泛型化 Node[T], Edge[T]   │
 ├──────────────────────────────────┤
 │ 3. 迁移 AdjGraph                  │
 │    → storage/adjacency_list.mbt   │
 │    → 实现 GraphWritable + Directed│
 ├──────────────────────────────────┤
 │ 4. 保留兼容性                     │
-│    类型别名: Graph = AdjGraph     │
+│    类型别名: Graph = AdjacencyListGraph│
 └──────────────────────────────────┘
 ```
 
@@ -1035,7 +1090,7 @@ graph.mbt (现有)
 
 ```moonbit
 /// 向后兼容别名
-pub type Graph = AdjacencyListGraph[Double, Double]
+pub type Graph = AdjacencyListGraph
 ```
 
 ***
@@ -1077,17 +1132,17 @@ test "bfs produces same result on list and csr" {
 本方案通过 **trait 分层 + 存储多实现 + 算法解耦** 的架构，实现了：
 
 1. **SOLID 合规**: 接口隔离、里氏替换、依赖倒置
-2. **MoonBit 适配**: 使用 trait 继承、泛型、默认方法
+2. **MoonBit 适配**: 使用 trait 继承、MVP 固定 `Double` 类型简化开发
 3. **渐进实现**: P0→P1→P2→P3 分阶段推进
 4. **向后兼容**: 保留现有 `AdjGraph` 作为类型别名
-5. **算法通用**: `bfs[G: GraphReadable]` 适用于所有存储
+5. **算法通用**: `bfs[G: GraphReadable](g: G)` 适用于所有存储
 
 ***
 
 **文档状态**: 草稿 ⏳
 **待确认事项**:
 
-- [ ] 是否同意 trait 分层方案
+- [x] trait 分层方案已确定
 - [ ] NodeId 是否需要回收机制
 - [ ] 第一阶段是否同时实现邻接表和 CSR
 - [ ] 算法模块是否立即集成
@@ -1100,4 +1155,3 @@ test "bfs produces same result on list and csr" {
 - petgraph: <https://docs.rs/petgraph/latest/petgraph/>
 - NetworkX: <https://networkx.org/documentation/stable/>
 - meguruli/ds: <https://mooncakes.io/docs/meguruli/ds>
-
