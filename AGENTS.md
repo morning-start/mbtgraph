@@ -49,6 +49,7 @@ GraphReadable[N, E]  ← 基础只读（所有存储都实现）
 ```
 
 **核心决策**:
+
 - CSR 等只读存储**不实现** `GraphWritable`，避免违反里氏替换原则
 - MoonBit 支持 `pub trait B: A` 继承语法
 - 算法使用 trait 约束 `bfs[G: GraphReadable](g: G)` 而非具体类型
@@ -75,6 +76,7 @@ mbtgraph/
 ```
 
 **Package Organization**:
+
 - Each directory contains a `moon.pkg` file listing dependencies
 - Blackbox tests: `*_test.mbt` (external API testing)
 - Whitebox tests: `*_wbtest.mbt` (internal implementation testing)
@@ -83,21 +85,21 @@ mbtgraph/
 
 ### Available Skills
 
-| Skill | Purpose | When to Use |
-|-------|---------|-------------|
-| `moonbit-core-skill` | Core syntax, types, functions | Basic language features |
-| `moonbit-data-structures-skill` | Arrays, tuples, structs, enums, Map, Set | Data structure design |
-| `moonbit-tutorial-skill` | Environment setup, Hello World, project structure | Newcomer onboarding |
-| `moonbit-functions-skill` | Higher-order functions, closures, pipes | Functional programming |
-| `moonbit-pattern-matching-skill` | match, destructuring, guards | Pattern matching tasks |
-| `moonbit-generics-skill` | Generics, Traits, impl, type constraints | Abstraction & reuse |
-| `moonbit-error-handling-skill` | Option, Result, raise, try/catch | Error handling |
-| `moonbit-toolchain-skill` | moon CLI, compile, build, format | Build & tooling |
-| `moonbit-testing-skill` | Unit tests, expect tests, coverage | Testing & debugging |
-| `moonbit-packages-skill` | mooncakes, dependency management | Package management |
-| `moonbit-wasm-skill` | wasm/wasm-gc backend | WebAssembly targets |
-| `moonbit-js-skill` | JavaScript backend | Node.js/browser targets |
-| `moonbit-native-skill` | native/llvm backend | Native performance |
+| Skill                            | Purpose                                           | When to Use             |
+| -------------------------------- | ------------------------------------------------- | ----------------------- |
+| `moonbit-core-skill`             | Core syntax, types, functions                     | Basic language features |
+| `moonbit-data-structures-skill`  | Arrays, tuples, structs, enums, Map, Set          | Data structure design   |
+| `moonbit-tutorial-skill`         | Environment setup, Hello World, project structure | Newcomer onboarding     |
+| `moonbit-functions-skill`        | Higher-order functions, closures, pipes           | Functional programming  |
+| `moonbit-pattern-matching-skill` | match, destructuring, guards                      | Pattern matching tasks  |
+| `moonbit-generics-skill`         | Generics, Traits, impl, type constraints          | Abstraction & reuse     |
+| `moonbit-error-handling-skill`   | Option, Result, raise, try/catch                  | Error handling          |
+| `moonbit-toolchain-skill`        | moon CLI, compile, build, format                  | Build & tooling         |
+| `moonbit-testing-skill`          | Unit tests, expect tests, coverage                | Testing & debugging     |
+| `moonbit-packages-skill`         | mooncakes, dependency management                  | Package management      |
+| `moonbit-wasm-skill`             | wasm/wasm-gc backend                              | WebAssembly targets     |
+| `moonbit-js-skill`               | JavaScript backend                                | Node.js/browser targets |
+| `moonbit-native-skill`           | native/llvm backend                               | Native performance      |
 
 ### Skill Selection Flow
 
@@ -180,9 +182,9 @@ moon test --update
 
 ### Test Types
 
-| Type | File Suffix | Purpose |
-|------|-------------|---------|
-| Blackbox | `*_test.mbt` | External API testing |
+| Type     | File Suffix    | Purpose                         |
+| -------- | -------------- | ------------------------------- |
+| Blackbox | `*_test.mbt`   | External API testing            |
 | Whitebox | `*_wbtest.mbt` | Internal implementation testing |
 
 ### Test Commands
@@ -211,23 +213,26 @@ moon coverage analyze > uncovered.log
 
 本项目采用双层记忆架构：
 
-| 层级 | 位置 | 用途 | 内容 |
-|------|------|------|------|
-| **项目记忆** | `MEMORY.md` | 项目级持久化记忆 | 项目关键决策、架构变更、重要约定、现状描述 |
-| **每日记忆** | `memory/YYYY-MM-DD.md` | 会话级操作日志 | 当天具体操作、临时上下文、短期发现 |
+| 层级         | 位置                   | 用途             | 内容                                       |
+| ------------ | ---------------------- | ---------------- | ------------------------------------------ |
+| **项目记忆** | `MEMORY.md`            | 项目级持久化记忆 | 项目关键决策、架构变更、重要约定、现状描述 |
+| **每日记忆** | `memory/YYYY-MM-DD.md` | 会话级操作日志   | 当天具体操作、临时上下文、短期发现         |
 
 ### How to Use Memory
 
 **Every Session 启动流程**:
+
 1. 读取 `MEMORY.md` — 了解项目级记忆和关键约定
 2. 读取 `memory/YYYY-MM-DD.md`（今天）— 检查今日已有操作上下文
 3. 读取 `memory/YYYY-MM-DD.md`（昨天）— 了解最近操作背景（可选）
 
 **During Work**:
+
 - 重要决策 → 更新 `MEMORY.md`
 - 日常操作 → 追加到 `memory/YYYY-MM-DD.md`
 
 **After Completion**:
+
 - 项目级变更：更新 `MEMORY.md`（聚焦现状，不区分日期）
 - 会话级记录：写入 `memory/YYYY-MM-DD.md`
 
@@ -237,6 +242,7 @@ moon coverage analyze > uncovered.log
 聚焦项目现状，包含架构、规范、决策等，不按日期区分。
 
 **每日记忆 (memory/YYYY-MM-DD.md)**:
+
 ```markdown
 # YYYY-MM-DD Memory Log
 
@@ -254,15 +260,15 @@ moon coverage analyze > uncovered.log
 
 ## Tooling Reference
 
-| Tool | Purpose |
-|------|---------|
-| `moon fmt` | Code formatting |
-| `moon info` | Generate package interfaces (.mbti) |
-| `moon ide` | IDE helpers: peek-def, outline, find-references |
-| `moon test` | Run test suite |
-| `moon bench` | Run benchmarks |
-| `moon build` | Build project |
-| `moon run` | Execute entry point |
+| Tool         | Purpose                                         |
+| ------------ | ----------------------------------------------- |
+| `moon fmt`   | Code formatting                                 |
+| `moon info`  | Generate package interfaces (.mbti)             |
+| `moon ide`   | IDE helpers: peek-def, outline, find-references |
+| `moon test`  | Run test suite                                  |
+| `moon bench` | Run benchmarks                                  |
+| `moon build` | Build project                                   |
+| `moon run`   | Execute entry point                             |
 
 ## Official Resources
 
