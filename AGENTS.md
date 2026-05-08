@@ -162,28 +162,56 @@ moon coverage analyze > uncovered.log
 
 ## Memory System
 
+### Memory Architecture
+
+本项目采用双层记忆架构：
+
+| 层级 | 位置 | 用途 | 内容 |
+|------|------|------|------|
+| **项目记忆** | `MEMORY.md` | 项目级持久化记忆 | 项目关键决策、架构变更、重要约定 |
+| **每日记忆** | `memory/YYYY-MM-DD.md` | 会话级操作日志 | 当天具体操作、临时上下文、短期发现 |
+
 ### How to Use Memory
 
-1. **Before starting**: Read MEMORY.md for recent context
-2. **During work**: Note significant decisions and changes
-3. **After completion**: Update MEMORY.md with operation summary
+**Every Session 启动流程**：
+1. 读取 `MEMORY.md` — 了解项目级记忆和关键约定
+2. 读取 `memory/YYYY-MM-DD.md`（今天）— 检查今日已有操作上下文
+3. 读取 `memory/YYYY-MM-DD.md`（昨天）— 了解最近操作背景（可选）
+
+**During Work**：
+- 重要决策 → 更新 `MEMORY.md`
+- 日常操作 → 追加到 `memory/YYYY-MM-DD.md`
+
+**After Completion**：
+- 项目级变更：更新 `MEMORY.md`
+- 会话级记录：写入 `memory/YYYY-MM-DD.md`
 
 ### Memory Format
 
+**项目记忆 (MEMORY.md)**：
 ```markdown
-## YYYY-MM-DD
+## 主题：[关键决策/架构变更]
 
-### 操作：[Brief description]
+- [决策内容]
+- [原因说明]
+- [生效日期]
+```
+
+**每日记忆 (memory/YYYY-MM-DD.md)**：
+```markdown
+# YYYY-MM-DD Memory Log
+
+## 操作：[Brief description]
 
 - [Key decision or action]
 - [Important finding]
 - [Change made]
 ```
 
-### Memory Directory
+### Memory Files
 
-- `MEMORY.md` — Current memory log
-- `memory/` — Directory for dated memory files (if needed)
+- `MEMORY.md` — 项目记忆，存储关键决策和架构约定
+- `memory/` — 每日记忆目录，按日期存储操作日志（如 `2026-05-08.md`）
 
 ## Tooling Reference
 
