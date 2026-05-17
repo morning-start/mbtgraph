@@ -3,7 +3,7 @@
 ///
 /// 采用左上角三角存储法：无向边仅存储在上三角区域 (from < to)。
 /// 节省约 50% 矩阵空间，查询 O(1)，遍历 O(V)。
-pub struct UndirectedMatrix {
+pub(all) struct UndirectedMatrix {
   mut node_count : Int
   mut edge_count : Int
   capacity : Int
@@ -14,28 +14,31 @@ pub struct UndirectedMatrix {
 ///|
 pub fn new_undirected_matrix(capacity : Int) -> UndirectedMatrix {
   let nodes = Array::make(capacity, None)
-  let matrix = Array::make(capacity, Array::make(capacity, None))
+  let matrix : Array[Array[Double?]] = []
+  for _ in 0..<capacity {
+    matrix.push(Array::make(capacity, None))
+  }
   { node_count: 0, edge_count: 0, capacity, nodes, matrix }
 }
 
 ///|
-impl @core.GraphReadable for UndirectedMatrix with node_count(self) -> Int {
+pub impl @core.GraphReadable for UndirectedMatrix with node_count(self) -> Int {
   self.node_count
 }
 
 ///|
-impl @core.GraphReadable for UndirectedMatrix with edge_count(self) -> Int {
+pub impl @core.GraphReadable for UndirectedMatrix with edge_count(self) -> Int {
   self.edge_count
 }
 
 ///|
-impl @core.GraphReadable for UndirectedMatrix with contains_node(self, id) -> Bool {
+pub impl @core.GraphReadable for UndirectedMatrix with contains_node(self, id) -> Bool {
   let idx = id.0
   idx >= 0 && idx < self.nodes.length() && has_node(self.nodes, idx)
 }
 
 ///|
-impl @core.GraphReadable for UndirectedMatrix with contains_edge(self, from, to) -> Bool {
+pub impl @core.GraphReadable for UndirectedMatrix with contains_edge(self, from, to) -> Bool {
   let fi = from.0
   let ti = to.0
   if fi < 0 || fi >= self.capacity || ti < 0 || ti >= self.capacity {
@@ -50,7 +53,7 @@ impl @core.GraphReadable for UndirectedMatrix with contains_edge(self, from, to)
 }
 
 ///|
-impl @core.GraphReadable for UndirectedMatrix with get_node(self, id) -> Double? {
+pub impl @core.GraphReadable for UndirectedMatrix with get_node(self, id) -> Double? {
   match self.nodes[id.0] {
     Some(n) => Some(n.data)
     None => None
@@ -58,7 +61,7 @@ impl @core.GraphReadable for UndirectedMatrix with get_node(self, id) -> Double?
 }
 
 ///|
-impl @core.GraphReadable for UndirectedMatrix with get_edge(self, from, to) -> Double? {
+pub impl @core.GraphReadable for UndirectedMatrix with get_edge(self, from, to) -> Double? {
   let fi = from.0
   let ti = to.0
   if fi < 0 || fi >= self.capacity {
@@ -69,7 +72,7 @@ impl @core.GraphReadable for UndirectedMatrix with get_edge(self, from, to) -> D
 }
 
 ///|
-impl @core.GraphReadable for UndirectedMatrix with neighbors(self, id) -> Iter[
+pub impl @core.GraphReadable for UndirectedMatrix with neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let idx = id.0
@@ -88,7 +91,7 @@ impl @core.GraphReadable for UndirectedMatrix with neighbors(self, id) -> Iter[
 }
 
 ///|
-impl @core.GraphReadable for UndirectedMatrix with degree(self, id) -> Int {
+pub impl @core.GraphReadable for UndirectedMatrix with degree(self, id) -> Int {
   let idx = id.0
   if idx < 0 || idx >= self.capacity {
     0
@@ -106,17 +109,17 @@ impl @core.GraphReadable for UndirectedMatrix with degree(self, id) -> Int {
 }
 
 ///|
-impl @core.GraphReadable for UndirectedMatrix with is_directed(self) -> Bool {
+pub impl @core.GraphReadable for UndirectedMatrix with is_directed(self) -> Bool {
   false
 }
 
 ///|
-impl @core.GraphReadable for UndirectedMatrix with is_empty(self) -> Bool {
+pub impl @core.GraphReadable for UndirectedMatrix with is_empty(self) -> Bool {
   self.node_count == 0
 }
 
 ///|
-impl @core.GraphReadable for UndirectedMatrix with node_ids(self) -> Iter[
+pub impl @core.GraphReadable for UndirectedMatrix with node_ids(self) -> Iter[
   @core.NodeId,
 ] {
   let r : Array[@core.NodeId] = []
@@ -129,7 +132,7 @@ impl @core.GraphReadable for UndirectedMatrix with node_ids(self) -> Iter[
 }
 
 ///|
-impl @core.GraphReadable for UndirectedMatrix with edges(self) -> Iter[
+pub impl @core.GraphReadable for UndirectedMatrix with edges(self) -> Iter[
   (@core.NodeId, @core.NodeId, Double),
 ] {
   let r : Array[(@core.NodeId, @core.NodeId, Double)] = []
@@ -147,7 +150,7 @@ impl @core.GraphReadable for UndirectedMatrix with edges(self) -> Iter[
 }
 
 ///|
-impl @core.GraphWritable for UndirectedMatrix with add_node(self, data) -> @core.NodeId {
+pub impl @core.GraphWritable for UndirectedMatrix with add_node(self, data) -> @core.NodeId {
   let slot = find_slot(self.nodes, 0, self.nodes.length())
   let idx = if slot >= 0 { slot } else { self.nodes.length() }
   let g = self
@@ -159,7 +162,7 @@ impl @core.GraphWritable for UndirectedMatrix with add_node(self, data) -> @core
 }
 
 ///|
-impl @core.GraphWritable for UndirectedMatrix with remove_node(self, id) -> Bool {
+pub impl @core.GraphWritable for UndirectedMatrix with remove_node(self, id) -> Bool {
   let idx = id.0
   if idx < 0 || idx >= self.capacity {
     return false
@@ -196,7 +199,7 @@ impl @core.GraphWritable for UndirectedMatrix with remove_node(self, id) -> Bool
 }
 
 ///|
-impl @core.GraphWritable for UndirectedMatrix with add_edge(
+pub impl @core.GraphWritable for UndirectedMatrix with add_edge(
   self,
   from,
   to,
@@ -230,7 +233,7 @@ impl @core.GraphWritable for UndirectedMatrix with add_edge(
 }
 
 ///|
-impl @core.GraphWritable for UndirectedMatrix with remove_edge(self, from, to) -> Bool {
+pub impl @core.GraphWritable for UndirectedMatrix with remove_edge(self, from, to) -> Bool {
   let fi = from.0
   let ti = to.0
   if fi < 0 || fi >= self.capacity || ti < 0 || ti >= self.capacity {
@@ -250,7 +253,7 @@ impl @core.GraphWritable for UndirectedMatrix with remove_edge(self, from, to) -
 }
 
 ///|
-impl @core.GraphWritable for UndirectedMatrix with clear(self) -> Unit {
+pub impl @core.GraphWritable for UndirectedMatrix with clear(self) -> Unit {
   let g = self
   for i in 0..<g.capacity {
     g.nodes[i] = None

@@ -5,7 +5,7 @@
 /// CSR 按行（源节点）压缩，适合出边遍历；
 /// CSC 按列（目标节点）压缩，适合入边遍历。
 /// **不实现** `GraphWritable`，符合里氏替换原则 (LSP)。
-pub struct CSCGraph {
+pub(all) struct CSCGraph {
   nodes : Array[@core.Node]
   col_ptr : Array[Int]
   row_idx : Array[@core.NodeId]
@@ -13,7 +13,7 @@ pub struct CSCGraph {
 }
 
 ///|
-pub struct CSCBuilder {
+pub(all) struct CSCBuilder {
   nodes : Array[@core.Node]
   edges : Array[(@core.NodeId, @core.NodeId, Double)]
 }
@@ -97,23 +97,23 @@ pub fn CSCBuilder::build(self : CSCBuilder) -> CSCGraph {
 }
 
 ///|
-impl @core.GraphReadable for CSCGraph with node_count(self) -> Int {
+pub impl @core.GraphReadable for CSCGraph with node_count(self) -> Int {
   self.nodes.length()
 }
 
 ///|
-impl @core.GraphReadable for CSCGraph with edge_count(self) -> Int {
+pub impl @core.GraphReadable for CSCGraph with edge_count(self) -> Int {
   self.row_idx.length()
 }
 
 ///|
-impl @core.GraphReadable for CSCGraph with contains_node(self, id) -> Bool {
+pub impl @core.GraphReadable for CSCGraph with contains_node(self, id) -> Bool {
   let idx = id.0
   idx >= 0 && idx < self.nodes.length()
 }
 
 ///|
-impl @core.GraphReadable for CSCGraph with contains_edge(self, from, to) -> Bool {
+pub impl @core.GraphReadable for CSCGraph with contains_edge(self, from, to) -> Bool {
   let ti = to.0
   if ti < 0 || ti >= self.col_ptr.length() - 1 {
     return false
@@ -129,7 +129,7 @@ impl @core.GraphReadable for CSCGraph with contains_edge(self, from, to) -> Bool
 }
 
 ///|
-impl @core.GraphReadable for CSCGraph with get_node(self, id) -> Double? {
+pub impl @core.GraphReadable for CSCGraph with get_node(self, id) -> Double? {
   let idx = id.0
   if idx < 0 || idx >= self.nodes.length() {
     None
@@ -139,7 +139,7 @@ impl @core.GraphReadable for CSCGraph with get_node(self, id) -> Double? {
 }
 
 ///|
-impl @core.GraphReadable for CSCGraph with get_edge(self, from, to) -> Double? {
+pub impl @core.GraphReadable for CSCGraph with get_edge(self, from, to) -> Double? {
   let ti = to.0
   if ti < 0 || ti >= self.col_ptr.length() - 1 {
     return None
@@ -155,7 +155,7 @@ impl @core.GraphReadable for CSCGraph with get_edge(self, from, to) -> Double? {
 }
 
 ///|
-impl @core.GraphReadable for CSCGraph with neighbors(self, id) -> Iter[
+pub impl @core.GraphReadable for CSCGraph with neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let idx = id.0
@@ -185,7 +185,7 @@ impl @core.GraphReadable for CSCGraph with neighbors(self, id) -> Iter[
 }
 
 ///|
-impl @core.GraphReadable for CSCGraph with degree(self, id) -> Int {
+pub impl @core.GraphReadable for CSCGraph with degree(self, id) -> Int {
   let idx = id.0
   if idx < 0 || idx >= self.col_ptr.length() - 1 {
     0
@@ -195,17 +195,17 @@ impl @core.GraphReadable for CSCGraph with degree(self, id) -> Int {
 }
 
 ///|
-impl @core.GraphReadable for CSCGraph with is_directed(self) -> Bool {
+pub impl @core.GraphReadable for CSCGraph with is_directed(self) -> Bool {
   true
 }
 
 ///|
-impl @core.GraphReadable for CSCGraph with is_empty(self) -> Bool {
+pub impl @core.GraphReadable for CSCGraph with is_empty(self) -> Bool {
   self.nodes.length() == 0
 }
 
 ///|
-impl @core.GraphReadable for CSCGraph with node_ids(self) -> Iter[@core.NodeId] {
+pub impl @core.GraphReadable for CSCGraph with node_ids(self) -> Iter[@core.NodeId] {
   let r : Array[@core.NodeId] = []
   for i in 0..<self.nodes.length() {
     r.push(self.nodes[i].id)
@@ -214,7 +214,7 @@ impl @core.GraphReadable for CSCGraph with node_ids(self) -> Iter[@core.NodeId] 
 }
 
 ///|
-impl @core.GraphReadable for CSCGraph with edges(self) -> Iter[
+pub impl @core.GraphReadable for CSCGraph with edges(self) -> Iter[
   (@core.NodeId, @core.NodeId, Double),
 ] {
   let r : Array[(@core.NodeId, @core.NodeId, Double)] = []
@@ -230,7 +230,7 @@ impl @core.GraphReadable for CSCGraph with edges(self) -> Iter[
 }
 
 ///|
-impl @core.GraphBatchReadable for CSCGraph with batch_neighbors(
+pub impl @core.GraphBatchReadable for CSCGraph with batch_neighbors(
   self,
   ids : Array[@core.NodeId],
 ) -> Array[Array[@core.NodeId]] {
@@ -253,7 +253,7 @@ impl @core.GraphBatchReadable for CSCGraph with batch_neighbors(
 }
 
 ///|
-impl @core.GraphBatchReadable for CSCGraph with batch_edges(
+pub impl @core.GraphBatchReadable for CSCGraph with batch_edges(
   self,
   pairs : Array[(@core.NodeId, @core.NodeId)],
 ) -> Array[Double?] {

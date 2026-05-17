@@ -3,7 +3,7 @@
 ///
 /// 最简单的存储方式，边存储在连续数组中。
 /// 适用于 Kruskal 等需要边排序的算法场景。
-pub struct EdgeListGraph {
+pub(all) struct EdgeListGraph {
   mut node_cnt : Int
   nodes : Array[@core.Node?]
   mut edges : Array[@core.Edge]
@@ -15,23 +15,23 @@ pub fn new_edge_list() -> EdgeListGraph {
 }
 
 ///|
-impl @core.GraphReadable for EdgeListGraph with node_count(self) -> Int {
+pub impl @core.GraphReadable for EdgeListGraph with node_count(self) -> Int {
   self.node_cnt
 }
 
 ///|
-impl @core.GraphReadable for EdgeListGraph with edge_count(self) -> Int {
+pub impl @core.GraphReadable for EdgeListGraph with edge_count(self) -> Int {
   self.edges.length()
 }
 
 ///|
-impl @core.GraphReadable for EdgeListGraph with contains_node(self, id) -> Bool {
+pub impl @core.GraphReadable for EdgeListGraph with contains_node(self, id) -> Bool {
   let idx = id.0
   idx >= 0 && idx < self.nodes.length() && has_node(self.nodes, idx)
 }
 
 ///|
-impl @core.GraphReadable for EdgeListGraph with contains_edge(self, from, to) -> Bool {
+pub impl @core.GraphReadable for EdgeListGraph with contains_edge(self, from, to) -> Bool {
   for e in self.edges {
     if e.from == from && e.to == to {
       return true
@@ -41,7 +41,7 @@ impl @core.GraphReadable for EdgeListGraph with contains_edge(self, from, to) ->
 }
 
 ///|
-impl @core.GraphReadable for EdgeListGraph with get_node(self, id) -> Double? {
+pub impl @core.GraphReadable for EdgeListGraph with get_node(self, id) -> Double? {
   let idx = id.0
   if idx < 0 || idx >= self.nodes.length() {
     return None
@@ -53,7 +53,7 @@ impl @core.GraphReadable for EdgeListGraph with get_node(self, id) -> Double? {
 }
 
 ///|
-impl @core.GraphReadable for EdgeListGraph with get_edge(self, from, to) -> Double? {
+pub impl @core.GraphReadable for EdgeListGraph with get_edge(self, from, to) -> Double? {
   for e in self.edges {
     if e.from == from && e.to == to {
       return Some(e.data)
@@ -63,7 +63,7 @@ impl @core.GraphReadable for EdgeListGraph with get_edge(self, from, to) -> Doub
 }
 
 ///|
-impl @core.GraphReadable for EdgeListGraph with neighbors(self, id) -> Iter[
+pub impl @core.GraphReadable for EdgeListGraph with neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let r : Array[@core.NodeId] = []
@@ -76,7 +76,7 @@ impl @core.GraphReadable for EdgeListGraph with neighbors(self, id) -> Iter[
 }
 
 ///|
-impl @core.GraphReadable for EdgeListGraph with degree(self, id) -> Int {
+pub impl @core.GraphReadable for EdgeListGraph with degree(self, id) -> Int {
   let mut c = 0
   for e in self.edges {
     if e.from == id {
@@ -87,17 +87,17 @@ impl @core.GraphReadable for EdgeListGraph with degree(self, id) -> Int {
 }
 
 ///|
-impl @core.GraphReadable for EdgeListGraph with is_directed(self) -> Bool {
+pub impl @core.GraphReadable for EdgeListGraph with is_directed(self) -> Bool {
   true
 }
 
 ///|
-impl @core.GraphReadable for EdgeListGraph with is_empty(self) -> Bool {
+pub impl @core.GraphReadable for EdgeListGraph with is_empty(self) -> Bool {
   self.node_cnt == 0
 }
 
 ///|
-impl @core.GraphReadable for EdgeListGraph with node_ids(self) -> Iter[
+pub impl @core.GraphReadable for EdgeListGraph with node_ids(self) -> Iter[
   @core.NodeId,
 ] {
   let r : Array[@core.NodeId] = []
@@ -110,7 +110,7 @@ impl @core.GraphReadable for EdgeListGraph with node_ids(self) -> Iter[
 }
 
 ///|
-impl @core.GraphReadable for EdgeListGraph with edges(self) -> Iter[
+pub impl @core.GraphReadable for EdgeListGraph with edges(self) -> Iter[
   (@core.NodeId, @core.NodeId, Double),
 ] {
   let r : Array[(@core.NodeId, @core.NodeId, Double)] = []
@@ -121,7 +121,7 @@ impl @core.GraphReadable for EdgeListGraph with edges(self) -> Iter[
 }
 
 ///|
-impl @core.GraphWritable for EdgeListGraph with add_node(self, data) -> @core.NodeId {
+pub impl @core.GraphWritable for EdgeListGraph with add_node(self, data) -> @core.NodeId {
   let slot = find_slot(self.nodes, 0, self.nodes.length())
   let idx = if slot >= 0 { slot } else { self.nodes.length() }
   let g = self
@@ -134,7 +134,7 @@ impl @core.GraphWritable for EdgeListGraph with add_node(self, data) -> @core.No
 }
 
 ///|
-impl @core.GraphWritable for EdgeListGraph with remove_node(self, id) -> Bool {
+pub impl @core.GraphWritable for EdgeListGraph with remove_node(self, id) -> Bool {
   let idx = id.0
   if idx < 0 || idx >= self.nodes.length() {
     return false
@@ -158,7 +158,7 @@ impl @core.GraphWritable for EdgeListGraph with remove_node(self, id) -> Bool {
 }
 
 ///|
-impl @core.GraphWritable for EdgeListGraph with add_edge(self, from, to, data) -> Result[
+pub impl @core.GraphWritable for EdgeListGraph with add_edge(self, from, to, data) -> Result[
   Unit,
   @core.GraphError,
 ] {
@@ -187,7 +187,7 @@ impl @core.GraphWritable for EdgeListGraph with add_edge(self, from, to, data) -
 }
 
 ///|
-impl @core.GraphWritable for EdgeListGraph with remove_edge(self, from, to) -> Bool {
+pub impl @core.GraphWritable for EdgeListGraph with remove_edge(self, from, to) -> Bool {
   let ne : Array[@core.Edge] = []
   let mut found = false
   for e in self.edges {
@@ -203,7 +203,7 @@ impl @core.GraphWritable for EdgeListGraph with remove_edge(self, from, to) -> B
 }
 
 ///|
-impl @core.GraphWritable for EdgeListGraph with clear(self) -> Unit {
+pub impl @core.GraphWritable for EdgeListGraph with clear(self) -> Unit {
   let g = self
   for i in 0..<g.nodes.length() {
     g.nodes[i] = None
@@ -213,7 +213,7 @@ impl @core.GraphWritable for EdgeListGraph with clear(self) -> Unit {
 }
 
 ///|
-impl @core.GraphEdgeIterable for EdgeListGraph with edges_sorted(self) -> Iter[
+pub impl @core.GraphEdgeIterable for EdgeListGraph with edges_sorted(self) -> Iter[
   (@core.NodeId, @core.NodeId, Double),
 ] {
   let all : Array[(@core.NodeId, @core.NodeId, Double)] = []

@@ -20,9 +20,13 @@ pub fn new_edge_list() -> EdgeListGraph
 
 pub fn new_undirected() -> UndirectedAdjList
 
+pub fn new_undirected_edge_list() -> UndirectedEdgeListGraph
+
 pub fn new_undirected_matrix(Int) -> UndirectedMatrix
 
 pub fn remove_from_list(Array[(@core.NodeId, Double)], Int) -> (Bool, Array[(@core.NodeId, Double)])
+
+pub fn[G : @core.GraphReadable] to_csc(G) -> CSCGraph
 
 pub fn[G : @core.GraphReadable] to_csr(G) -> CSRGraph
 
@@ -34,12 +38,30 @@ pub fn[G : @core.GraphReadable] to_edge_list(G) -> EdgeListGraph
 
 pub fn[G : @core.GraphReadable] to_undirected_adj_list(G) -> UndirectedAdjList
 
+pub fn[G : @core.GraphReadable] to_undirected_edge_list(G) -> UndirectedEdgeListGraph
+
 pub fn[G : @core.GraphReadable] to_undirected_matrix(G, Int) -> UndirectedMatrix
 
 // Errors
 
 // Types and methods
-pub struct CSRBuilder {
+pub(all) struct CSCBuilder {
+  nodes : Array[@core.Node]
+  edges : Array[(@core.NodeId, @core.NodeId, Double)]
+}
+pub fn CSCBuilder::add_edge(Self, @core.NodeId, @core.NodeId, Double) -> Self
+pub fn CSCBuilder::add_node(Self, @core.NodeId, Double) -> Self
+pub fn CSCBuilder::build(Self) -> CSCGraph
+pub fn CSCBuilder::new() -> Self
+
+pub(all) struct CSCGraph {
+  nodes : Array[@core.Node]
+  col_ptr : Array[Int]
+  row_idx : Array[@core.NodeId]
+  values : Array[Double]
+}
+
+pub(all) struct CSRBuilder {
   nodes : Array[@core.Node]
   edges : Array[(@core.NodeId, @core.NodeId, Double)]
 }
@@ -48,22 +70,25 @@ pub fn CSRBuilder::add_node(Self, @core.NodeId, Double) -> Self
 pub fn CSRBuilder::build(Self) -> CSRGraph
 pub fn CSRBuilder::new() -> Self
 
-pub struct CSRGraph {
+pub(all) struct CSRGraph {
   nodes : Array[@core.Node]
   row_ptr : Array[Int]
   col_idx : Array[@core.NodeId]
   values : Array[Double]
 }
 
-pub struct DirectedAdjList {
+pub(all) struct DirectedAdjList {
   mut node_cnt : Int
   mut edge_cnt : Int
   nodes : Array[@core.Node?]
   adj : Array[Array[(@core.NodeId, Double)]]
   rev_adj : Array[Array[(@core.NodeId, Double)]]
 }
+pub impl @core.GraphDirected for DirectedAdjList
+pub impl @core.GraphReadable for DirectedAdjList
+pub impl @core.GraphWritable for DirectedAdjList
 
-pub struct DirectedMatrix {
+pub(all) struct DirectedMatrix {
   mut node_count : Int
   mut edge_count : Int
   capacity : Int
@@ -71,20 +96,26 @@ pub struct DirectedMatrix {
   matrix : Array[Array[Double?]]
 }
 
-pub struct EdgeListGraph {
+pub(all) struct EdgeListGraph {
   mut node_cnt : Int
   nodes : Array[@core.Node?]
   mut edges : Array[@core.Edge]
 }
 
-pub struct UndirectedAdjList {
+pub(all) struct UndirectedAdjList {
   mut node_cnt : Int
   mut edge_cnt : Int
   nodes : Array[@core.Node?]
   adj : Array[Array[(@core.NodeId, Double)]]
 }
 
-pub struct UndirectedMatrix {
+pub(all) struct UndirectedEdgeListGraph {
+  mut node_cnt : Int
+  nodes : Array[@core.Node?]
+  mut edges : Array[@core.Edge]
+}
+
+pub(all) struct UndirectedMatrix {
   mut node_count : Int
   mut edge_count : Int
   capacity : Int

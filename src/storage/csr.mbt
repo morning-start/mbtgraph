@@ -4,7 +4,7 @@
 /// 只读格式，适合大规模图计算（亿级节点）。
 /// 内存效率极高，缓存局部性极佳。
 /// **不实现** `GraphWritable`，符合里氏替换原则 (LSP)。
-pub struct CSRGraph {
+pub(all) struct CSRGraph {
   nodes : Array[@core.Node]
   row_ptr : Array[Int]
   col_idx : Array[@core.NodeId]
@@ -12,7 +12,7 @@ pub struct CSRGraph {
 }
 
 ///|
-pub struct CSRBuilder {
+pub(all) struct CSRBuilder {
   nodes : Array[@core.Node]
   edges : Array[(@core.NodeId, @core.NodeId, Double)]
 }
@@ -96,23 +96,23 @@ pub fn CSRBuilder::build(self : CSRBuilder) -> CSRGraph {
 }
 
 ///|
-impl @core.GraphReadable for CSRGraph with node_count(self) -> Int {
+pub impl @core.GraphReadable for CSRGraph with node_count(self) -> Int {
   self.nodes.length()
 }
 
 ///|
-impl @core.GraphReadable for CSRGraph with edge_count(self) -> Int {
+pub impl @core.GraphReadable for CSRGraph with edge_count(self) -> Int {
   self.col_idx.length()
 }
 
 ///|
-impl @core.GraphReadable for CSRGraph with contains_node(self, id) -> Bool {
+pub impl @core.GraphReadable for CSRGraph with contains_node(self, id) -> Bool {
   let idx = id.0
   idx >= 0 && idx < self.nodes.length()
 }
 
 ///|
-impl @core.GraphReadable for CSRGraph with contains_edge(self, from, to) -> Bool {
+pub impl @core.GraphReadable for CSRGraph with contains_edge(self, from, to) -> Bool {
   let fi = from.0
   if fi < 0 || fi >= self.row_ptr.length() - 1 {
     return false
@@ -128,7 +128,7 @@ impl @core.GraphReadable for CSRGraph with contains_edge(self, from, to) -> Bool
 }
 
 ///|
-impl @core.GraphReadable for CSRGraph with get_node(self, id) -> Double? {
+pub impl @core.GraphReadable for CSRGraph with get_node(self, id) -> Double? {
   let idx = id.0
   if idx < 0 || idx >= self.nodes.length() {
     None
@@ -138,7 +138,7 @@ impl @core.GraphReadable for CSRGraph with get_node(self, id) -> Double? {
 }
 
 ///|
-impl @core.GraphReadable for CSRGraph with get_edge(self, from, to) -> Double? {
+pub impl @core.GraphReadable for CSRGraph with get_edge(self, from, to) -> Double? {
   let fi = from.0
   if fi < 0 || fi >= self.row_ptr.length() - 1 {
     return None
@@ -154,7 +154,7 @@ impl @core.GraphReadable for CSRGraph with get_edge(self, from, to) -> Double? {
 }
 
 ///|
-impl @core.GraphReadable for CSRGraph with neighbors(self, id) -> Iter[
+pub impl @core.GraphReadable for CSRGraph with neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let idx = id.0
@@ -171,7 +171,7 @@ impl @core.GraphReadable for CSRGraph with neighbors(self, id) -> Iter[
 }
 
 ///|
-impl @core.GraphReadable for CSRGraph with degree(self, id) -> Int {
+pub impl @core.GraphReadable for CSRGraph with degree(self, id) -> Int {
   let idx = id.0
   if idx < 0 || idx >= self.row_ptr.length() - 1 {
     0
@@ -181,17 +181,19 @@ impl @core.GraphReadable for CSRGraph with degree(self, id) -> Int {
 }
 
 ///|
-impl @core.GraphReadable for CSRGraph with is_directed(self) -> Bool {
+pub impl @core.GraphReadable for CSRGraph with is_directed(self) -> Bool {
   true
 }
 
 ///|
-impl @core.GraphReadable for CSRGraph with is_empty(self) -> Bool {
+pub impl @core.GraphReadable for CSRGraph with is_empty(self) -> Bool {
   self.nodes.length() == 0
 }
 
 ///|
-impl @core.GraphReadable for CSRGraph with node_ids(self) -> Iter[@core.NodeId] {
+pub impl @core.GraphReadable for CSRGraph with node_ids(self) -> Iter[
+  @core.NodeId,
+] {
   let r : Array[@core.NodeId] = []
   for i in 0..<self.nodes.length() {
     r.push(self.nodes[i].id)
@@ -200,7 +202,7 @@ impl @core.GraphReadable for CSRGraph with node_ids(self) -> Iter[@core.NodeId] 
 }
 
 ///|
-impl @core.GraphReadable for CSRGraph with edges(self) -> Iter[
+pub impl @core.GraphReadable for CSRGraph with edges(self) -> Iter[
   (@core.NodeId, @core.NodeId, Double),
 ] {
   let r : Array[(@core.NodeId, @core.NodeId, Double)] = []
@@ -216,7 +218,7 @@ impl @core.GraphReadable for CSRGraph with edges(self) -> Iter[
 }
 
 ///|
-impl @core.GraphBatchReadable for CSRGraph with batch_neighbors(
+pub impl @core.GraphBatchReadable for CSRGraph with batch_neighbors(
   self,
   ids : Array[@core.NodeId],
 ) -> Array[Array[@core.NodeId]] {
@@ -239,7 +241,7 @@ impl @core.GraphBatchReadable for CSRGraph with batch_neighbors(
 }
 
 ///|
-impl @core.GraphBatchReadable for CSRGraph with batch_edges(
+pub impl @core.GraphBatchReadable for CSRGraph with batch_edges(
   self,
   pairs : Array[(@core.NodeId, @core.NodeId)],
 ) -> Array[Double?] {
