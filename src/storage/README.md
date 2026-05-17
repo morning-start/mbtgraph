@@ -25,7 +25,7 @@ storage/
 │   └── csc.mbt                   🚀 压缩稀疏列（入边密集场景）
 │
 ├── 格式转换器
-│   └── converter.mbt            8 个泛型转换函数
+│   └── converter.mbt            10 个泛型转换函数（三层语义安全架构）
 │
 └── 公共工具
     └── shared_helpers.mbt       4 个辅助函数
@@ -162,12 +162,12 @@ let csr = b2.build()  // 构建后不可修改
 CSR:  row_ptr=[0,2,...], col_idx=[1,3], values=[2.0,1.5]
 ```
 
-| 特征       | 值                           |
-| ---------- | ---------------------------- |
-| 空间复杂度 | O(V + E)（最优）             |
-| 邻居遍历   | O(deg(v))                    |
-| 可变性     | ❌ **只读**（LSP）           |
-| Trait      | Readable + **BatchReadable** |
+| 特征       | 值                                          |
+| ---------- | ------------------------------------------- |
+| 空间复杂度 | O(V + E)（最优）                            |
+| 邻居遍历   | O(deg(v))                                   |
+| 可变性     | ❌ **只读**（LSP）                          |
+| Trait      | Readable + **BatchReadable** + **Directed** |
 
 **批量查询 API**:
 
@@ -175,6 +175,16 @@ CSR:  row_ptr=[0,2,...], col_idx=[1,3], values=[2.0,1.5]
 @core.GraphBatchReadable::batch_neighbors(csr, ids)   // 批量邻居
 @core.GraphBatchReadable::batch_edges(csr, pairs)     // 批量边权
 ```
+
+**有向图 API**（CSR 同样支持 `GraphDirected`）:
+
+```moonbit
+@core.GraphDirected::out_neighbors(node)   // O(deg_out) — 行遍历，极快 ✨
+@core.GraphDirected::in_degree(node)       // O(E) — 需全扫描
+@core.GraphDirected::successors(node)      // 带权出边列表
+```
+
+> **CSR vs CSC 复杂度互补**: CSR 的 `out_*` 是 O(1)/O(deg)，`in_*` 是 O(E)；CSC 正好相反。
 
 ---
 
@@ -193,6 +203,14 @@ CSR 的**转置变体**：按目标节点（列）压缩而非源节点（行）
 | 典型场景 | BFS/DFS/PageRank    | 反向PageRank/入度查询 |
 
 同样通过 Builder 构建，同样为**只读格式**。
+
+**有向图 API**（CSC 的 `in_*` 操作是 O(1)/O(deg)，与 CSR 互补）:
+
+```moonbit
+@core.GraphDirected::in_neighbors(node)    // O(deg_in) — 列遍历，极快 ✨
+@core.GraphDirected::in_degree(node)      // O(1) — 指针差，常数时间 ✨
+@core.GraphDirected::predecessors(node)   // 带权入边列表
+```
 
 ---
 
@@ -240,28 +258,67 @@ let g = new_edge_list()
 
 **文件**: [converter.mbt](converter.mbt)
 
-基于 `GraphReadable` trait 的 **8 个泛型转换函数**，支持任意存储类型之间互相转换：
+基于 **trait 约束分层** 的 **10 个泛型转换函数**，语义安全地支持存储结构互转：
 
-| 目标类型                | 函数签名                       | 需要容量参数？ |
-| ----------------------- | ------------------------------ | :------------: |
-| DirectedAdjList         | `to_directed_adj_list(g)`      |       ❌       |
-| UndirectedAdjList       | `to_undirected_adj_list(g)`    |       ❌       |
-| DirectedMatrix          | `to_directed_matrix(g, cap)`   |       ✅       |
-| UndirectedMatrix        | `to_undirected_matrix(g, cap)` |       ✅       |
-| CSRGraph                | `to_csr(g)`                    |       ❌       |
-| CSCGraph                | `to_csc(g)`                    |       ❌       |
-| EdgeListGraph           | `to_edge_list(g)`              |       ❌       |
-| UndirectedEdgeListGraph | `to_undirected_edge_list(g)`   |       ❌       |
+### 三层架构
+
+| 层级           | 约束                        | 函数数 | 保护机制                                        |
+| -------------- | --------------------------- | :----: | ----------------------------------------------- |
+| **有向转换组** | `[G : GraphDirected]`       |   5    | ✅ **编译期**保证源是有向图                     |
+| **无向转换组** | `[G : GraphReadable] raise` |   3    | ✅ **运行时** `assert_true(!is_directed)` panic |
+| **语义转换**   | `[G : GraphReadable] raise` |   2    | 函数名即文档，用户明确知情                      |
+
+### 有向图存储结构互转（编译期安全）
+
+> 源类型必须实现 `GraphDirected` trait（如 DirectedAdjList、CSRGraph、CSCGraph 等）。
+> 如果传入无向图，**编译期直接报错**。
+
+| 目标类型        | 函数签名                     | 需要容量参数？ |
+| --------------- | ---------------------------- | :------------: |
+| DirectedAdjList | `to_directed_adj_list(g)`    |       ❌       |
+| DirectedMatrix  | `to_directed_matrix(g, cap)` |       ✅       |
+| CSRGraph        | `to_csr(g)`                  |       ❌       |
+| CSCGraph        | `to_csc(g)`                  |       ❌       |
+| EdgeListGraph   | `to_edge_list(g)`            |       ❌       |
+
+### 无向图存储结构互转（运行时保护）
+
+> 源类型必须满足 `is_directed() == false`，否则运行时 **panic**。
+
+| 目标类型                | 函数签名                             | 需要容量参数？ |
+| ----------------------- | ------------------------------------ | :------------: |
+| UndirectedAdjList       | `to_undirected_adj_list(g) raise`    |       ❌       |
+| UndirectedMatrix        | `to_undirected_matrix(g, cap) raise` |       ✅       |
+| UndirectedEdgeListGraph | `to_undirected_edge_list(g) raise`   |       ❌       |
+
+### 显式语义转换（跨有向/无向边界）
+
+> 用户通过函数名显式表达意图，不与结构转换混淆。
+
+| 函数                     | 行为                                                 | 典型用途                         |
+| ------------------------ | ---------------------------------------------------- | -------------------------------- |
+| `as_undirected(g) raise` | 有向→无向：`(a→b, w)` → `{a-b, w}`，双向边自动去重   | 算法需要无向输入但数据源是有向的 |
+| `as_directed(g) raise`   | 无向→有向：`{a-b, w}` → `(a→b, w)`，**不生成反向边** | 算法需要有向输入但数据源是无向的 |
 
 ```moonbit
-// 从任意图类型转换
-let adj = to_directed_adj_list(some_graph)
-let csr = to_csr(some_graph)
-let csc = to_csc(some_graph)
-let el = to_undirected_edge_list(some_graph)
+// 结构优化：同一语义内切换存储格式
+let csr = to_csr(my_directed_adj_list)        // AdjList → CSR（出边友好）
+let csc = to_csc(csr)                         // CSR → CSC（入边友好）
+let mat = to_directed_matrix(csc, 1000)        // CSC → Matrix
+
+// 语义转换：跨有向/无向边界（用户明确知情）
+let undirected = as_undirected(my_dag)         // DAG → 无向图（丢失方向信息）
+let directed   = as_directed(my_undirected)    // 无向 → 有向（每条边只保留一个方向）
+
+// Round-trip：无损验证
+let roundtrip = to_directed_adj_list(to_csr(original))
 ```
 
-所有转换均为**无损**：保留所有节点数据和边权值。
+### 设计原则
+
+- **结构转换 ≠ 语义转换**：`to_xxx` 只做同语义内的格式优化；跨边界必须用 `as_*`
+- **编译期优先**：有向组用 `GraphDirected` 约束，零运行时开销
+- **防御性编程**：无向组和语义转换用 `assert_true` + `raise` 保护
 
 ---
 
@@ -284,17 +341,19 @@ let el = to_undirected_edge_list(some_graph)
 
 ### 时间复杂度
 
-| 操作              | AdjList   | Matrix   | CSR/CSC      | EdgeList |
-| ----------------- | --------- | -------- | ------------ | -------- |
-| `add_node()`      | O(1)\*    | O(1)     | Builder only | O(1)\*   |
-| `remove_node()`   | O(deg(v)) | O(V)     | ❌           | O(E)     |
-| `add_edge()`      | O(1)      | O(1)     | Builder only | O(1)     |
-| `remove_edge()`   | O(deg(v)) | O(1)     | ❌           | O(E)     |
-| `contains_edge()` | O(deg(v)) | **O(1)** | O(deg(v))    | O(E)     |
-| `get_edge()`      | O(deg(v)) | **O(1)** | O(deg(v))    | O(E)     |
-| `neighbors()`     | O(deg(v)) | O(V)     | O(deg(v))    | O(E)     |
-| `degree()`        | O(1)      | O(V)     | **O(1)**     | O(E)     |
-| `memory`          | O(V+E)    | O(V²)    | **O(V+E)**   | O(V+E)   |
+| 操作              | AdjList   | Matrix   | CSR          | CSC          | EdgeList |
+| ----------------- | --------- | -------- | ------------ | ------------ | -------- |
+| `add_node()`      | O(1)\*    | O(1)     | Builder only | Builder only | O(1)\*   |
+| `remove_node()`   | O(deg(v)) | O(V)     | ❌           | ❌           | O(E)     |
+| `add_edge()`      | O(1)      | O(1)     | Builder only | Builder only | O(1)     |
+| `remove_edge()`   | O(deg(v)) | O(1)     | ❌           | ❌           | O(E)     |
+| `contains_edge()` | O(deg(v)) | **O(1)** | O(deg_out)   | O(deg_in)    | O(E)     |
+| `get_edge()`      | O(deg(v)) | **O(1)** | O(deg_out)   | O(deg_in)    | O(E)     |
+| `neighbors()`     | O(deg(v)) | O(V)     | O(deg_out)   | O(E)         | O(E)     |
+| `degree()`        | O(1)      | O(V)     | **O(1)**     | O(E)         | O(E)     |
+| `in_degree()`     | O(1)\*    | O(V)     | O(E)         | **O(1)** ✨  | O(E)     |
+| `out_degree()`    | O(1)      | O(V)     | **O(1)** ✨  | O(E)         | O(E)     |
+| `memory`          | O(V+E)    | O(V²)    | **O(V+E)**   | **O(V+E)**   | O(V+E)   |
 
 > \*均摊复杂度
 
@@ -353,12 +412,13 @@ use @core.{GraphReadable}  // 禁止！
 
 ## 已知限制
 
-| 限制             | 影响           | 解决方案                     |
-| ---------------- | -------------- | ---------------------------- |
-| CSR/CSC 不可修改 | 无法动态增删   | 先动态构建再 `to_csr()` 转换 |
-| 矩阵需预分配容量 | 不能动态扩容   | 提前评估最大节点数           |
-| 冒泡排序         | 大规模边集慢   | 中小规模够用，后续可替换快排 |
-| 节点 ID 为整数   | 不支持字符串键 | 外部维护映射表               |
+| 限制             | 影响                   | 解决方案                       |
+| ---------------- | ---------------------- | ------------------------------ |
+| CSR/CSC 不可修改 | 无法动态增删           | 先动态构建再 `to_csr()` 转换   |
+| 矩阵需预分配容量 | 不能动态扩容           | 提前评估最大节点数             |
+| 冒泡排序         | 大规模边集慢           | 中小规模够用，后续可替换快排   |
+| 节点 ID 为整数   | 不支持字符串键         | 外部维护映射表                 |
+| 无多重边支持     | 同一对节点只能有一条边 | 按需使用 EdgeList + 自定义逻辑 |
 
 ---
 
