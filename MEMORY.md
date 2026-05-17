@@ -9,41 +9,69 @@
 
 ## 图存储架构
 
-### Trait 分层体系
+### Trait 分层体系（6 层）
 
-采用 4 层 trait 架构，遵循 SOLID 原则（特别是 LSP 和 ISP）：
+采用 6 层 trait 架构，遵循 SOLID 原则（特别是 LSP 和 ISP）：
 
 ```
-GraphReadable[N, E]  ← 基础只读（所有存储都实现）
-    ├── GraphWritable[N, E]  ← 可写（仅动态存储实现）
-    └── GraphDirected[N, E]  ← 有向图入边查询
-            └── GraphFull[N, E]  ← 完整图别名（= Writable + Directed）
+GraphReadable          ← 基础只读（12 方法，所有存储都实现）
+├── GraphWritable      ← 可写（+5 方法，仅动态存储；CSR 故意不实现 LSP）
+├── GraphDirected      ← 有向图入边查询（+6 方法）
+│   └── GraphFull     ← 完整别名（= Writable + Directed）
+├── GraphBatchReadable ← 批量优化（+2 方法，CSR/CSC 专用）
+└── GraphEdgeIterable  ← 边排序（+1 方法，Kruskal 友好）
 ```
 
-- **核心决策**: CSR 等只读存储**不实现** `GraphWritable`，避免违反里氏替换原则
-- **语法**: MoonBit 支持 `pub trait B: A` 继承语法
-- **算法依赖**: 算法使用 trait 约束 `bfs[G: GraphReadable](g: G)` 而非具体类型
+**核心决策**:
+- CSR/CSC 等只读存储**不实现** `GraphWritable`，避免违反里氏替换原则
+- 算法使用 trait 约束 `[G : @core.GraphReadable]` 而非具体类型
+- 无向图采用**半存储优化**：邻接表用左上角三角存储，矩阵用上三角存储
+
+### 存储层完整清单
+
+```
+src/storage/
+├── 有向图 (3)
+│   ├── directed_adj_list.mbt     ⭐ 默认推荐 | Readable + Writable + Directed
+│   ├── directed_matrix.mbt       小规模稠密图 | Readable + Writable + Directed
+│   └── edge_list.mbt            Kruskal 友好 | Readable + Writable + EdgeIterable
+│
+├── 无向图 (3)
+│   ├── undirected_adj_list.mbt   ⭐ 半存储优化 | Readable + Writable + EdgeIterable
+│   ├── undirected_matrix.mbt     上三角优化    | Readable + Writable
+│   └── undirected_edge_list.mbt  无向边集       | Readable + Writable + EdgeIterable
+│
+├── 只读高性能 (2)
+│   ├── csr.mbt                  亿级节点       | Readable + BatchReadable
+│   └── csc.mbt                  入边密集       | Readable + BatchReadable
+│
+└── 工具 (3)
+    ├── converter.mbt            8 个泛型转换函数
+    ├── shared_helpers.mbt       4 个公共辅助函数
+    └── README.md                包文档
+```
 
 ### 包结构
 
 ```
 src/
-├── core/          # 基础类型 + trait 定义
-├── storage/       # 存储实现（adjacency_list/ adjacency_matrix/ csr/ 等子目录）
-├── algorithms/    # 图算法（遍历/最短路径/MST/连通性等）
-├── generators/    # 图生成器（经典图/随机图）
-└── utils/         # 工具层（序列化等）
+├── core/          # 基础类型(3) + trait定义(6) + 错误类型(1) + 测试(68)
+├── storage/       # 存储实现(8结构体) + 转换器(8) + 工具(4) + 测试(101) + 文档
+├── algorithms/    # 图算法（遍历/最短路径/MST/连通性等）— 待开发
+├── generators/    # 图生成器（经典图/随机图）— 待开发
+└── utils/         # 工具层（序列化等）— 待开发
 ```
 
-### 存储实现优先级
+### 存储选型速查
 
-| 阶段 | 内容 |
+| 需求 | 推荐 |
 |------|------|
-| P0 | 核心 trait 定义（GraphReadable/Writable/Directed/Full） |
-| P1 | 邻接表实现（AdjacencyListGraph） |
-| P2 | 基础算法（BFS/DFS/连通分量） |
-| P3 | CSR 实现 + 格式转换器 |
-| P4+ | 邻接矩阵/边集数组/最短路径/生成器等 |
+| 通用有向图 | DirectedAdjList (`new_directed()`) |
+| 通用无向图 | UndirectedAdjList (`new_undirected()`) |
+| V<1000 稠密图 | DirectedMatrix (`new_directed_matrix(cap)`) |
+| V>10K 静态大图 | CSRGraph (`to_csr(g)`) |
+| 入边密集查询 | CSCGraph (`to_csc(g)`) |
+| Kruskal/MST | UndirectedEdgeList / UndirectedAdjList |
 
 ### 向后兼容
 
@@ -53,15 +81,82 @@ src/
 
 - **块风格**: 代码块以 `///|` 分隔，块顺序无关
 - **废弃代码**: 移至 `deprecated.mbt`
-- **测试**: 白盒测试 `*_wbtest.mbt`，黑盒测试 `*_test.mbt`
+- **测试**: 双轨制 — 黑盒 `*_test.mbt` + 白盒 `*_wbtest.mbt`
 - **接口文件**: 修改后运行 `moon info` 更新 `.mbti`，检查 diff 确认变更可见性
+- **强制规则 (R1-R5)**: 见 AGENTS.md §编码规范
+
+### MoonBit 语法陷阱（已验证）
+
+| 规则 | 正确 | 错误 | 编译错误 |
+|------|------|------|---------|
+| 结构体构造 | `Node::{ id, data }` | `Node { id, data }` | E3002 |
+| Int→Double | `x.to_double()` | `x.to_float()` | E4014 |
+| 科学计数法 | `0.000001` | `1e-300` | Parse error |
+| 无 Show 时断言 | `assert_true(a == b)` | `assert_eq(a, b)` | 缺少 Show impl |
+| Option 匹配 | 不需要 `_ => ()` 分支 | 添加冗余分支 | — |
+| Impl 参数 | `(self)` | `mut self` | E3002 |
+| For 循环 | 先绑定再 match | `for (a,b) in ...` | E3002 |
+| 跨包类型可见性 | `pub(all) struct` | `pub struct` | E4018 (blackbox test) |
+| 跨包 trait 可见性 | `pub impl Trait for T` | `impl Trait for T` | E4063 (一致性检查) |
+| 二维数组初始化 | 逐行 push 独立创建 | `Array::make(n, Array::make(n, x))` | 数据污染 bug |
+
+## 测试状态
+
+### 当前覆盖率
+
+| 包 | 黑盒 | 白盒 | 总计 | 状态 |
+|----|:----:|:----:|:----:|:----:|
+| core | 49 | 19 | **68** | ✅ 全通过 |
+| storage | 88 | 13 | **101** | ✅ 全通过 |
+| root | 0 | 0 | 0 | — |
+| **合计** | **137** | **32** | **169** | **✅** |
+
+### Core 测试详情
+
+| 文件 | 类型 | 数量 | 覆盖 |
+|------|------|:----:|------|
+| types_test.mbt | Blackbox | 24 | NodeId构造/Eq + Node构造/字段 + Edge构造/字段 + 组合 |
+| error_test.mbt | Blackbox | 25 | 3变体×构造匹配 + Eq(11) + Result集成(7) |
+| traits_wbtest.mbt | Whitebox | 19 | MockGraph 实现 6 Trait 共 26 方法 |
+
+### Storage 测试详情
+
+| 文件 | 类型 | 数量 | 覆盖 |
+|------|------|:----:|------|
+| directed_adj_list_test.mbt | Blackbox | 19 | CRUD + GraphDirected (in/out degree/neighbors) |
+| undirected_adj_list_test.mbt | Blackbox | 15 | 双向语义 + 半存储优化 + edges_sorted |
+| matrix_test.mbt | Blackbox | 15 | DirectedMatrix + UndirectedMatrix O(1)查询 |
+| edge_list_test.mbt | Blackbox | 15 | EdgeListGraph + UndirectedEdgeListGraph |
+| csr_csc_test.mbt | Blackbox | 15 | CSRGraph/CSCGraph Builder模式 + batch操作 |
+| converter_test.mbt | Blackbox | 11 | 8个转换函数含 round-trip 验证 |
+| helpers_wbtest.mbt | Whitebox | 13 | has_node/find_slot/remove_from_list/bubble_sort |
+
+### MockGraph 设计要点（traits_wbtest）
+
+- 使用 `node_cnt` 字段独立追踪节点计数（不依赖 nodes.length()）
+- 支持 directed 标志位切换有向/无向模式
+- remove_node() 级联删除关联边并递减 node_cnt
+- bubble_sort_by_weight 用于 edges_sorted 的冒泡排序实现
 
 ## 工具链
 
 ```bash
-moon info && moon fmt    # 更新接口并格式化
-moon test                 # 运行测试
-moon test --update        # 更新快照
-moon bench                # 基准测试
-moon coverage analyze     # 覆盖率分析
+moon check               # 类型检查（零错误零警告）
+moon test                # 运行全部测试
+moon fmt && moon info     # 格式化 + 更新 .mbti 接口文件
+moon build --target <tgt> # 构建（wasm/js/native）
+moon coverage analyze    # 覆盖率分析
 ```
+
+## 关键决策记录
+
+| 日期 | 决策 | 原因 |
+|------|------|------|
+| 2026-05-08 | 4 层 trait 分层 → 6 层 | 新增 BatchReadable + EdgeIterable |
+| 2026-05-08 | CSR 不实现 Writable | 里氏替换原则 (LSP) |
+| 2026-05-17 | 无向图半存储优化 | 节省 ~50% 内存 |
+| 2026-05-17 | 新增 CSC 格式 | 补齐调研文档，支持入边密集场景 |
+| 2026-05-17 | 新增 UndirectedEdgeList | 补齐调研文档，支持无向 Kruskal |
+| 2026-05-17 | converter 扩展至 8 函数 | 支持所有存储互转 |
+| 2026-05-17 | storage struct 改 pub(all) + impl 改 pub | blackbox test 跨包可见性要求 (E4018/E4063) |
+| 2026-05-17 | Matrix 构造改逐行初始化 | Array::make 二维数组共享 bug 修复 |
