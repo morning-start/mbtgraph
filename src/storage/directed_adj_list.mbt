@@ -3,8 +3,6 @@
 ///
 /// 适用于有向图场景，维护正向邻接表 `adj` 和反向邻接表 `rev_adj`。
 /// 空间复杂度 O(V+2E)，支持 O(deg) 的入边/出边查询。
-///
-/// 参考: docs/design/graph_storage_survey.md §2.2
 pub struct DirectedAdjList {
   mut node_cnt : Int
   mut edge_cnt : Int
@@ -16,26 +14,6 @@ pub struct DirectedAdjList {
 ///|
 pub fn new_directed() -> DirectedAdjList {
   { node_cnt: 0, edge_cnt: 0, nodes: [], adj: [], rev_adj: [] }
-}
-
-///|
-fn dal_has_node(nodes : Array[@core.Node?], idx : Int) -> Bool {
-  match nodes[idx] {
-    None => false
-    Some(_) => true
-  }
-}
-
-///|
-fn dal_find_slot(nodes : Array[@core.Node?], i : Int, n : Int) -> Int {
-  if i >= n {
-    -1
-  } else {
-    match nodes[i] {
-      None => i
-      Some(_) => dal_find_slot(nodes, i + 1, n)
-    }
-  }
 }
 
 ///|
@@ -51,7 +29,7 @@ impl @core.GraphReadable for DirectedAdjList with edge_count(self) -> Int {
 ///|
 impl @core.GraphReadable for DirectedAdjList with contains_node(self, id) -> Bool {
   let idx = id.0
-  idx >= 0 && idx < self.nodes.length() && dal_has_node(self.nodes, idx)
+  idx >= 0 && idx < self.nodes.length() && has_node(self.nodes, idx)
 }
 
 ///|
@@ -140,7 +118,7 @@ impl @core.GraphReadable for DirectedAdjList with node_ids(self) -> Iter[
 ] {
   let r : Array[@core.NodeId] = []
   for i in 0..<self.nodes.length() {
-    if dal_has_node(self.nodes, i) {
+    if has_node(self.nodes, i) {
       r.push(@core.NodeId(i))
     }
   }
@@ -153,7 +131,7 @@ impl @core.GraphReadable for DirectedAdjList with edges(self) -> Iter[
 ] {
   let r : Array[(@core.NodeId, @core.NodeId, Double)] = []
   for i in 0..<self.nodes.length() {
-    if dal_has_node(self.nodes, i) {
+    if has_node(self.nodes, i) {
       for entry in self.adj[i] {
         match entry {
           (nid, w) => r.push((@core.NodeId(i), nid, w))
@@ -167,7 +145,7 @@ impl @core.GraphReadable for DirectedAdjList with edges(self) -> Iter[
 
 ///|
 impl @core.GraphWritable for DirectedAdjList with add_node(self, data) -> @core.NodeId {
-  let slot = dal_find_slot(self.nodes, 0, self.nodes.length())
+  let slot = find_slot(self.nodes, 0, self.nodes.length())
   let idx = if slot >= 0 { slot } else { self.nodes.length() }
   let g = self
   if idx == g.nodes.length() {
@@ -226,12 +204,9 @@ fn dal_remove_rev(
   if from_idx < 0 || from_idx >= g.rev_adj.length() {
     return g
   }
-  let nl : Array[(@core.NodeId, Double)] = []
-  for entry in g.rev_adj[from_idx] {
-    match entry {
-      (nid, w) => if nid.0 != to_idx { nl.push((nid, w)) }
-      _ => ()
-    }
+  let (found, nl) = remove_from_list(g.rev_adj[from_idx], to_idx)
+  if !found {
+    return g
   }
   let g2 = g
   g2.rev_adj[from_idx] = nl
@@ -247,12 +222,9 @@ fn dal_remove_from_adj(
   if from_idx < 0 || from_idx >= g.adj.length() {
     return g
   }
-  let nl : Array[(@core.NodeId, Double)] = []
-  for entry in g.adj[from_idx] {
-    match entry {
-      (nid, w) => if nid.0 != target { nl.push((nid, w)) }
-      _ => ()
-    }
+  let (found, nl) = remove_from_list(g.adj[from_idx], target)
+  if !found {
+    return g
   }
   let g2 = g
   g2.adj[from_idx] = nl
@@ -318,32 +290,16 @@ impl @core.GraphWritable for DirectedAdjList with remove_edge(self, from, to) ->
   if fi < 0 || fi >= self.adj.length() {
     return false
   }
-  let (removed, nl) = dal_remove_from_list(self.adj[fi], ti)
+  let (removed, nl) = remove_from_list(self.adj[fi], ti)
   if !removed {
     return false
   }
   let g = self
   g.adj[fi] = nl
   g.edge_cnt = g.edge_cnt - 1
-  let (_, nl2) = dal_remove_from_list(g.rev_adj[ti], fi)
+  let (_, nl2) = remove_from_list(g.rev_adj[ti], fi)
   g.rev_adj[ti] = nl2
   true
-}
-
-///|
-fn dal_remove_from_list(
-  list : Array[(@core.NodeId, Double)],
-  target : Int,
-) -> (Bool, Array[(@core.NodeId, Double)]) {
-  let nl : Array[(@core.NodeId, Double)] = []
-  let mut found = false
-  for entry in list {
-    match entry {
-      (nid, w) => if nid.0 == target { found = true } else { nl.push((nid, w)) }
-      _ => ()
-    }
-  }
-  (found, nl)
 }
 
 ///|

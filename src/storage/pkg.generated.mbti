@@ -6,36 +6,39 @@ import {
 }
 
 // Values
+pub fn bubble_sort_by_weight(Array[(@core.NodeId, @core.NodeId, Double)]) -> Array[(@core.NodeId, @core.NodeId, Double)]
+
+pub fn find_slot(Array[@core.Node?], Int, Int) -> Int
+
+pub fn has_node(Array[@core.Node?], Int) -> Bool
+
 pub fn new_directed() -> DirectedAdjList
+
+pub fn new_directed_matrix(Int) -> DirectedMatrix
 
 pub fn new_edge_list() -> EdgeListGraph
 
-pub fn new_matrix(Int, Bool) -> AdjacencyMatrixGraph
-
 pub fn new_undirected() -> UndirectedAdjList
 
-pub fn[G : @core.GraphReadable] to_adjacency_matrix(G, Int) -> AdjacencyMatrixGraph
+pub fn new_undirected_matrix(Int) -> UndirectedMatrix
+
+pub fn remove_from_list(Array[(@core.NodeId, Double)], Int) -> (Bool, Array[(@core.NodeId, Double)])
 
 pub fn[G : @core.GraphReadable] to_csr(G) -> CSRGraph
 
 pub fn[G : @core.GraphReadable] to_directed_adj_list(G) -> DirectedAdjList
 
+pub fn[G : @core.GraphReadable] to_directed_matrix(G, Int) -> DirectedMatrix
+
 pub fn[G : @core.GraphReadable] to_edge_list(G) -> EdgeListGraph
 
 pub fn[G : @core.GraphReadable] to_undirected_adj_list(G) -> UndirectedAdjList
 
+pub fn[G : @core.GraphReadable] to_undirected_matrix(G, Int) -> UndirectedMatrix
+
 // Errors
 
 // Types and methods
-pub struct AdjacencyMatrixGraph {
-  mut node_count : Int
-  mut edge_count : Int
-  capacity : Int
-  nodes : Array[@core.Node?]
-  matrix : Array[Array[Double?]]
-  directed : Bool
-}
-
 pub struct CSRBuilder {
   nodes : Array[@core.Node]
   edges : Array[(@core.NodeId, @core.NodeId, Double)]
@@ -50,7 +53,6 @@ pub struct CSRGraph {
   row_ptr : Array[Int]
   col_idx : Array[@core.NodeId]
   values : Array[Double]
-  directed : Bool
 }
 
 pub struct DirectedAdjList {
@@ -59,6 +61,14 @@ pub struct DirectedAdjList {
   nodes : Array[@core.Node?]
   adj : Array[Array[(@core.NodeId, Double)]]
   rev_adj : Array[Array[(@core.NodeId, Double)]]
+}
+
+pub struct DirectedMatrix {
+  mut node_count : Int
+  mut edge_count : Int
+  capacity : Int
+  nodes : Array[@core.Node?]
+  matrix : Array[Array[Double?]]
 }
 
 pub struct EdgeListGraph {
@@ -72,6 +82,14 @@ pub struct UndirectedAdjList {
   mut edge_cnt : Int
   nodes : Array[@core.Node?]
   adj : Array[Array[(@core.NodeId, Double)]]
+}
+
+pub struct UndirectedMatrix {
+  mut node_count : Int
+  mut edge_count : Int
+  capacity : Int
+  nodes : Array[@core.Node?]
+  matrix : Array[Array[Double?]]
 }
 
 // Type aliases

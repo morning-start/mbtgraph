@@ -1,9 +1,8 @@
 ///|
-/// 边集数组图实现
+/// 边集数组图实现（有向专用）
 ///
 /// 最简单的存储方式，边存储在连续数组中。
-/// 主要适用于 Kruskal 等需要边排序的算法场景。
-/// 参考: docs/design/graph_storage_survey.md §2.3
+/// 适用于 Kruskal 等需要边排序的算法场景。
 pub struct EdgeListGraph {
   mut node_cnt : Int
   nodes : Array[@core.Node?]
@@ -13,26 +12,6 @@ pub struct EdgeListGraph {
 ///|
 pub fn new_edge_list() -> EdgeListGraph {
   { node_cnt: 0, nodes: [], edges: [] }
-}
-
-///|
-fn el_has_node(nodes : Array[@core.Node?], idx : Int) -> Bool {
-  match nodes[idx] {
-    None => false
-    Some(_) => true
-  }
-}
-
-///|
-fn el_find_slot(nodes : Array[@core.Node?], i : Int, n : Int) -> Int {
-  if i >= n {
-    -1
-  } else {
-    match nodes[i] {
-      None => i
-      Some(_) => el_find_slot(nodes, i + 1, n)
-    }
-  }
 }
 
 ///|
@@ -48,7 +27,7 @@ impl @core.GraphReadable for EdgeListGraph with edge_count(self) -> Int {
 ///|
 impl @core.GraphReadable for EdgeListGraph with contains_node(self, id) -> Bool {
   let idx = id.0
-  idx >= 0 && idx < self.nodes.length() && el_has_node(self.nodes, idx)
+  idx >= 0 && idx < self.nodes.length() && has_node(self.nodes, idx)
 }
 
 ///|
@@ -123,7 +102,7 @@ impl @core.GraphReadable for EdgeListGraph with node_ids(self) -> Iter[
 ] {
   let r : Array[@core.NodeId] = []
   for i in 0..<self.nodes.length() {
-    if el_has_node(self.nodes, i) {
+    if has_node(self.nodes, i) {
       r.push(@core.NodeId(i))
     }
   }
@@ -143,7 +122,7 @@ impl @core.GraphReadable for EdgeListGraph with edges(self) -> Iter[
 
 ///|
 impl @core.GraphWritable for EdgeListGraph with add_node(self, data) -> @core.NodeId {
-  let slot = el_find_slot(self.nodes, 0, self.nodes.length())
+  let slot = find_slot(self.nodes, 0, self.nodes.length())
   let idx = if slot >= 0 { slot } else { self.nodes.length() }
   let g = self
   if idx == g.nodes.length() {
@@ -195,7 +174,7 @@ impl @core.GraphWritable for EdgeListGraph with add_edge(self, from, to, data) -
           Err(@core.GraphError::InvalidNodeId)
         } else {
           match self.nodes[ti] {
-            None => Err(@core.GraphError::InvalidNodeId)
+            None => Err(@core.GraphError::NodeNotFound(to))
             Some(_) => {
               let g = self
               g.edges.push({ from, to, data })
@@ -241,26 +220,6 @@ impl @core.GraphEdgeIterable for EdgeListGraph with edges_sorted(self) -> Iter[
   for e in self.edges {
     all.push((e.from, e.to, e.data))
   }
-  let sorted = el_bubble_sort(all)
+  let sorted = bubble_sort_by_weight(all)
   sorted.iter()
-}
-
-///|
-fn el_bubble_sort(
-  edges : Array[(@core.NodeId, @core.NodeId, Double)],
-) -> Array[(@core.NodeId, @core.NodeId, Double)] {
-  let es = edges
-  let n = es.length()
-  for i in 0..<n {
-    for j in 0..<(n - i - 1) {
-      let (_, _, w1) = es[j]
-      let (_, _, w2) = es[j + 1]
-      if w1 > w2 {
-        let tmp = es[j]
-        es[j] = es[j + 1]
-        es[j + 1] = tmp
-      }
-    }
-  }
-  es
 }

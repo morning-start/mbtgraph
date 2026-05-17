@@ -4,13 +4,11 @@
 /// 只读格式，适合大规模图计算（亿级节点）。
 /// 内存效率极高，缓存局部性极佳。
 /// **不实现** `GraphWritable`，符合里氏替换原则 (LSP)。
-/// 参考: docs/design/graph_storage_survey.md §2.8
 pub struct CSRGraph {
   nodes : Array[@core.Node]
   row_ptr : Array[Int]
   col_idx : Array[@core.NodeId]
   values : Array[Double]
-  directed : Bool
 }
 
 ///|
@@ -56,16 +54,20 @@ pub fn CSRBuilder::build(self : CSRBuilder) -> CSRGraph {
   let edges = self.edges
   let n = edges.length()
   let es = edges
-  for i in 0..<n {
-    for j in 0..<(n - i - 1) {
-      let (fi1, _, _) = es[j]
-      let (fi2, _, _) = es[j + 1]
+  let mut j = 0
+  while j < n {
+    let mut k = 0
+    while k < n - j - 1 {
+      let (fi1, _, _) = es[k]
+      let (fi2, _, _) = es[k + 1]
       if fi1.0 > fi2.0 {
-        let tmp = es[j]
-        es[j] = es[j + 1]
-        es[j + 1] = tmp
+        let tmp = es[k]
+        es[k] = es[k + 1]
+        es[k + 1] = tmp
       }
+      k = k + 1
     }
+    j = j + 1
   }
   let nc = self.nodes.length()
   let rp = Array::make(nc + 1, 0)
@@ -77,16 +79,20 @@ pub fn CSRBuilder::build(self : CSRBuilder) -> CSRGraph {
     vals.push(e.2)
     let row = e.0.0
     if row != cur_row {
-      for r in (cur_row + 1)..<=row {
+      let mut r = cur_row + 1
+      while r <= row {
         rp[r] = ci.length() - 1
+        r = r + 1
       }
       cur_row = row
     }
   }
-  for r in (cur_row + 1)..<=nc {
+  let mut r = cur_row + 1
+  while r <= nc {
     rp[r] = ci.length()
+    r = r + 1
   }
-  { nodes: self.nodes, row_ptr: rp, col_idx: ci, values: vals, directed: true }
+  { nodes: self.nodes, row_ptr: rp, col_idx: ci, values: vals }
 }
 
 ///|
@@ -176,7 +182,7 @@ impl @core.GraphReadable for CSRGraph with degree(self, id) -> Int {
 
 ///|
 impl @core.GraphReadable for CSRGraph with is_directed(self) -> Bool {
-  self.directed
+  true
 }
 
 ///|

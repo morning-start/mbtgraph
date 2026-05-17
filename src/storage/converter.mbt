@@ -2,7 +2,6 @@
 /// 图格式转换器
 ///
 /// 基于 `GraphReadable` trait，任意存储类型可互相转换。
-/// 有向图和无向图的邻接表转换函数已分开。
 pub fn[G : @core.GraphReadable] to_directed_adj_list(g : G) -> DirectedAdjList {
   let r = new_directed()
   for nid in g.node_ids() {
@@ -41,12 +40,32 @@ pub fn[G : @core.GraphReadable] to_undirected_adj_list(
 }
 
 ///|
-pub fn[G : @core.GraphReadable] to_adjacency_matrix(
+pub fn[G : @core.GraphReadable] to_directed_matrix(
   g : G,
   cap : Int,
-) -> AdjacencyMatrixGraph {
-  let d = g.is_directed()
-  let r = new_matrix(cap, d)
+) -> DirectedMatrix {
+  let r = new_directed_matrix(cap)
+  for nid in g.node_ids() {
+    match g.get_node(nid) {
+      Some(data) => @core.GraphWritable::add_node(r, data) |> ignore
+      None => ()
+    }
+  }
+  for triple in g.edges() {
+    match triple {
+      (f, t, w) => @core.GraphWritable::add_edge(r, f, t, w) |> ignore
+      _ => ()
+    }
+  }
+  r
+}
+
+///|
+pub fn[G : @core.GraphReadable] to_undirected_matrix(
+  g : G,
+  cap : Int,
+) -> UndirectedMatrix {
+  let r = new_undirected_matrix(cap)
   for nid in g.node_ids() {
     match g.get_node(nid) {
       Some(data) => @core.GraphWritable::add_node(r, data) |> ignore

@@ -1,102 +1,41 @@
 ///|
-/// 邻接矩阵图实现
+/// 有向图邻接矩阵实现
 ///
-/// 适用于小规模稠密图（V < 1000）。
+/// 适用于小规模稠密有向图（V < 1000）。
 /// 查询边存在性 O(1)，遍历邻居 O(V)。
-/// 参考: docs/design/graph_storage_survey.md §2.1
-pub struct AdjacencyMatrixGraph {
+pub struct DirectedMatrix {
   mut node_count : Int
   mut edge_count : Int
   capacity : Int
   nodes : Array[@core.Node?]
   matrix : Array[Array[Double?]]
-  directed : Bool
 }
 
 ///|
-pub fn new_matrix(capacity : Int, directed : Bool) -> AdjacencyMatrixGraph {
+pub fn new_directed_matrix(capacity : Int) -> DirectedMatrix {
   let nodes = Array::make(capacity, None)
   let matrix = Array::make(capacity, Array::make(capacity, None))
-  let m = { node_count: 0, edge_count: 0, capacity, nodes, matrix, directed }
-  m
+  { node_count: 0, edge_count: 0, capacity, nodes, matrix }
 }
 
 ///|
-fn am_has_node(nodes : Array[@core.Node?], idx : Int) -> Bool {
-  match nodes[idx] {
-    None => false
-    Some(_) => true
-  }
-}
-
-///|
-fn am_count_row(matrix : Array[Array[Double?]], cap : Int, row : Int) -> Int {
-  am_count_row_acc(matrix, cap, row, 0, 0)
-}
-
-///|
-fn am_count_row_acc(
-  matrix : Array[Array[Double?]],
-  cap : Int,
-  row : Int,
-  j : Int,
-  acc : Int,
-) -> Int {
-  if j >= cap {
-    acc
-  } else {
-    match matrix[row][j] {
-      None => am_count_row_acc(matrix, cap, row, j + 1, acc)
-      Some(_) => am_count_row_acc(matrix, cap, row, j + 1, acc + 1)
-    }
-  }
-}
-
-///|
-fn am_count_col(matrix : Array[Array[Double?]], cap : Int, col : Int) -> Int {
-  am_count_col_acc(matrix, cap, col, 0, 0)
-}
-
-///|
-fn am_count_col_acc(
-  matrix : Array[Array[Double?]],
-  cap : Int,
-  col : Int,
-  i : Int,
-  acc : Int,
-) -> Int {
-  if i >= cap {
-    acc
-  } else {
-    match matrix[i][col] {
-      None => am_count_col_acc(matrix, cap, col, i + 1, acc)
-      Some(_) => am_count_col_acc(matrix, cap, col, i + 1, acc + 1)
-    }
-  }
-}
-
-///|
-impl @core.GraphReadable for AdjacencyMatrixGraph with node_count(self) -> Int {
+impl @core.GraphReadable for DirectedMatrix with node_count(self) -> Int {
   self.node_count
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyMatrixGraph with edge_count(self) -> Int {
+impl @core.GraphReadable for DirectedMatrix with edge_count(self) -> Int {
   self.edge_count
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyMatrixGraph with contains_node(self, id) -> Bool {
+impl @core.GraphReadable for DirectedMatrix with contains_node(self, id) -> Bool {
   let idx = id.0
-  idx >= 0 && idx < self.nodes.length() && am_has_node(self.nodes, idx)
+  idx >= 0 && idx < self.nodes.length() && has_node(self.nodes, idx)
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyMatrixGraph with contains_edge(
-  self,
-  from,
-  to,
-) -> Bool {
+impl @core.GraphReadable for DirectedMatrix with contains_edge(self, from, to) -> Bool {
   let fi = from.0
   let ti = to.0
   if fi < 0 || fi >= self.capacity || ti < 0 || ti >= self.capacity {
@@ -110,7 +49,7 @@ impl @core.GraphReadable for AdjacencyMatrixGraph with contains_edge(
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyMatrixGraph with get_node(self, id) -> Double? {
+impl @core.GraphReadable for DirectedMatrix with get_node(self, id) -> Double? {
   match self.nodes[id.0] {
     Some(n) => Some(n.data)
     None => None
@@ -118,12 +57,12 @@ impl @core.GraphReadable for AdjacencyMatrixGraph with get_node(self, id) -> Dou
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyMatrixGraph with get_edge(self, from, to) -> Double? {
+impl @core.GraphReadable for DirectedMatrix with get_edge(self, from, to) -> Double? {
   self.matrix[from.0][to.0]
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyMatrixGraph with neighbors(self, id) -> Iter[
+impl @core.GraphReadable for DirectedMatrix with neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let idx = id.0
@@ -141,32 +80,46 @@ impl @core.GraphReadable for AdjacencyMatrixGraph with neighbors(self, id) -> It
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyMatrixGraph with degree(self, id) -> Int {
+fn dm_count_row(matrix : Array[Array[Double?]], cap : Int, row : Int) -> Int {
+  let mut c = 0
+  let mut j = 0
+  while j < cap {
+    match matrix[row][j] {
+      Some(_) => c = c + 1
+      None => ()
+    }
+    j = j + 1
+  }
+  c
+}
+
+///|
+impl @core.GraphReadable for DirectedMatrix with degree(self, id) -> Int {
   let idx = id.0
   if idx < 0 || idx >= self.capacity {
     0
   } else {
-    am_count_row(self.matrix, self.capacity, idx)
+    dm_count_row(self.matrix, self.capacity, idx)
   }
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyMatrixGraph with is_directed(self) -> Bool {
-  self.directed
+impl @core.GraphReadable for DirectedMatrix with is_directed(self) -> Bool {
+  true
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyMatrixGraph with is_empty(self) -> Bool {
+impl @core.GraphReadable for DirectedMatrix with is_empty(self) -> Bool {
   self.node_count == 0
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyMatrixGraph with node_ids(self) -> Iter[
+impl @core.GraphReadable for DirectedMatrix with node_ids(self) -> Iter[
   @core.NodeId,
 ] {
   let r : Array[@core.NodeId] = []
   for i in 0..<self.nodes.length() {
-    if am_has_node(self.nodes, i) {
+    if has_node(self.nodes, i) {
       r.push(@core.NodeId(i))
     }
   }
@@ -174,12 +127,12 @@ impl @core.GraphReadable for AdjacencyMatrixGraph with node_ids(self) -> Iter[
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyMatrixGraph with edges(self) -> Iter[
+impl @core.GraphReadable for DirectedMatrix with edges(self) -> Iter[
   (@core.NodeId, @core.NodeId, Double),
 ] {
   let r : Array[(@core.NodeId, @core.NodeId, Double)] = []
   for i in 0..<self.capacity {
-    if am_has_node(self.nodes, i) {
+    if has_node(self.nodes, i) {
       for j in 0..<self.capacity {
         match self.matrix[i][j] {
           Some(w) => r.push((@core.NodeId(i), @core.NodeId(j), w))
@@ -192,8 +145,8 @@ impl @core.GraphReadable for AdjacencyMatrixGraph with edges(self) -> Iter[
 }
 
 ///|
-impl @core.GraphWritable for AdjacencyMatrixGraph with add_node(self, data) -> @core.NodeId {
-  let slot = am_find_slot(self.nodes, 0, self.nodes.length())
+impl @core.GraphWritable for DirectedMatrix with add_node(self, data) -> @core.NodeId {
+  let slot = find_slot(self.nodes, 0, self.nodes.length())
   let idx = if slot >= 0 { slot } else { self.nodes.length() }
   let g = self
   if idx >= 0 && idx < g.capacity {
@@ -204,19 +157,7 @@ impl @core.GraphWritable for AdjacencyMatrixGraph with add_node(self, data) -> @
 }
 
 ///|
-fn am_find_slot(nodes : Array[@core.Node?], i : Int, n : Int) -> Int {
-  if i >= n {
-    -1
-  } else {
-    match nodes[i] {
-      None => i
-      Some(_) => am_find_slot(nodes, i + 1, n)
-    }
-  }
-}
-
-///|
-impl @core.GraphWritable for AdjacencyMatrixGraph with remove_node(self, id) -> Bool {
+impl @core.GraphWritable for DirectedMatrix with remove_node(self, id) -> Bool {
   let idx = id.0
   if idx < 0 || idx >= self.capacity {
     return false
@@ -251,12 +192,10 @@ impl @core.GraphWritable for AdjacencyMatrixGraph with remove_node(self, id) -> 
 }
 
 ///|
-impl @core.GraphWritable for AdjacencyMatrixGraph with add_edge(
-  self,
-  from,
-  to,
-  data,
-) -> Result[Unit, @core.GraphError] {
+impl @core.GraphWritable for DirectedMatrix with add_edge(self, from, to, data) -> Result[
+  Unit,
+  @core.GraphError,
+] {
   let fi = from.0
   let ti = to.0
   if fi < 0 || fi >= self.capacity || ti < 0 || ti >= self.capacity {
@@ -274,10 +213,6 @@ impl @core.GraphWritable for AdjacencyMatrixGraph with add_edge(
                 let g = self
                 g.matrix[fi][ti] = Some(data)
                 g.edge_count = g.edge_count + 1
-                if !g.directed {
-                  g.matrix[ti][fi] = Some(data)
-                  g.edge_count = g.edge_count + 1
-                }
                 Ok(())
               }
             }
@@ -287,11 +222,7 @@ impl @core.GraphWritable for AdjacencyMatrixGraph with add_edge(
 }
 
 ///|
-impl @core.GraphWritable for AdjacencyMatrixGraph with remove_edge(
-  self,
-  from,
-  to,
-) -> Bool {
+impl @core.GraphWritable for DirectedMatrix with remove_edge(self, from, to) -> Bool {
   let fi = from.0
   let ti = to.0
   if fi < 0 || fi >= self.capacity || ti < 0 || ti >= self.capacity {
@@ -302,10 +233,6 @@ impl @core.GraphWritable for AdjacencyMatrixGraph with remove_edge(
         let g = self
         g.matrix[fi][ti] = None
         g.edge_count = g.edge_count - 1
-        if !g.directed {
-          g.matrix[ti][fi] = None
-          g.edge_count = g.edge_count - 1
-        }
         true
       }
       None => false
@@ -314,7 +241,7 @@ impl @core.GraphWritable for AdjacencyMatrixGraph with remove_edge(
 }
 
 ///|
-impl @core.GraphWritable for AdjacencyMatrixGraph with clear(self) -> Unit {
+impl @core.GraphWritable for DirectedMatrix with clear(self) -> Unit {
   let g = self
   for i in 0..<g.capacity {
     g.nodes[i] = None
@@ -327,7 +254,7 @@ impl @core.GraphWritable for AdjacencyMatrixGraph with clear(self) -> Unit {
 }
 
 ///|
-impl @core.GraphDirected for AdjacencyMatrixGraph with in_neighbors(self, id) -> Iter[
+impl @core.GraphDirected for DirectedMatrix with in_neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let idx = id.0
@@ -345,29 +272,43 @@ impl @core.GraphDirected for AdjacencyMatrixGraph with in_neighbors(self, id) ->
 }
 
 ///|
-impl @core.GraphDirected for AdjacencyMatrixGraph with out_neighbors(self, id) -> Iter[
+impl @core.GraphDirected for DirectedMatrix with out_neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   @core.GraphReadable::neighbors(self, id)
 }
 
 ///|
-impl @core.GraphDirected for AdjacencyMatrixGraph with in_degree(self, id) -> Int {
+fn dm_count_col(matrix : Array[Array[Double?]], cap : Int, col : Int) -> Int {
+  let mut c = 0
+  let mut i = 0
+  while i < cap {
+    match matrix[i][col] {
+      Some(_) => c = c + 1
+      None => ()
+    }
+    i = i + 1
+  }
+  c
+}
+
+///|
+impl @core.GraphDirected for DirectedMatrix with in_degree(self, id) -> Int {
   let idx = id.0
   if idx < 0 || idx >= self.capacity {
     0
   } else {
-    am_count_col(self.matrix, self.capacity, idx)
+    dm_count_col(self.matrix, self.capacity, idx)
   }
 }
 
 ///|
-impl @core.GraphDirected for AdjacencyMatrixGraph with out_degree(self, id) -> Int {
+impl @core.GraphDirected for DirectedMatrix with out_degree(self, id) -> Int {
   @core.GraphReadable::degree(self, id)
 }
 
 ///|
-impl @core.GraphDirected for AdjacencyMatrixGraph with predecessors(self, id) -> Iter[
+impl @core.GraphDirected for DirectedMatrix with predecessors(self, id) -> Iter[
   (@core.NodeId, Double),
 ] {
   let idx = id.0
@@ -385,7 +326,7 @@ impl @core.GraphDirected for AdjacencyMatrixGraph with predecessors(self, id) ->
 }
 
 ///|
-impl @core.GraphDirected for AdjacencyMatrixGraph with successors(self, id) -> Iter[
+impl @core.GraphDirected for DirectedMatrix with successors(self, id) -> Iter[
   (@core.NodeId, Double),
 ] {
   let idx = id.0

@@ -3,22 +3,6 @@
 ///
 /// 采用左上角三角存储法：每条无向边仅存储一次。
 /// 边 `(u, v, w)` 按 `min(u,v) < max(u,v)` 规则存入 `adj[min(u,v)]`。
-///
-/// ## 空间优势
-///
-/// - 边存储量：E（而非对称存储的 2E），节省 ~50%
-/// - 无需维护 `rev_adj` 反向索引
-///
-/// ## 复杂度权衡
-///
-/// | 操作 | 复杂度 |
-///------|--------|
-/// add_edge / remove_edge | O(1) / O(deg) |
-/// neighbors(u) | O(u + deg(u)) — 稀疏图接近 O(deg) |
-/// degree(u) | O(u + deg(u)) |
-/// contains_edge / get_edge | O(min(u,v) + deg) |
-///
-/// 参考: docs/design/graph_storage_survey.md §2.2, §2.5
 pub struct UndirectedAdjList {
   mut node_cnt : Int
   mut edge_cnt : Int
@@ -29,26 +13,6 @@ pub struct UndirectedAdjList {
 ///|
 pub fn new_undirected() -> UndirectedAdjList {
   { node_cnt: 0, edge_cnt: 0, nodes: [], adj: [] }
-}
-
-///|
-fn ual_has_node(nodes : Array[@core.Node?], idx : Int) -> Bool {
-  match nodes[idx] {
-    None => false
-    Some(_) => true
-  }
-}
-
-///|
-fn ual_find_slot(nodes : Array[@core.Node?], i : Int, n : Int) -> Int {
-  if i >= n {
-    -1
-  } else {
-    match nodes[i] {
-      None => i
-      Some(_) => ual_find_slot(nodes, i + 1, n)
-    }
-  }
 }
 
 ///|
@@ -64,7 +28,7 @@ impl @core.GraphReadable for UndirectedAdjList with edge_count(self) -> Int {
 ///|
 impl @core.GraphReadable for UndirectedAdjList with contains_node(self, id) -> Bool {
   let idx = id.0
-  idx >= 0 && idx < self.nodes.length() && ual_has_node(self.nodes, idx)
+  idx >= 0 && idx < self.nodes.length() && has_node(self.nodes, idx)
 }
 
 ///|
@@ -182,7 +146,7 @@ impl @core.GraphReadable for UndirectedAdjList with node_ids(self) -> Iter[
 ] {
   let r : Array[@core.NodeId] = []
   for i in 0..<self.nodes.length() {
-    if ual_has_node(self.nodes, i) {
+    if has_node(self.nodes, i) {
       r.push(@core.NodeId(i))
     }
   }
@@ -195,7 +159,7 @@ impl @core.GraphReadable for UndirectedAdjList with edges(self) -> Iter[
 ] {
   let r : Array[(@core.NodeId, @core.NodeId, Double)] = []
   for i in 0..<self.nodes.length() {
-    if ual_has_node(self.nodes, i) {
+    if has_node(self.nodes, i) {
       for entry in self.adj[i] {
         match entry {
           (nid, w) => r.push((@core.NodeId(i), nid, w))
@@ -209,7 +173,7 @@ impl @core.GraphReadable for UndirectedAdjList with edges(self) -> Iter[
 
 ///|
 impl @core.GraphWritable for UndirectedAdjList with add_node(self, data) -> @core.NodeId {
-  let slot = ual_find_slot(self.nodes, 0, self.nodes.length())
+  let slot = find_slot(self.nodes, 0, self.nodes.length())
   let idx = if slot >= 0 { slot } else { self.nodes.length() }
   let g = self
   if idx == g.nodes.length() {
@@ -240,7 +204,7 @@ impl @core.GraphWritable for UndirectedAdjList with remove_node(self, id) -> Boo
       }
       let mut i = 0
       while i < idx {
-        let (removed, _) = ual_remove_from_list(g.adj[i], idx)
+        let (removed, _) = remove_from_list(g.adj[i], idx)
         if removed {
           ec = ec + 1
         }
@@ -320,7 +284,7 @@ impl @core.GraphWritable for UndirectedAdjList with remove_edge(self, from, to) 
     return false
   }
   let (lo, target) = if fi < ti { (fi, ti) } else { (ti, fi) }
-  let (removed, nl) = ual_remove_from_list(self.adj[lo], target)
+  let (removed, nl) = remove_from_list(self.adj[lo], target)
   if !removed {
     return false
   }
@@ -328,22 +292,6 @@ impl @core.GraphWritable for UndirectedAdjList with remove_edge(self, from, to) 
   g.adj[lo] = nl
   g.edge_cnt = g.edge_cnt - 1
   true
-}
-
-///|
-fn ual_remove_from_list(
-  list : Array[(@core.NodeId, Double)],
-  target : Int,
-) -> (Bool, Array[(@core.NodeId, Double)]) {
-  let nl : Array[(@core.NodeId, Double)] = []
-  let mut found = false
-  for entry in list {
-    match entry {
-      (nid, w) => if nid.0 == target { found = true } else { nl.push((nid, w)) }
-      _ => ()
-    }
-  }
-  (found, nl)
 }
 
 ///|
@@ -363,7 +311,7 @@ impl @core.GraphEdgeIterable for UndirectedAdjList with edges_sorted(self) -> It
 ] {
   let all : Array[(@core.NodeId, @core.NodeId, Double)] = []
   for i in 0..<self.nodes.length() {
-    if ual_has_node(self.nodes, i) {
+    if has_node(self.nodes, i) {
       for entry in self.adj[i] {
         match entry {
           (nid, w) => all.push((@core.NodeId(i), nid, w))
@@ -372,30 +320,6 @@ impl @core.GraphEdgeIterable for UndirectedAdjList with edges_sorted(self) -> It
       }
     }
   }
-  let sorted = ual_bubble_sort_edges(all)
+  let sorted = bubble_sort_by_weight(all)
   sorted.iter()
-}
-
-///|
-fn ual_bubble_sort_edges(
-  edges : Array[(@core.NodeId, @core.NodeId, Double)],
-) -> Array[(@core.NodeId, @core.NodeId, Double)] {
-  let es = edges
-  let n = es.length()
-  let mut j = 0
-  while j < n {
-    let mut k = 0
-    while k < n - j - 1 {
-      let (_, _, w1) = es[k]
-      let (_, _, w2) = es[k + 1]
-      if w1 > w2 {
-        let tmp = es[k]
-        es[k] = es[k + 1]
-        es[k + 1] = tmp
-      }
-      k = k + 1
-    }
-    j = j + 1
-  }
-  es
 }
