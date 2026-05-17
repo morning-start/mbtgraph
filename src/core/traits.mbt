@@ -55,7 +55,7 @@ pub(open) trait GraphReadable {
 /// # 继承关系
 ///
 /// 继承自 `GraphReadable`，实现此 trait 必须同时实现 `GraphReadable`
-pub trait GraphWritable: GraphReadable {
+pub(open) trait GraphWritable: GraphReadable {
   /// 添加节点，返回其 ID
   add_node(Self, Double) -> NodeId
 
@@ -86,7 +86,7 @@ pub trait GraphWritable: GraphReadable {
 /// # 继承关系
 ///
 /// 继承自 `GraphReadable`
-pub trait GraphDirected: GraphReadable {
+pub(open) trait GraphDirected: GraphReadable {
   /// 获取前驱节点（入边源）
   in_neighbors(Self, NodeId) -> Iter[NodeId]
 
@@ -114,7 +114,7 @@ pub trait GraphDirected: GraphReadable {
 /// # 继承关系
 ///
 /// 继承自 `GraphWritable + GraphDirected`
-pub trait GraphFull: GraphWritable + GraphDirected {
+pub(open) trait GraphFull: GraphWritable + GraphDirected {
   // 无需额外方法，仅作类型约束的便捷别名
 }
 
@@ -127,7 +127,7 @@ pub trait GraphFull: GraphWritable + GraphDirected {
 /// # 继承关系
 ///
 /// 继承自 `GraphReadable`
-pub trait GraphBatchReadable: GraphReadable {
+pub(open) trait GraphBatchReadable: GraphReadable {
   /// 批量获取邻居
   batch_neighbors(Self, Array[NodeId]) -> Array[Array[NodeId]]
 
@@ -144,7 +144,7 @@ pub trait GraphBatchReadable: GraphReadable {
 /// # 继承关系
 ///
 /// 继承自 `GraphReadable`
-pub trait GraphEdgeIterable: GraphReadable {
+pub(open) trait GraphEdgeIterable: GraphReadable {
   /// 按权重排序的边迭代器
   edges_sorted(Self) -> Iter[(NodeId, NodeId, Double)]
 }
