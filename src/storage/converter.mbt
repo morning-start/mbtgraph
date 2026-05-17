@@ -2,9 +2,29 @@
 /// 图格式转换器
 ///
 /// 基于 `GraphReadable` trait，任意存储类型可互相转换。
-pub fn[G : @core.GraphReadable] to_adjacency_list(g : G) -> AdjacencyListGraph {
-  let d = g.is_directed()
-  let r = new(d)
+/// 有向图和无向图的邻接表转换函数已分开。
+pub fn[G : @core.GraphReadable] to_directed_adj_list(g : G) -> DirectedAdjList {
+  let r = new_directed()
+  for nid in g.node_ids() {
+    match g.get_node(nid) {
+      Some(data) => @core.GraphWritable::add_node(r, data) |> ignore
+      None => ()
+    }
+  }
+  for triple in g.edges() {
+    match triple {
+      (f, t, w) => @core.GraphWritable::add_edge(r, f, t, w) |> ignore
+      _ => ()
+    }
+  }
+  r
+}
+
+///|
+pub fn[G : @core.GraphReadable] to_undirected_adj_list(
+  g : G,
+) -> UndirectedAdjList {
+  let r = new_undirected()
   for nid in g.node_ids() {
     match g.get_node(nid) {
       Some(data) => @core.GraphWritable::add_node(r, data) |> ignore

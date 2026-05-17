@@ -1,25 +1,25 @@
 ///|
-/// 邻接表图实现
+/// 有向图邻接表实现
 ///
-/// 默认通用实现，支持动态增删节点/边。
-/// 空间复杂度 O(V+E)，适合大多数稀疏图场景。
+/// 适用于有向图场景，维护正向邻接表 `adj` 和反向邻接表 `rev_adj`。
+/// 空间复杂度 O(V+2E)，支持 O(deg) 的入边/出边查询。
+///
 /// 参考: docs/design/graph_storage_survey.md §2.2
-pub struct AdjacencyListGraph {
+pub struct DirectedAdjList {
   mut node_cnt : Int
   mut edge_cnt : Int
   nodes : Array[@core.Node?]
   adj : Array[Array[(@core.NodeId, Double)]]
-  directed : Bool
   rev_adj : Array[Array[(@core.NodeId, Double)]]
 }
 
 ///|
-pub fn new(directed : Bool) -> AdjacencyListGraph {
-  { node_cnt: 0, edge_cnt: 0, nodes: [], adj: [], directed, rev_adj: [] }
+pub fn new_directed() -> DirectedAdjList {
+  { node_cnt: 0, edge_cnt: 0, nodes: [], adj: [], rev_adj: [] }
 }
 
 ///|
-fn al_has_node(nodes : Array[@core.Node?], idx : Int) -> Bool {
+fn dal_has_node(nodes : Array[@core.Node?], idx : Int) -> Bool {
   match nodes[idx] {
     None => false
     Some(_) => true
@@ -27,49 +27,35 @@ fn al_has_node(nodes : Array[@core.Node?], idx : Int) -> Bool {
 }
 
 ///|
-fn al_find_slot(nodes : Array[@core.Node?], i : Int, n : Int) -> Int {
+fn dal_find_slot(nodes : Array[@core.Node?], i : Int, n : Int) -> Int {
   if i >= n {
     -1
   } else {
     match nodes[i] {
       None => i
-      Some(_) => al_find_slot(nodes, i + 1, n)
+      Some(_) => dal_find_slot(nodes, i + 1, n)
     }
   }
 }
 
 ///|
-fn al_ensure(g : AdjacencyListGraph, idx : Int) -> Unit {
-  let g = g
-  while idx >= g.nodes.length() {
-    g.nodes.push(None)
-    g.adj.push([])
-    g.rev_adj.push([])
-  }
-}
-
-///|
-impl @core.GraphReadable for AdjacencyListGraph with node_count(self) -> Int {
+impl @core.GraphReadable for DirectedAdjList with node_count(self) -> Int {
   self.node_cnt
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyListGraph with edge_count(self) -> Int {
+impl @core.GraphReadable for DirectedAdjList with edge_count(self) -> Int {
   self.edge_cnt
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyListGraph with contains_node(self, id) -> Bool {
+impl @core.GraphReadable for DirectedAdjList with contains_node(self, id) -> Bool {
   let idx = id.0
-  idx >= 0 && idx < self.nodes.length() && al_has_node(self.nodes, idx)
+  idx >= 0 && idx < self.nodes.length() && dal_has_node(self.nodes, idx)
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyListGraph with contains_edge(
-  self,
-  from,
-  to,
-) -> Bool {
+impl @core.GraphReadable for DirectedAdjList with contains_edge(self, from, to) -> Bool {
   let fi = from.0
   if fi < 0 || fi >= self.adj.length() {
     return false
@@ -84,7 +70,7 @@ impl @core.GraphReadable for AdjacencyListGraph with contains_edge(
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyListGraph with get_node(self, id) -> Double? {
+impl @core.GraphReadable for DirectedAdjList with get_node(self, id) -> Double? {
   let idx = id.0
   if idx < 0 || idx >= self.nodes.length() {
     return None
@@ -96,7 +82,7 @@ impl @core.GraphReadable for AdjacencyListGraph with get_node(self, id) -> Doubl
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyListGraph with get_edge(self, from, to) -> Double? {
+impl @core.GraphReadable for DirectedAdjList with get_edge(self, from, to) -> Double? {
   let fi = from.0
   if fi < 0 || fi >= self.adj.length() {
     return None
@@ -111,7 +97,7 @@ impl @core.GraphReadable for AdjacencyListGraph with get_edge(self, from, to) ->
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyListGraph with neighbors(self, id) -> Iter[
+impl @core.GraphReadable for DirectedAdjList with neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let idx = id.0
@@ -129,7 +115,7 @@ impl @core.GraphReadable for AdjacencyListGraph with neighbors(self, id) -> Iter
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyListGraph with degree(self, id) -> Int {
+impl @core.GraphReadable for DirectedAdjList with degree(self, id) -> Int {
   let idx = id.0
   if idx < 0 || idx >= self.adj.length() {
     0
@@ -139,22 +125,22 @@ impl @core.GraphReadable for AdjacencyListGraph with degree(self, id) -> Int {
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyListGraph with is_directed(self) -> Bool {
-  self.directed
+impl @core.GraphReadable for DirectedAdjList with is_directed(self) -> Bool {
+  true
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyListGraph with is_empty(self) -> Bool {
+impl @core.GraphReadable for DirectedAdjList with is_empty(self) -> Bool {
   self.node_cnt == 0
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyListGraph with node_ids(self) -> Iter[
+impl @core.GraphReadable for DirectedAdjList with node_ids(self) -> Iter[
   @core.NodeId,
 ] {
   let r : Array[@core.NodeId] = []
   for i in 0..<self.nodes.length() {
-    if al_has_node(self.nodes, i) {
+    if dal_has_node(self.nodes, i) {
       r.push(@core.NodeId(i))
     }
   }
@@ -162,12 +148,12 @@ impl @core.GraphReadable for AdjacencyListGraph with node_ids(self) -> Iter[
 }
 
 ///|
-impl @core.GraphReadable for AdjacencyListGraph with edges(self) -> Iter[
+impl @core.GraphReadable for DirectedAdjList with edges(self) -> Iter[
   (@core.NodeId, @core.NodeId, Double),
 ] {
   let r : Array[(@core.NodeId, @core.NodeId, Double)] = []
   for i in 0..<self.nodes.length() {
-    if al_has_node(self.nodes, i) {
+    if dal_has_node(self.nodes, i) {
       for entry in self.adj[i] {
         match entry {
           (nid, w) => r.push((@core.NodeId(i), nid, w))
@@ -180,8 +166,8 @@ impl @core.GraphReadable for AdjacencyListGraph with edges(self) -> Iter[
 }
 
 ///|
-impl @core.GraphWritable for AdjacencyListGraph with add_node(self, data) -> @core.NodeId {
-  let slot = al_find_slot(self.nodes, 0, self.nodes.length())
+impl @core.GraphWritable for DirectedAdjList with add_node(self, data) -> @core.NodeId {
+  let slot = dal_find_slot(self.nodes, 0, self.nodes.length())
   let idx = if slot >= 0 { slot } else { self.nodes.length() }
   let g = self
   if idx == g.nodes.length() {
@@ -195,7 +181,7 @@ impl @core.GraphWritable for AdjacencyListGraph with add_node(self, data) -> @co
 }
 
 ///|
-impl @core.GraphWritable for AdjacencyListGraph with remove_node(self, id) -> Bool {
+impl @core.GraphWritable for DirectedAdjList with remove_node(self, id) -> Bool {
   let idx = id.0
   if idx < 0 || idx >= self.nodes.length() {
     return false
@@ -207,7 +193,16 @@ impl @core.GraphWritable for AdjacencyListGraph with remove_node(self, id) -> Bo
       for entry in g.adj[idx] {
         match entry {
           (nid, _) => {
-            g = al_remove_rev(g, nid.0, idx)
+            g = dal_remove_rev(g, nid.0, idx)
+            g.edge_cnt = g.edge_cnt - 1
+          }
+          _ => ()
+        }
+      }
+      for entry in g.rev_adj[idx] {
+        match entry {
+          (nid, _) => {
+            g = dal_remove_from_adj(g, nid.0, idx)
             g.edge_cnt = g.edge_cnt - 1
           }
           _ => ()
@@ -223,11 +218,11 @@ impl @core.GraphWritable for AdjacencyListGraph with remove_node(self, id) -> Bo
 }
 
 ///|
-fn al_remove_rev(
-  g : AdjacencyListGraph,
+fn dal_remove_rev(
+  g : DirectedAdjList,
   from_idx : Int,
   to_idx : Int,
-) -> AdjacencyListGraph {
+) -> DirectedAdjList {
   if from_idx < 0 || from_idx >= g.rev_adj.length() {
     return g
   }
@@ -244,12 +239,31 @@ fn al_remove_rev(
 }
 
 ///|
-impl @core.GraphWritable for AdjacencyListGraph with add_edge(
-  self,
-  from,
-  to,
-  data,
-) -> Result[Unit, @core.GraphError] {
+fn dal_remove_from_adj(
+  g : DirectedAdjList,
+  from_idx : Int,
+  target : Int,
+) -> DirectedAdjList {
+  if from_idx < 0 || from_idx >= g.adj.length() {
+    return g
+  }
+  let nl : Array[(@core.NodeId, Double)] = []
+  for entry in g.adj[from_idx] {
+    match entry {
+      (nid, w) => if nid.0 != target { nl.push((nid, w)) }
+      _ => ()
+    }
+  }
+  let g2 = g
+  g2.adj[from_idx] = nl
+  g2
+}
+
+///|
+impl @core.GraphWritable for DirectedAdjList with add_edge(self, from, to, data) -> Result[
+  Unit,
+  @core.GraphError,
+] {
   let fi = from.0
   let ti = to.0
   if fi < 0 || fi >= self.nodes.length() {
@@ -262,20 +276,15 @@ impl @core.GraphWritable for AdjacencyListGraph with add_edge(
           Err(@core.GraphError::InvalidNodeId)
         } else {
           match self.nodes[ti] {
-            None => Err(@core.GraphError::InvalidNodeId)
+            None => Err(@core.GraphError::NodeNotFound(to))
             Some(_) =>
-              if al_contains_edge(self.adj, fi, ti) {
+              if dal_contains_edge(self.adj, fi, ti) {
                 Err(@core.GraphError::EdgeAlreadyExists(from, to))
               } else {
                 let g = self
                 g.adj[fi].push((to, data))
+                g.rev_adj[ti].push((from, data))
                 g.edge_cnt = g.edge_cnt + 1
-                if !g.directed {
-                  g.adj[ti].push((from, data))
-                  g.edge_cnt = g.edge_cnt + 1
-                } else {
-                  g.rev_adj[ti].push((from, data))
-                }
                 Ok(())
               }
           }
@@ -285,7 +294,7 @@ impl @core.GraphWritable for AdjacencyListGraph with add_edge(
 }
 
 ///|
-fn al_contains_edge(
+fn dal_contains_edge(
   adj : Array[Array[(@core.NodeId, Double)]],
   fi : Int,
   ti : Int,
@@ -303,32 +312,26 @@ fn al_contains_edge(
 }
 
 ///|
-impl @core.GraphWritable for AdjacencyListGraph with remove_edge(self, from, to) -> Bool {
+impl @core.GraphWritable for DirectedAdjList with remove_edge(self, from, to) -> Bool {
   let fi = from.0
   let ti = to.0
   if fi < 0 || fi >= self.adj.length() {
     return false
   }
-  let (removed, nl) = al_remove_from_list(self.adj[fi], ti)
+  let (removed, nl) = dal_remove_from_list(self.adj[fi], ti)
   if !removed {
     return false
   }
   let g = self
   g.adj[fi] = nl
   g.edge_cnt = g.edge_cnt - 1
-  if !g.directed {
-    let (_, nl2) = al_remove_from_list(g.adj[ti], fi)
-    g.adj[ti] = nl2
-    g.edge_cnt = g.edge_cnt - 1
-  } else {
-    let (_, nl2) = al_remove_from_list(g.rev_adj[ti], fi)
-    g.rev_adj[ti] = nl2
-  }
+  let (_, nl2) = dal_remove_from_list(g.rev_adj[ti], fi)
+  g.rev_adj[ti] = nl2
   true
 }
 
 ///|
-fn al_remove_from_list(
+fn dal_remove_from_list(
   list : Array[(@core.NodeId, Double)],
   target : Int,
 ) -> (Bool, Array[(@core.NodeId, Double)]) {
@@ -344,7 +347,7 @@ fn al_remove_from_list(
 }
 
 ///|
-impl @core.GraphWritable for AdjacencyListGraph with clear(self) -> Unit {
+impl @core.GraphWritable for DirectedAdjList with clear(self) -> Unit {
   let g = self
   for i in 0..<g.nodes.length() {
     g.nodes[i] = None
@@ -356,7 +359,7 @@ impl @core.GraphWritable for AdjacencyListGraph with clear(self) -> Unit {
 }
 
 ///|
-impl @core.GraphDirected for AdjacencyListGraph with in_neighbors(self, id) -> Iter[
+impl @core.GraphDirected for DirectedAdjList with in_neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let idx = id.0
@@ -374,14 +377,14 @@ impl @core.GraphDirected for AdjacencyListGraph with in_neighbors(self, id) -> I
 }
 
 ///|
-impl @core.GraphDirected for AdjacencyListGraph with out_neighbors(self, id) -> Iter[
+impl @core.GraphDirected for DirectedAdjList with out_neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   @core.GraphReadable::neighbors(self, id)
 }
 
 ///|
-impl @core.GraphDirected for AdjacencyListGraph with in_degree(self, id) -> Int {
+impl @core.GraphDirected for DirectedAdjList with in_degree(self, id) -> Int {
   let idx = id.0
   if idx < 0 || idx >= self.rev_adj.length() {
     0
@@ -391,12 +394,12 @@ impl @core.GraphDirected for AdjacencyListGraph with in_degree(self, id) -> Int 
 }
 
 ///|
-impl @core.GraphDirected for AdjacencyListGraph with out_degree(self, id) -> Int {
+impl @core.GraphDirected for DirectedAdjList with out_degree(self, id) -> Int {
   @core.GraphReadable::degree(self, id)
 }
 
 ///|
-impl @core.GraphDirected for AdjacencyListGraph with predecessors(self, id) -> Iter[
+impl @core.GraphDirected for DirectedAdjList with predecessors(self, id) -> Iter[
   (@core.NodeId, Double),
 ] {
   let idx = id.0
@@ -411,7 +414,7 @@ impl @core.GraphDirected for AdjacencyListGraph with predecessors(self, id) -> I
 }
 
 ///|
-impl @core.GraphDirected for AdjacencyListGraph with successors(self, id) -> Iter[
+impl @core.GraphDirected for DirectedAdjList with successors(self, id) -> Iter[
   (@core.NodeId, Double),
 ] {
   let idx = id.0
@@ -423,43 +426,4 @@ impl @core.GraphDirected for AdjacencyListGraph with successors(self, id) -> Ite
     r.push(pair)
   }
   r.iter()
-}
-
-///|
-impl @core.GraphEdgeIterable for AdjacencyListGraph with edges_sorted(self) -> Iter[
-  (@core.NodeId, @core.NodeId, Double),
-] {
-  let all : Array[(@core.NodeId, @core.NodeId, Double)] = []
-  for i in 0..<self.nodes.length() {
-    if al_has_node(self.nodes, i) {
-      for entry in self.adj[i] {
-        match entry {
-          (nid, w) => all.push((@core.NodeId(i), nid, w))
-          _ => ()
-        }
-      }
-    }
-  }
-  let sorted = al_bubble_sort_edges(all)
-  sorted.iter()
-}
-
-///|
-fn al_bubble_sort_edges(
-  edges : Array[(@core.NodeId, @core.NodeId, Double)],
-) -> Array[(@core.NodeId, @core.NodeId, Double)] {
-  let es = edges
-  let n = es.length()
-  for i in 0..<n {
-    for j in 0..<(n - i - 1) {
-      let (_, _, w1) = es[j]
-      let (_, _, w2) = es[j + 1]
-      if w1 > w2 {
-        let tmp = es[j]
-        es[j] = es[j + 1]
-        es[j + 1] = tmp
-      }
-    }
-  }
-  es
 }

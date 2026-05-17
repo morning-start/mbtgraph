@@ -6,32 +6,27 @@ import {
 }
 
 // Values
-pub fn new(Bool) -> AdjacencyListGraph
+pub fn new_directed() -> DirectedAdjList
 
 pub fn new_edge_list() -> EdgeListGraph
 
 pub fn new_matrix(Int, Bool) -> AdjacencyMatrixGraph
 
-pub fn[G : @core.GraphReadable] to_adjacency_list(G) -> AdjacencyListGraph
+pub fn new_undirected() -> UndirectedAdjList
 
 pub fn[G : @core.GraphReadable] to_adjacency_matrix(G, Int) -> AdjacencyMatrixGraph
 
 pub fn[G : @core.GraphReadable] to_csr(G) -> CSRGraph
 
+pub fn[G : @core.GraphReadable] to_directed_adj_list(G) -> DirectedAdjList
+
 pub fn[G : @core.GraphReadable] to_edge_list(G) -> EdgeListGraph
+
+pub fn[G : @core.GraphReadable] to_undirected_adj_list(G) -> UndirectedAdjList
 
 // Errors
 
 // Types and methods
-pub struct AdjacencyListGraph {
-  mut node_cnt : Int
-  mut edge_cnt : Int
-  nodes : Array[@core.Node?]
-  adj : Array[Array[(@core.NodeId, Double)]]
-  directed : Bool
-  rev_adj : Array[Array[(@core.NodeId, Double)]]
-}
-
 pub struct AdjacencyMatrixGraph {
   mut node_count : Int
   mut edge_count : Int
@@ -58,10 +53,25 @@ pub struct CSRGraph {
   directed : Bool
 }
 
+pub struct DirectedAdjList {
+  mut node_cnt : Int
+  mut edge_cnt : Int
+  nodes : Array[@core.Node?]
+  adj : Array[Array[(@core.NodeId, Double)]]
+  rev_adj : Array[Array[(@core.NodeId, Double)]]
+}
+
 pub struct EdgeListGraph {
   mut node_cnt : Int
   nodes : Array[@core.Node?]
   mut edges : Array[@core.Edge]
+}
+
+pub struct UndirectedAdjList {
+  mut node_cnt : Int
+  mut edge_cnt : Int
+  nodes : Array[@core.Node?]
+  adj : Array[Array[(@core.NodeId, Double)]]
 }
 
 // Type aliases
