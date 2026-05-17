@@ -107,9 +107,9 @@ src/
 | 包 | 黑盒 | 白盒 | 总计 | 状态 |
 |----|:----:|:----:|:----:|:----:|
 | core | 49 | 19 | **68** | ✅ 全通过 |
-| storage | 88 | 13 | **101** | ✅ 全通过 |
+| storage | 92 | 15 | **107** | ✅ 全通过 |
 | root | 0 | 0 | 0 | — |
-| **合计** | **137** | **32** | **169** | **✅** |
+| **合计** | **141** | **34** | **175** | **✅** |
 
 ### Core 测试详情
 
@@ -128,8 +128,16 @@ src/
 | matrix_test.mbt | Blackbox | 15 | DirectedMatrix + UndirectedMatrix O(1)查询 |
 | edge_list_test.mbt | Blackbox | 15 | EdgeListGraph + UndirectedEdgeListGraph |
 | csr_csc_test.mbt | Blackbox | 15 | CSRGraph/CSCGraph Builder模式 + batch操作 |
-| converter_test.mbt | Blackbox | 11 | 8个转换函数含 round-trip 验证 |
+| converter_test.mbt | Blackbox | **16** | 有向转换(8) + 无向转换(5) + 语义转换(3) |
 | helpers_wbtest.mbt | Whitebox | 13 | has_node/find_slot/remove_from_list/bubble_sort |
+
+### 转换器架构（三层设计）
+
+| 分组 | 约束 | 函数数 | 保护机制 |
+|------|------|:------:|---------|
+| **有向转换组** | `[G : GraphDirected]` | 5 | **编译期**保证源是有向图 |
+| **无向转换组** | `[G : GraphReadable]` + `raise` | 3 | **运行时** `assert_true(!is_directed)` |
+| **语义转换** | `[G : GraphReadable]` + `raise` | 2 | `as_undirected` / `as_directed` 显式跨边界 |
 
 ### MockGraph 设计要点（traits_wbtest）
 
@@ -160,3 +168,5 @@ moon coverage analyze    # 覆盖率分析
 | 2026-05-17 | converter 扩展至 8 函数 | 支持所有存储互转 |
 | 2026-05-17 | storage struct 改 pub(all) + impl 改 pub | blackbox test 跨包可见性要求 (E4018/E4063) |
 | 2026-05-17 | Matrix 构造改逐行初始化 | Array::make 二维数组共享 bug 修复 |
+| 2026-05-17 | 转换器三层架构重构 | 有向(GraphDirected) + 无向(assert) + 语义(as_*) 分离 |
+| 2026-05-17 | CSR/CSC 补充 GraphDirected trait | 各6方法(in/out neighbors/degree/predecessors/successors) |
