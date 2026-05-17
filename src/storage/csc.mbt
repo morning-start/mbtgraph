@@ -253,6 +253,114 @@ pub impl @core.GraphBatchReadable for CSCGraph with batch_neighbors(
 }
 
 ///|
+pub impl @core.GraphDirected for CSCGraph with in_neighbors(self, id) -> Iter[
+  @core.NodeId,
+] {
+  let idx = id.0
+  if idx < 0 || idx >= self.col_ptr.length() - 1 {
+    return [].iter()
+  }
+  let s = self.col_ptr[idx]
+  let e = self.col_ptr[idx + 1]
+  let r : Array[@core.NodeId] = []
+  for k in s..<e {
+    r.push(self.row_idx[k])
+  }
+  r.iter()
+}
+
+///|
+pub impl @core.GraphDirected for CSCGraph with out_neighbors(self, id) -> Iter[
+  @core.NodeId,
+] {
+  let idx = id.0
+  let r : Array[@core.NodeId] = []
+  let nc = self.nodes.length()
+  for j in 0..<nc {
+    let s = self.col_ptr[j]
+    let e = self.col_ptr[j + 1]
+    for k in s..<e {
+      if self.row_idx[k] == id {
+        r.push(@core.NodeId(j))
+        break
+      }
+    }
+  }
+  r.iter()
+}
+
+///|
+pub impl @core.GraphDirected for CSCGraph with in_degree(self, id) -> Int {
+  let idx = id.0
+  if idx < 0 || idx >= self.col_ptr.length() - 1 {
+    0
+  } else {
+    self.col_ptr[idx + 1] - self.col_ptr[idx]
+  }
+}
+
+///|
+pub impl @core.GraphDirected for CSCGraph with out_degree(self, id) -> Int {
+  let idx = id.0
+  let mut c = 0
+  let nc = self.nodes.length()
+  let mut j = 0
+  while j < nc {
+    let s = self.col_ptr[j]
+    let e = self.col_ptr[j + 1]
+    let mut k = s
+    while k < e {
+      if self.row_idx[k] == id {
+        c = c + 1
+        break
+      }
+      k = k + 1
+    }
+    j = j + 1
+  }
+  c
+}
+
+///|
+pub impl @core.GraphDirected for CSCGraph with predecessors(
+  self,
+  id,
+) -> Iter[(@core.NodeId, Double)] {
+  let idx = id.0
+  if idx < 0 || idx >= self.col_ptr.length() - 1 {
+    return [].iter()
+  }
+  let s = self.col_ptr[idx]
+  let e = self.col_ptr[idx + 1]
+  let r : Array[(@core.NodeId, Double)] = []
+  for k in s..<e {
+    r.push((self.row_idx[k], self.values[k]))
+  }
+  r.iter()
+}
+
+///|
+pub impl @core.GraphDirected for CSCGraph with successors(
+  self,
+  id,
+) -> Iter[(@core.NodeId, Double)] {
+  let idx = id.0
+  let r : Array[(@core.NodeId, Double)] = []
+  let nc = self.nodes.length()
+  for j in 0..<nc {
+    let s = self.col_ptr[j]
+    let e = self.col_ptr[j + 1]
+    for k in s..<e {
+      if self.row_idx[k] == id {
+        r.push((@core.NodeId(j), self.values[k]))
+        break
+      }
+    }
+  }
+  r.iter()
+}
+
+///|
 pub impl @core.GraphBatchReadable for CSCGraph with batch_edges(
   self,
   pairs : Array[(@core.NodeId, @core.NodeId)],

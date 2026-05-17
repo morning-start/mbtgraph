@@ -241,6 +241,99 @@ pub impl @core.GraphBatchReadable for CSRGraph with batch_neighbors(
 }
 
 ///|
+pub impl @core.GraphDirected for CSRGraph with in_neighbors(self, id) -> Iter[
+  @core.NodeId,
+] {
+  let idx = id.0
+  let r : Array[@core.NodeId] = []
+  let nc = self.nodes.length()
+  for i in 0..<nc {
+    let s = self.row_ptr[i]
+    let e = self.row_ptr[i + 1]
+    for k in s..<e {
+      if self.col_idx[k] == id {
+        r.push(@core.NodeId(i))
+        break
+      }
+    }
+  }
+  r.iter()
+}
+
+///|
+pub impl @core.GraphDirected for CSRGraph with out_neighbors(self, id) -> Iter[
+  @core.NodeId,
+] {
+  @core.GraphReadable::neighbors(self, id)
+}
+
+///|
+pub impl @core.GraphDirected for CSRGraph with in_degree(self, id) -> Int {
+  let idx = id.0
+  let mut c = 0
+  let nc = self.nodes.length()
+  let mut i = 0
+  while i < nc {
+    let s = self.row_ptr[i]
+    let e = self.row_ptr[i + 1]
+    let mut k = s
+    while k < e {
+      if self.col_idx[k].0 == idx {
+        c = c + 1
+        break
+      }
+      k = k + 1
+    }
+    i = i + 1
+  }
+  c
+}
+
+///|
+pub impl @core.GraphDirected for CSRGraph with out_degree(self, id) -> Int {
+  @core.GraphReadable::degree(self, id)
+}
+
+///|
+pub impl @core.GraphDirected for CSRGraph with predecessors(
+  self,
+  id,
+) -> Iter[(@core.NodeId, Double)] {
+  let idx = id.0
+  let r : Array[(@core.NodeId, Double)] = []
+  let nc = self.nodes.length()
+  for i in 0..<nc {
+    let s = self.row_ptr[i]
+    let e = self.row_ptr[i + 1]
+    for k in s..<e {
+      if self.col_idx[k] == id {
+        r.push((@core.NodeId(i), self.values[k]))
+        break
+      }
+    }
+  }
+  r.iter()
+}
+
+///|
+pub impl @core.GraphDirected for CSRGraph with successors(
+  self,
+  id,
+) -> Iter[(@core.NodeId, Double)] {
+  let idx = id.0
+  if idx < 0 || idx >= self.row_ptr.length() - 1 {
+    return [].iter()
+  }
+  let s = self.row_ptr[idx]
+  let e = self.row_ptr[idx + 1]
+  let r : Array[(@core.NodeId, Double)] = []
+  for k in s..<e {
+    r.push((self.col_idx[k], self.values[k]))
+  }
+  r.iter()
+}
+
+///|
 pub impl @core.GraphBatchReadable for CSRGraph with batch_edges(
   self,
   pairs : Array[(@core.NodeId, @core.NodeId)],
