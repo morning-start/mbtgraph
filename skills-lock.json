@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "agents-writer": {
+      "source": "morning-start/book-skills",
+      "sourceType": "github",
+      "skillPath": "agents-writer/SKILL.md",
+      "computedHash": "6c7cf028232b0afef17ee8246a52ecddd1d59f76ed7c9f714a188ae382c6bf62"
+    },
     "hermes-agent-config": {
       "source": "morning-start/book-skills",
       "sourceType": "github",
@@ -11,7 +17,7 @@
       "source": "morning-start/book-skills",
       "sourceType": "github",
       "skillPath": "moonbit-skills/SKILL.md",
-      "computedHash": "86f5e23109be6471d35d9c04de3b2d09023f86a9fdbb57f435812b964da00e77"
+      "computedHash": "cca42be0e53955d63dcf45ce9712c2744852ef9cdc2da4371810db947f93a1e3"
     }
   }
 }

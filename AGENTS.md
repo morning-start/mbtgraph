@@ -1,279 +1,157 @@
-# Project Agents.md Guide
+---
+name: mbtgraph-agents
+version: v2.0.0
+author: mbtgraph-team
+description: MoonBit 图算法库 Agent 协作配置
+tags: [moonbit, graph-algorithms, trait-based, storage-patterns]
+---
 
-This is a [MoonBit](https://docs.moonbitlang.com) project.
+# mbtgraph — MoonBit 图算法库
 
-You can browse and install extra skills here:
-<https://github.com/moonbitlang/skills>
+MoonBit 图数据结构库：邻接表/矩阵/CSR/边集 + Trait 抽象层。
 
-## Every Session
+## 开发环境
 
-1. Read MEMORY.md — check recent context and operations
-2. Read this AGENTS.md — this is your workflow guide
-3. Follow the workflow below for all tasks
+```bash
+moon fmt && moon info        # 格式化 + 更新接口
+moon test                    # 运行测试
+```
 
-## Project Overview
+## 技术栈
 
-- **Module**: `morning-start/mbtgraph`
-- **Language**: MoonBit (AI-native language for cloud & edge computing)
-- **License**: Apache-2.0
-- **Purpose**: Graph data structure and algorithm library
+| 组件 | 技术 | 说明 |
+|------|------|------|
+| 语言 | MoonBit | native/wasm 后端 |
+| 架构 | Trait-based | GraphReadable → Writable → Directed |
+| 测试 | 双轨制 | Blackbox (`*_test.mbt`) + Whitebox (`*_wbtest.mbt`) |
 
-## Project Architecture
-
-### Package Structure
+## 项目结构
 
 ```
 src/
-├── core/          # 基础类型 + trait 定义 (NodeId, Node, Edge, GraphError, Traits)
-├── storage/       # 存储实现（每个子包一种存储方式）
-│   ├── adjacency_list/   # 邻接表（默认实现，支持动态增删）
-│   ├── adjacency_matrix/ # 邻接矩阵（稠密图优化）
-│   ├── csr/              # CSR（大规模只读图）
-│   ├── edge_list/        # 边集数组（边排序友好）
-│   ├── hybrid/           # 混合图（快速查询）
-│   └── converter.mbt     # 格式转换器
-├── algorithms/    # 图算法（遍历/最短路径/MST/连通性/拓扑排序）
-├── generators/    # 图生成器（经典图/随机图）
-└── utils/         # 工具层（序列化等）
+├── core/                     # 类型 + trait 定义
+│   ├── types.mbt            # NodeId, Node, Edge
+│   ├── traits.mbt           # GraphReadable 等核心 trait
+│   └── error.mbt            # GraphError
+└── storage/                  # 存储实现
+    ├── directed_adj_list.mbt # 有向邻接表（参考实现）⭐
+    ├── undirected_adj_list.mbt # 无向邻接表（半存储优化）
+    ├── shared_helpers.mbt   # 公共辅助函数（同包直接调用）
+    └── converter.mbt        # 格式转换器
 ```
 
-### Trait 分层体系
+**关键入口**: 新类型→`types.mbt` | 新trait→`traits.mbt` | 新存储→参考 `directed_adj_list.mbt`
 
-采用 4 层 trait 架构，遵循 SOLID 原则（特别是 LSP 和 ISP）：
+## 编码规范
+
+### 🔴 强制规则（CI 检查，必须遵守）
+
+| # | 规则 | ✅ 正确 | ❌ 错误 | 检测方式 |
+|---|------|--------|--------|---------|
+| R1 | 使用 `@core.` 完全限定名 | `@core.NodeId(0)` | use 别名 | Code Review |
+| R2 | Impl 用 `(self)` 非 `mut self` | `let g = self` | `mut self` | 编译报错 E3002 |
+| R3 | 可变性按需声明 | 只改字段→`let g` | 需重新赋值→`let mut g` | Warning E0015 |
+| R4 | 可见性正确选择 | 核心类型→`pub(all)` | trait→`pub(open)trait` | 编译报错 E4036/E4145 |
+| R5 | For 循环不直接解构元组 | 先绑定再 match | `for (a,b) in ...` | 编译报错 E3002 |
+
+### 🟡 推荐惯例（Code Review 关注）
+
+- Match 多语句用 `{}` 包裹（不用逗号分隔）
+- Option 匹配不需要 `_ => ()` 分支
+- 同包内函数直接调用，无需模块前缀
+- 公共逻辑复用 `shared_helpers.mbt`，不重复实现
+
+### ❌ 禁止行为
+
+1. 不要使用 `mut self` 参数（MoonBit 不支持）
+2. 不要在 for 中解构元组（先绑定再 match）
+3. 不要用 use/using 别名（使用完全限定名）
+4. 不要忽略 .mbti 变更（每次修改后检查 `git diff -- "*.mbti"`）
+5. 不要重复实现公共逻辑（使用 shared_helpers）
+
+## 架构概要
+
+### Trait 分层（4层）
 
 ```
-GraphReadable[N, E]  ← 基础只读（所有存储都实现）
-    ├── GraphWritable[N, E]  ← 可写（仅动态存储实现）
-    └── GraphDirected[N, E]  ← 有向图入边查询
-            └── GraphFull[N, E]  ← 完整图别名（= Writable + Directed）
+GraphReadable (所有存储)
+├── GraphWritable (仅动态存储: AdjList/Matrix/EdgeList)
+└── GraphDirected (仅 Directed* 存储)
+    └── GraphFull = Writable + Directed
 ```
 
 **核心决策**:
+- CSR 为只读格式，故意不实现 GraphWritable（LSP 原则）
+- 有向/无向用独立结构体（非 runtime 字段判断）
+- 算法约束: `fn[G: GraphReadable] bfs(g: G) -> ...`
 
-- CSR 等只读存储**不实现** `GraphWritable`，避免违反里氏替换原则
-- MoonBit 支持 `pub trait B: A` 继承语法
-- 算法使用 trait 约束 `bfs[G: GraphReadable](g: G)` 而非具体类型
-- 保留现有 `AdjGraph` 作为向后兼容类型别名
+详细设计: [docs/design/graph_trait_and_module_architecture.md](file:///e:/Workplace/APP/MoonBit/mbtgraph/docs/design/graph_trait_and_module_architecture.md)
 
-**实现优先级**: P0 核心 trait → P1 邻接表 → P2 基础算法 → P3 CSR → P4+ 扩展
-
-详细设计文档: [docs/design/graph_trait_and_module_architecture.md](file:///e:/Workplace/APP/MoonBit/mbtgraph/docs/design/graph_trait_and_module_architecture.md)
-
-## Project Structure
-
-```
-mbtgraph/
-├── moon.mod.json          # Module metadata
-├── AGENTS.md              # This file - Agent workflow guide
-├── MEMORY.md              # Persistent memory log (project-level)
-├── memory/                # Memory directory (for dated session logs)
-├── docs/
-│   └── design/            # Design documents and surveys
-└── src/                   # Source packages (each with moon.pkg)
-    ├── *.mbt              # Source files
-    ├── *_test.mbt         # Blackbox test files
-    └── *_wbtest.mbt       # Whitebox test files
-```
-
-**Package Organization**:
-
-- Each directory contains a `moon.pkg` file listing dependencies
-- Blackbox tests: `*_test.mbt` (external API testing)
-- Whitebox tests: `*_wbtest.mbt` (internal implementation testing)
-
-## MoonBit Skills Guide
-
-### Available Skills
-
-| Skill                            | Purpose                                           | When to Use             |
-| -------------------------------- | ------------------------------------------------- | ----------------------- |
-| `moonbit-core-skill`             | Core syntax, types, functions                     | Basic language features |
-| `moonbit-data-structures-skill`  | Arrays, tuples, structs, enums, Map, Set          | Data structure design   |
-| `moonbit-tutorial-skill`         | Environment setup, Hello World, project structure | Newcomer onboarding     |
-| `moonbit-functions-skill`        | Higher-order functions, closures, pipes           | Functional programming  |
-| `moonbit-pattern-matching-skill` | match, destructuring, guards                      | Pattern matching tasks  |
-| `moonbit-generics-skill`         | Generics, Traits, impl, type constraints          | Abstraction & reuse     |
-| `moonbit-error-handling-skill`   | Option, Result, raise, try/catch                  | Error handling          |
-| `moonbit-toolchain-skill`        | moon CLI, compile, build, format                  | Build & tooling         |
-| `moonbit-testing-skill`          | Unit tests, expect tests, coverage                | Testing & debugging     |
-| `moonbit-packages-skill`         | mooncakes, dependency management                  | Package management      |
-| `moonbit-wasm-skill`             | wasm/wasm-gc backend                              | WebAssembly targets     |
-| `moonbit-js-skill`               | JavaScript backend                                | Node.js/browser targets |
-| `moonbit-native-skill`           | native/llvm backend                               | Native performance      |
-
-### Skill Selection Flow
-
-1. **Task involves syntax/language features** → `moonbit-core-skill`
-2. **Task involves data modeling** → `moonbit-data-structures-skill`
-3. **Task involves testing** → `moonbit-testing-skill`
-4. **Task involves build/CLI** → `moonbit-toolchain-skill`
-5. **Task involves dependencies** → `moonbit-packages-skill`
-6. **Task involves error handling** → `moonbit-error-handling-skill`
-
-## Development Commands
-
-### Essential Commands
+## 测试指南
 
 ```bash
-# Format code
-moon fmt
-
-# Update package interfaces (.mbti files)
-moon info
-
-# Run tests
-moon test
-
-# Run benchmarks
-moon bench
-
-# Run tests with coverage
-moon coverage analyze > uncovered.log
-
-# Update snapshot tests
-moon test --update
-
-# Build project
-moon build
-
-# Run main entry
-moon run cmd/main
+moon test                # 全量测试
+moon test --update       # 更新快照
+moon coverage analyze    # 覆盖率分析
 ```
 
-### Recommended Workflow
+**要求**: 核心高覆盖率 | 明确结果用 assertion | 复杂输出用 snapshot
 
-```bash
-# 1. Format and update interfaces
-moon info && moon fmt
+## 错误速查
 
-# 2. Check .mbti diffs for expected changes
-git diff -- "*.mbti"
+| 错误码 | 含义 | 快速修复 |
+|--------|------|---------|
+| **E0015** | unused_mut | 改为 `let`（只需改字段时）|
+| **E3002** | Parse error | 检查: mut self / for解构 / 逗号分支 |
+| **E4036** | read-only type | 改为 `pub(all) struct` |
+| **E4145** | sealed trait | 改为 `pub(open)trait` |
+| **E4021** | unbound variable | 用 `@core.Trait::method(self, ...)` |
 
-# 3. Run tests
-moon test
+**Top 5 陷阱**:
+1. mut self → `(self)` + 内部 `let g = self`
+2. For元组解构 → `for x in arr { match x { (a,b) => } }`
+3. Match多语句 → `{ stmt; stmt }` （不用逗号）
+4. 构造 pub struct 失败 → 核心类型必须 `pub(all)`
+5. Trait方法调用未绑定 → 必须完全限定名
 
-# 4. If snapshots changed, update them
-moon test --update
+## 安全与权限
+
+| 级别 | 操作 | 示例 |
+|------|------|------|
+| ✅ 允许 | 读文件、运行 fmt/info/test、编辑 `.mbt` | 日常开发 |
+| ⚠️ 确认 | 改依赖、删文件、git操作、改 AGENTS.md | 需用户同意 |
+| 🚫 禁止 | 提交敏感信息、改 `.git` 目录、运行未知命令 | 永不执行 |
+
+## 工作风格
+
+### 协作原则
+1. **先理解再规划** — 歧义必确认，不得自行假设
+2. **小步迭代** — 优先小改动、频繁验证
+3. **证据优先** — 判断基于代码/文档/命令输出
+
+### 输出要求
+- 执行类: TodoWrite 进度追踪
+- 分析类: "结论→依据→建议" 三层结构
+- 错误处理: 错误码 + 原因 + 修复方案
+
+## 记忆系统
+
+| 层级 | 文件 | 内容 |
+|------|------|------|
+| 项目记忆 | `MEMORY.md` | 关键决策、架构约定 |
+| 每日记忆 | `memory/YYYY-MM-DD.md` | 操作日志 |
+
+**流程**: 启动读 MEMORY → 今日 memory | 工作中更新 | 完成后写入 memory
+
+## 快速参考
+
+```moonbit
+// 泛型函数
+pub fn[G : @core.GraphReadable] to_adj_list(g : G) -> AdjList { ... }
+
+// Option/Result
+match value { Some(x) => ..., None => ... }  // Option 不需要 _ => ()
+@core.GraphWritable::add_node(g, data) |> ignore  // 丢弃 Result<Unit>
+
+// Block 风格: ///| 分隔符 | 废弃代码放 deprecated.mbt
 ```
-
-## Coding Conventions
-
-### Block Style
-
-- MoonBit code uses block style, each block separated by `///|`
-- Block order is irrelevant; process blocks independently during refactoring
-- Keep deprecated blocks in `deprecated.mbt` per directory
-
-### Naming & Style
-
-- Follow MoonBit standard formatting (`moon fmt`)
-- Use descriptive names for functions and types
-- Prefer `assert_eq` or `assert_true(pattern is Pattern(...))` for stable results
-- Use snapshot tests for behavior recording
-- For scientific computations, prefer assertion tests over snapshots
-
-### Interface Files (.mbti)
-
-- Each package has a generated `.mbti` interface file
-- If `.mbti` doesn't change, your refactoring is externally invisible
-- Always check `.mbti` diffs after changes
-
-## Testing Strategy
-
-### Test Types
-
-| Type     | File Suffix    | Purpose                         |
-| -------- | -------------- | ------------------------------- |
-| Blackbox | `*_test.mbt`   | External API testing            |
-| Whitebox | `*_wbtest.mbt` | Internal implementation testing |
-
-### Test Commands
-
-```bash
-# Run all tests
-moon test
-
-# Update snapshot tests
-moon test --update
-
-# Analyze coverage
-moon coverage analyze > uncovered.log
-```
-
-### Coverage Requirements
-
-- Aim for high coverage on core logic
-- Use `uncovered.log` to identify untested code paths
-- Prefer assertion tests for well-defined results
-- Use snapshot tests for complex output formatting
-
-## Memory System
-
-### Memory Architecture
-
-本项目采用双层记忆架构：
-
-| 层级         | 位置                   | 用途             | 内容                                       |
-| ------------ | ---------------------- | ---------------- | ------------------------------------------ |
-| **项目记忆** | `MEMORY.md`            | 项目级持久化记忆 | 项目关键决策、架构变更、重要约定、现状描述 |
-| **每日记忆** | `memory/YYYY-MM-DD.md` | 会话级操作日志   | 当天具体操作、临时上下文、短期发现         |
-
-### How to Use Memory
-
-**Every Session 启动流程**:
-
-1. 读取 `MEMORY.md` — 了解项目级记忆和关键约定
-2. 读取 `memory/YYYY-MM-DD.md`（今天）— 检查今日已有操作上下文
-3. 读取 `memory/YYYY-MM-DD.md`（昨天）— 了解最近操作背景（可选）
-
-**During Work**:
-
-- 重要决策 → 更新 `MEMORY.md`
-- 日常操作 → 追加到 `memory/YYYY-MM-DD.md`
-
-**After Completion**:
-
-- 项目级变更：更新 `MEMORY.md`（聚焦现状，不区分日期）
-- 会话级记录：写入 `memory/YYYY-MM-DD.md`
-
-### Memory Format
-
-**项目记忆 (MEMORY.md)**:
-聚焦项目现状，包含架构、规范、决策等，不按日期区分。
-
-**每日记忆 (memory/YYYY-MM-DD.md)**:
-
-```markdown
-# YYYY-MM-DD Memory Log
-
-## 操作：[Brief description]
-
-- [Key decision or action]
-- [Important finding]
-- [Change made]
-```
-
-### Memory Files
-
-- `MEMORY.md` — 项目记忆，存储关键决策和架构约定
-- `memory/` — 每日记忆目录，按日期存储操作日志（如 `2026-05-08.md`）
-
-## Tooling Reference
-
-| Tool         | Purpose                                         |
-| ------------ | ----------------------------------------------- |
-| `moon fmt`   | Code formatting                                 |
-| `moon info`  | Generate package interfaces (.mbti)             |
-| `moon ide`   | IDE helpers: peek-def, outline, find-references |
-| `moon test`  | Run test suite                                  |
-| `moon bench` | Run benchmarks                                  |
-| `moon build` | Build project                                   |
-| `moon run`   | Execute entry point                             |
-
-## Official Resources
-
-- [MoonBit Documentation](https://docs.moonbitlang.com)
-- [MoonBit Language Reference](https://docs.moonbitlang.cn/language/index.html)
-- [MoonBit Tutorials](https://docs.moonbitlang.cn/tutorial/index.html)
-- [Mooncakes Package Registry](https://mooncakes.io)
-- [MoonBit Skills Repository](https://github.com/moonbitlang/skills)
