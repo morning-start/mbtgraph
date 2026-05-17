@@ -13,7 +13,6 @@ pub fn[G : @core.GraphReadable] to_directed_adj_list(g : G) -> DirectedAdjList {
   for triple in g.edges() {
     match triple {
       (f, t, w) => @core.GraphWritable::add_edge(r, f, t, w) |> ignore
-      _ => ()
     }
   }
   r
@@ -33,7 +32,6 @@ pub fn[G : @core.GraphReadable] to_undirected_adj_list(
   for triple in g.edges() {
     match triple {
       (f, t, w) => @core.GraphWritable::add_edge(r, f, t, w) |> ignore
-      _ => ()
     }
   }
   r
@@ -54,7 +52,6 @@ pub fn[G : @core.GraphReadable] to_directed_matrix(
   for triple in g.edges() {
     match triple {
       (f, t, w) => @core.GraphWritable::add_edge(r, f, t, w) |> ignore
-      _ => ()
     }
   }
   r
@@ -75,7 +72,6 @@ pub fn[G : @core.GraphReadable] to_undirected_matrix(
   for triple in g.edges() {
     match triple {
       (f, t, w) => @core.GraphWritable::add_edge(r, f, t, w) |> ignore
-      _ => ()
     }
   }
   r
@@ -100,7 +96,6 @@ pub fn[G : @core.GraphReadable] to_csr(g : G) -> CSRGraph {
         b2 = b2.add_edge(f, t, w)
         ()
       }
-      _ => ()
     }
   }
   b2.build()
@@ -118,7 +113,6 @@ pub fn[G : @core.GraphReadable] to_edge_list(g : G) -> EdgeListGraph {
   for triple in g.edges() {
     match triple {
       (f, t, w) => @core.GraphWritable::add_edge(r, f, t, w) |> ignore
-      _ => ()
     }
   }
   r

@@ -46,7 +46,6 @@ impl @core.GraphReadable for UndirectedAdjList with contains_edge(
   for entry in self.adj[lo] {
     match entry {
       (nid, _) => if nid == hi { return true }
-      _ => ()
     }
   }
   false
@@ -75,7 +74,6 @@ impl @core.GraphReadable for UndirectedAdjList with get_edge(self, from, to) -> 
   for entry in self.adj[lo] {
     match entry {
       (nid, w) => if nid == hi { return Some(w) }
-      _ => ()
     }
   }
   None
@@ -93,7 +91,6 @@ impl @core.GraphReadable for UndirectedAdjList with neighbors(self, id) -> Iter[
   for entry in self.adj[idx] {
     match entry {
       (nid, _) => r.push(nid)
-      _ => ()
     }
   }
   let mut i = 0
@@ -101,7 +98,6 @@ impl @core.GraphReadable for UndirectedAdjList with neighbors(self, id) -> Iter[
     for entry in self.adj[i] {
       match entry {
         (nid, _) => if nid == id { r.push(@core.NodeId(i)) }
-        _ => ()
       }
     }
     i = i + 1
@@ -121,7 +117,6 @@ impl @core.GraphReadable for UndirectedAdjList with degree(self, id) -> Int {
       for entry in self.adj[i] {
         match entry {
           (nid, _) => if nid == id { d = d + 1 }
-          _ => ()
         }
       }
       i = i + 1
@@ -163,7 +158,6 @@ impl @core.GraphReadable for UndirectedAdjList with edges(self) -> Iter[
       for entry in self.adj[i] {
         match entry {
           (nid, w) => r.push((@core.NodeId(i), nid, w))
-          _ => ()
         }
       }
     }
@@ -199,7 +193,6 @@ impl @core.GraphWritable for UndirectedAdjList with remove_node(self, id) -> Boo
       for entry in g.adj[idx] {
         match entry {
           _ => ec = ec + 1
-          _ => ()
         }
       }
       let mut i = 0
@@ -270,7 +263,6 @@ fn ual_contains_edge(
   for entry in g.adj[lo] {
     match entry {
       (nid, _) => if nid == hi { return true }
-      _ => ()
     }
   }
   false
@@ -315,7 +307,6 @@ impl @core.GraphEdgeIterable for UndirectedAdjList with edges_sorted(self) -> It
       for entry in self.adj[i] {
         match entry {
           (nid, w) => all.push((@core.NodeId(i), nid, w))
-          _ => ()
         }
       }
     }

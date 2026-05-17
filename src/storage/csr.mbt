@@ -247,7 +247,6 @@ impl @core.GraphBatchReadable for CSRGraph with batch_edges(
   for p in pairs {
     match p {
       (f, t) => r.push(@core.GraphReadable::get_edge(self, f, t))
-      _ => r.push(None)
     }
   }
   r

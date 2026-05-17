@@ -41,7 +41,6 @@ impl @core.GraphReadable for DirectedAdjList with contains_edge(self, from, to) 
   for entry in self.adj[fi] {
     match entry {
       (nid, _) => if nid == to { return true }
-      _ => ()
     }
   }
   false
@@ -68,7 +67,6 @@ impl @core.GraphReadable for DirectedAdjList with get_edge(self, from, to) -> Do
   for entry in self.adj[fi] {
     match entry {
       (nid, w) => if nid == to { return Some(w) }
-      _ => ()
     }
   }
   None
@@ -86,7 +84,6 @@ impl @core.GraphReadable for DirectedAdjList with neighbors(self, id) -> Iter[
   for entry in self.adj[idx] {
     match entry {
       (nid, _) => r.push(nid)
-      _ => ()
     }
   }
   r.iter()
@@ -135,7 +132,6 @@ impl @core.GraphReadable for DirectedAdjList with edges(self) -> Iter[
       for entry in self.adj[i] {
         match entry {
           (nid, w) => r.push((@core.NodeId(i), nid, w))
-          _ => ()
         }
       }
     }
@@ -174,7 +170,6 @@ impl @core.GraphWritable for DirectedAdjList with remove_node(self, id) -> Bool 
             g = dal_remove_rev(g, nid.0, idx)
             g.edge_cnt = g.edge_cnt - 1
           }
-          _ => ()
         }
       }
       for entry in g.rev_adj[idx] {
@@ -183,7 +178,6 @@ impl @core.GraphWritable for DirectedAdjList with remove_node(self, id) -> Bool 
             g = dal_remove_from_adj(g, nid.0, idx)
             g.edge_cnt = g.edge_cnt - 1
           }
-          _ => ()
         }
       }
       g.adj[idx] = []
@@ -277,7 +271,6 @@ fn dal_contains_edge(
   for entry in adj[fi] {
     match entry {
       (nid, _) => if nid.0 == ti { return true }
-      _ => ()
     }
   }
   false
@@ -326,7 +319,6 @@ impl @core.GraphDirected for DirectedAdjList with in_neighbors(self, id) -> Iter
   for entry in self.rev_adj[idx] {
     match entry {
       (nid, _) => r.push(nid)
-      _ => ()
     }
   }
   r.iter()

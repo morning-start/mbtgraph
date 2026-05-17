@@ -31,7 +31,6 @@ pub fn remove_from_list(
   for entry in list {
     match entry {
       (nid, w) => if nid.0 == target { found = true } else { nl.push((nid, w)) }
-      _ => ()
     }
   }
   (found, nl)
