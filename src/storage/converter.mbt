@@ -117,3 +117,46 @@ pub fn[G : @core.GraphReadable] to_edge_list(g : G) -> EdgeListGraph {
   }
   r
 }
+
+///|
+pub fn[G : @core.GraphReadable] to_undirected_edge_list(
+  g : G,
+) -> UndirectedEdgeListGraph {
+  let r = new_undirected_edge_list()
+  for nid in g.node_ids() {
+    match g.get_node(nid) {
+      Some(data) => @core.GraphWritable::add_node(r, data) |> ignore
+      None => ()
+    }
+  }
+  for triple in g.edges() {
+    match triple {
+      (f, t, w) => @core.GraphWritable::add_edge(r, f, t, w) |> ignore
+    }
+  }
+  r
+}
+
+///|
+pub fn[G : @core.GraphReadable] to_csc(g : G) -> CSCGraph {
+  let b = CSCBuilder::new()
+  let mut b2 = b
+  for nid in g.node_ids() {
+    match g.get_node(nid) {
+      Some(data) => {
+        b2 = b2.add_node(nid, data)
+        ()
+      }
+      None => ()
+    }
+  }
+  for triple in g.edges() {
+    match triple {
+      (f, t, w) => {
+        b2 = b2.add_edge(f, t, w)
+        ()
+      }
+    }
+  }
+  b2.build()
+}

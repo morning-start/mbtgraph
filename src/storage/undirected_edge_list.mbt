@@ -1,0 +1,264 @@
+///|
+/// 无向边集数组图实现
+///
+/// 边存储在连续数组中，查询时双向匹配。
+/// 适用于 Kruskal 等需要边排序的无向图算法场景。
+pub struct UndirectedEdgeListGraph {
+  mut node_cnt : Int
+  nodes : Array[@core.Node?]
+  mut edges : Array[@core.Edge]
+}
+
+///|
+pub fn new_undirected_edge_list() -> UndirectedEdgeListGraph {
+  { node_cnt: 0, nodes: [], edges: [] }
+}
+
+///|
+impl @core.GraphReadable for UndirectedEdgeListGraph with node_count(self) -> Int {
+  self.node_cnt
+}
+
+///|
+impl @core.GraphReadable for UndirectedEdgeListGraph with edge_count(self) -> Int {
+  self.edges.length()
+}
+
+///|
+impl @core.GraphReadable for UndirectedEdgeListGraph with contains_node(
+  self,
+  id,
+) -> Bool {
+  let idx = id.0
+  idx >= 0 && idx < self.nodes.length() && has_node(self.nodes, idx)
+}
+
+///|
+impl @core.GraphReadable for UndirectedEdgeListGraph with contains_edge(
+  self,
+  from,
+  to,
+) -> Bool {
+  for e in self.edges {
+    if (e.from == from && e.to == to) || (e.from == to && e.to == from) {
+      return true
+    }
+  }
+  false
+}
+
+///|
+impl @core.GraphReadable for UndirectedEdgeListGraph with get_node(self, id) -> Double? {
+  let idx = id.0
+  if idx < 0 || idx >= self.nodes.length() {
+    return None
+  }
+  match self.nodes[idx] {
+    Some(n) => Some(n.data)
+    None => None
+  }
+}
+
+///|
+impl @core.GraphReadable for UndirectedEdgeListGraph with get_edge(
+  self,
+  from,
+  to,
+) -> Double? {
+  for e in self.edges {
+    if e.from == from && e.to == to {
+      return Some(e.data)
+    }
+    if e.from == to && e.to == from {
+      return Some(e.data)
+    }
+  }
+  None
+}
+
+///|
+impl @core.GraphReadable for UndirectedEdgeListGraph with neighbors(self, id) -> Iter[
+  @core.NodeId,
+] {
+  let r : Array[@core.NodeId] = []
+  for e in self.edges {
+    if e.from == id {
+      r.push(e.to)
+    } else if e.to == id {
+      r.push(e.from)
+    }
+  }
+  r.iter()
+}
+
+///|
+impl @core.GraphReadable for UndirectedEdgeListGraph with degree(self, id) -> Int {
+  let mut c = 0
+  for e in self.edges {
+    if e.from == id || e.to == id {
+      c = c + 1
+    }
+  }
+  c
+}
+
+///|
+impl @core.GraphReadable for UndirectedEdgeListGraph with is_directed(self) -> Bool {
+  false
+}
+
+///|
+impl @core.GraphReadable for UndirectedEdgeListGraph with is_empty(self) -> Bool {
+  self.node_cnt == 0
+}
+
+///|
+impl @core.GraphReadable for UndirectedEdgeListGraph with node_ids(self) -> Iter[
+  @core.NodeId,
+] {
+  let r : Array[@core.NodeId] = []
+  for i in 0..<self.nodes.length() {
+    if has_node(self.nodes, i) {
+      r.push(@core.NodeId(i))
+    }
+  }
+  r.iter()
+}
+
+///|
+impl @core.GraphReadable for UndirectedEdgeListGraph with edges(self) -> Iter[
+  (@core.NodeId, @core.NodeId, Double),
+] {
+  let r : Array[(@core.NodeId, @core.NodeId, Double)] = []
+  for e in self.edges {
+    r.push((e.from, e.to, e.data))
+  }
+  r.iter()
+}
+
+///|
+impl @core.GraphWritable for UndirectedEdgeListGraph with add_node(self, data) -> @core.NodeId {
+  let slot = find_slot(self.nodes, 0, self.nodes.length())
+  let idx = if slot >= 0 { slot } else { self.nodes.length() }
+  let g = self
+  if idx == g.nodes.length() {
+    g.nodes.push(None)
+  }
+  g.nodes[idx] = Some({ id: @core.NodeId(idx), data })
+  g.node_cnt = g.node_cnt + 1
+  @core.NodeId(idx)
+}
+
+///|
+impl @core.GraphWritable for UndirectedEdgeListGraph with remove_node(self, id) -> Bool {
+  let idx = id.0
+  if idx < 0 || idx >= self.nodes.length() {
+    return false
+  }
+  match self.nodes[idx] {
+    None => false
+    Some(_) => {
+      let ne : Array[@core.Edge] = []
+      for e in self.edges {
+        if e.from != id && e.to != id {
+          ne.push(e)
+        }
+      }
+      let g = self
+      g.edges = ne
+      g.nodes[idx] = None
+      g.node_cnt = g.node_cnt - 1
+      true
+    }
+  }
+}
+
+///|
+fn uel_contains_edge(
+  g : UndirectedEdgeListGraph,
+  from : @core.NodeId,
+  to : @core.NodeId,
+) -> Bool {
+  for e in g.edges {
+    if (e.from == from && e.to == to) || (e.from == to && e.to == from) {
+      return true
+    }
+  }
+  false
+}
+
+///|
+impl @core.GraphWritable for UndirectedEdgeListGraph with add_edge(
+  self,
+  from,
+  to,
+  data,
+) -> Result[Unit, @core.GraphError] {
+  let fi = from.0
+  let ti = to.0
+  if fi < 0 || fi >= self.nodes.length() {
+    Err(@core.GraphError::InvalidNodeId)
+  } else {
+    match self.nodes[fi] {
+      None => Err(@core.GraphError::NodeNotFound(from))
+      Some(_) =>
+        if ti < 0 || ti >= self.nodes.length() {
+          Err(@core.GraphError::InvalidNodeId)
+        } else {
+          match self.nodes[ti] {
+            None => Err(@core.GraphError::NodeNotFound(to))
+            Some(_) =>
+              if uel_contains_edge(self, from, to) {
+                Err(@core.GraphError::EdgeAlreadyExists(from, to))
+              } else {
+                let g = self
+                g.edges.push({ from, to, data })
+                Ok(())
+              }
+          }
+        }
+    }
+  }
+}
+
+///|
+impl @core.GraphWritable for UndirectedEdgeListGraph with remove_edge(
+  self,
+  from,
+  to,
+) -> Bool {
+  let ne : Array[@core.Edge] = []
+  let mut found = false
+  for e in self.edges {
+    if (e.from == from && e.to == to) || (e.from == to && e.to == from) {
+      found = true
+    } else {
+      ne.push(e)
+    }
+  }
+  let g = self
+  g.edges = ne
+  found
+}
+
+///|
+impl @core.GraphWritable for UndirectedEdgeListGraph with clear(self) -> Unit {
+  let g = self
+  for i in 0..<g.nodes.length() {
+    g.nodes[i] = None
+  }
+  g.edges = []
+  g.node_cnt = 0
+}
+
+///|
+impl @core.GraphEdgeIterable for UndirectedEdgeListGraph with edges_sorted(self) -> Iter[
+  (@core.NodeId, @core.NodeId, Double),
+] {
+  let all : Array[(@core.NodeId, @core.NodeId, Double)] = []
+  for e in self.edges {
+    all.push((e.from, e.to, e.data))
+  }
+  let sorted = bubble_sort_by_weight(all)
+  sorted.iter()
+}
