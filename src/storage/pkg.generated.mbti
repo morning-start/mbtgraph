@@ -1,0 +1,70 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "morning-start/mbtgraph/src/storage"
+
+import {
+  "morning-start/mbtgraph/src/core",
+}
+
+// Values
+pub fn new(Bool) -> AdjacencyListGraph
+
+pub fn new_edge_list() -> EdgeListGraph
+
+pub fn new_matrix(Int, Bool) -> AdjacencyMatrixGraph
+
+pub fn[G : @core.GraphReadable] to_adjacency_list(G) -> AdjacencyListGraph
+
+pub fn[G : @core.GraphReadable] to_adjacency_matrix(G, Int) -> AdjacencyMatrixGraph
+
+pub fn[G : @core.GraphReadable] to_csr(G) -> CSRGraph
+
+pub fn[G : @core.GraphReadable] to_edge_list(G) -> EdgeListGraph
+
+// Errors
+
+// Types and methods
+pub struct AdjacencyListGraph {
+  mut node_cnt : Int
+  mut edge_cnt : Int
+  nodes : Array[@core.Node?]
+  adj : Array[Array[(@core.NodeId, Double)]]
+  directed : Bool
+  rev_adj : Array[Array[(@core.NodeId, Double)]]
+}
+
+pub struct AdjacencyMatrixGraph {
+  mut node_count : Int
+  mut edge_count : Int
+  capacity : Int
+  nodes : Array[@core.Node?]
+  matrix : Array[Array[Double?]]
+  directed : Bool
+}
+
+pub struct CSRBuilder {
+  nodes : Array[@core.Node]
+  edges : Array[(@core.NodeId, @core.NodeId, Double)]
+}
+pub fn CSRBuilder::add_edge(Self, @core.NodeId, @core.NodeId, Double) -> Self
+pub fn CSRBuilder::add_node(Self, @core.NodeId, Double) -> Self
+pub fn CSRBuilder::build(Self) -> CSRGraph
+pub fn CSRBuilder::new() -> Self
+
+pub struct CSRGraph {
+  nodes : Array[@core.Node]
+  row_ptr : Array[Int]
+  col_idx : Array[@core.NodeId]
+  values : Array[Double]
+  directed : Bool
+}
+
+pub struct EdgeListGraph {
+  mut node_cnt : Int
+  nodes : Array[@core.Node?]
+  mut edges : Array[@core.Edge]
+}
+
+// Type aliases
+
+// Traits
+

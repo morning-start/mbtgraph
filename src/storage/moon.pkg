@@ -1,0 +1,9 @@
+import {
+  "morning-start/mbtgraph/src/core" @core,
+}
+
+warnings = "-unused_value"
+
+options(
+  "is-main": false,
+)
