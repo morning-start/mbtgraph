@@ -6,11 +6,11 @@
 
 ## 快速导航
 
-| 模块 | 文件 | 职责 |
-|------|------|------|
-| **类型定义** | [types.mbt](types.mbt) | `NodeId`, `Node`, `Edge` 三大核心类型 |
-| **Trait 接口** | [traits.mbt) | 6 个分层 Trait，定义图操作的抽象契约 |
-| **错误类型** | [error.mbt](error.mbt) | `GraphError` 枚举，统一错误处理 |
+| 模块           | 文件                   | 职责                                  |
+| -------------- | ---------------------- | ------------------------------------- |
+| **类型定义**   | [types.mbt](types.mbt) | `NodeId`, `Node`, `Edge` 三大核心类型 |
+| **Trait 接口** | [traits.mbt)           | 6 个分层 Trait，定义图操作的抽象契约  |
+| **错误类型**   | [error.mbt](error.mbt) | `GraphError` 枚举，统一错误处理       |
 
 ---
 
@@ -75,7 +75,7 @@ let edge = { from: @core.NodeId(0), to: @core.NodeId(1), data: 2.5 }
 
 core 包的核心是 **6 个分层 Trait**，遵循**接口隔离原则 (ISP)** 和**里氏替换原则 (LSP)**：
 
-```
+```txt
                     ┌─────────────────┐
                     │  GraphReadable   │  ← 所有存储必须实现
                     │  （只读基线）      │     12 个方法
@@ -113,20 +113,20 @@ core 包的核心是 **6 个分层 Trait**，遵循**接口隔离原则 (ISP)** 
 
 **适用**: **所有存储实现**
 
-| 方法 | 签名 | 说明 |
-|------|------|------|
-| `node_count` | `(Self) -> Int` | 节点总数 |
-| `edge_count` | `(Self) -> Int` | 边总数 |
-| `contains_node` | `(Self, NodeId) -> Bool` | 节点是否存在 |
-| `contains_edge` | `(Self, NodeId, NodeId) -> Bool` | 边是否存在 |
-| `get_node` | `(Self, NodeId) -> Double?` | 获取节点数据 |
-| `get_edge` | `(Self, NodeId, NodeId) -> Double?` | 获取边权值 |
-| `neighbors` | `(Self, NodeId) -> Iter[NodeId]` | 邻居迭代器 |
-| `degree` | `(Self, NodeId) -> Int` | 度数（无向）/ 出度（有向）|
-| `is_directed` | `(Self) -> Bool` | 是否有向图 |
-| `is_empty` | `(Self) -> Bool` | 是否空图 |
-| `node_ids` | `(Self) -> Iter[NodeId]` | 所有节点 ID 迭代器 |
-| `edges` | `(Self) -> Iter[(NodeId, NodeId, Double)]` | 所有边迭代器 |
+| 方法            | 签名                                       | 说明                       |
+| --------------- | ------------------------------------------ | -------------------------- |
+| `node_count`    | `(Self) -> Int`                            | 节点总数                   |
+| `edge_count`    | `(Self) -> Int`                            | 边总数                     |
+| `contains_node` | `(Self, NodeId) -> Bool`                   | 节点是否存在               |
+| `contains_edge` | `(Self, NodeId, NodeId) -> Bool`           | 边是否存在                 |
+| `get_node`      | `(Self, NodeId) -> Double?`                | 获取节点数据               |
+| `get_edge`      | `(Self, NodeId, NodeId) -> Double?`        | 获取边权值                 |
+| `neighbors`     | `(Self, NodeId) -> Iter[NodeId]`           | 邻居迭代器                 |
+| `degree`        | `(Self, NodeId) -> Int`                    | 度数（无向）/ 出度（有向） |
+| `is_directed`   | `(Self) -> Bool`                           | 是否有向图                 |
+| `is_empty`      | `(Self) -> Bool`                           | 是否空图                   |
+| `node_ids`      | `(Self) -> Iter[NodeId]`                   | 所有节点 ID 迭代器         |
+| `edges`         | `(Self) -> Iter[(NodeId, NodeId, Double)]` | 所有边迭代器               |
 
 **使用示例**:
 
@@ -150,13 +150,13 @@ pub fn[G : @core.GraphReadOnly] bfs(g : G, start : NodeId) -> Array[NodeId] {
 
 **适用**: 动态存储（AdjList, Matrix, EdgeList）；**CSR 不实现**（LSP）
 
-| 方法 | 签名 | 返回值 | 说明 |
-|------|------|--------|------|
-| `add_node` | `(Self, Double) -> NodeId` | 新节点 ID | 添加节点 |
-| `remove_node` | `(Self, NodeId) -> Bool` | 是否成功 | 删除节点及关联边 |
-| `add_edge` | `(Self, NodeId, NodeId, Double) -> Result[Unit, GraphError]` | 成功/错误 | 添加边 |
-| `remove_edge` | `(Self, NodeId, NodeId) -> Bool` | 是否成功 | 删除边 |
-| `clear` | `(Self) -> Unit` | - | 清空图 |
+| 方法          | 签名                                                         | 返回值    | 说明             |
+| ------------- | ------------------------------------------------------------ | --------- | ---------------- |
+| `add_node`    | `(Self, Double) -> NodeId`                                   | 新节点 ID | 添加节点         |
+| `remove_node` | `(Self, NodeId) -> Bool`                                     | 是否成功  | 删除节点及关联边 |
+| `add_edge`    | `(Self, NodeId, NodeId, Double) -> Result[Unit, GraphError]` | 成功/错误 | 添加边           |
+| `remove_edge` | `(Self, NodeId, NodeId) -> Bool`                             | 是否成功  | 删除边           |
+| `clear`       | `(Self) -> Unit`                                             | -         | 清空图           |
 
 **错误处理**:
 
@@ -179,14 +179,14 @@ match @core.GraphWritable::add_edge(g, from, to, weight) {
 
 **适用**: 有向存储（DirectedAdjList, DirectedMatrix）
 
-| 方法 | 签名 | 说明 |
-|------|------|------|
-| `in_neighbors` | `(Self, NodeId) -> Iter[NodeId]` | 入边邻居 |
-| `out_neighbors` | `(Self, NodeId) -> Iter[NodeId]` | 出边邻居 |
-| `in_degree` | `(Self, NodeId) -> Int` | 入度 |
-| `out_degree` | `(Self, NodeId) -> Int` | 出度 |
-| `predecessors` | `(Self, NodeId) -> Iter[(NodeId, Double)]` | 前驱边（带权）|
-| `successors` | `(Self, NodeId) -> Iter[(NodeId, Double)]` | 后继边（带权）|
+| 方法            | 签名                                       | 说明           |
+| --------------- | ------------------------------------------ | -------------- |
+| `in_neighbors`  | `(Self, NodeId) -> Iter[NodeId]`           | 入边邻居       |
+| `out_neighbors` | `(Self, NodeId) -> Iter[NodeId]`           | 出边邻居       |
+| `in_degree`     | `(Self, NodeId) -> Int`                    | 入度           |
+| `out_degree`    | `(Self, NodeId) -> Int`                    | 出度           |
+| `predecessors`  | `(Self, NodeId) -> Iter[(NodeId, Double)]` | 前驱边（带权） |
+| `successors`    | `(Self, NodeId) -> Iter[(NodeId, Double)]` | 后继边（带权） |
 
 ---
 
@@ -214,10 +214,10 @@ pub fn[G : @core.GraphFull] some_algo(g : G) { ... }
 
 **适用**: CSR、CSC 等连续内存存储
 
-| 方法 | 签名 | 说明 |
-|------|------|------|
-| `batch_neighbors` | `(Self, Array[NodeId]) -> Array[Array[NodeId]]` | 批量查询邻居 |
-| `batch_edges` | `(Self, Array[(NodeId, NodeId)]) -> Array[Double?]` | 批量查询边权 |
+| 方法              | 签名                                                | 说明         |
+| ----------------- | --------------------------------------------------- | ------------ |
+| `batch_neighbors` | `(Self, Array[NodeId]) -> Array[Array[NodeId]]`     | 批量查询邻居 |
+| `batch_edges`     | `(Self, Array[(NodeId, NodeId)]) -> Array[Double?]` | 批量查询边权 |
 
 **性能优势**: 减少多次单次调用的开销，适合大规模图计算。
 
@@ -229,8 +229,8 @@ pub fn[G : @core.GraphFull] some_algo(g : G) { ... }
 
 **适用**: 边集数组、无向邻接表等支持边排序的存储
 
-| 方法 | 签名 | 说明 |
-|------|------|------|
+| 方法           | 签名                                       | 说明               |
+| -------------- | ------------------------------------------ | ------------------ |
 | `edges_sorted` | `(Self) -> Iter[(NodeId, NodeId, Double)]` | 按权值升序排列的边 |
 
 **典型用途**: Kruskal 最小生成树算法需要边按权值排序。
@@ -249,11 +249,11 @@ pub(all) enum GraphError {
 }
 ```
 
-| 变体 | 触发场景 | 处理建议 |
-|------|---------|---------|
-| `NodeNotFound(id)` | 对不存在的节点执行操作 | 先调用 `contains_node` 检查 |
-| `EdgeAlreadyExists(f,t)` | 重复添加同一条边 | 调用 `contains_edge` 或忽略错误 |
-| `InvalidNodeId` | 使用负数或越界的 ID | 校验输入范围 |
+| 变体                     | 触发场景               | 处理建议                        |
+| ------------------------ | ---------------------- | ------------------------------- |
+| `NodeNotFound(id)`       | 对不存在的节点执行操作 | 先调用 `contains_node` 检查     |
+| `EdgeAlreadyExists(f,t)` | 重复添加同一条边       | 调用 `contains_edge` 或忽略错误 |
+| `InvalidNodeId`          | 使用负数或越界的 ID    | 校验输入范围                    |
 
 ---
 
@@ -261,14 +261,14 @@ pub(all) enum GraphError {
 
 下表展示了 storage 包中各存储类型对 core Trait 的实现情况：
 
-| Trait | DirectedAdjList | UndirectedAdjList | DirectedMatrix | UndirectedMatrix | CSR/CSC | EdgeListGraph | UndirectedEdgeListGraph |
-|-------|:---------------:|:-----------------:|:--------------:|:----------------:|:-------:|:-------------:|:----------------------:|
-| **GraphReadable** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **GraphWritable** | ✅ | ✅ | ✅ | ✅ | ❌ LSP | ✅ | ✅ |
-| **GraphDirected** | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| **GraphFull** | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| **GraphBatchReadable** | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
-| **GraphEdgeIterable** | ❌ | ✅ | ❌ | ❌ | ❌ | ✅ | ✅ |
+| Trait                  | DirectedAdjList | UndirectedAdjList | DirectedMatrix | UndirectedMatrix | CSR/CSC | EdgeListGraph | UndirectedEdgeListGraph |
+| ---------------------- | :-------------: | :---------------: | :------------: | :--------------: | :-----: | :-----------: | :---------------------: |
+| **GraphReadable**      |       ✅        |        ✅         |       ✅       |        ✅        |   ✅    |      ✅       |           ✅            |
+| **GraphWritable**      |       ✅        |        ✅         |       ✅       |        ✅        | ❌ LSP  |      ✅       |           ✅            |
+| **GraphDirected**      |       ✅        |        ❌         |       ✅       |        ❌        |   ❌    |      ❌       |           ❌            |
+| **GraphFull**          |       ✅        |        ❌         |       ✅       |        ❌        |   ❌    |      ❌       |           ❌            |
+| **GraphBatchReadable** |       ❌        |        ❌         |       ❌       |        ❌        |   ✅    |      ❌       |           ❌            |
+| **GraphEdgeIterable**  |       ❌        |        ✅         |       ❌       |        ❌        |   ❌    |      ✅       |           ✅            |
 
 ---
 
@@ -277,6 +277,7 @@ pub(all) enum GraphError {
 ### 接口隔离 (ISP)
 
 每个 Trait 只包含特定场景需要的方法：
+
 - 只读查询 → `GraphReadable`
 - 动态修改 → `GraphWritable`
 - 有向语义 → `GraphDirected`
@@ -286,6 +287,7 @@ pub(all) enum GraphError {
 ### 里氏替换 (LSP)
 
 CSR 是**只读格式**，故意不实现 `GraphWritable`：
+
 - CSR 的 `add_edge()` 会破坏压缩结构的高效性
 - 子类不能削弱父类的能力，但可以**不承诺**额外能力
 
@@ -305,13 +307,13 @@ pub fn dfs_adjlist(g : DirectedAdjList) -> ...
 
 ## 编码规范速查
 
-| 规则 | 示例 |
-|------|------|
-| 完全限定名 | `@core.NodeId(0)` / `@core.GraphReadable::node_count(g)` |
-| Impl 参数 | `(self)` 非 `mut self` |
-| Option 匹配 | 不需要 `_ => ()` 分支 |
-| Trait 方法调用 | 必须用完全限定名 `@core.Trait::method(self, ...)` |
-| Result 丢弃 | `\|> ignore` |
+| 规则           | 示例                                                     |
+| -------------- | -------------------------------------------------------- |
+| 完全限定名     | `@core.NodeId(0)` / `@core.GraphReadable::node_count(g)` |
+| Impl 参数      | `(self)` 非 `mut self`                                   |
+| Option 匹配    | 不需要 `_ => ()` 分支                                    |
+| Trait 方法调用 | 必须用完全限定名 `@core.Trait::method(self, ...)`        |
+| Result 丢弃    | `\|> ignore`                                             |
 
 ---
 
