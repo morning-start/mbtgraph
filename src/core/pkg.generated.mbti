@@ -1,0 +1,78 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "morning-start/mbtgraph/src/core"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct Edge {
+  from : NodeId
+  to : NodeId
+  data : Double
+} derive(@debug.Debug)
+
+pub enum GraphError {
+  NodeNotFound(NodeId)
+  EdgeAlreadyExists(NodeId, NodeId)
+  InvalidNodeId
+} derive(Eq, @debug.Debug)
+
+pub struct Node {
+  id : NodeId
+  data : Double
+} derive(@debug.Debug)
+
+pub struct NodeId(Int) derive(Eq, @debug.Debug)
+
+// Type aliases
+
+// Traits
+pub trait GraphBatchReadable : GraphReadable {
+  batch_neighbors(Self, Array[NodeId]) -> Array[Array[NodeId]]
+  batch_edges(Self, Array[(NodeId, NodeId)]) -> Array[Double?]
+}
+
+pub trait GraphDirected : GraphReadable {
+  in_neighbors(Self, NodeId) -> Iter[NodeId]
+  out_neighbors(Self, NodeId) -> Iter[NodeId]
+  in_degree(Self, NodeId) -> Int
+  out_degree(Self, NodeId) -> Int
+  predecessors(Self, NodeId) -> Iter[(NodeId, Double)]
+  successors(Self, NodeId) -> Iter[(NodeId, Double)]
+}
+
+pub trait GraphEdgeIterable : GraphReadable {
+  edges_sorted(Self) -> Iter[(NodeId, NodeId, Double)]
+}
+
+pub trait GraphFull : GraphWritable + GraphDirected {
+}
+
+pub trait GraphReadable {
+  node_count(Self) -> Int
+  edge_count(Self) -> Int
+  contains_node(Self, NodeId) -> Bool
+  contains_edge(Self, NodeId, NodeId) -> Bool
+  get_node(Self, NodeId) -> Double?
+  get_edge(Self, NodeId, NodeId) -> Double?
+  neighbors(Self, NodeId) -> Iter[NodeId]
+  degree(Self, NodeId) -> Int
+  is_directed(Self) -> Bool
+  is_empty(Self) -> Bool
+  node_ids(Self) -> Iter[NodeId]
+  edges(Self) -> Iter[(NodeId, NodeId, Double)]
+}
+
+pub trait GraphWritable : GraphReadable {
+  add_node(Self, Double) -> NodeId
+  remove_node(Self, NodeId) -> Bool
+  add_edge(Self, NodeId, NodeId, Double) -> Result[Unit, GraphError]
+  remove_edge(Self, NodeId, NodeId) -> Bool
+  clear(Self) -> Unit
+}
+
