@@ -63,9 +63,13 @@ test "remove_from_list removes matching entry and returns found=true" {
   assert_eq(result.length(), 2)
   // Should contain entries 0 and 2
   let (id0, _) = result[0]
-  match id0 { @core.NodeId(v) => assert_eq(v, 0) }
+  match id0 {
+    @core.NodeId(v) => assert_eq(v, 0)
+  }
   let (id2, _) = result[1]
-  match id2 { @core.NodeId(v) => assert_eq(v, 2) }
+  match id2 {
+    @core.NodeId(v) => assert_eq(v, 2)
+  }
 }
 
 ///|
@@ -102,7 +106,9 @@ test "remove_from_list removes only first occurrence when duplicates exist" {
   assert_eq(result.length(), 1)
   // Only non-matching entry remains
   let (id0, w0) = result[0]
-  match id0 { @core.NodeId(v) => assert_eq(v, 1) }
+  match id0 {
+    @core.NodeId(v) => assert_eq(v, 1)
+  }
   assert_eq(w0, 2.0)
 }
 

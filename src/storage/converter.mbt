@@ -219,12 +219,11 @@ pub fn[G : @core.GraphReadable] as_undirected(g : G) -> UndirectedAdjList raise 
   }
   for triple in @core.GraphReadable::edges(g) {
     match triple {
-      (f, t, w) => {
+      (f, t, w) =>
         match @core.GraphWritable::add_edge(r, f, t, w) {
           Ok(_) => ()
-          Err(_) => ()  // 反向边已存在则跳过
+          Err(_) => () // 反向边已存在则跳过
         }
-      }
     }
   }
   r

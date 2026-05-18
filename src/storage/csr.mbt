@@ -295,10 +295,9 @@ pub impl @core.GraphDirected for CSRGraph with out_degree(self, id) -> Int {
 }
 
 ///|
-pub impl @core.GraphDirected for CSRGraph with predecessors(
-  self,
-  id,
-) -> Iter[(@core.NodeId, Double)] {
+pub impl @core.GraphDirected for CSRGraph with predecessors(self, id) -> Iter[
+  (@core.NodeId, Double),
+] {
   let idx = id.0
   let r : Array[(@core.NodeId, Double)] = []
   let nc = self.nodes.length()
@@ -316,10 +315,9 @@ pub impl @core.GraphDirected for CSRGraph with predecessors(
 }
 
 ///|
-pub impl @core.GraphDirected for CSRGraph with successors(
-  self,
-  id,
-) -> Iter[(@core.NodeId, Double)] {
+pub impl @core.GraphDirected for CSRGraph with successors(self, id) -> Iter[
+  (@core.NodeId, Double),
+] {
   let idx = id.0
   if idx < 0 || idx >= self.row_ptr.length() - 1 {
     return [].iter()

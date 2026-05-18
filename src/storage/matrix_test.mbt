@@ -20,8 +20,12 @@ test "directed matrix add_node within capacity" {
   let id0 = @core.GraphWritable::add_node(g, 1.0)
   let id1 = @core.GraphWritable::add_node(g, 2.0)
 
-  match id0 { @core.NodeId(v) => assert_eq(v, 0) }
-  match id1 { @core.NodeId(v) => assert_eq(v, 1) }
+  match id0 {
+    @core.NodeId(v) => assert_eq(v, 0)
+  }
+  match id1 {
+    @core.NodeId(v) => assert_eq(v, 1)
+  }
   assert_eq(@core.GraphReadable::node_count(g), 2)
 }
 

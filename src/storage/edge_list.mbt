@@ -31,7 +31,11 @@ pub impl @core.GraphReadable for EdgeListGraph with contains_node(self, id) -> B
 }
 
 ///|
-pub impl @core.GraphReadable for EdgeListGraph with contains_edge(self, from, to) -> Bool {
+pub impl @core.GraphReadable for EdgeListGraph with contains_edge(
+  self,
+  from,
+  to,
+) -> Bool {
   for e in self.edges {
     if e.from == from && e.to == to {
       return true
@@ -158,10 +162,12 @@ pub impl @core.GraphWritable for EdgeListGraph with remove_node(self, id) -> Boo
 }
 
 ///|
-pub impl @core.GraphWritable for EdgeListGraph with add_edge(self, from, to, data) -> Result[
-  Unit,
-  @core.GraphError,
-] {
+pub impl @core.GraphWritable for EdgeListGraph with add_edge(
+  self,
+  from,
+  to,
+  data,
+) -> Result[Unit, @core.GraphError] {
   let fi = from.0
   let ti = to.0
   if fi < 0 || fi >= self.nodes.length() {

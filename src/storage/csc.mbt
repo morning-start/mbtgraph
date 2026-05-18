@@ -205,7 +205,9 @@ pub impl @core.GraphReadable for CSCGraph with is_empty(self) -> Bool {
 }
 
 ///|
-pub impl @core.GraphReadable for CSCGraph with node_ids(self) -> Iter[@core.NodeId] {
+pub impl @core.GraphReadable for CSCGraph with node_ids(self) -> Iter[
+  @core.NodeId,
+] {
   let r : Array[@core.NodeId] = []
   for i in 0..<self.nodes.length() {
     r.push(self.nodes[i].id)
@@ -322,10 +324,9 @@ pub impl @core.GraphDirected for CSCGraph with out_degree(self, id) -> Int {
 }
 
 ///|
-pub impl @core.GraphDirected for CSCGraph with predecessors(
-  self,
-  id,
-) -> Iter[(@core.NodeId, Double)] {
+pub impl @core.GraphDirected for CSCGraph with predecessors(self, id) -> Iter[
+  (@core.NodeId, Double),
+] {
   let idx = id.0
   if idx < 0 || idx >= self.col_ptr.length() - 1 {
     return [].iter()
@@ -340,10 +341,9 @@ pub impl @core.GraphDirected for CSCGraph with predecessors(
 }
 
 ///|
-pub impl @core.GraphDirected for CSCGraph with successors(
-  self,
-  id,
-) -> Iter[(@core.NodeId, Double)] {
+pub impl @core.GraphDirected for CSCGraph with successors(self, id) -> Iter[
+  (@core.NodeId, Double),
+] {
   let idx = id.0
   let r : Array[(@core.NodeId, Double)] = []
   let nc = self.nodes.length()

@@ -17,9 +17,15 @@ test "add_node returns sequential NodeId starting from 0" {
   let id1 = @core.GraphWritable::add_node(g, 20.0)
   let id2 = @core.GraphWritable::add_node(g, 30.0)
 
-  match id0 { @core.NodeId(v) => assert_eq(v, 0) }
-  match id1 { @core.NodeId(v) => assert_eq(v, 1) }
-  match id2 { @core.NodeId(v) => assert_eq(v, 2) }
+  match id0 {
+    @core.NodeId(v) => assert_eq(v, 0)
+  }
+  match id1 {
+    @core.NodeId(v) => assert_eq(v, 1)
+  }
+  match id2 {
+    @core.NodeId(v) => assert_eq(v, 2)
+  }
   assert_eq(@core.GraphReadable::node_count(g), 3)
 }
 
@@ -173,12 +179,11 @@ test "add_edge with invalid node returns error" {
 
   match @core.GraphWritable::add_edge(g, a, bad, 1.0) {
     Ok(_) => assert_true(false)
-    Err(e) => {
+    Err(e) =>
       match e {
         @core.GraphError::InvalidNodeId => assert_true(true)
         _ => assert_true(false)
       }
-    }
   }
 }
 

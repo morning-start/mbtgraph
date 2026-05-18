@@ -38,7 +38,11 @@ pub impl @core.GraphReadable for DirectedMatrix with contains_node(self, id) -> 
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedMatrix with contains_edge(self, from, to) -> Bool {
+pub impl @core.GraphReadable for DirectedMatrix with contains_edge(
+  self,
+  from,
+  to,
+) -> Bool {
   let fi = from.0
   let ti = to.0
   if fi < 0 || fi >= self.capacity || ti < 0 || ti >= self.capacity {
@@ -195,10 +199,12 @@ pub impl @core.GraphWritable for DirectedMatrix with remove_node(self, id) -> Bo
 }
 
 ///|
-pub impl @core.GraphWritable for DirectedMatrix with add_edge(self, from, to, data) -> Result[
-  Unit,
-  @core.GraphError,
-] {
+pub impl @core.GraphWritable for DirectedMatrix with add_edge(
+  self,
+  from,
+  to,
+  data,
+) -> Result[Unit, @core.GraphError] {
   let fi = from.0
   let ti = to.0
   if fi < 0 || fi >= self.capacity || ti < 0 || ti >= self.capacity {

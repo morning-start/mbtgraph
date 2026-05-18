@@ -269,7 +269,11 @@ fn ual_contains_edge(
 }
 
 ///|
-pub impl @core.GraphWritable for UndirectedAdjList with remove_edge(self, from, to) -> Bool {
+pub impl @core.GraphWritable for UndirectedAdjList with remove_edge(
+  self,
+  from,
+  to,
+) -> Bool {
   let fi = from.0
   let ti = to.0
   if fi < 0 || fi >= self.adj.length() || ti < 0 || ti >= self.adj.length() {

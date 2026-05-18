@@ -38,7 +38,11 @@ pub impl @core.GraphReadable for UndirectedMatrix with contains_node(self, id) -
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedMatrix with contains_edge(self, from, to) -> Bool {
+pub impl @core.GraphReadable for UndirectedMatrix with contains_edge(
+  self,
+  from,
+  to,
+) -> Bool {
   let fi = from.0
   let ti = to.0
   if fi < 0 || fi >= self.capacity || ti < 0 || ti >= self.capacity {
@@ -233,7 +237,11 @@ pub impl @core.GraphWritable for UndirectedMatrix with add_edge(
 }
 
 ///|
-pub impl @core.GraphWritable for UndirectedMatrix with remove_edge(self, from, to) -> Bool {
+pub impl @core.GraphWritable for UndirectedMatrix with remove_edge(
+  self,
+  from,
+  to,
+) -> Bool {
   let fi = from.0
   let ti = to.0
   if fi < 0 || fi >= self.capacity || ti < 0 || ti >= self.capacity {

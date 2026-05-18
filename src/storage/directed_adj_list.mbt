@@ -33,7 +33,11 @@ pub impl @core.GraphReadable for DirectedAdjList with contains_node(self, id) ->
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedAdjList with contains_edge(self, from, to) -> Bool {
+pub impl @core.GraphReadable for DirectedAdjList with contains_edge(
+  self,
+  from,
+  to,
+) -> Bool {
   let fi = from.0
   if fi < 0 || fi >= self.adj.length() {
     return false
@@ -226,10 +230,12 @@ fn dal_remove_from_adj(
 }
 
 ///|
-pub impl @core.GraphWritable for DirectedAdjList with add_edge(self, from, to, data) -> Result[
-  Unit,
-  @core.GraphError,
-] {
+pub impl @core.GraphWritable for DirectedAdjList with add_edge(
+  self,
+  from,
+  to,
+  data,
+) -> Result[Unit, @core.GraphError] {
   let fi = from.0
   let ti = to.0
   if fi < 0 || fi >= self.nodes.length() {
@@ -277,7 +283,11 @@ fn dal_contains_edge(
 }
 
 ///|
-pub impl @core.GraphWritable for DirectedAdjList with remove_edge(self, from, to) -> Bool {
+pub impl @core.GraphWritable for DirectedAdjList with remove_edge(
+  self,
+  from,
+  to,
+) -> Bool {
   let fi = from.0
   let ti = to.0
   if fi < 0 || fi >= self.adj.length() {

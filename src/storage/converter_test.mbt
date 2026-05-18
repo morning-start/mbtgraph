@@ -265,7 +265,7 @@ test "as_undirected deduplicates bidirectional edges" {
   let a = @core.GraphWritable::add_node(src, 1.0)
   let b = @core.GraphWritable::add_node(src, 2.0)
   @core.GraphWritable::add_edge(src, a, b, 3.0) |> ignore
-  @core.GraphWritable::add_edge(src, b, a, 4.0) |> ignore  // 反向边
+  @core.GraphWritable::add_edge(src, b, a, 4.0) |> ignore // 反向边
 
   let dst = as_undirected(src)
 

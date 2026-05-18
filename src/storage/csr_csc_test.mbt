@@ -45,7 +45,9 @@ test "CSRBuilder add_edge and build preserves edge data" {
   let g = b3.build()
 
   assert_eq(@core.GraphReadable::edge_count(g), 1)
-  assert_true(@core.GraphReadable::contains_edge(g, @core.NodeId(0), @core.NodeId(1)))
+  assert_true(
+    @core.GraphReadable::contains_edge(g, @core.NodeId(0), @core.NodeId(1)),
+  )
 
   match @core.GraphReadable::get_edge(g, @core.NodeId(0), @core.NodeId(1)) {
     Some(w) => assert_eq(w, 3.14)
@@ -53,7 +55,9 @@ test "CSRBuilder add_edge and build preserves edge data" {
   }
 
   // Reverse direction does not exist (directed CSR)
-  assert_true(!@core.GraphReadable::contains_edge(g, @core.NodeId(1), @core.NodeId(0)))
+  assert_true(
+    !@core.GraphReadable::contains_edge(g, @core.NodeId(1), @core.NodeId(0)),
+  )
 }
 
 ///|
@@ -121,10 +125,11 @@ test "CSR batch_neighbors returns per-node neighbor lists" {
   let b5 = b4.add_edge(@core.NodeId(0), @core.NodeId(2), 2.0)
   let g = b5.build()
 
-  let result = @core.GraphBatchReadable::batch_neighbors(
-    g,
-    [@core.NodeId(0), @core.NodeId(1), @core.NodeId(2)],
-  )
+  let result = @core.GraphBatchReadable::batch_neighbors(g, [
+    @core.NodeId(0),
+    @core.NodeId(1),
+    @core.NodeId(2),
+  ])
   assert_eq(result.length(), 3)
   assert_eq(result[0].length(), 2)
   assert_eq(result[1].length(), 0)
@@ -139,10 +144,10 @@ test "CSR batch_edges returns weights for existing and non-existing pairs" {
   let b3 = b2.add_edge(@core.NodeId(0), @core.NodeId(1), 9.9)
   let g = b3.build()
 
-  let result = @core.GraphBatchReadable::batch_edges(
-    g,
-    [(@core.NodeId(0), @core.NodeId(1)), (@core.NodeId(1), @core.NodeId(0))],
-  )
+  let result = @core.GraphBatchReadable::batch_edges(g, [
+    (@core.NodeId(0), @core.NodeId(1)),
+    (@core.NodeId(1), @core.NodeId(0)),
+  ])
   assert_eq(result.length(), 2)
 
   match result[0] {
@@ -201,7 +206,9 @@ test "CSCBuilder with nodes and edges builds correctly" {
 
   assert_eq(@core.GraphReadable::node_count(g), 2)
   assert_eq(@core.GraphReadable::edge_count(g), 1)
-  assert_true(@core.GraphReadable::contains_edge(g, @core.NodeId(0), @core.NodeId(1)))
+  assert_true(
+    @core.GraphReadable::contains_edge(g, @core.NodeId(0), @core.NodeId(1)),
+  )
 
   match @core.GraphReadable::get_edge(g, @core.NodeId(0), @core.NodeId(1)) {
     Some(w) => assert_eq(w, 3.14)
