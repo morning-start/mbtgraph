@@ -25,7 +25,13 @@ pub fn[G : @core.GraphWritable] bipartite_complete_directed(
   }
   for i in 0..<m {
     for j in 0..<n {
-      @core.GraphWritable::add_edge(gg, @core.NodeId(i), @core.NodeId(m + j), weight) |> ignore
+      @core.GraphWritable::add_edge(
+        gg,
+        @core.NodeId(i),
+        @core.NodeId(m + j),
+        weight,
+      )
+      |> ignore
     }
   }
   gg
@@ -53,7 +59,13 @@ pub fn[G : @core.GraphWritable] bipartite_complete_undirected(
   }
   for i in 0..<m {
     for j in 0..<n {
-      @core.GraphWritable::add_edge(gg, @core.NodeId(i), @core.NodeId(m + j), weight) |> ignore
+      @core.GraphWritable::add_edge(
+        gg,
+        @core.NodeId(i),
+        @core.NodeId(m + j),
+        weight,
+      )
+      |> ignore
     }
   }
   gg

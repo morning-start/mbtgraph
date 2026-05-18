@@ -4,16 +4,17 @@
 /// 使用内置 LCG（线性同余生成器）提供可复现的随机图生成。
 ///
 /// LCG 参数: a=1664525, c=1013904223, m=2^32 (Minimal Standard)
-
 priv struct LcgState {
   state : Int
 }
 
+///|
 fn lcg_new(seed : Int) -> LcgState {
   let s = if seed == 0 { 1 } else { seed }
   LcgState::{ state: s }
 }
 
+///|
 fn lcg_next(lcg : LcgState) -> (LcgState, Double) {
   let new_state = (1664525 * lcg.state + 1013904223) % 2147483647
   let rng = LcgState::{ state: new_state }
@@ -51,7 +52,13 @@ pub fn[G : @core.GraphWritable] random_erdos_renyi_directed(
         let (rng_next, prob) = lcg_next(rng)
         rng = rng_next
         if prob < p {
-          @core.GraphWritable::add_edge(gg, @core.NodeId(i), @core.NodeId(j), weight) |> ignore
+          @core.GraphWritable::add_edge(
+            gg,
+            @core.NodeId(i),
+            @core.NodeId(j),
+            weight,
+          )
+          |> ignore
         }
       }
     }
@@ -84,7 +91,13 @@ pub fn[G : @core.GraphWritable] random_erdos_renyi_undirected(
       let (rng_next, prob) = lcg_next(rng)
       rng = rng_next
       if prob < p {
-        @core.GraphWritable::add_edge(gg, @core.NodeId(i), @core.NodeId(j), weight) |> ignore
+        @core.GraphWritable::add_edge(
+          gg,
+          @core.NodeId(i),
+          @core.NodeId(j),
+          weight,
+        )
+        |> ignore
       }
     }
   }

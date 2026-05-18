@@ -26,10 +26,22 @@ pub fn[G : @core.GraphWritable] grid_directed(
     for c in 0..<cols {
       let idx = r * cols + c
       if c + 1 < cols {
-        @core.GraphWritable::add_edge(gg, @core.NodeId(idx), @core.NodeId(idx + 1), weight) |> ignore
+        @core.GraphWritable::add_edge(
+          gg,
+          @core.NodeId(idx),
+          @core.NodeId(idx + 1),
+          weight,
+        )
+        |> ignore
       }
       if r + 1 < rows {
-        @core.GraphWritable::add_edge(gg, @core.NodeId(idx), @core.NodeId(idx + cols), weight) |> ignore
+        @core.GraphWritable::add_edge(
+          gg,
+          @core.NodeId(idx),
+          @core.NodeId(idx + cols),
+          weight,
+        )
+        |> ignore
       }
     }
   }
@@ -59,10 +71,22 @@ pub fn[G : @core.GraphWritable] grid_undirected(
     for c in 0..<cols {
       let idx = r * cols + c
       if c + 1 < cols {
-        @core.GraphWritable::add_edge(gg, @core.NodeId(idx), @core.NodeId(idx + 1), weight) |> ignore
+        @core.GraphWritable::add_edge(
+          gg,
+          @core.NodeId(idx),
+          @core.NodeId(idx + 1),
+          weight,
+        )
+        |> ignore
       }
       if r + 1 < rows {
-        @core.GraphWritable::add_edge(gg, @core.NodeId(idx), @core.NodeId(idx + cols), weight) |> ignore
+        @core.GraphWritable::add_edge(
+          gg,
+          @core.NodeId(idx),
+          @core.NodeId(idx + cols),
+          weight,
+        )
+        |> ignore
       }
     }
   }

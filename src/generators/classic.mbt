@@ -28,7 +28,13 @@ pub fn[G : @core.GraphWritable] complete_directed(
   for i in 0..<n {
     for j in 0..<n {
       if i != j {
-        @core.GraphWritable::add_edge(gg, @core.NodeId(i), @core.NodeId(j), weight) |> ignore
+        @core.GraphWritable::add_edge(
+          gg,
+          @core.NodeId(i),
+          @core.NodeId(j),
+          weight,
+        )
+        |> ignore
       }
     }
   }
@@ -54,7 +60,13 @@ pub fn[G : @core.GraphWritable] complete_undirected(
   }
   for i in 0..<n {
     for j in (i + 1)..<n {
-      @core.GraphWritable::add_edge(gg, @core.NodeId(i), @core.NodeId(j), weight) |> ignore
+      @core.GraphWritable::add_edge(
+        gg,
+        @core.NodeId(i),
+        @core.NodeId(j),
+        weight,
+      )
+      |> ignore
     }
   }
   gg
@@ -83,7 +95,13 @@ pub fn[G : @core.GraphWritable] cycle_directed(
   }
   for i in 0..<n {
     let next = (i + 1) % n
-    @core.GraphWritable::add_edge(gg, @core.NodeId(i), @core.NodeId(next), weight) |> ignore
+    @core.GraphWritable::add_edge(
+      gg,
+      @core.NodeId(i),
+      @core.NodeId(next),
+      weight,
+    )
+    |> ignore
   }
   gg
 }
@@ -107,7 +125,13 @@ pub fn[G : @core.GraphWritable] cycle_undirected(
   }
   for i in 0..<n {
     let next = (i + 1) % n
-    @core.GraphWritable::add_edge(gg, @core.NodeId(i), @core.NodeId(next), weight) |> ignore
+    @core.GraphWritable::add_edge(
+      gg,
+      @core.NodeId(i),
+      @core.NodeId(next),
+      weight,
+    )
+    |> ignore
   }
   gg
 }
@@ -134,7 +158,13 @@ pub fn[G : @core.GraphWritable] path_directed(
     @core.GraphWritable::add_node(gg, 0.0) |> ignore
   }
   for i in 0..<(n - 1) {
-    @core.GraphWritable::add_edge(gg, @core.NodeId(i), @core.NodeId(i + 1), weight) |> ignore
+    @core.GraphWritable::add_edge(
+      gg,
+      @core.NodeId(i),
+      @core.NodeId(i + 1),
+      weight,
+    )
+    |> ignore
   }
   gg
 }
@@ -157,7 +187,13 @@ pub fn[G : @core.GraphWritable] path_undirected(
     @core.GraphWritable::add_node(gg, 0.0) |> ignore
   }
   for i in 0..<(n - 1) {
-    @core.GraphWritable::add_edge(gg, @core.NodeId(i), @core.NodeId(i + 1), weight) |> ignore
+    @core.GraphWritable::add_edge(
+      gg,
+      @core.NodeId(i),
+      @core.NodeId(i + 1),
+      weight,
+    )
+    |> ignore
   }
   gg
 }
@@ -185,7 +221,8 @@ pub fn[G : @core.GraphWritable] star_directed(
     @core.GraphWritable::add_node(gg, 0.0) |> ignore
   }
   for i in 1..<n {
-    @core.GraphWritable::add_edge(gg, @core.NodeId(0), @core.NodeId(i), weight) |> ignore
+    @core.GraphWritable::add_edge(gg, @core.NodeId(0), @core.NodeId(i), weight)
+    |> ignore
   }
   gg
 }
@@ -209,7 +246,8 @@ pub fn[G : @core.GraphWritable] star_undirected(
     @core.GraphWritable::add_node(gg, 0.0) |> ignore
   }
   for i in 1..<n {
-    @core.GraphWritable::add_edge(gg, @core.NodeId(0), @core.NodeId(i), weight) |> ignore
+    @core.GraphWritable::add_edge(gg, @core.NodeId(0), @core.NodeId(i), weight)
+    |> ignore
   }
   gg
 }
