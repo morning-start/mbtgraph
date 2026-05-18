@@ -57,8 +57,14 @@ src/storage/
 src/
 ├── core/          # 基础类型(3) + trait定义(6) + 错误类型(1) + 测试(68)
 ├── storage/       # 存储实现(8结构体) + 转换器(8) + 工具(4) + 测试(101) + 文档
-├── algorithms/    # 图算法（遍历/最短路径/MST/连通性等）— 待开发
-├── generators/    # 图生成器（经典图/随机图）— 待开发
+├── algorithms/    # 图算法模块 ⭐ P0-P3 全部完成
+│   ├── traversal/      # 遍历 (BFS/DFS)
+│   ├── generators/     # 图生成器 (P0) — 16 函数, 56 tests ✅
+│   ├── shortest_path/  # 最短路径 (P1) — Dijkstra/BF/FW, 32 tests ✅
+│   ├── mst/            # 最小生成树 (P2) — Kruskal/Prim, 16 tests ✅
+│   ├── connectivity/   # 连通性 (P2) — CC/Tarjan/Kosaraju, 21 tests ✅
+│   └── flow/           # 网络流 (P3) — Edmonds-Karp, 17 tests ✅
+├── generators/    # ~~图生成器（已迁移至 algorithms/generators）~~
 └── utils/         # 工具层（序列化等）— 待开发
 ```
 
@@ -99,6 +105,11 @@ src/
 | 跨包类型可见性 | `pub(all) struct` | `pub struct` | E4018 (blackbox test) |
 | 跨包 trait 可见性 | `pub impl Trait for T` | `impl Trait for T` | E4063 (一致性检查) |
 | 二维数组初始化 | 逐行 push 独立创建 | `Array::make(n, Array::make(n, x))` | 数据污染 bug |
+| **嵌套泛型** ⭐ | `Array[Array[T?]]` | `Array[Array[T?>>` | Parse error (>> 冲突) |
+| **保留字命名** ⭐ | `net`, `graph`, `data` | `fn`, `var` | Parse error / deprecated |
+| **返回值消费** ⭐ | `let x = func(x)` 或 `ignore()` | `func(x) \|> ignore` (非 Unit 时) | E4139 |
+| **废弃语法** ⭐ | `let mut` / `while true {}` | `var` / `loop {}` | Deprecated warning/error |
+| **数组引用副作用** ⭐ | 算法前深拷贝 | 直接修改输入数组 | 测试失败 (不可变性违反) |
 
 ## 测试状态
 
@@ -108,8 +119,14 @@ src/
 |----|:----:|:----:|:----:|:----:|
 | core | 49 | 19 | **68** | ✅ 全通过 |
 | storage | 92 | 15 | **107** | ✅ 全通过 |
+| algorithms | **142** | **0** | **142** | ✅ 全通过 |
+| ├─ generators | 56 | - | 56 | ✅ |
+| ├─ shortest_path | 32 | - | 32 | ✅ |
+| ├─ mst | 16 | - | 16 | ✅ |
+| ├─ connectivity | 21 | - | 21 | ✅ |
+| └─ flow | 17 | - | 17 | ✅ |
 | root | 0 | 0 | 0 | — |
-| **合计** | **141** | **34** | **175** | **✅** |
+| **合计** | **283** | **34** | **317** | **✅** |
 
 ### Core 测试详情
 
@@ -170,3 +187,8 @@ moon coverage analyze    # 覆盖率分析
 | 2026-05-17 | Matrix 构造改逐行初始化 | Array::make 二维数组共享 bug 修复 |
 | 2026-05-17 | 转换器三层架构重构 | 有向(GraphDirected) + 无向(assert) + 语义(as_*) 分离 |
 | 2026-05-17 | CSR/CSC 补充 GraphDirected trait | 各6方法(in/out neighbors/degree/predecessors/successors) |
+| **2026-05-19** | **FlowNetwork 独立类型设计** | **流网络语义特殊（容量/流量矩阵），不强制适配 Graph trait** |
+| **2026-05-19** | **Edmonds-Karp 算法选择** | **实现简洁（~40% code less），足够实用，为 Dinic 扩展预留接口** |
+| **2026-05-19** | **深拷贝纯函数语义** | **算法修改输入数据时必须 deep_copy，保证原网络不被修改** |
+| **2026-05-19** | **AGENTS.md v2.1.0 固化经验** | **Top10陷阱/算法开发流程/Git规范/错误速查扩展（避免重复踩坑）** |
+| **2026-05-19** | **Roadmap P0-P3 全部完成** | **图生成器+最短路径+MST+连通性+网络流，包文档覆盖率 8/8 (100%)** |
