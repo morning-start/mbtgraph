@@ -97,7 +97,7 @@ pub fn[G : @core.GraphDirected] topo_sort_dfs(
   Ok(rev)
 }
 
-pub fn[G : @core.GraphDirected] topo_dfs_visit(
+fn[G : @core.GraphDirected] topo_dfs_visit(
   g : G,
   cur : @core.NodeId,
   visited : Array[Bool],
@@ -128,7 +128,7 @@ pub fn[G : @core.GraphDirected] topo_dfs_visit(
   Ok(result)
 }
 
-pub fn[G : @core.GraphReadable] topo_find_max_id(g : G) -> Int {
+fn[G : @core.GraphReadable] topo_find_max_id(g : G) -> Int {
   let mut m = -1
   for nid in @core.GraphReadable::node_ids(g) {
     if nid.0 > m {
