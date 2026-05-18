@@ -1,0 +1,44 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "morning-start/mbtgraph/src/generators"
+
+import {
+  "morning-start/mbtgraph/src/core",
+}
+
+// Values
+pub fn[G : @core.GraphWritable] bipartite_complete_directed(G, Int, Int, Double) -> G
+
+pub fn[G : @core.GraphWritable] bipartite_complete_undirected(G, Int, Int, Double) -> G
+
+pub fn[G : @core.GraphWritable] complete_directed(G, Int, Double) -> G
+
+pub fn[G : @core.GraphWritable] complete_undirected(G, Int, Double) -> G
+
+pub fn[G : @core.GraphWritable] cycle_directed(G, Int, Double) -> G
+
+pub fn[G : @core.GraphWritable] cycle_undirected(G, Int, Double) -> G
+
+pub fn[G : @core.GraphWritable] grid_directed(G, Int, Int, Double) -> G
+
+pub fn[G : @core.GraphWritable] grid_undirected(G, Int, Int, Double) -> G
+
+pub fn[G : @core.GraphWritable] path_directed(G, Int, Double) -> G
+
+pub fn[G : @core.GraphWritable] path_undirected(G, Int, Double) -> G
+
+pub fn[G : @core.GraphWritable] random_erdos_renyi_directed(G, Int, Double, Int, Double) -> G
+
+pub fn[G : @core.GraphWritable] random_erdos_renyi_undirected(G, Int, Double, Int, Double) -> G
+
+pub fn[G : @core.GraphWritable] star_directed(G, Int, Double) -> G
+
+pub fn[G : @core.GraphWritable] star_undirected(G, Int, Double) -> G
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

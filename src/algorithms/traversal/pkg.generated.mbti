@@ -1,0 +1,56 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "morning-start/mbtgraph/src/algorithms/traversal"
+
+import {
+  "morning-start/mbtgraph/src/core",
+}
+
+// Values
+pub fn[G : @core.GraphReadable] bfs(G, @core.NodeId) -> BfsResult
+
+pub fn[G : @core.GraphReadable] bfs_all(G) -> BfsResult
+
+pub fn[G : @core.GraphReadable] bfs_shortest_path(G, @core.NodeId, @core.NodeId) -> Array[@core.NodeId]
+
+pub fn[G : @core.GraphReadable] dfs(G, @core.NodeId) -> DfsResult
+
+pub fn[G : @core.GraphReadable] dfs_all(G) -> DfsResult
+
+pub fn[G : @core.GraphReadable] has_cycle(G) -> Bool
+
+pub fn[G : @core.GraphDirected] has_directed_cycle(G) -> Bool
+
+pub fn[G : @core.GraphReadable] has_undirected_cycle(G) -> Bool
+
+pub fn[G : @core.GraphDirected] topo_sort_dfs(G) -> Result[Array[@core.NodeId], String]
+
+pub fn[G : @core.GraphDirected] topo_sort_kahn(G) -> Result[Array[@core.NodeId], String]
+
+// Errors
+
+// Types and methods
+pub(all) struct BfsResult {
+  base : TraversalResult
+  levels : Array[Int]
+}
+pub fn BfsResult::distance(Self, @core.NodeId) -> Int
+
+pub(all) struct DfsResult {
+  base : TraversalResult
+  entry_time : Array[Int]
+  exit_time : Array[Int]
+}
+
+pub(all) struct TraversalResult {
+  visited : Array[Bool]
+  order : Array[@core.NodeId]
+  parents : Array[@core.NodeId?]
+}
+pub fn TraversalResult::is_visited(Self, @core.NodeId) -> Bool
+pub fn TraversalResult::path_to(Self, @core.NodeId) -> Array[@core.NodeId]
+pub fn TraversalResult::reachable_count(Self) -> Int
+
+// Type aliases
+
+// Traits
+

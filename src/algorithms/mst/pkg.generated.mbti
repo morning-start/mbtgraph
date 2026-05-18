@@ -1,0 +1,26 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "morning-start/mbtgraph/src/algorithms/mst"
+
+import {
+  "morning-start/mbtgraph/src/core",
+}
+
+// Values
+pub fn[G : @core.GraphReadable] kruskal(G) -> MstResult
+
+pub fn[G : @core.GraphReadable] prim(G, @core.NodeId) -> MstResult
+
+// Errors
+
+// Types and methods
+pub(all) struct MstResult {
+  total_weight : Double
+  edges : Array[(@core.NodeId, @core.NodeId, Double)]
+}
+pub fn MstResult::edge_count(Self) -> Int
+pub fn MstResult::has_edge(Self, @core.NodeId, @core.NodeId) -> Bool
+
+// Type aliases
+
+// Traits
+

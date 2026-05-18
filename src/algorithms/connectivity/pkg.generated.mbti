@@ -1,0 +1,34 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "morning-start/mbtgraph/src/algorithms/connectivity"
+
+import {
+  "morning-start/mbtgraph/src/core",
+}
+
+// Values
+pub fn[G : @core.GraphReadable] connected_components(G) -> ConnectedComponents
+
+pub fn[G : @core.GraphReadable] kosaraju_scc(G) -> StronglyConnectedComponents
+
+pub fn[G : @core.GraphDirected] tarjan_scc(G) -> StronglyConnectedComponents
+
+// Errors
+
+// Types and methods
+pub(all) struct ConnectedComponents {
+  components : Array[Array[@core.NodeId]]
+}
+pub fn ConnectedComponents::component_of(Self, @core.NodeId) -> Int
+pub fn ConnectedComponents::count(Self) -> Int
+pub fn ConnectedComponents::size(Self, Int) -> Int
+
+pub(all) struct StronglyConnectedComponents {
+  components : Array[Array[@core.NodeId]]
+}
+pub fn StronglyConnectedComponents::component_of(Self, @core.NodeId) -> Int
+pub fn StronglyConnectedComponents::count(Self) -> Int
+
+// Type aliases
+
+// Traits
+

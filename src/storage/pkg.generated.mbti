@@ -6,6 +6,10 @@ import {
 }
 
 // Values
+pub fn[G : @core.GraphReadable] as_directed(G) -> DirectedAdjList raise
+
+pub fn[G : @core.GraphReadable] as_undirected(G) -> UndirectedAdjList raise
+
 pub fn bubble_sort_by_weight(Array[(@core.NodeId, @core.NodeId, Double)]) -> Array[(@core.NodeId, @core.NodeId, Double)]
 
 pub fn find_slot(Array[@core.Node?], Int, Int) -> Int
@@ -26,21 +30,21 @@ pub fn new_undirected_matrix(Int) -> UndirectedMatrix
 
 pub fn remove_from_list(Array[(@core.NodeId, Double)], Int) -> (Bool, Array[(@core.NodeId, Double)])
 
-pub fn[G : @core.GraphReadable] to_csc(G) -> CSCGraph
+pub fn[G : @core.GraphDirected] to_csc(G) -> CSCGraph
 
-pub fn[G : @core.GraphReadable] to_csr(G) -> CSRGraph
+pub fn[G : @core.GraphDirected] to_csr(G) -> CSRGraph
 
-pub fn[G : @core.GraphReadable] to_directed_adj_list(G) -> DirectedAdjList
+pub fn[G : @core.GraphDirected] to_directed_adj_list(G) -> DirectedAdjList
 
-pub fn[G : @core.GraphReadable] to_directed_matrix(G, Int) -> DirectedMatrix
+pub fn[G : @core.GraphDirected] to_directed_matrix(G, Int) -> DirectedMatrix
 
-pub fn[G : @core.GraphReadable] to_edge_list(G) -> EdgeListGraph
+pub fn[G : @core.GraphDirected] to_edge_list(G) -> EdgeListGraph
 
-pub fn[G : @core.GraphReadable] to_undirected_adj_list(G) -> UndirectedAdjList
+pub fn[G : @core.GraphReadable] to_undirected_adj_list(G) -> UndirectedAdjList raise
 
-pub fn[G : @core.GraphReadable] to_undirected_edge_list(G) -> UndirectedEdgeListGraph
+pub fn[G : @core.GraphReadable] to_undirected_edge_list(G) -> UndirectedEdgeListGraph raise
 
-pub fn[G : @core.GraphReadable] to_undirected_matrix(G, Int) -> UndirectedMatrix
+pub fn[G : @core.GraphReadable] to_undirected_matrix(G, Int) -> UndirectedMatrix raise
 
 // Errors
 
@@ -60,6 +64,9 @@ pub(all) struct CSCGraph {
   row_idx : Array[@core.NodeId]
   values : Array[Double]
 }
+pub impl @core.GraphBatchReadable for CSCGraph
+pub impl @core.GraphDirected for CSCGraph
+pub impl @core.GraphReadable for CSCGraph
 
 pub(all) struct CSRBuilder {
   nodes : Array[@core.Node]
@@ -76,6 +83,9 @@ pub(all) struct CSRGraph {
   col_idx : Array[@core.NodeId]
   values : Array[Double]
 }
+pub impl @core.GraphBatchReadable for CSRGraph
+pub impl @core.GraphDirected for CSRGraph
+pub impl @core.GraphReadable for CSRGraph
 
 pub(all) struct DirectedAdjList {
   mut node_cnt : Int
@@ -95,12 +105,18 @@ pub(all) struct DirectedMatrix {
   nodes : Array[@core.Node?]
   matrix : Array[Array[Double?]]
 }
+pub impl @core.GraphDirected for DirectedMatrix
+pub impl @core.GraphReadable for DirectedMatrix
+pub impl @core.GraphWritable for DirectedMatrix
 
 pub(all) struct EdgeListGraph {
   mut node_cnt : Int
   nodes : Array[@core.Node?]
   mut edges : Array[@core.Edge]
 }
+pub impl @core.GraphEdgeIterable for EdgeListGraph
+pub impl @core.GraphReadable for EdgeListGraph
+pub impl @core.GraphWritable for EdgeListGraph
 
 pub(all) struct UndirectedAdjList {
   mut node_cnt : Int
@@ -108,12 +124,18 @@ pub(all) struct UndirectedAdjList {
   nodes : Array[@core.Node?]
   adj : Array[Array[(@core.NodeId, Double)]]
 }
+pub impl @core.GraphEdgeIterable for UndirectedAdjList
+pub impl @core.GraphReadable for UndirectedAdjList
+pub impl @core.GraphWritable for UndirectedAdjList
 
 pub(all) struct UndirectedEdgeListGraph {
   mut node_cnt : Int
   nodes : Array[@core.Node?]
   mut edges : Array[@core.Edge]
 }
+pub impl @core.GraphEdgeIterable for UndirectedEdgeListGraph
+pub impl @core.GraphReadable for UndirectedEdgeListGraph
+pub impl @core.GraphWritable for UndirectedEdgeListGraph
 
 pub(all) struct UndirectedMatrix {
   mut node_count : Int
@@ -122,6 +144,8 @@ pub(all) struct UndirectedMatrix {
   nodes : Array[@core.Node?]
   matrix : Array[Array[Double?]]
 }
+pub impl @core.GraphReadable for UndirectedMatrix
+pub impl @core.GraphWritable for UndirectedMatrix
 
 // Type aliases
 
