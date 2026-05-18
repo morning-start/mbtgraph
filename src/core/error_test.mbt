@@ -16,11 +16,10 @@
 test "GraphError NodeNotFound: constructs with NodeId and matches correctly" {
   let err = GraphError::NodeNotFound(@core.NodeId(5))
   match err {
-    GraphError::NodeNotFound(id) => {
+    GraphError::NodeNotFound(id) =>
       match id {
         @core.NodeId(v) => assert_eq(v, 5)
       }
-    }
     GraphError::EdgeAlreadyExists(_, _) => assert_true(false)
     GraphError::InvalidNodeId => assert_true(false)
   }
@@ -30,11 +29,10 @@ test "GraphError NodeNotFound: constructs with NodeId and matches correctly" {
 test "GraphError NodeNotFound with zero NodeId" {
   let err = GraphError::NodeNotFound(@core.NodeId(0))
   match err {
-    GraphError::NodeNotFound(id) => {
+    GraphError::NodeNotFound(id) =>
       match id {
         @core.NodeId(v) => assert_eq(v, 0)
       }
-    }
     _ => assert_true(false)
   }
 }
@@ -43,11 +41,10 @@ test "GraphError NodeNotFound with zero NodeId" {
 test "GraphError NodeNotFound with large NodeId" {
   let err = GraphError::NodeNotFound(@core.NodeId(999999))
   match err {
-    GraphError::NodeNotFound(id) => {
+    GraphError::NodeNotFound(id) =>
       match id {
         @core.NodeId(v) => assert_eq(v, 999999)
       }
-    }
     _ => assert_true(false)
   }
 }
@@ -219,17 +216,15 @@ test "GraphError in Result: Err branch carries NodeNotFound" {
 
   match make_err_notfound() {
     Ok(_) => assert_true(false)
-    Err(e) => {
+    Err(e) =>
       match e {
-        GraphError::NodeNotFound(id) => {
+        GraphError::NodeNotFound(id) =>
           match id {
             @core.NodeId(v) => assert_eq(v, 7)
           }
-        }
         GraphError::EdgeAlreadyExists(_, _) => assert_true(false)
         GraphError::InvalidNodeId => assert_true(false)
       }
-    }
   }
 }
 
@@ -241,7 +236,7 @@ test "GraphError in Result: Err branch carries EdgeAlreadyExists" {
 
   match make_err_edge() {
     Ok(_) => assert_true(false)
-    Err(e) => {
+    Err(e) =>
       match e {
         GraphError::NodeNotFound(_) => assert_true(false)
         GraphError::EdgeAlreadyExists(f, t) => {
@@ -254,7 +249,6 @@ test "GraphError in Result: Err branch carries EdgeAlreadyExists" {
         }
         GraphError::InvalidNodeId => assert_true(false)
       }
-    }
   }
 }
 
@@ -266,13 +260,12 @@ test "GraphError in Result: Err branch carries InvalidNodeId" {
 
   match make_err_invalid() {
     Ok(_) => assert_true(false)
-    Err(e) => {
+    Err(e) =>
       match e {
         GraphError::NodeNotFound(_) => assert_true(false)
         GraphError::EdgeAlreadyExists(_, _) => assert_true(false)
         GraphError::InvalidNodeId => assert_true(true)
       }
-    }
   }
 }
 
@@ -298,8 +291,12 @@ test "GraphError in Result: nested function returning different errors" {
   match validate_edge(5, 5) {
     Ok(_) => assert_true(false)
     Err(GraphError::EdgeAlreadyExists(f, t)) => {
-      match f { @core.NodeId(v) => assert_eq(v, 5) }
-      match t { @core.NodeId(v) => assert_eq(v, 5) }
+      match f {
+        @core.NodeId(v) => assert_eq(v, 5)
+      }
+      match t {
+        @core.NodeId(v) => assert_eq(v, 5)
+      }
     }
     Err(_) => assert_true(false)
   }

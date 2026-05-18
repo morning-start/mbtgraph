@@ -129,7 +129,11 @@ test "Node data field is independent across instances" {
 
 ///|
 test "Edge constructs with from, to and positive weight" {
-  let edge : Edge = Edge::{ from: @core.NodeId(0), to: @core.NodeId(1), data: 2.5 }
+  let edge : Edge = Edge::{
+    from: @core.NodeId(0),
+    to: @core.NodeId(1),
+    data: 2.5,
+  }
   match edge.from {
     @core.NodeId(v) => assert_eq(v, 0)
   }
@@ -141,7 +145,11 @@ test "Edge constructs with from, to and positive weight" {
 
 ///|
 test "Edge self-loop (from == to) is valid" {
-  let edge : Edge = Edge::{ from: @core.NodeId(0), to: @core.NodeId(0), data: 1.0 }
+  let edge : Edge = Edge::{
+    from: @core.NodeId(0),
+    to: @core.NodeId(0),
+    data: 1.0,
+  }
   match edge.from {
     @core.NodeId(v) => assert_eq(v, 0)
   }
@@ -153,19 +161,31 @@ test "Edge self-loop (from == to) is valid" {
 
 ///|
 test "Edge with zero weight" {
-  let edge : Edge = Edge::{ from: @core.NodeId(0), to: @core.NodeId(1), data: 0.0 }
+  let edge : Edge = Edge::{
+    from: @core.NodeId(0),
+    to: @core.NodeId(1),
+    data: 0.0,
+  }
   assert_eq(edge.data, 0.0)
 }
 
 ///|
 test "Edge with negative weight (signed graph support)" {
-  let edge : Edge = Edge::{ from: @core.NodeId(0), to: @core.NodeId(1), data: -5.0 }
+  let edge : Edge = Edge::{
+    from: @core.NodeId(0),
+    to: @core.NodeId(1),
+    data: -5.0,
+  }
   assert_eq(edge.data, -5.0)
 }
 
 ///|
 test "Edge with large weight" {
-  let edge : Edge = Edge::{ from: @core.NodeId(0), to: @core.NodeId(1), data: 999999.99 }
+  let edge : Edge = Edge::{
+    from: @core.NodeId(0),
+    to: @core.NodeId(1),
+    data: 999999.99,
+  }
   assert_true(edge.data > 1000.0)
 }
 
@@ -180,8 +200,16 @@ test "Edge fields preserve NodeId identity" {
 
 ///|
 test "Edge direction matters: (a,b) != (b,a)" {
-  let e1 : Edge = Edge::{ from: @core.NodeId(0), to: @core.NodeId(1), data: 1.0 }
-  let e2 : Edge = Edge::{ from: @core.NodeId(1), to: @core.NodeId(0), data: 1.0 }
+  let e1 : Edge = Edge::{
+    from: @core.NodeId(0),
+    to: @core.NodeId(1),
+    data: 1.0,
+  }
+  let e2 : Edge = Edge::{
+    from: @core.NodeId(1),
+    to: @core.NodeId(0),
+    data: 1.0,
+  }
   assert_true(e1.from == e2.to)
   assert_true(e1.to == e2.from)
   assert_true(e1.data == e2.data)
@@ -242,7 +270,11 @@ test "NodeId sequence creates consistent node/edge chain" {
   let edges : Array[Edge] = []
   let mut j = 0
   while j < 3 {
-    edges.push(Edge::{ from: nodes[j].id, to: nodes[j + 1].id, data: (j + 1).to_double() })
+    edges.push(Edge::{
+      from: nodes[j].id,
+      to: nodes[j + 1].id,
+      data: (j + 1).to_double(),
+    })
     j = j + 1
   }
 
