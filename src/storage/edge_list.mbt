@@ -229,3 +229,73 @@ pub impl @core.GraphEdgeIterable for EdgeListGraph with edges_sorted(self) -> It
   let sorted = bubble_sort_by_weight(all)
   sorted.iter()
 }
+
+pub impl @core.GraphDirected for EdgeListGraph with in_neighbors(self, id) -> Iter[
+  @core.NodeId,
+] {
+  let r : Array[@core.NodeId] = []
+  for e in self.edges {
+    if e.to == id {
+      r.push(e.from)
+    }
+  }
+  r.iter()
+}
+
+pub impl @core.GraphDirected for EdgeListGraph with out_neighbors(self, id) -> Iter[
+  @core.NodeId,
+] {
+  let r : Array[@core.NodeId] = []
+  for e in self.edges {
+    if e.from == id {
+      r.push(e.to)
+    }
+  }
+  r.iter()
+}
+
+pub impl @core.GraphDirected for EdgeListGraph with in_degree(self, id) -> Int {
+  let mut c = 0
+  for e in self.edges {
+    if e.to == id {
+      c = c + 1
+    }
+  }
+  c
+}
+
+pub impl @core.GraphDirected for EdgeListGraph with out_degree(self, id) -> Int {
+  let mut c = 0
+  for e in self.edges {
+    if e.from == id {
+      c = c + 1
+    }
+  }
+  c
+}
+
+pub impl @core.GraphDirected for EdgeListGraph with predecessors(
+  self,
+  id,
+) -> Iter[(@core.NodeId, Double)] {
+  let r : Array[(@core.NodeId, Double)] = []
+  for e in self.edges {
+    if e.to == id {
+      r.push((e.from, e.data))
+    }
+  }
+  r.iter()
+}
+
+pub impl @core.GraphDirected for EdgeListGraph with successors(
+  self,
+  id,
+) -> Iter[(@core.NodeId, Double)] {
+  let r : Array[(@core.NodeId, Double)] = []
+  for e in self.edges {
+    if e.from == id {
+      r.push((e.to, e.data))
+    }
+  }
+  r.iter()
+}
