@@ -7,6 +7,7 @@
 // 辅助函数：构建常用测试图
 // ============================================================================
 
+///|
 /// 创建线性图: 0 → 1 → 2 → 3 (4 节点, 3 边)
 fn make_linear() -> @storage.DirectedAdjList {
   let g = @storage.new_directed()
@@ -20,6 +21,7 @@ fn make_linear() -> @storage.DirectedAdjList {
   g
 }
 
+///|
 /// 创建星形图: 0 → 1, 0 → 2, 0 → 3 (中心为 0)
 fn make_star() -> @storage.DirectedAdjList {
   let g = @storage.new_directed()
@@ -33,6 +35,7 @@ fn make_star() -> @storage.DirectedAdjList {
   g
 }
 
+///|
 /// 创建 DAG (有向无环): 0→1, 0→2, 1→3, 2→3
 fn make_dag() -> @storage.DirectedAdjList {
   let g = @storage.new_directed()
@@ -47,6 +50,7 @@ fn make_dag() -> @storage.DirectedAdjList {
   g
 }
 
+///|
 /// 创建有环有向图: 0→1→2→0 (三角形环)
 fn make_cyclic_dag() -> @storage.DirectedAdjList {
   let g = @storage.new_directed()
@@ -59,6 +63,7 @@ fn make_cyclic_dag() -> @storage.DirectedAdjList {
   g
 }
 
+///|
 /// 创建无向树 (无环): 0-1-2-3 (路径图)
 fn make_undirected_tree() -> @storage.UndirectedAdjList {
   let g = @storage.new_undirected()
@@ -72,6 +77,7 @@ fn make_undirected_tree() -> @storage.UndirectedAdjList {
   g
 }
 
+///|
 /// 创建无向环图: 0-1-2-0 (三角形)
 fn make_undirected_cycle() -> @storage.UndirectedAdjList {
   let g = @storage.new_undirected()
@@ -113,7 +119,9 @@ test "BFS on linear graph visits all nodes in order" {
 
   assert_eq(result.base.reachable_count(), 4)
   // BFS 层序: 0, 1, 2, 3
-  match result.base.order[0] { @core.NodeId(v) => assert_eq(v, start.0) }
+  match result.base.order[0] {
+    @core.NodeId(v) => assert_eq(v, start.0)
+  }
   assert_eq(result.distance(start), 0)
   assert_eq(result.distance(@core.NodeId(1)), 1)
   assert_eq(result.distance(@core.NodeId(2)), 2)
@@ -140,8 +148,12 @@ test "BFS shortest path on linear graph" {
   let path = bfs_shortest_path(g, @core.NodeId(0), @core.NodeId(3))
 
   assert_eq(path.length(), 4)
-  match path[0] { @core.NodeId(v) => assert_eq(v, 0) }
-  match path[3] { @core.NodeId(v) => assert_eq(v, 3) }
+  match path[0] {
+    @core.NodeId(v) => assert_eq(v, 0)
+  }
+  match path[3] {
+    @core.NodeId(v) => assert_eq(v, 3)
+  }
 }
 
 ///|
@@ -149,7 +161,9 @@ test "BFS shortest path from node to itself" {
   let g = make_linear()
   let path = bfs_shortest_path(g, @core.NodeId(1), @core.NodeId(1))
   assert_eq(path.length(), 1)
-  match path[0] { @core.NodeId(v) => assert_eq(v, 1) }
+  match path[0] {
+    @core.NodeId(v) => assert_eq(v, 1)
+  }
 }
 
 ///|
@@ -168,10 +182,18 @@ test "BFS path_to reconstructs correct path" {
   let path = result.base.path_to(@core.NodeId(3))
 
   assert_eq(path.length(), 4)
-  match path[0] { @core.NodeId(v) => assert_eq(v, 0) }
-  match path[1] { @core.NodeId(v) => assert_eq(v, 1) }
-  match path[2] { @core.NodeId(v) => assert_eq(v, 2) }
-  match path[3] { @core.NodeId(v) => assert_eq(v, 3) }
+  match path[0] {
+    @core.NodeId(v) => assert_eq(v, 0)
+  }
+  match path[1] {
+    @core.NodeId(v) => assert_eq(v, 1)
+  }
+  match path[2] {
+    @core.NodeId(v) => assert_eq(v, 2)
+  }
+  match path[3] {
+    @core.NodeId(v) => assert_eq(v, 3)
+  }
 }
 
 ///|
@@ -252,7 +274,9 @@ test "DFS parent chain forms valid paths" {
   let result = dfs(g, @core.NodeId(0))
   let path = result.base.path_to(@core.NodeId(3))
   assert_eq(path.length(), 4)
-  match path[0] { @core.NodeId(v) => assert_eq(v, 0) }
+  match path[0] {
+    @core.NodeId(v) => assert_eq(v, 0)
+  }
 }
 
 // ============================================================================
@@ -354,7 +378,9 @@ test "topo_sort on single node returns that node" {
   match topo_sort_kahn(g) {
     Ok(order) => {
       assert_eq(order.length(), 1)
-      match order[0] { @core.NodeId(v) => assert_eq(v, n0.0) }
+      match order[0] {
+        @core.NodeId(v) => assert_eq(v, n0.0)
+      }
     }
     Err(_) => assert_true(false)
   }
@@ -363,8 +389,14 @@ test "topo_sort on single node returns that node" {
 ///|
 test "Kahn and DFS produce same-length results for DAG" {
   let g = make_dag()
-  let kahn = match topo_sort_kahn(g) { Ok(o) => o; Err(_) => [] }
-  let dfs_res = match topo_sort_dfs(g) { Ok(o) => o; Err(_) => [] }
+  let kahn = match topo_sort_kahn(g) {
+    Ok(o) => o
+    Err(_) => []
+  }
+  let dfs_res = match topo_sort_dfs(g) {
+    Ok(o) => o
+    Err(_) => []
+  }
   assert_eq(kahn.length(), dfs_res.length())
 }
 
@@ -381,7 +413,11 @@ test "topo_sort on empty graph returns empty" {
 // 验证辅助函数
 // ============================================================================
 
-pub fn[G : @core.GraphReadable] topo_validates(g : G, order : Array[@core.NodeId]) -> Bool {
+///|
+pub fn[G : @core.GraphReadable] topo_validates(
+  g : G,
+  order : Array[@core.NodeId],
+) -> Bool {
   let pos : Array[Int] = []
   let n = order.length()
   let mut i = 0

@@ -15,7 +15,11 @@ pub fn[G : @core.GraphReadable] dfs(g : G, start : @core.NodeId) -> DfsResult {
     let empty_e : Array[Int] = []
     let empty_x : Array[Int] = []
     return DfsResult::{
-      base: TraversalResult::{ visited: empty_v, order: empty_o, parents: empty_p },
+      base: TraversalResult::{
+        visited: empty_v,
+        order: empty_o,
+        parents: empty_p,
+      },
       entry_time: empty_e,
       exit_time: empty_x,
     }
@@ -57,7 +61,7 @@ pub fn[G : @core.GraphReadable] dfs(g : G, start : @core.NodeId) -> DfsResult {
     }
   }
   DfsResult::{
-    base: TraversalResult::{ visited: visited, order: order, parents: parents },
+    base: TraversalResult::{ visited, order, parents },
     entry_time: entry,
     exit_time: exit,
   }
@@ -74,7 +78,11 @@ pub fn[G : @core.GraphReadable] dfs_all(g : G) -> DfsResult {
     let empty_e : Array[Int] = []
     let empty_x : Array[Int] = []
     return DfsResult::{
-      base: TraversalResult::{ visited: empty_v, order: empty_o, parents: empty_p },
+      base: TraversalResult::{
+        visited: empty_v,
+        order: empty_o,
+        parents: empty_p,
+      },
       entry_time: empty_e,
       exit_time: empty_x,
     }
@@ -121,12 +129,13 @@ pub fn[G : @core.GraphReadable] dfs_all(g : G) -> DfsResult {
     }
   }
   DfsResult::{
-    base: TraversalResult::{ visited: visited, order: order, parents: parents },
+    base: TraversalResult::{ visited, order, parents },
     entry_time: entry,
     exit_time: exit,
   }
 }
 
+///|
 fn[G : @core.GraphReadable] dfs_find_max_id(g : G) -> Int {
   let mut m = -1
   for nid in @core.GraphReadable::node_ids(g) {

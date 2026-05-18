@@ -4,13 +4,16 @@
 /// 存储遍历过程中的核心元数据，支持路径重建和可达性查询。
 pub(all) struct TraversalResult {
   visited : Array[Bool]
-  order    : Array[@core.NodeId]
+  order : Array[@core.NodeId]
   parents : Array[@core.NodeId?]
 }
 
 ///|
 /// 查询节点是否被访问过
-pub fn TraversalResult::is_visited(self : TraversalResult, id : @core.NodeId) -> Bool {
+pub fn TraversalResult::is_visited(
+  self : TraversalResult,
+  id : @core.NodeId,
+) -> Bool {
   let idx = id.0
   if idx < 0 || idx >= self.visited.length() {
     false
@@ -29,19 +32,16 @@ pub fn TraversalResult::reachable_count(self : TraversalResult) -> Int {
 /// 重建从起点到 target 的路径（通过 parents[] 回溯）
 ///
 /// 返回 [start, ..., target]，如果 target 不可达则返回空数组
-pub fn TraversalResult::path_to(self : TraversalResult, target : @core.NodeId) -> Array[@core.NodeId] {
+pub fn TraversalResult::path_to(
+  self : TraversalResult,
+  target : @core.NodeId,
+) -> Array[@core.NodeId] {
   let idx = target.0
   if idx < 0 || idx >= self.parents.length() {
     return []
   }
   match self.parents[idx] {
-    None => {
-      if self.is_visited(target) {
-        [target]
-      } else {
-        []
-      }
-    }
+    None => if self.is_visited(target) { [target] } else { [] }
     Some(_) => {
       let path : Array[@core.NodeId] = []
       let mut cur = target
@@ -74,7 +74,7 @@ pub fn TraversalResult::path_to(self : TraversalResult, target : @core.NodeId) -
 ///
 /// 在 TraversalResult 基础上增加层级距离信息。
 pub(all) struct BfsResult {
-  base   : TraversalResult
+  base : TraversalResult
   levels : Array[Int]
 }
 
@@ -99,7 +99,7 @@ pub fn BfsResult::distance(self : BfsResult, id : @core.NodeId) -> Int {
 /// 在 TraversalResult 基础上增加时间戳信息，
 /// 可用于拓扑排序、强连通分量等高级算法。
 pub(all) struct DfsResult {
-  base       : TraversalResult
+  base : TraversalResult
   entry_time : Array[Int]
-  exit_time  : Array[Int]
+  exit_time : Array[Int]
 }

@@ -84,7 +84,9 @@ pub fn[G : @core.GraphDirected] topo_sort_dfs(
       continue
     }
     match topo_dfs_visit(g, nid, visited, on_stack, result, size) {
-      Ok(r) => { let _ = r }
+      Ok(r) => {
+        let _ = r
+      }
       Err(e) => return Err(e)
     }
   }
@@ -97,6 +99,7 @@ pub fn[G : @core.GraphDirected] topo_sort_dfs(
   Ok(rev)
 }
 
+///|
 fn[G : @core.GraphDirected] topo_dfs_visit(
   g : G,
   cur : @core.NodeId,
@@ -118,7 +121,9 @@ fn[G : @core.GraphDirected] topo_dfs_visit(
     }
     if !visited[idx] {
       match topo_dfs_visit(g, nid, visited, on_stack, result, size) {
-        Ok(r) => { let _ = r }
+        Ok(r) => {
+          let _ = r
+        }
         Err(e) => return Err(e)
       }
     }
@@ -128,6 +133,7 @@ fn[G : @core.GraphDirected] topo_dfs_visit(
   Ok(result)
 }
 
+///|
 fn[G : @core.GraphReadable] topo_find_max_id(g : G) -> Int {
   let mut m = -1
   for nid in @core.GraphReadable::node_ids(g) {

@@ -14,7 +14,11 @@ pub fn[G : @core.GraphReadable] bfs(g : G, start : @core.NodeId) -> BfsResult {
     let empty_parents : Array[@core.NodeId?] = []
     let empty_levels : Array[Int] = []
     return BfsResult::{
-      base: TraversalResult::{ visited: empty_visited, order: empty_order, parents: empty_parents },
+      base: TraversalResult::{
+        visited: empty_visited,
+        order: empty_order,
+        parents: empty_parents,
+      },
       levels: empty_levels,
     }
   }
@@ -44,10 +48,7 @@ pub fn[G : @core.GraphReadable] bfs(g : G, start : @core.NodeId) -> BfsResult {
       }
     }
   }
-  BfsResult::{
-    base: TraversalResult::{ visited: visited, order: order, parents: parents },
-    levels: levels,
-  }
+  BfsResult::{ base: TraversalResult::{ visited, order, parents }, levels }
 }
 
 ///|
@@ -60,7 +61,11 @@ pub fn[G : @core.GraphReadable] bfs_all(g : G) -> BfsResult {
     let empty_parents : Array[@core.NodeId?] = []
     let empty_levels : Array[Int] = []
     return BfsResult::{
-      base: TraversalResult::{ visited: empty_visited, order: empty_order, parents: empty_parents },
+      base: TraversalResult::{
+        visited: empty_visited,
+        order: empty_order,
+        parents: empty_parents,
+      },
       levels: empty_levels,
     }
   }
@@ -95,10 +100,7 @@ pub fn[G : @core.GraphReadable] bfs_all(g : G) -> BfsResult {
       }
     }
   }
-  BfsResult::{
-    base: TraversalResult::{ visited: visited, order: order, parents: parents },
-    levels: levels,
-  }
+  BfsResult::{ base: TraversalResult::{ visited, order, parents }, levels }
 }
 
 ///|
@@ -118,10 +120,16 @@ pub fn[G : @core.GraphReadable] bfs_shortest_path(
   result.base.path_to(target)
 }
 
+///|
 fn max(a : Int, b : Int) -> Int {
-  if a > b { a } else { b }
+  if a > b {
+    a
+  } else {
+    b
+  }
 }
 
+///|
 fn[G : @core.GraphReadable] bfs_find_max_id(g : G) -> Int {
   let mut m = -1
   for nid in @core.GraphReadable::node_ids(g) {

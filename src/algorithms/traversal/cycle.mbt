@@ -37,6 +37,7 @@ pub fn[G : @core.GraphReadable] has_undirected_cycle(g : G) -> Bool {
 // 内部实现：有向环检测（三色标记法）
 // ============================================================================
 
+///|
 fn[G : @core.GraphReadable] directed_cycle_impl(g : G) -> Bool {
   let nc = @core.GraphReadable::node_count(g)
   if nc == 0 {
@@ -57,6 +58,7 @@ fn[G : @core.GraphReadable] directed_cycle_impl(g : G) -> Bool {
   false
 }
 
+///|
 fn[G : @core.GraphReadable] dfs_detect_cycle(
   g : G,
   cur : @core.NodeId,
@@ -84,6 +86,7 @@ fn[G : @core.GraphReadable] dfs_detect_cycle(
 // 内部实现：无向环检测（父节点排除法）
 // ============================================================================
 
+///|
 fn[G : @core.GraphReadable] undirected_cycle_impl(g : G) -> Bool {
   let nc = @core.GraphReadable::node_count(g)
   if nc <= 1 {
@@ -104,6 +107,7 @@ fn[G : @core.GraphReadable] undirected_cycle_impl(g : G) -> Bool {
   false
 }
 
+///|
 fn[G : @core.GraphReadable] dfs_undirected_cycle(
   g : G,
   cur : @core.NodeId,
@@ -128,6 +132,7 @@ fn[G : @core.GraphReadable] dfs_undirected_cycle(
   false
 }
 
+///|
 fn[G : @core.GraphReadable] cycle_find_max_id(g : G) -> Int {
   let mut m = -1
   for nid in @core.GraphReadable::node_ids(g) {

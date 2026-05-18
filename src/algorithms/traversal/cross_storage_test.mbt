@@ -7,6 +7,7 @@
 // 图构建工厂：用不同存储结构构建相同拓扑的图
 // ============================================================================
 
+///|
 /// 构建线性有向图: 0 → 1 → 2 → 3 (4 节点, 3 边)
 fn make_linear_adjlist() -> @storage.DirectedAdjList {
   let g = @storage.new_directed()
@@ -20,6 +21,7 @@ fn make_linear_adjlist() -> @storage.DirectedAdjList {
   g
 }
 
+///|
 fn make_linear_matrix() -> @storage.DirectedMatrix {
   let g = @storage.new_directed_matrix(10)
   let n0 = @core.GraphWritable::add_node(g, 0.0)
@@ -32,6 +34,7 @@ fn make_linear_matrix() -> @storage.DirectedMatrix {
   g
 }
 
+///|
 fn make_linear_edgelist() -> @storage.EdgeListGraph {
   let g = @storage.new_edge_list()
   let n0 = @core.GraphWritable::add_node(g, 0.0)
@@ -44,6 +47,7 @@ fn make_linear_edgelist() -> @storage.EdgeListGraph {
   g
 }
 
+///|
 fn make_linear_csr() -> @storage.CSRGraph {
   let b = @storage.CSRBuilder::new()
   let b1 = b.add_node(@core.NodeId(0), 0.0)
@@ -56,6 +60,7 @@ fn make_linear_csr() -> @storage.CSRGraph {
   b7.build()
 }
 
+///|
 /// 构建 DAG: 0→1, 0→2, 1→3, 2→3 (4 节点, 4 边, 无环)
 fn make_dag_adjlist() -> @storage.DirectedAdjList {
   let g = @storage.new_directed()
@@ -70,6 +75,7 @@ fn make_dag_adjlist() -> @storage.DirectedAdjList {
   g
 }
 
+///|
 fn make_dag_csr() -> @storage.CSRGraph {
   let b = @storage.CSRBuilder::new()
   let b1 = b.add_node(@core.NodeId(0), 0.0)
@@ -83,6 +89,7 @@ fn make_dag_csr() -> @storage.CSRGraph {
   b8.build()
 }
 
+///|
 /// 构建有环有向图: 0→1→2→0 (三角形)
 fn make_cycle_adjlist() -> @storage.DirectedAdjList {
   let g = @storage.new_directed()
@@ -95,6 +102,7 @@ fn make_cycle_adjlist() -> @storage.DirectedAdjList {
   g
 }
 
+///|
 fn make_cycle_csr() -> @storage.CSRGraph {
   let b = @storage.CSRBuilder::new()
   let b1 = b.add_node(@core.NodeId(0), 0.0)
@@ -106,6 +114,7 @@ fn make_cycle_csr() -> @storage.CSRGraph {
   b6.build()
 }
 
+///|
 /// 构建无向树 (无环): 0-1-2-3
 fn make_undirected_tree_adjlist() -> @storage.UndirectedAdjList {
   let g = @storage.new_undirected()
@@ -149,8 +158,16 @@ test "BFS distance consistency: AdjList vs Matrix" {
 
 ///|
 test "BFS shortest path: AdjList vs EdgeList" {
-  let p_al = bfs_shortest_path(make_linear_adjlist(), @core.NodeId(0), @core.NodeId(3))
-  let p_el = bfs_shortest_path(make_linear_edgelist(), @core.NodeId(0), @core.NodeId(3))
+  let p_al = bfs_shortest_path(
+    make_linear_adjlist(),
+    @core.NodeId(0),
+    @core.NodeId(3),
+  )
+  let p_el = bfs_shortest_path(
+    make_linear_edgelist(),
+    @core.NodeId(0),
+    @core.NodeId(3),
+  )
 
   assert_eq(p_al.length(), p_el.length())
   assert_eq(p_al.length(), 4)
@@ -313,16 +330,12 @@ test "topo_sort_kahn: AdjList and CSR produce valid orderings for DAG" {
   let g_csr = make_dag_csr()
 
   match topo_sort_kahn(g_al) {
-    Ok(order_al) => {
-      assert_eq(order_al.length(), 4)
-    }
+    Ok(order_al) => assert_eq(order_al.length(), 4)
     Err(_) => assert_true(false)
   }
 
   match topo_sort_kahn(g_csr) {
-    Ok(order_csr) => {
-      assert_eq(order_csr.length(), 4)
-    }
+    Ok(order_csr) => assert_eq(order_csr.length(), 4)
     Err(_) => assert_true(false)
   }
 }
@@ -384,10 +397,22 @@ test "topo_sort Kahn vs DFS: same length on AdjList and CSR" {
   let g_al = make_dag_adjlist()
   let g_csr = make_dag_csr()
 
-  let kahn_al = match topo_sort_kahn(g_al) { Ok(o) => o; Err(_) => [] }
-  let dfs_al = match topo_sort_dfs(g_al) { Ok(o) => o; Err(_) => [] }
-  let kahn_csr = match topo_sort_kahn(g_csr) { Ok(o) => o; Err(_) => [] }
-  let dfs_csr = match topo_sort_dfs(g_csr) { Ok(o) => o; Err(_) => [] }
+  let kahn_al = match topo_sort_kahn(g_al) {
+    Ok(o) => o
+    Err(_) => []
+  }
+  let dfs_al = match topo_sort_dfs(g_al) {
+    Ok(o) => o
+    Err(_) => []
+  }
+  let kahn_csr = match topo_sort_kahn(g_csr) {
+    Ok(o) => o
+    Err(_) => []
+  }
+  let dfs_csr = match topo_sort_dfs(g_csr) {
+    Ok(o) => o
+    Err(_) => []
+  }
 
   assert_eq(kahn_al.length(), dfs_al.length())
   assert_eq(kahn_al.length(), kahn_csr.length())
@@ -399,6 +424,7 @@ test "topo_sort Kahn vs DFS: same length on AdjList and CSR" {
 // 验证辅助函数
 // ============================================================================
 
+///|
 fn check_entry_exit_invariant(result : DfsResult) -> Unit raise {
   let nc = result.base.order.length()
   let mut i = 0
