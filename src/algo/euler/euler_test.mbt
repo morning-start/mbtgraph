@@ -284,3 +284,77 @@ test "edge_coverage_property" {
   assert_true(result.exists)
   assert_eq(result.circuit.length(), 6)
 }
+
+// ============================================================================
+// 有向图欧拉路径/回路测试
+// ============================================================================
+
+///|
+/// 创建有向环图（n 个节点）
+///
+/// 结构：0→1→2→...→(n-1)→0
+/// 所有节点入度=出度=1，存在欧拉回路
+fn make_directed_cycle(n : Int) -> @storage.DirectedAdjList {
+  let g = @storage.new_directed()
+  let mut i = 0
+  while i < n {
+    @core.GraphWritable::add_node(g, 0.0) |> ignore
+    i = i + 1
+  }
+  let mut j = 0
+  while j < n {
+    let next = (j + 1) % n
+    @core.GraphWritable::add_edge(g, @core.NodeId(j), @core.NodeId(next), 1.0)
+      |> ignore
+    j = j + 1
+  }
+  g
+}
+
+///|
+/// 创建有向链图（3 个节点）
+///
+/// 结构：0→1, 1→2
+/// 节点0: 出度=1, 入度=0（起点候选）
+/// 节点1: 出度=1, 入度=1（平衡）
+/// 节点2: 出度=0, 入度=1（终点候选）
+fn make_directed_chain() -> @storage.DirectedAdjList {
+  let g = @storage.new_directed()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+    |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+    |> ignore
+  g
+}
+
+///|
+test "directed_cycle_has_euler_circuit" {
+  let g = make_directed_cycle(3)
+  assert_true(has_euler_circuit_directed(g))
+}
+
+///|
+test "directed_chain_has_euler_path" {
+  let g = make_directed_chain()
+  assert_true(has_euler_path_directed(g))
+  assert_true(!has_euler_circuit_directed(g))
+}
+
+///|
+test "find_directed_cycle_circuit" {
+  let g = make_directed_cycle(4)
+  let result = find_euler_circuit_directed(g)
+  assert_true(result.exists)
+  assert_eq(result.circuit.length(), 4)
+}
+
+///|
+test "find_directed_chain_path" {
+  let g = make_directed_chain()
+  let result = find_euler_path_directed(g)
+  assert_true(result.exists)
+  assert_true(result.path.length() == 2)
+}
