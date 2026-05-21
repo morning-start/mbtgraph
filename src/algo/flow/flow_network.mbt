@@ -3,7 +3,6 @@
 ///
 /// 独立管理容量矩阵和流量矩阵，用于最大流算法。
 /// 不依赖 core 的 Edge 类型，完全自包含。
-
 pub(all) struct FlowNetwork {
   node_count : Int
   capacity : Array[Array[Double]]
@@ -14,11 +13,7 @@ pub(all) struct FlowNetwork {
 /// 创建指定节点数的空流网络
 pub fn FlowNetwork::new(node_count : Int) -> FlowNetwork {
   if node_count <= 0 {
-    return FlowNetwork::{
-      node_count: 0,
-      capacity: [],
-      flow: [],
-    }
+    return FlowNetwork::{ node_count: 0, capacity: [], flow: [] }
   }
   let cap : Array[Array[Double]] = []
   let flw : Array[Array[Double]] = []
@@ -32,7 +27,7 @@ pub fn FlowNetwork::new(node_count : Int) -> FlowNetwork {
     cap.push(row_c)
     flw.push(row_f)
   }
-  FlowNetwork::{ node_count: node_count, capacity: cap, flow: flw }
+  FlowNetwork::{ node_count, capacity: cap, flow: flw }
 }
 
 ///|

@@ -3,7 +3,6 @@
 ///
 /// 使用 BFS 寻找最短增广路，时间复杂度 O(V E²)。
 /// 每次增广沿瓶颈值更新正向流量、减少反向流量（残差图语义）。
-
 fn ek_bfs(
   capacity : Array[Array[Double]],
   flow : Array[Array[Double]],
@@ -39,6 +38,7 @@ fn ek_bfs(
   (parent, false)
 }
 
+///|
 fn ek_find_path_bottleneck(
   parent : Array[Int?],
   sink : Int,
@@ -49,7 +49,7 @@ fn ek_find_path_bottleneck(
   let mut cur = sink
   while true {
     match parent[cur] {
-      None => { break }
+      None => break
       Some(p) => {
         let residual = capacity[p][cur] - flow[p][cur]
         if residual < bottleneck && residual > 0.0 {
@@ -62,6 +62,7 @@ fn ek_find_path_bottleneck(
   bottleneck
 }
 
+///|
 fn ek_augment(
   parent : Array[Int?],
   source : Int,
@@ -73,7 +74,7 @@ fn ek_augment(
   let mut v = sink
   while v != source {
     match parent[v] {
-      None => { break }
+      None => break
       Some(u) => {
         flow_ref[u][v] = flow_ref[u][v] + bottleneck
         flow_ref[v][u] = flow_ref[v][u] - bottleneck
@@ -83,6 +84,7 @@ fn ek_augment(
   }
 }
 
+///|
 fn deep_copy_matrix(src : Array[Array[Double]]) -> Array[Array[Double]] {
   let result : Array[Array[Double]] = []
   for i in 0..<src.length() {
@@ -106,7 +108,12 @@ pub fn edmonds_karp(
   sink : Int,
 ) -> MaxFlowResult {
   let n = net.node_count
-  if n == 0 || source < 0 || source >= n || sink < 0 || sink >= n || source == sink {
+  if n == 0 ||
+    source < 0 ||
+    source >= n ||
+    sink < 0 ||
+    sink >= n ||
+    source == sink {
     return MaxFlowResult::{ max_flow: 0.0, flow_matrix: [] }
   }
   let work_flow = deep_copy_matrix(net.flow)
@@ -116,7 +123,12 @@ pub fn edmonds_karp(
     if !found {
       break
     }
-    let bottleneck = ek_find_path_bottleneck(parent, sink, net.capacity, work_flow)
+    let bottleneck = ek_find_path_bottleneck(
+      parent,
+      sink,
+      net.capacity,
+      work_flow,
+    )
     if bottleneck <= 0.000001 {
       break
     }

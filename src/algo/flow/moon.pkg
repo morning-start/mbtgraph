@@ -4,4 +4,6 @@ import {
 
 warnings = "-unused_value-unused_package"
 
-options("is-main": false)
+options(
+  "is-main": false,
+)
