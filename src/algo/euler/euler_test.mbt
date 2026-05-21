@@ -130,6 +130,53 @@ fn make_disconnected_graph() -> @storage.UndirectedAdjList {
   g
 }
 
+///|
+/// 创建简单路径图（2个奇度节点，有欧拉路径但无回路）
+///
+/// 结构：0-1-2（线性链，3节点2边）
+/// 度数：节点0=1(奇), 节点1=2(偶), 节点2=1(奇)
+fn make_simple_path_graph() -> @storage.UndirectedAdjList {
+  let g = @storage.new_undirected()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+    |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+    |> ignore
+  g
+}
+
+///|
+/// 创建偶数度图（用于测试欧拉回路边覆盖属性）
+///
+/// 结构：矩形 + 两条对角线（但调整使所有节点度数为偶数）
+/// 使用"沙漏"形状：两个三角形共享一个节点
+/// 节点：0-1-2-0 (三角形1) 和 0-3-4-0 (三角形2)
+/// 度数：节点0=4(偶), 节点1=2(偶), 节点2=2(偶), 节点3=2(偶), 节点4=2(偶)
+/// 总边数 = 6 条
+fn make_six_edge_even_graph() -> @storage.UndirectedAdjList {
+  let g = @storage.new_undirected()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+    |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+    |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(0), 1.0)
+    |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(3), 1.0)
+    |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(4), 1.0)
+    |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(4), @core.NodeId(0), 1.0)
+    |> ignore
+  g
+}
+
 // ============================================================================
 // 三角形图测试（欧拉回路存在）
 // ============================================================================
@@ -208,4 +255,32 @@ test "disconnected_no_euler_path_undirected" {
 test "disconnected_no_euler_circuit_undirected" {
   let g = make_disconnected_graph()
   assert_true(!has_euler_circuit_undirected(g))
+}
+
+// ============================================================================
+// Hierholzer 算法 - 欧拉回路查找测试
+// ============================================================================
+
+///|
+test "find_euler_circuit_triangle" {
+  let g = make_triangle_graph()
+  let result = find_euler_circuit_undirected(g)
+  assert_true(result.exists)
+  assert_eq(result.circuit.length(), 3)
+}
+
+///|
+test "find_euler_path_simple_path" {
+  let g = make_simple_path_graph()
+  let result = find_euler_path_undirected(g)
+  assert_true(result.exists)
+  assert_true(result.path.length() > 0)
+}
+
+///|
+test "edge_coverage_property" {
+  let g = make_six_edge_even_graph()
+  let result = find_euler_circuit_undirected(g)
+  assert_true(result.exists)
+  assert_eq(result.circuit.length(), 6)
 }
