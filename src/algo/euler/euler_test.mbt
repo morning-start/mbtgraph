@@ -358,3 +358,80 @@ test "find_directed_chain_path" {
   assert_true(result.exists)
   assert_true(result.path.length() == 2)
 }
+
+// ============================================================================
+// 边界情况测试（Boundary Cases）
+// ============================================================================
+
+/// 空图测试：0 个节点、0 条边
+///
+/// 预期：空图视为平凡欧拉回路（无边的回路）
+test "empty_graph_trivial_circuit" {
+  let g = @storage.new_undirected()
+  assert_true(has_euler_circuit_undirected(g))
+  let result = find_euler_circuit_undirected(g)
+  assert_true(result.exists)
+  assert_eq(result.circuit.length(), 0)
+}
+
+///|
+/// 单节点无边测试
+///
+/// 预期：单节点无边图视为平凡欧拉回路
+test "single_node_no_edges" {
+  let g = @storage.new_undirected()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  assert_true(has_euler_circuit_undirected(g))
+}
+/// 含孤立节点的欧拉图测试
+///
+/// 结构：节点 0-1-2 形成三角形（3条边），节点 3 完全孤立
+/// 预期：孤立节点不影响欧拉性判定，结果只包含连通分量的边
+test "isolated_nodes_ignored" {
+  let g = @storage.new_undirected()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+    |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+    |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(0), 1.0)
+    |> ignore
+  assert_true(has_euler_circuit_undirected(g))
+  let result = find_euler_circuit_undirected(g)
+  assert_true(result.exists)
+  assert_eq(result.circuit.length(), 3)
+}
+
+// ============================================================================
+// 属性验证测试（Property Verification）
+// ============================================================================
+
+///|
+/// 不可变性属性测试：验证算法执行后原图不被修改
+test "immutability_property" {
+  let original_g = make_triangle_graph()
+  let node_count_before = @core.GraphReadable::node_count(original_g)
+  let edge_count_before = @core.GraphReadable::edge_count(original_g)
+  let _result = find_euler_circuit_undirected(original_g)
+  let node_count_after = @core.GraphReadable::node_count(original_g)
+  let edge_count_after = @core.GraphReadable::edge_count(original_g)
+  assert_eq(node_count_before, node_count_after)
+  assert_eq(edge_count_before, edge_count_after)
+}
+
+///|
+/// 一致性属性测试：has_* 返回 true ⟹ find_* 结果 exists=true
+test "consistency_property_undirected" {
+  let g1 = make_triangle_graph()
+  assert_true(has_euler_circuit_undirected(g1))
+  let result1 = find_euler_circuit_undirected(g1)
+  assert_true(result1.exists)
+  let g2 = make_disconnected_graph()
+  if !has_euler_path_undirected(g2) {
+    let result2 = find_euler_path_undirected(g2)
+    assert_true(!result2.exists)
+  }
+}
