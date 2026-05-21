@@ -28,13 +28,13 @@ fn[G : @core.GraphDirected] check_degree_balance(g : G) -> (Bool, Int?, Int?) {
     let outdeg = @core.GraphDirected::out_degree(g, nid)
     if outdeg == indeg + 1 {
       match start_candidate {
-        None => { start_candidate = Some(nid.0) }
-        Some(_) => { balanced = false }
+        None => start_candidate = Some(nid.0)
+        Some(_) => balanced = false
       }
     } else if indeg == outdeg + 1 {
       match end_candidate {
-        None => { end_candidate = Some(nid.0) }
-        Some(_) => { balanced = false }
+        None => end_candidate = Some(nid.0)
+        Some(_) => balanced = false
       }
     } else if indeg != outdeg {
       balanced = false
@@ -99,7 +99,7 @@ fn[G : @core.GraphDirected] is_base_graph_connected(g : G) -> Bool {
         head = head + 1
         for succ_pair in @core.GraphDirected::successors(g, cur) {
           match succ_pair {
-            (succ_node, _) => {
+            (succ_node, _) =>
               if !visited[succ_node.0] {
                 visited[succ_node.0] = true
                 queue.push(succ_node)
@@ -109,12 +109,11 @@ fn[G : @core.GraphDirected] is_base_graph_connected(g : G) -> Bool {
                   visited_non_isolated = visited_non_isolated + 1
                 }
               }
-            }
           }
         }
         for pred_pair in @core.GraphDirected::predecessors(g, cur) {
           match pred_pair {
-            (pred_node, _) => {
+            (pred_node, _) =>
               if !visited[pred_node.0] {
                 visited[pred_node.0] = true
                 queue.push(pred_node)
@@ -124,7 +123,6 @@ fn[G : @core.GraphDirected] is_base_graph_connected(g : G) -> Bool {
                   visited_non_isolated = visited_non_isolated + 1
                 }
               }
-            }
           }
         }
       }
@@ -146,11 +144,33 @@ fn[G : @core.GraphDirected] is_base_graph_connected(g : G) -> Bool {
 // ============================================================================
 
 ///|
-/// 判断有向图是否存在欧拉路径
+/// 判定有向图是否存在欧拉路径
 ///
-/// 条件：
-/// 1. 基图是连通的（忽略方向，忽略孤立节点）
-/// 2. 度数平衡条件满足（至多一个起点候选 + 至多一个终点候选）
+/// 欧拉路径是指能够访问图中每条有向边恰好一次的路径。
+///
+/// **时间复杂度**: O(V + E)，其中 V 为节点数，E 为边数
+/// **空间复杂度**: O(V)，用于基图连通性检查和度数统计
+///
+/// **参数**:
+///   - `g`: 有向图（实现 GraphDirected trait）
+///
+/// **返回值**:
+///   - `true`: 存在欧拉路径
+///   - `false`: 不存在欧拉路径
+///
+/// **判定条件**:
+///   - 基图必须是连通的（忽略方向，忽略孤立节点）
+///   - 度数平衡条件满足：
+///     - 至多一个节点出度 = 入度 + 1（起点候选）
+///     - 至多一个节点入度 = 出度 + 1（终点候选）
+///     - 其余所有节点入度 = 出度
+///
+/// **使用示例**:
+/// ```moonbit nocheck
+/// let g = make_directed_path(4) // 0→1→2→3 有向路径
+///
+/// let result = has_euler_path_directed(g) // 返回 true
+/// ```
 pub fn[G : @core.GraphDirected] has_euler_path_directed(g : G) -> Bool {
   if !is_base_graph_connected(g) {
     return false
@@ -160,11 +180,30 @@ pub fn[G : @core.GraphDirected] has_euler_path_directed(g : G) -> Bool {
 }
 
 ///|
-/// 判断有向图是否存在欧拉回路
+/// 判定有向图是否存在欧拉回路
 ///
-/// 条件：
-/// 1. 基图是连通的（忽略方向，忽略孤立节点）
-/// 2. 所有节点入度=出度（无起点/终点候选）
+/// 欧拉回路是指能够访问图中每条有向边恰好一次并回到起点的闭合路径。
+///
+/// **时间复杂度**: O(V + E)，其中 V 为节点数，E 为边数
+/// **空间复杂度**: O(V)，用于基图连通性检查和度数统计
+///
+/// **参数**:
+///   - `g`: 有向图（实现 GraphDirected trait）
+///
+/// **返回值**:
+///   - `true`: 存在欧拉回路
+///   - `false`: 不存在欧拉回路
+///
+/// **判定条件**:
+///   - 基图必须是连通的（忽略方向，忽略孤立节点）
+///   - 所有节点入度 = 出度（无起点/终点候选）
+///
+/// **使用示例**:
+/// ```moonbit nocheck
+/// let g = make_directed_cycle(4) // 0→1→2→3→0 有向环
+///
+/// let result = has_euler_circuit_directed(g) // 返回 true
+/// ```
 pub fn[G : @core.GraphDirected] has_euler_circuit_directed(g : G) -> Bool {
   if !is_base_graph_connected(g) {
     return false
@@ -184,7 +223,9 @@ pub fn[G : @core.GraphDirected] has_euler_circuit_directed(g : G) -> Bool {
 /// 有向图只添加单向边（不同于无向图的双向添加）
 ///
 /// 返回: (邻接表, 边总数, Edge 对象数组)
-fn[G : @core.GraphDirected] build_directed_adjacency(g : G) -> (Array[Array[(Int, Int)]], Int, Array[@core.Edge]) {
+fn[G : @core.GraphDirected] build_directed_adjacency(
+  g : G,
+) -> (Array[Array[(Int, Int)]], Int, Array[@core.Edge]) {
   let nc = @core.GraphReadable::node_count(g)
   if nc == 0 {
     return ([], 0, [])
@@ -229,7 +270,11 @@ fn[G : @core.GraphDirected] find_first_non_zero_out_degree(g : G) -> Int {
 /// 使用栈模拟递归避免栈溢出
 /// 栈元素类型: (current_node, next_edge_index_to_try)
 /// 返回边索引序列（需要反转）
-fn hierholzer_directed_core(adj : Array[Array[(Int, Int)]], edge_count : Int, start_node : Int) -> Array[Int] {
+fn hierholzer_directed_core(
+  adj : Array[Array[(Int, Int)]],
+  edge_count : Int,
+  start_node : Int,
+) -> Array[Int] {
   if edge_count == 0 {
     return []
   }
@@ -287,14 +332,58 @@ fn hierholzer_directed_core(adj : Array[Array[(Int, Int)]], edge_count : Int, st
 ///|
 /// 查找有向图的欧拉路径
 ///
-/// 先检查存在性，再使用 Hierholzer 算法查找具体路径
-pub fn[G : @core.GraphDirected] find_euler_path_directed(g : G) -> EulerPathResult {
+/// 先检查存在性，再使用 Hierholzer 算法查找具体路径。
+/// 如果存在起点候选（出度=入度+1），从该节点开始；
+/// 否则从第一个出度>0 的节点开始。
+///
+/// **时间复杂度**: O(E)，其中 E 为边数（Hierholzer 算法）
+/// **空间复杂度**: O(E)，用于存储邻接表和路径
+///
+/// **参数**:
+///   - `g`: 有向图（实现 GraphDirected trait）
+///
+/// **返回值**:
+///   - `EulerPathResult`:
+///     - `exists`: 是否存在欧拉路径
+///     - `path`: 欧拉路径的边序列（按遍历顺序）
+///     - `start_node`: 路径起点（存在时有值）
+///     - `end_node`: 路径终点（存在时有值）
+///
+/// **算法说明**:
+///   - 使用 Hierholzer 算法进行深度优先搜索
+///   - 仅沿有向边方向遍历
+///   - 遇到死胡同时回溯并记录边
+///   - 最终反转得到正确的欧拉路径
+///
+/// **使用示例**:
+/// ```moonbit nocheck
+/// let g = make_directed_path(4)  // 0→1→2→3 有向路径
+/// let result = find_euler_path_directed(g)
+/// if result.exists {
+///   for edge in result.path {
+///     println("访问边: ${edge.from} -> ${edge.to}")
+///   }
+/// }
+/// ```
+pub fn[G : @core.GraphDirected] find_euler_path_directed(
+  g : G,
+) -> EulerPathResult {
   if !has_euler_path_directed(g) {
-    return EulerPathResult::{ exists: false, path: [], start_node: None, end_node: None }
+    return EulerPathResult::{
+      exists: false,
+      path: [],
+      start_node: None,
+      end_node: None,
+    }
   }
   let (adj, edge_count, edges) = build_directed_adjacency(g)
   if edge_count == 0 {
-    return EulerPathResult::{ exists: true, path: [], start_node: None, end_node: None }
+    return EulerPathResult::{
+      exists: true,
+      path: [],
+      start_node: None,
+      end_node: None,
+    }
   }
   let (_, start_candidate, _) = check_degree_balance(g)
   let start_node = match start_candidate {
@@ -319,15 +408,49 @@ pub fn[G : @core.GraphDirected] find_euler_path_directed(g : G) -> EulerPathResu
     exists: true,
     path: path_edges,
     start_node: Some(@core.NodeId(start_node)),
-    end_node: end_node_id
+    end_node: end_node_id,
   }
 }
 
 ///|
 /// 查找有向图的欧拉回路
 ///
-/// 先检查存在性，再使用 Hierholzer 算法查找具体回路
-pub fn[G : @core.GraphDirected] find_euler_circuit_directed(g : G) -> EulerCircuitResult {
+/// 先检查存在性，再使用 Hierholzer 算法查找具体回路。
+/// 回路从第一个出度>0 的节点开始，最终形成闭合路径。
+///
+/// **时间复杂度**: O(E)，其中 E 为边数（Hierholzer 算法）
+/// **空间复杂度**: O(E)，用于存储邻接表和回路
+///
+/// **参数**:
+///   - `g`: 有向图（实现 GraphDirected trait）
+///
+/// **返回值**:
+///   - `EulerCircuitResult`:
+///     - `exists`: 是否存在欧拉回路
+///     - `circuit`: 欧拉回路的边序列（按遍历顺序，形成闭环）
+///     - `start_node`: 回路起点（存在时有值，也是终点）
+///
+/// **算法说明**:
+///   - 使用 Hierholzer 算法进行深度优先搜索
+///   - 仅沿有向边方向遍历
+///   - 从任意出度>0 的节点开始遍历
+///   - 遇到死胡同时回溯并记录边
+///   - 最终反转得到正确的欧拉回路
+///
+/// **使用示例**:
+/// ```moonbit nocheck
+/// let g = make_directed_cycle(4)  // 0→1→2→3→0 有向环
+/// let result = find_euler_circuit_directed(g)
+/// if result.exists {
+///   for edge in result.circuit {
+///     println("访问边: ${edge.from} -> ${edge.to}")
+///   }
+///   // 输出将包含所有 4 条有向边，每条恰好一次
+/// }
+/// ```
+pub fn[G : @core.GraphDirected] find_euler_circuit_directed(
+  g : G,
+) -> EulerCircuitResult {
   if !has_euler_circuit_directed(g) {
     return EulerCircuitResult::{ exists: false, circuit: [], start_node: None }
   }
@@ -348,6 +471,6 @@ pub fn[G : @core.GraphDirected] find_euler_circuit_directed(g : G) -> EulerCircu
   EulerCircuitResult::{
     exists: true,
     circuit: circuit_edges,
-    start_node: Some(@core.NodeId(start_node))
+    start_node: Some(@core.NodeId(start_node)),
   }
 }

@@ -16,11 +16,11 @@ fn make_triangle_graph() -> @storage.UndirectedAdjList {
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(0), 1.0)
-    |> ignore
+  |> ignore
   g
 }
 
@@ -39,17 +39,17 @@ fn make_house_graph() -> @storage.UndirectedAdjList {
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(0), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(4), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(4), @core.NodeId(3), 1.0)
-    |> ignore
+  |> ignore
   g
 }
 
@@ -68,17 +68,17 @@ fn make_bowtie_graph() -> @storage.UndirectedAdjList {
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(0), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(3), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(4), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(4), @core.NodeId(0), 1.0)
-    |> ignore
+  |> ignore
   g
 }
 
@@ -94,11 +94,11 @@ fn make_path_graph() -> @storage.UndirectedAdjList {
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
-    |> ignore
+  |> ignore
   g
 }
 
@@ -116,17 +116,17 @@ fn make_disconnected_graph() -> @storage.UndirectedAdjList {
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(0), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(4), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(4), @core.NodeId(5), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(5), @core.NodeId(3), 1.0)
-    |> ignore
+  |> ignore
   g
 }
 
@@ -141,9 +141,9 @@ fn make_simple_path_graph() -> @storage.UndirectedAdjList {
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
-    |> ignore
+  |> ignore
   g
 }
 
@@ -163,17 +163,17 @@ fn make_six_edge_even_graph() -> @storage.UndirectedAdjList {
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(0), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(3), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(4), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(4), @core.NodeId(0), 1.0)
-    |> ignore
+  |> ignore
   g
 }
 
@@ -305,7 +305,7 @@ fn make_directed_cycle(n : Int) -> @storage.DirectedAdjList {
   while j < n {
     let next = (j + 1) % n
     @core.GraphWritable::add_edge(g, @core.NodeId(j), @core.NodeId(next), 1.0)
-      |> ignore
+    |> ignore
     j = j + 1
   }
   g
@@ -324,9 +324,9 @@ fn make_directed_chain() -> @storage.DirectedAdjList {
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
-    |> ignore
+  |> ignore
   g
 }
 
@@ -363,6 +363,7 @@ test "find_directed_chain_path" {
 // 边界情况测试（Boundary Cases）
 // ============================================================================
 
+///|
 /// 空图测试：0 个节点、0 条边
 ///
 /// 预期：空图视为平凡欧拉回路（无边的回路）
@@ -383,6 +384,8 @@ test "single_node_no_edges" {
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   assert_true(has_euler_circuit_undirected(g))
 }
+
+///|
 /// 含孤立节点的欧拉图测试
 ///
 /// 结构：节点 0-1-2 形成三角形（3条边），节点 3 完全孤立
@@ -394,11 +397,11 @@ test "isolated_nodes_ignored" {
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
-    |> ignore
+  |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(0), 1.0)
-    |> ignore
+  |> ignore
   assert_true(has_euler_circuit_undirected(g))
   let result = find_euler_circuit_undirected(g)
   assert_true(result.exists)

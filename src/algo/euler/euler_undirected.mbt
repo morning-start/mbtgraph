@@ -18,13 +18,12 @@ fn[G : @core.GraphReadable] check_degree_parity(g : G) -> (Int, Int?, Int?) {
     if deg % 2 != 0 {
       odd_count = odd_count + 1
       match first_odd {
-        None => { first_odd = Some(nid.0) }
-        Some(_) => {
+        None => first_odd = Some(nid.0)
+        Some(_) =>
           match second_odd {
-            None => { second_odd = Some(nid.0) }
-            Some(_) => { () |> ignore }
+            None => second_odd = Some(nid.0)
+            Some(_) => () |> ignore
           }
-        }
       }
     }
   }
@@ -101,11 +100,40 @@ fn[G : @core.GraphReadable] find_max_node_id(g : G) -> Int {
 }
 
 ///|
-/// 判断无向图是否存在欧拉路径
+/// 判定无向图是否存在欧拉路径
 ///
-/// 条件：
-/// 1. 图是连通的（忽略孤立节点）
-/// 2. 奇度节点数量为 0 或 2
+/// 欧拉路径是指能够访问图中每条边恰好一次的路径。
+///
+/// **时间复杂度**: O(V + E)，其中 V 为节点数，E 为边数
+/// **空间复杂度**: O(V)，用于 BFS 连通性检查和度数统计
+///
+/// **参数**:
+///   - `g`: 无向图（实现 GraphReadable trait）
+///
+/// **返回值**:
+///   - `true`: 存在欧拉路径
+///   - `false`: 不存在欧拉路径
+///
+/// **判定条件**:
+///   - 图必须是连通的（孤立节点除外）
+///   - 奇度节点的数量必须为 0 或 2
+///     - 奇度节点数为 0：存在欧拉回路（也是欧拉路径的特例）
+///     - 奇度节点数为 2：存在欧拉路径，起点和终点为这两个奇度节点
+///
+/// **使用示例**:
+/// ```moonbit nocheck
+/// let g = create_undirected_graph()
+///
+/// let g = g.add_edge(0, 1, 1.0) |> ignore
+///
+/// let g = g.add_edge(1, 2, 1.0) |> ignore
+///
+/// let g = g.add_edge(2, 3, 1.0) |> ignore
+///
+/// let g = g.add_edge(3, 0, 1.0) |> ignore
+///
+/// let result = has_euler_path_undirected(g) // 返回 true（存在欧拉回路）
+/// ```
 pub fn[G : @core.GraphReadable] has_euler_path_undirected(g : G) -> Bool {
   if !is_connected_undirected(g) {
     return false
@@ -115,11 +143,36 @@ pub fn[G : @core.GraphReadable] has_euler_path_undirected(g : G) -> Bool {
 }
 
 ///|
-/// 判断无向图是否存在欧拉回路
+/// 判定无向图是否存在欧拉回路
 ///
-/// 条件：
-/// 1. 图是连通的（忽略孤立节点）
-/// 2. 所有节点度数均为偶数（奇度节点数量为 0）
+/// 欧拉回路是指能够访问图中每条边恰好一次并回到起点的闭合路径。
+///
+/// **时间复杂度**: O(V + E)，其中 V 为节点数，E 为边数
+/// **空间复杂度**: O(V)，用于 BFS 连通性检查和度数统计
+///
+/// **参数**:
+///   - `g`: 无向图（实现 GraphReadable trait）
+///
+/// **返回值**:
+///   - `true`: 存在欧拉回路
+///   - `false`: 不存在欧拉回路
+///
+/// **判定条件**:
+///   - 图必须是连通的（孤立节点除外）
+///   - 所有节点度数均为偶数（奇度节点数量为 0）
+///
+/// **使用示例**:
+/// ```moonbit nocheck
+/// let g = create_undirected_graph()
+///
+/// let g = g.add_edge(0, 1, 1.0) |> ignore
+///
+/// let g = g.add_edge(1, 2, 1.0) |> ignore
+///
+/// let g = g.add_edge(2, 0, 1.0) |> ignore
+///
+/// let result = has_euler_circuit_undirected(g) // 返回 true（三角形存在欧拉回路）
+/// ```
 pub fn[G : @core.GraphReadable] has_euler_circuit_undirected(g : G) -> Bool {
   if !is_connected_undirected(g) {
     return false
@@ -139,7 +192,9 @@ pub fn[G : @core.GraphReadable] has_euler_circuit_undirected(g : G) -> Bool {
 /// 无向图需要双向添加边，但每条物理边只有一个索引
 ///
 /// 返回: (邻接表, 边总数, Edge 对象数组)
-fn[G : @core.GraphReadable] build_adjacency_with_edges(g : G) -> (Array[Array[(Int, Int)]], Int, Array[@core.Edge]) {
+fn[G : @core.GraphReadable] build_adjacency_with_edges(
+  g : G,
+) -> (Array[Array[(Int, Int)]], Int, Array[@core.Edge]) {
   let nc = @core.GraphReadable::node_count(g)
   if nc == 0 {
     return ([], 0, [])
@@ -190,7 +245,11 @@ fn[G : @core.GraphReadable] find_first_non_isolated(g : G) -> Int {
 /// 使用栈模拟递归避免栈溢出
 /// 栈元素类型: (current_node, next_edge_index_to_try)
 /// 返回边索引序列（需要反转）
-fn hierholzer_undirected_full(adj : Array[Array[(Int, Int)]], edge_count : Int, start_node : Int) -> Array[Int] {
+fn hierholzer_undirected_full(
+  adj : Array[Array[(Int, Int)]],
+  edge_count : Int,
+  start_node : Int,
+) -> Array[Int] {
   if edge_count == 0 {
     return []
   }
@@ -244,14 +303,57 @@ fn hierholzer_undirected_full(adj : Array[Array[(Int, Int)]], edge_count : Int, 
 ///|
 /// 查找无向图的欧拉路径
 ///
-/// 先检查存在性，再使用 Hierholzer 算法查找具体路径
-pub fn[G : @core.GraphReadable] find_euler_path_undirected(g : G) -> EulerPathResult {
+/// 先检查存在性，再使用 Hierholzer 算法查找具体路径。
+/// 如果存在欧拉路径但不存在欧拉回路（即有 2 个奇度节点），
+/// 路径从第一个奇度节点开始，到第二个奇度节点结束。
+///
+/// **时间复杂度**: O(E)，其中 E 为边数（Hierholzer 算法）
+/// **空间复杂度**: O(E)，用于存储邻接表和路径
+///
+/// **参数**:
+///   - `g`: 无向图（实现 GraphReadable trait）
+///
+/// **返回值**:
+///   - `EulerPathResult`:
+///     - `exists`: 是否存在欧拉路径
+///     - `path`: 欧拉路径的边序列（按遍历顺序）
+///     - `start_node`: 路径起点（存在时有值）
+///     - `end_node`: 路径终点（存在时有值）
+///
+/// **算法说明**:
+///   - 使用 Hierholzer 算法进行深度优先搜索
+///   - 遇到死胡同时回溯并记录边
+///   - 最终反转得到正确的欧拉路径
+///
+/// **使用示例**:
+/// ```moonbit nocheck
+/// let g = make_path_graph(4)  // 0-1-2-3 路径图
+/// let result = find_euler_path_undirected(g)
+/// if result.exists {
+///   for edge in result.path {
+///     println("访问边: ${edge.from} -> ${edge.to}")
+///   }
+/// }
+/// ```
+pub fn[G : @core.GraphReadable] find_euler_path_undirected(
+  g : G,
+) -> EulerPathResult {
   if !has_euler_path_undirected(g) {
-    return EulerPathResult::{ exists: false, path: [], start_node: None, end_node: None }
+    return EulerPathResult::{
+      exists: false,
+      path: [],
+      start_node: None,
+      end_node: None,
+    }
   }
   let (adj, edge_count, edges) = build_adjacency_with_edges(g)
   if edge_count == 0 {
-    return EulerPathResult::{ exists: true, path: [], start_node: None, end_node: None }
+    return EulerPathResult::{
+      exists: true,
+      path: [],
+      start_node: None,
+      end_node: None,
+    }
   }
   let (odd_count, first_odd, second_odd) = check_degree_parity(g)
   let start_node = match first_odd {
@@ -276,15 +378,48 @@ pub fn[G : @core.GraphReadable] find_euler_path_undirected(g : G) -> EulerPathRe
     exists: true,
     path: path_edges,
     start_node: Some(@core.NodeId(start_node)),
-    end_node: end_node_id
+    end_node: end_node_id,
   }
 }
 
 ///|
 /// 查找无向图的欧拉回路
 ///
-/// 先检查存在性，再使用 Hierholzer 算法查找具体回路
-pub fn[G : @core.GraphReadable] find_euler_circuit_undirected(g : G) -> EulerCircuitResult {
+/// 先检查存在性，再使用 Hierholzer 算法查找具体回路。
+/// 回路从第一个非孤立节点开始，最终形成闭合路径。
+///
+/// **时间复杂度**: O(E)，其中 E 为边数（Hierholzer 算法）
+/// **空间复杂度**: O(E)，用于存储邻接表和回路
+///
+/// **参数**:
+///   - `g`: 无向图（实现 GraphReadable trait）
+///
+/// **返回值**:
+///   - `EulerCircuitResult`:
+///     - `exists`: 是否存在欧拉回路
+///     - `circuit`: 欧拉回路的边序列（按遍历顺序，形成闭环）
+///     - `start_node`: 回路起点（存在时有值，也是终点）
+///
+/// **算法说明**:
+///   - 使用 Hierholzer 算法进行深度优先搜索
+///   - 从任意非孤立节点开始遍历
+///   - 遇到死胡同时回溯并记录边
+///   - 最终反转得到正确的欧拉回路
+///
+/// **使用示例**:
+/// ```moonbit nocheck
+/// let g = make_triangle_graph()  // 三角形 0-1-2-0
+/// let result = find_euler_circuit_undirected(g)
+/// if result.exists {
+///   for edge in result.circuit {
+///     println("访问边: ${edge.from} -> ${edge.to}")
+///   }
+///   // 输出将包含所有 3 条边，每条恰好一次
+/// }
+/// ```
+pub fn[G : @core.GraphReadable] find_euler_circuit_undirected(
+  g : G,
+) -> EulerCircuitResult {
   if !has_euler_circuit_undirected(g) {
     return EulerCircuitResult::{ exists: false, circuit: [], start_node: None }
   }
@@ -305,6 +440,6 @@ pub fn[G : @core.GraphReadable] find_euler_circuit_undirected(g : G) -> EulerCir
   EulerCircuitResult::{
     exists: true,
     circuit: circuit_edges,
-    start_node: Some(@core.NodeId(start_node))
+    start_node: Some(@core.NodeId(start_node)),
   }
 }
