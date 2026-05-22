@@ -3,7 +3,6 @@
 ///
 /// 基于边排序 + Union-Find 的贪心算法，时间复杂度 O(E log E)。
 /// 适用于无向图。
-
 fn[G : @core.GraphReadable] mst_find_max_id(g : G) -> Int {
   let mut m = -1
   for nid in @core.GraphReadable::node_ids(g) {
@@ -14,11 +13,19 @@ fn[G : @core.GraphReadable] mst_find_max_id(g : G) -> Int {
   m
 }
 
+///|
 fn max_int(a : Int, b : Int) -> Int {
-  if a > b { a } else { b }
+  if a > b {
+    a
+  } else {
+    b
+  }
 }
 
-fn sort_edges(edges : Array[(@core.NodeId, @core.NodeId, Double)]) -> Array[(@core.NodeId, @core.NodeId, Double)] {
+///|
+fn sort_edges(
+  edges : Array[(@core.NodeId, @core.NodeId, Double)],
+) -> Array[(@core.NodeId, @core.NodeId, Double)] {
   let n = edges.length()
   if n <= 1 {
     return edges
@@ -56,11 +63,7 @@ pub fn[G : @core.GraphReadable] kruskal(g : G) -> MstResult {
   for u in @core.GraphReadable::node_ids(g) {
     for v in @core.GraphReadable::neighbors(g, u) {
       match @core.GraphReadable::get_edge(g, u, v) {
-        Some(w) => {
-          if u.0 < v.0 {
-            raw_edges.push((u, v, w))
-          }
-        }
+        Some(w) => if u.0 < v.0 { raw_edges.push((u, v, w)) }
         None => ()
       }
     }
@@ -70,13 +73,12 @@ pub fn[G : @core.GraphReadable] kruskal(g : G) -> MstResult {
   let mut total_weight = 0.0
   for edge in sorted {
     match edge {
-      (u, v, w) => {
+      (u, v, w) =>
         if uf_union(uf, u.0, v.0) {
           mst_edges.push((u, v, w))
           total_weight = total_weight + w
         }
-      }
     }
   }
-  MstResult::{ total_weight: total_weight, edges: mst_edges }
+  MstResult::{ total_weight, edges: mst_edges }
 }

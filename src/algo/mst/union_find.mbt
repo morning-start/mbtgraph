@@ -2,12 +2,12 @@
 /// Union-Find（并查集）数据结构
 ///
 /// 带路径压缩和按秩合并，用于 Kruskal 算法。
-
 priv struct UnionFind {
   parent : Array[Int]
   rank : Array[Int]
 }
 
+///|
 fn uf_new(size : Int) -> UnionFind {
   let p : Array[Int] = []
   let r : Array[Int] = []
@@ -18,6 +18,7 @@ fn uf_new(size : Int) -> UnionFind {
   UnionFind::{ parent: p, rank: r }
 }
 
+///|
 fn uf_find(uf : UnionFind, x : Int) -> Int {
   if uf.parent[x] != x {
     let root = uf_find(uf, uf.parent[x])
@@ -28,6 +29,7 @@ fn uf_find(uf : UnionFind, x : Int) -> Int {
   }
 }
 
+///|
 fn uf_union(uf : UnionFind, x : Int, y : Int) -> Bool {
   let rx = uf_find(uf, x)
   let ry = uf_find(uf, y)

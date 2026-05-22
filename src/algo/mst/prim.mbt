@@ -3,8 +3,11 @@
 ///
 /// 从根节点出发的贪心生长算法，时间复杂度 O((V+E)log V)。
 /// 使用数组模拟优先队列（避免跨包依赖）。
-
-fn prim_min_key(key : Array[Double?], in_mst : Array[Bool], size : Int) -> (Int, Bool) {
+fn prim_min_key(
+  key : Array[Double?],
+  in_mst : Array[Bool],
+  size : Int,
+) -> (Int, Bool) {
   let mut min_val = 1000000000000000000.0
   let mut min_idx = -1
   let mut found = false
@@ -12,13 +15,12 @@ fn prim_min_key(key : Array[Double?], in_mst : Array[Bool], size : Int) -> (Int,
   while i < size {
     if !in_mst[i] {
       match key[i] {
-        Some(k) => {
+        Some(k) =>
           if k < min_val {
             min_val = k
             min_idx = i
             found = true
           }
-        }
         None => ()
       }
     }
@@ -31,10 +33,7 @@ fn prim_min_key(key : Array[Double?], in_mst : Array[Bool], size : Int) -> (Int,
 /// Prim 最小生成树
 ///
 /// 从 root 节点开始构建最小生成树。
-pub fn[G : @core.GraphReadable] prim(
-  g : G,
-  root : @core.NodeId,
-) -> MstResult {
+pub fn[G : @core.GraphReadable] prim(g : G, root : @core.NodeId) -> MstResult {
   let nc = @core.GraphReadable::node_count(g)
   if nc == 0 || !@core.GraphReadable::contains_node(g, root) {
     return MstResult::{ total_weight: 0.0, edges: [] }
@@ -55,7 +54,7 @@ pub fn[G : @core.GraphReadable] prim(
     }
     in_mst[u] = true
     match parent[u] {
-      Some(p) => {
+      Some(p) =>
         match key[u] {
           Some(w) => {
             mst_edges.push((p, @core.NodeId(u), w))
@@ -63,7 +62,6 @@ pub fn[G : @core.GraphReadable] prim(
           }
           None => ()
         }
-      }
       None => ()
     }
     let unode = @core.NodeId(u)
@@ -87,5 +85,5 @@ pub fn[G : @core.GraphReadable] prim(
     }
     count = count + 1
   }
-  MstResult::{ total_weight: total_weight, edges: mst_edges }
+  MstResult::{ total_weight, edges: mst_edges }
 }
