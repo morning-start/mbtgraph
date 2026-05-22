@@ -72,18 +72,50 @@ fn[G : @core.GraphReadable] tarjan_bridge_dfs(
 }
 
 ///|
-/// 在无向图中查找所有桥
+/// 在无向图中查找所有桥（关键边）
 ///
-/// 使用 Tarjan DFS 算法，基于 discovery time 和 low link value 判定桥。
-/// 桥是移除后会增加连通分量数的边。
+/// 使用 **Tarjan DFS 算法**，基于 discovery time（发现时间）和 low link value（低点值）判定桥。
+///
+/// ## 功能描述
+///
+/// 桥（Bridge）是指从图中移除该边后，图的连通分量数会增加的边。
+/// 本算法通过一次 DFS 遍历即可找出所有桥。
+///
+/// ## 时间复杂度
+///
+/// - **O(V + E)**，其中 V 是节点数，E 是边数
+///
+/// ## 参数说明
+///
+/// - `g`: 实现了 `GraphReadable` trait 的图结构（如 `UndirectedAdjList`）
+///
+/// ## 返回值语义
+///
+/// 返回 `BridgeResult` 结构体，包含：
+/// - `bridges`: 所有桥的边列表（`Array[Edge]`）
+/// - `is_bridge`: 布尔数组，`is_bridge[i]` 表示第 i 条边是否为桥
+/// - `count`: 桥的总数
+///
+/// ## 桥判定条件
+///
+/// 边 (u, v) 是桥当且仅当 **low[v] > disc[u]**，
+/// 即 v 无法通过其他路径回到 u 或 u 的祖先。
+///
+/// ## 使用示例
+///
+/// ```moonbit nocheck
+/// let g = make_chain_graph(5)  // 创建链图 0-1-2-3-4
+/// let result = find_bridges_undirected(g)
+///
+/// for bridge in result.bridges {
+///   println("桥: ${bridge.from.id.value()} -> ${bridge.to.id.value()}")
+/// }
+/// println("总桥数: ${result.count}")
+/// ```
 pub fn[G : @core.GraphReadable] find_bridges_undirected(g : G) -> BridgeResult {
   let nc = @core.GraphReadable::node_count(g)
   if nc == 0 {
-    return BridgeResult::{
-      bridges: [],
-      is_bridge: [],
-      count: 0,
-    }
+    return BridgeResult::{ bridges: [], is_bridge: [], count: 0 }
   }
 
   let max_id = bridge_find_max_id(g)
@@ -101,12 +133,11 @@ pub fn[G : @core.GraphReadable] find_bridges_undirected(g : G) -> BridgeResult {
   for pair in state.bridges_list {
     match pair {
       (from, to) => {
-        let weight =
-          match @core.GraphReadable::get_edge(g, from, to) {
-            Some(w) => w
-            None => 0.0
-          }
-        bridges.push(@core.Edge::{ from: from, to: to, data: weight })
+        let weight = match @core.GraphReadable::get_edge(g, from, to) {
+          Some(w) => w
+          None => 0.0
+        }
+        bridges.push(@core.Edge::{ from, to, data: weight })
       }
     }
   }
@@ -114,17 +145,43 @@ pub fn[G : @core.GraphReadable] find_bridges_undirected(g : G) -> BridgeResult {
   let total_edges = @core.GraphReadable::edge_count(g)
   let is_bridge = Array::make(total_edges, false)
 
-  BridgeResult::{
-    bridges: bridges,
-    is_bridge: is_bridge,
-    count: bridges.length(),
-  }
+  BridgeResult::{ bridges, is_bridge, count: bridges.length() }
 }
 
 ///|
 /// 在有向图中查找所有桥（基于基图）
 ///
-/// 将有向图视为无向图（忽略方向），运行桥检测算法。
+/// 将有向图视为无向图（忽略边的方向），运行桥检测算法。
+///
+/// ## 功能描述
+///
+/// 对于有向图，本函数先将其转换为**基图**（underlying undirected graph），
+/// 即忽略所有边的方向，然后在基图上执行 Tarjan 桥检测算法。
+///
+/// ## 时间复杂度
+///
+/// - **O(V + E)**，其中 V 是节点数，E 是边数
+///
+/// ## 参数说明
+///
+/// - `g`: 实现了 `GraphDirected` trait 的有向图结构（如 `DirectedAdjList`）
+///
+/// ## 返回值语义
+///
+/// 返回 `BridgeResult` 结构体，包含：
+/// - `bridges`: 所有桥的边列表（`Array[Edge]`）
+/// - `is_bridge`: 布尔数组，表示每条边是否为桥
+/// - `count`: 桥的总数
+///
+/// ## 使用示例
+///
+/// ```moonbit nocheck
+/// let mut g = @storage.DirectedAdjList::new(3)
+/// g = @storage.DirectedAdjList::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+/// g = @storage.DirectedAdjList::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+/// let result = find_bridges_directed(g)
+/// println("桥的数量: ${result.count}")
+/// ```
 pub fn[G : @core.GraphDirected] find_bridges_directed(g : G) -> BridgeResult {
   find_bridges_undirected(g)
 }

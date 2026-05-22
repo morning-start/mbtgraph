@@ -82,19 +82,54 @@ fn[G : @core.GraphReadable] tarjan_ap_dfs(
 }
 
 ///|
-/// 在无向图中查找所有割点
+/// 在无向图中查找所有割点（关节点）
 ///
-/// 使用 Tarjan DFS 算法，基于 discovery time 和 low link value 判定割点。
+/// 使用 **Tarjan DFS 算法**，基于 discovery time（发现时间）和 low link value（低点值）判定割点。
+///
+/// ## 功能描述
+///
+/// 割点（Articulation Point）是指从图中移除该节点后，图的连通分量数会增加的节点。
+/// 本算法通过一次 DFS 遍历即可找出所有割点。
+///
+/// ## 时间复杂度
+///
+/// - **O(V + E)**，其中 V 是节点数，E 是边数
+///
+/// ## 参数说明
+///
+/// - `g`: 实现了 `GraphReadable` trait 的图结构（如 `UndirectedAdjList`）
+///
+/// ## 返回值语义
+///
+/// 返回 `CutPointResult` 结构体，包含：
+/// - `cut_points`: 所有割点的有序列表（按节点 ID 排序）
+/// - `is_cut_point`: 布尔数组，`is_cut_point[i]` 表示节点 i 是否为割点
+/// - `count`: 割点总数
+///
+/// ## 割点判定规则
+///
+/// 1. **根节点**: 如果是 DFS 树的根且有 ≥ 2 个子树 → 割点
+/// 2. **非根节点**: 如果存在子节点 v 使得 low[v] ≥ disc[u] → 割点
+///
+/// ## 使用示例
+///
+/// ```moonbit nocheck
+/// let g = make_chain_graph(5)  // 创建链图 0-1-2-3-4
+/// let result = find_articulation_points_undirected(g)
+///
+/// if result.count > 0 {
+///   println("割点数量: ${result.count}")
+///   for cp in result.cut_points {
+///     println("割点节点: ${cp.value()}")
+///   }
+/// }
+/// ```
 pub fn[G : @core.GraphReadable] find_articulation_points_undirected(
   g : G,
 ) -> CutPointResult {
   let nc = @core.GraphReadable::node_count(g)
   if nc == 0 {
-    return CutPointResult::{
-      cut_points: [],
-      is_cut_point: [],
-      count: 0,
-    }
+    return CutPointResult::{ cut_points: [], is_cut_point: [], count: 0 }
   }
 
   let max_id = ap_find_max_id(g)
@@ -117,17 +152,43 @@ pub fn[G : @core.GraphReadable] find_articulation_points_undirected(
     }
   }
 
-  CutPointResult::{
-    cut_points: cut_points,
-    is_cut_point: state.ap,
-    count: count,
-  }
+  CutPointResult::{ cut_points, is_cut_point: state.ap, count }
 }
 
 ///|
 /// 在有向图中查找所有割点（基于基图）
 ///
-/// 将有向图视为无向图（忽略方向），运行割点检测算法。
+/// 将有向图视为无向图（忽略边的方向），运行割点检测算法。
+///
+/// ## 功能描述
+///
+/// 对于有向图，本函数先将其转换为**基图**（underlying undirected graph），
+/// 即忽略所有边的方向，然后在基图上执行 Tarjan 割点算法。
+///
+/// ## 时间复杂度
+///
+/// - **O(V + E)**，其中 V 是节点数，E 是边数
+///
+/// ## 参数说明
+///
+/// - `g`: 实现了 `GraphDirected` trait 的有向图结构（如 `DirectedAdjList`）
+///
+/// ## 返回值语义
+///
+/// 返回 `CutPointResult` 结构体，包含：
+/// - `cut_points`: 所有割点的有序列表
+/// - `is_cut_point`: 布尔数组，表示每个节点是否为割点
+/// - `count`: 割点总数
+///
+/// ## 使用示例
+///
+/// ```moonbit nocheck
+/// let mut g = @storage.DirectedAdjList::new(4)
+/// g = @storage.DirectedAdjList::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+/// g = @storage.DirectedAdjList::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+/// let result = find_articulation_points_directed(g)
+/// println("割点数量: ${result.count}")
+/// ```
 pub fn[G : @core.GraphDirected] find_articulation_points_directed(
   g : G,
 ) -> CutPointResult {
