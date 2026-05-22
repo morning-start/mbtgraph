@@ -209,12 +209,7 @@ test "single_edge_2_colors_or_1" {
   let g = @storage.new_undirected()
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_node(g, 0.0) |> ignore
-  @storage.UndirectedAdjList::add_edge(
-    g,
-    @core.NodeId(0),
-    @core.NodeId(1),
-    1.0,
-  )
+  @storage.UndirectedAdjList::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
   |> ignore
   let result = greedy_coloring(g)
   assert_true(result.is_valid)
@@ -299,8 +294,8 @@ test "exact_chromatic_empty_graph" {
   let g = @storage.new_undirected()
   let result = exact_chromatic_number(g, 5000)
   match result.chromatic_number {
-    Some(c) => { assert_eq(c, 0) }
-    None => { assert_true(false) }
+    Some(c) => assert_eq(c, 0)
+    None => assert_true(false)
   }
   assert_true(result.exact)
 }
@@ -311,8 +306,8 @@ test "exact_chromatic_single_node" {
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   let result = exact_chromatic_number(g, 5000)
   match result.chromatic_number {
-    Some(c) => { assert_eq(c, 1) }
-    None => { assert_true(false) }
+    Some(c) => assert_eq(c, 1)
+    None => assert_true(false)
   }
   assert_true(result.exact)
 }
@@ -322,8 +317,8 @@ test "exact_chromatic_bipartite" {
   let g = make_bipartite_graph(3, 3)
   let result = exact_chromatic_number(g, 5000)
   match result.chromatic_number {
-    Some(c) => { assert_true(c <= 2) }
-    None => { assert_true(false) }
+    Some(c) => assert_true(c <= 2)
+    None => assert_true(false)
   }
   assert_true(result.exact)
 }
@@ -333,8 +328,8 @@ test "exact_chromatic_complete_graph_k4" {
   let g = make_complete_graph(4)
   let result = exact_chromatic_number(g, 5000)
   match result.chromatic_number {
-    Some(c) => { assert_eq(c, 4) }
-    None => { assert_true(false) }
+    Some(c) => assert_eq(c, 4)
+    None => assert_true(false)
   }
   assert_true(result.exact)
 }
