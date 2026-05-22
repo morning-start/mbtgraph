@@ -2,7 +2,6 @@
 /// Tarjan 强连通分量算法
 ///
 /// 基于 DFS 时间戳和栈的单次遍历算法，时间复杂度 O(V+E)。
-
 fn[G : @core.GraphReadable] scc_find_max_id(g : G) -> Int {
   let mut m = -1
   for nid in @core.GraphReadable::node_ids(g) {
@@ -13,6 +12,7 @@ fn[G : @core.GraphReadable] scc_find_max_id(g : G) -> Int {
   m
 }
 
+///|
 priv struct TarjanState {
   index : Array[Int]
   low_link : Array[Int]
@@ -23,6 +23,7 @@ priv struct TarjanState {
   components : Array[Array[@core.NodeId]]
 }
 
+///|
 fn new_tarjan_state(size : Int) -> TarjanState {
   TarjanState::{
     index: Array::make(size, -1),
@@ -31,10 +32,11 @@ fn new_tarjan_state(size : Int) -> TarjanState {
     stack: Array::make(size, @core.NodeId(0)),
     stack_top: [-1],
     idx_counter: [0],
-    components: []
+    components: [],
   }
 }
 
+///|
 fn[G : @core.GraphDirected] tarjan_strongconnect(
   state : TarjanState,
   g : G,

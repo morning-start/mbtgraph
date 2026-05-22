@@ -2,7 +2,6 @@
 /// 无向连通分量提取
 ///
 /// 基于 BFS/DFS 的 visited[] 数组分组。
-
 fn[G : @core.GraphReadable] conn_find_max_id(g : G) -> Int {
   let mut m = -1
   for nid in @core.GraphReadable::node_ids(g) {

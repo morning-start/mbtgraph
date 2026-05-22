@@ -3,7 +3,6 @@
 ///
 /// 基于两次 DFS 的经典算法：第一次 DFS 记录完成顺序，
 /// 第二次按逆序 DFS 得到 SCC。时间复杂度 O(V+E)。
-
 fn[G : @core.GraphReadable] kosaraju_find_max_id(g : G) -> Int {
   let mut m = -1
   for nid in @core.GraphReadable::node_ids(g) {
@@ -14,10 +13,13 @@ fn[G : @core.GraphReadable] kosaraju_find_max_id(g : G) -> Int {
   m
 }
 
+///|
 fn[T] reverse_array(arr : Array[T]) -> Array[T] {
   let n = arr.length()
   let result : Array[T] = []
-  if n == 0 { return result }
+  if n == 0 {
+    return result
+  }
   let mut j = n - 1
   while j >= 0 {
     result.push(arr[j])
@@ -99,6 +101,7 @@ pub fn[G : @core.GraphDirected] kosaraju_scc(
   StronglyConnectedComponents::{ components: result }
 }
 
+///|
 fn[T] array_pop_last(arr : Array[T]) -> Array[T] {
   let result : Array[T] = []
   let mut i = 0
