@@ -230,6 +230,7 @@ pub impl @core.GraphEdgeIterable for EdgeListGraph with edges_sorted(self) -> It
   sorted.iter()
 }
 
+///|
 pub impl @core.GraphDirected for EdgeListGraph with in_neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
@@ -242,6 +243,7 @@ pub impl @core.GraphDirected for EdgeListGraph with in_neighbors(self, id) -> It
   r.iter()
 }
 
+///|
 pub impl @core.GraphDirected for EdgeListGraph with out_neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
@@ -254,6 +256,7 @@ pub impl @core.GraphDirected for EdgeListGraph with out_neighbors(self, id) -> I
   r.iter()
 }
 
+///|
 pub impl @core.GraphDirected for EdgeListGraph with in_degree(self, id) -> Int {
   let mut c = 0
   for e in self.edges {
@@ -264,6 +267,7 @@ pub impl @core.GraphDirected for EdgeListGraph with in_degree(self, id) -> Int {
   c
 }
 
+///|
 pub impl @core.GraphDirected for EdgeListGraph with out_degree(self, id) -> Int {
   let mut c = 0
   for e in self.edges {
@@ -274,10 +278,10 @@ pub impl @core.GraphDirected for EdgeListGraph with out_degree(self, id) -> Int 
   c
 }
 
-pub impl @core.GraphDirected for EdgeListGraph with predecessors(
-  self,
-  id,
-) -> Iter[(@core.NodeId, Double)] {
+///|
+pub impl @core.GraphDirected for EdgeListGraph with predecessors(self, id) -> Iter[
+  (@core.NodeId, Double),
+] {
   let r : Array[(@core.NodeId, Double)] = []
   for e in self.edges {
     if e.to == id {
@@ -287,10 +291,10 @@ pub impl @core.GraphDirected for EdgeListGraph with predecessors(
   r.iter()
 }
 
-pub impl @core.GraphDirected for EdgeListGraph with successors(
-  self,
-  id,
-) -> Iter[(@core.NodeId, Double)] {
+///|
+pub impl @core.GraphDirected for EdgeListGraph with successors(self, id) -> Iter[
+  (@core.NodeId, Double),
+] {
   let r : Array[(@core.NodeId, Double)] = []
   for e in self.edges {
     if e.from == id {
