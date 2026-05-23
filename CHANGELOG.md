@@ -1,241 +1,241 @@
-# Changelog
+# 变更日志
 
-All notable changes to this project will be documented in this file.
+本项目的所有重要变更都将记录在此文件中。
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+格式基于 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
+本项目遵循 [语义化版本](https://semver.org/spec/v2.0.0.html)规范。
 
-## [Unreleased]
+## [未发布]
 
-### Added
-- Flow network module with Edmonds-Karp max flow algorithm
-- Complete test suite for all algorithm modules (179+ tests total)
-- Comprehensive documentation for all modules
+### 新增
+- 流网络模块，包含 Edmonds-Karp 最大流算法
+- 完整的测试套件（179+ 测试用例）
+- 所有模块的完整文档
 
 ---
 
 ## [0.3.0] - 2026-05-19
 
-### Major Changes - Complete Algorithm Library (P0-P3 ✅)
+### 重大变更 - 完整的算法库 (P0-P3 ✅)
 
-#### Core Module - [0.1.0]
-**Status**: 🟢 Stable Foundation
-**Commits**: 7 commits (1 feat, 4 refactor, 2 docs)
+#### 核心模块 - [0.1.0]
+**状态**: 🟢 稳定基础
+**提交**: 7 次（1 feat, 4 refactor, 2 docs）
 
-**Changes**:
-- `feat`: Add graph data structure core module (types, traits, error handling)
-- `refactor`: Optimize code structure, adjust visibility, remove redundant implementations
-- `refactor`: Fix trait visibility and type definitions
-- `docs`: Add comprehensive README documentation
+**变更**:
+- `feat`: 添加图数据结构核心模块（类型、trait、错误处理）
+- `refactor`: 优化代码结构、调整可见性、移除冗余实现
+- `refactor`: 修复 trait 可见性和类型定义
+- `docs`: 添加完整的 README 文档
 
-**Key Components**:
-- `NodeId`, `Node`, `Edge` types
-- `GraphReadable`, `GraphWritable`, `GraphDirected` traits
-- `GraphError` error type
+**核心组件**:
+- `NodeId`、`Node`、`Edge` 类型
+- `GraphReadable`、`GraphWritable`、`GraphDirected` trait
+- `GraphError` 错误类型
 
-**Stability**: Production-ready, foundational API stable
-
----
-
-#### Storage Module - [0.2.0]
-**Status**: 🟢 Feature-Rich & Stable
-**Commits**: 13+ commits (5 feat, 3 refactor, 1 fix, 3 docs, 1 chore)
-
-**Breaking Changes from 0.1.x**:
-- Major restructure: Split monolithic storage into specialized implementations
-- New storage formats: CSR/CSC for sparse graphs
-- Enhanced converter system with bidirectional transformations
-
-**Changes**:
-- `feat`: Complete graph storage implementation (AdjList, Matrix, EdgeList, CSR, CSC)
-- `feat`: Add undirected variants for all storage types
-- `feat`: Implement GraphDirected trait and refactor conversion logic
-- `feat`: Add CSC structure and conversion functions
-- `refactor`: Restructure storage module, extract shared helpers
-- `refactor`: Split adjacency list converters, add directed/undirected implementations
-- `fix`: Fix struct visibility, Array::make 2D initialization bug, add GraphDirected impls
-- `chore`: Update mbti binding files for all modules
-
-**Key Components**:
-- Directed/Undirected Adjacency List (`directed_adj_list`, `undirected_adj_list`)
-- Directed/Undirected Matrix (`directed_matrix`, `undirected_matrix`)
-- Edge List Graphs (`edge_list`, `undirected_edge_list`)
-- Compressed Formats (`csr`, `csc`)
-- Converter System (`converter`) with format transformations
-- Shared Helpers (`shared_helpers`)
-
-**Test Coverage**: Cross-storage compatibility verified
-
-**Stability**: Mature implementation, extensive testing
+**稳定性**: 生产就绪，基础 API 稳定
 
 ---
 
-#### Traversal Module - [0.1.1]
-**Status**: 🟢 Complete & Documented
-**Commits**: 8 commits (2 feat, 2 refactor, 1 test, 2 docs, 1 chore)
+#### 存储模块 - [0.2.0]
+**状态**: 🟢 功能丰富且稳定
+**提交**: 13+ 次（5 feat, 3 refactor, 1 fix, 3 docs, 1 chore）
 
-**Changes from 0.1.0**:
-- `feat`: Add BFS and DFS graph traversal algorithms
-- `feat`: Add cycle detection and topological sort utilities
-- `refactor`: Fix internal helper visibility and struct fields for public API
-- `refactor`: Remove unnecessary pub modifiers from utility functions
-- `test`: Add complete cross-storage traversal test suite
-- `docs`: Add README documentation and design document
+**与 0.1.x 的破坏性变更**:
+- 重大重构：将单体存储拆分为专门化实现
+- 新存储格式：CSR/CSC 用于稀疏图
+- 增强的转换系统，支持双向转换
 
-**Key Algorithms**:
-- Breadth-First Search (BFS)
-- Depth-First Search (DFS)
-- Cycle Detection
-- Topological Sort
+**变更**:
+- `feat`: 完整的图存储实现（AdjList、Matrix、EdgeList、CSR、CSC）
+- `feat`: 为所有存储类型添加无向变体
+- `feat`: 实现 GraphDirected trait 并重构转换逻辑
+- `feat`: 添加 CSC 结构和转换函数
+- `refactor`: 重构存储模块，提取共享辅助函数
+- `refactor`: 拆分邻接表转换器，添加有向/无向实现
+- `fix`: 修复结构体可见性、Array::make 2D 初始化 bug、添加 GraphDirected 实现
+- `chore`: 更新所有模块的 mbti 绑定文件
 
-**Stability**: Well-tested, clean public API
+**核心组件**:
+- 有向/无向邻接表（`directed_adj_list`、`undirected_adj_list`）
+- 有向/无向矩阵（`directed_matrix`、`undirected_matrix`）
+- 边集图（`edge_list`、`undirected_edge_list`）
+- 压缩格式（`csr`、`csc`）
+- 转换器系统（`converter`），支持格式转换
+- 共享辅助函数（`shared_helpers`）
 
----
+**测试覆盖**: 跨存储兼容性已验证
 
-#### Generators Module - [0.1.1]
-**Status**: 🟢 Complete & Tested
-**Commits**: 6 commits (1 feat, 1 fix, 1 test, 2 docs, 1 chore)
-
-**Changes from 0.1.0**:
-- `feat`: Add graph generators with generic GraphWritable support (16 functions)
-- `fix`: Fix MoonBit syntax compatibility for compilation
-- `test`: Add 56 tests with cross-storage compatibility verification
-- `docs`: Add package README and design document
-
-**Key Generators**:
-- Classic graphs: Complete, Cycle, Path, Star, Wheel, Bipartite
-- Grid graphs: 2D/3D grid, Torus, Hexagonal
-- Random graphs: Erdős–Rényi, Watts-Strogatz, Barabási–Albert
-- Special: Tree, DAG
-
-**Test Coverage**: 56 tests, cross-storage compatibility verified
-
-**Stability**: Robust, well-documented
+**稳定性**: 成熟实现，经过充分测试
 
 ---
 
-#### Shortest Path Module - [0.1.0]
-**Status**: 🟢 Initial Release
-**Commits**: 4 commits (1 feat, 1 test, 1 docs, 1 chore)
+#### 遍历模块 - [0.1.1]
+**状态**: 🟢 完整且有文档
+**提交**: 8 次（2 feat, 2 refactor, 1 test, 2 docs, 1 chore）
 
-**Changes**:
-- `feat`: Add Dijkstra, Bellman-Ford, Floyd-Warshall algorithms
-- `test`: Add 32 tests with cross-storage compatibility
-- `docs`: Add complete README documentation
+**与 0.1.0 的变更**:
+- `feat`: 添加 BFS 和 DFS 图遍历算法
+- `feat`: 添加环检测和拓扑排序工具
+- `refactor`: 修复内部辅助函数可见性和公共 API 的结构体字段
+- `refactor`: 移除工具函数中不必要的 pub 修饰符
+- `test`: 添加完整的跨存储遍历测试套件
+- `docs`: 添加 README 文档和设计文档
 
-**Key Algorithms**:
-- Dijkstra (non-negative weights)
-- Bellman-Ford (negative edges, negative cycle detection)
-- Floyd-Warshall (all-pairs shortest paths)
+**核心算法**:
+- 广度优先搜索（BFS）
+- 深度优先搜索（DFS）
+- 环检测
+- 拓扑排序
 
-**Test Coverage**: 32 tests, multiple storage backends
-
-**Stability**: Complete implementation, ready for use
-
----
-
-#### MST Module - [0.1.0]
-**Status**: 🟢 Initial Release
-**Commits**: 3 commits (1 feat, 1 test, 1 chore)
-
-**Changes**:
-- `feat`: Add Kruskal and Prim minimum spanning tree algorithms
-- `test`: Add 16 tests (shared with connectivity)
-
-**Key Algorithms**:
-- Kruskal's algorithm (with Union-Find data structure)
-- Prim's algorithm (with binary heap optimization)
-
-**Supporting Data Structures**:
-- Union-Find (Disjoint Set Union) with path compression and union by rank
-- Binary Min-Heap for priority queue operations
-
-**Test Coverage**: 16 tests
-
-**Stability**: Complete implementation
+**稳定性**: 经过充分测试，公共 API 干净整洁
 
 ---
 
-#### Connectivity Module - [0.1.0]
-**Status**: 🟢 Initial Release
-**Commits**: 5 commits (1 feat, 1 test, 2 docs, 1 chore)
+#### 图生成器模块 - [0.1.1]
+**状态**: 🟢 完整且已测试
+**提交**: 6 次（1 feat, 1 fix, 1 test, 2 docs, 1 chore）
 
-**Changes**:
-- `feat`: Add connected components, Tarjan SCC, Kosaraju SCC algorithms
-- `test`: Add 21 tests (shared with MST)
-- `docs`: Add design documentation
+**与 0.1.0 的变更**:
+- `feat`: 添加支持泛型 GraphWritable 的图生成器（16 个函数）
+- `fix`: 修复 MoonBit 语法兼容性以通过编译
+- `test`: 添加 56 个测试，验证跨存储兼容性
+- `docs`: 添加包 README 和设计文档
 
-**Key Algorithms**:
-- Connected Components (undirected graphs)
-- Tarjan's Strongly Connected Components
-- Kosaraju's Strongly Connected Components
+**核心生成器**:
+- 经典图：完全图、环图、路径图、星形图、轮图、二部图
+- 网格图：2D/3D 网格、环面网格、六边形网格
+- 随机图：Erdős–Rényi、Watts-Strogatz、Barabási–Albert
+- 特殊图：树、有向无环图（DAG）
 
-**Test Coverage**: 21 tests
+**测试覆盖**: 56 个测试，跨存储兼容性已验证
 
-**Stability**: Complete implementation
-
----
-
-#### Flow Module - [0.1.0]
-**Status**: 🟢 Initial Release (Latest)
-**Commits**: 5 commits (2 feat, 1 test, 2 docs)
-
-**Changes**:
-- `feat`: Add FlowNetwork base types and struct
-- `feat`: Implement Edmonds-Karp max flow algorithm
-- `test`: Add complete test suite (17 tests)
-- `docs`: Add README and design document
-
-**Key Components**:
-- `FlowNetwork` type (independent from Graph trait)
-- Edmonds-Karp algorithm (BFS-based Ford-Fulkerson)
-- Capacity/Flow matrix management
-
-**Design Decision**:
-- Independent type system (not extending GraphReadable) for semantic clarity
-- Pure functional semantics with deep copy for immutability
-
-**Test Coverage**: 17 tests
-
-**Stability**: Freshly implemented, well-tested
+**稳定性**: 健壮、文档完善
 
 ---
 
-## Project Summary
+#### 最短路径模块 - [0.1.0]
+**状态**: 🟢 初始发布
+**提交**: 4 次（1 feat, 1 test, 1 docs, 1 chore）
 
-| Module | Version | Status | Tests | Key Features |
-|--------|---------|--------|-------|--------------|
-| **core** | 0.1.0 | 🟢 Stable | - | Types, Traits, Errors |
-| **storage** | 0.2.0 | 🟢 Mature | - | 10+ formats, Converters |
-| **traversal** | 0.1.1 | 🟢 Complete | - | BFS, DFS, Cycle, TopoSort |
-| **generators** | 0.1.1 | 🟢 Robust | 56 | 16 graph generators |
-| **shortest_path** | 0.1.0 | 🟢 Ready | 32 | Dijkstra, BF, FW |
-| **mst** | 0.1.0 | 🟢 Ready | 16 | Kruskal, Prim |
-| **connectivity** | 0.1.0 | 🟢 Ready | 21 | CC, Tarjan, Kosaraju |
-| **flow** | 0.1.0 | 🟢 New | 17 | Edmonds-Karp |
+**变更**:
+- `feat`: 添加 Dijkstra、Bellman-Ford、Floyd-Warshall 算法
+- `test`: 添加 32 个测试，验证跨存储兼容性
+- `docs`: 添加完整的 README 文档
 
-**Total Test Count**: 179+ tests across all algorithm modules
+**核心算法**:
+- Dijkstra（非负权重）
+- Bellman-Ford（负权边、负环检测）
+- Floyd-Warshall（全源最短路径）
 
-**Roadmap Progress**: ✅ P0 (Core+Storage) → ✅ P1 (Traversal+Generators) → ✅ P2 (Shortest Path+MST+Connectivity) → ✅ P3 (Flow)
+**测试覆盖**: 32 个测试，多种存储后端
+
+**稳定性**: 完整实现，可投入使用
 
 ---
 
-## Version Guidelines
+#### 最小生成树模块 - [0.1.0]
+**状态**: 🟢 初始发布
+**提交**: 3 次（1 feat, 1 test, 1 chore）
 
-### Version Number Meaning
-- **MAJOR** (x.0.0): Incompatible API changes / Complete rewrites
-- **MINOR** (0.x.0): Backward-compatible new features / Significant additions
-- **PATCH** (0.0.x): Backward-compatible bug fixes / Documentation updates
+**变更**:
+- `feat`: 添加 Kruskal 和 Prim 最小生成树算法
+- `test`: 添加 16 个测试（与连通性模块共享）
 
-### Update Triggers
-- **MAJOR**: Breaking changes to public API, removal of features
-- **MINOR**: New algorithm modules, major feature additions, significant refactors
-- **PATCH**: Bug fixes, documentation improvements, test coverage increases
+**核心算法**:
+- Kruskal 算法（使用并查集数据结构）
+- Prim 算法（使用二叉堆优化）
 
-### Current Version Strategy
-- Core/Storage: Higher minor versions reflect maturity and extensive refactoring
-- Algorithm Modules: Start at 0.1.0, patch increments for refinements
-- Next major release will synchronize all modules when API stabilizes
+**支撑数据结构**:
+- 并查集（Disjoint Set Union），带路径压缩和按秩合并
+- 二叉最小堆用于优先队列操作
+
+**测试覆盖**: 16 个测试
+
+**稳定性**: 完整实现
+
+---
+
+#### 连通性模块 - [0.1.0]
+**状态**: 🟢 初始发布
+**提交**: 5 次（1 feat, 1 test, 2 docs, 1 chore）
+
+**变更**:
+- `feat`: 添加连通分量、Tarjan SCC、Kosaraju SCC 算法
+- `test`: 添加 21 个测试（与 MST 模块共享）
+- `docs`: 添加设计文档
+
+**核心算法**:
+- 连通分量（无向图）
+- Tarjan 强连通分量
+- Kosaraju 强连通分量
+
+**测试覆盖**: 21 个测试
+
+**稳定性**: 完整实现
+
+---
+
+#### 网络流模块 - [0.1.0]
+**状态**: 🟢 初始发布（最新）
+**提交**: 5 次（2 feat, 1 test, 2 docs）
+
+**变更**:
+- `feat`: 添加 FlowNetwork 基础类型和结构体
+- `feat`: 实现 Edmonds-Karp 最大流算法
+- `test`: 添加完整测试套件（17 个测试）
+- `docs`: 添加 README 和设计文档
+
+**核心组件**:
+- `FlowNetwork` 类型（独立于 Graph trait）
+- Edmonds-Karp 算法（基于 BFS 的 Ford-Fulkerson 方法）
+- 容量/流量矩阵管理
+
+**设计决策**:
+- 独立类型系统（不继承 GraphReadable），保证语义清晰
+- 纯函数语义，使用深拷贝确保不可变性
+
+**测试覆盖**: 17 个测试
+
+**稳定性**: 刚实现完成，经过充分测试
+
+---
+
+## 项目总览
+
+| 模块 | 版本 | 状态 | 测试数 | 核心功能 |
+|------|------|------|--------|----------|
+| **core** | 0.1.0 | 🟢 稳定 | - | 类型、Trait、错误 |
+| **storage** | 0.2.0 | 🟢 成熟 | - | 10+ 格式、转换器 |
+| **traversal** | 0.1.1 | 🟢 完整 | - | BFS、DFS、环检测、拓扑排序 |
+| **generators** | 0.1.1 | 🟢 健壮 | 56 | 16 个图生成器 |
+| **shortest_path** | 0.1.0 | 🟢 就绪 | 32 | Dijkstra、BF、FW |
+| **mst** | 0.1.0 | 🟢 就绪 | 16 | Kruskal、Prim |
+| **connectivity** | 0.1.0 | 🟢 就绪 | 21 | CC、Tarjan、Kosaraju |
+| **flow** | 0.1.0 | 🟢 全新 | 17 | Edmonds-Karp |
+
+**总测试数量**: 179+ 测试覆盖所有算法模块
+
+**路线图进度**: ✅ P0 (核心+存储) → ✅ P1 (遍历+生成器) → ✅ P2 (最短路径+MST+连通性) → ✅ P3 (网络流)
+
+---
+
+## 版本指南
+
+### 版本号含义
+- **主版本** (x.0.0): 不兼容的 API 变更 / 完全重写
+- **次版本** (0.x.0): 向后兼容的新功能 / 重要新增
+- **修订版** (0.0.x): 向后兼容的错误修复 / 文档更新
+
+### 触发条件
+- **主版本**: 公共 API 的破坏性变更、移除功能
+- **次版本**: 新算法模块、重要功能添加、重大重构
+- **修订版**: 错误修复、文档改进、测试覆盖率提升
+
+### 当前版本策略
+- 核心/存储: 较高的次版本号反映成熟度和广泛的重构
+- 算法模块: 从 0.1.0 开始，逐步递增修订版
+- 下一次主要发布将在所有模块 API 稳定时同步版本号
 
 ---
 
