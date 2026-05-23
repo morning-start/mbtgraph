@@ -24,18 +24,24 @@
 - **组件内聚策略** — BinaryHeap/UnionFind 等辅助数据结构私有化，零跨包耦合
 - **纯函数语义** — 深拷贝隔离副作用，保证算法不可变性
 
-### 🔬 算法覆盖（P0-P3 全部完成 ✅）
+### 🔬 算法覆盖（P0-P5 全部完成 ✅）
 
 | 模块 | 算法 | 复杂度 | 测试数 |
 |------|------|:-----:|:-----:|
-| **遍历** | BFS / DFS / 环检测 / 拓扑排序 | O(V+E) | 48 |
+| **遍历** | BFS / DFS / 环检测 / 拓扑排序 | O(V+E) | ~47 |
 | **最短路径** | Dijkstra / Bellman-Ford / Floyd-Warshall | O((V+E)logV) / O(VE) / O(V³) | 32 |
 | **最小生成树** | Kruskal (+UnionFind) / Prim | O(E logE) / O(V²) | 16 |
 | **连通性** | CC / Tarjan SCC / Kosaraju SCC | O(V+E) | 21 |
 | **网络流** | Edmonds-Karp / Dinic | O(VE²) / O(E√V) | 33 |
+| **图匹配** | Hungarian (匈牙利算法) | O(VE) | 21 |
+| **欧拉路径** 🆕 | Hierholzer (有向/无向) | O(E) | 22 |
+| **割点与桥** 🆕 | Tarjan | O(V+E) | 15 |
+| **图着色** 🆕 | Greedy / Welsh-Powell / DSATUR / Exact | O(V²) ~ O(k^V) | 21 |
+| **最大团** 🆕 | Bron-Kerbosch | O(3^{V/3}) | 14 |
+| **哈密顿/TSP** 🆕 | Backtrack / Nearest Neighbor / Held-Karp | O(V!) ~ O(2^V·V²) | 20 |
 | **图生成器** | 经典图 / 随机图 / 网格 / 二分图 | 各异 | 56 |
 
-**总测试数**: **317+** | **有效代码**: **8,310 行**
+**总测试数**: **483** | **有效代码**: **~11,040 行** | **算法数**: **30+**
 
 ---
 
@@ -44,7 +50,7 @@
 ### 安装
 
 ```bash
-moon add morning-start/mbtgraph@0.3.0
+moon add morning-start/mbtgraph@0.5.0
 ```
 
 ### 基础用法
@@ -283,7 +289,7 @@ Kruskal / 最小生成树             → UndirectedEdgeListGraph
 | **算法数** | 2 (BFS/DFS) | 0 | **20+** |
 | **存储数** | 0 | 1 | **8** |
 | **Trait 层** | 1 | 0 | **6** |
-| **测试数** | ~10 | fixture parity | **317+** |
+| **测试数** | ~10 | fixture parity | **483** |
 | **适用场景** | 对象图遍历 | DOT 可视化 | **算法竞赛/科研/生产** |
 
 **差异化优势**:
@@ -330,13 +336,19 @@ mbtgraph/
 │   │   ├── converter.mbt         # 10 个格式转换函数
 │   │   └── ... (共 8 种存储)
 │   │
-│   ├── algo/                      # 📦 算法模块 [142 tests] P0-P3 ✅
-│   │   ├── traversal/            # 遍历 (BFS/DFS/环检测/拓扑排序)
-│   │   ├── shortest_path/        # 最短路径 (Dijkstra/BF/FW)
-│   │   ├── mst/                  # 最小生成树 (Kruskal/Prim)
-│   │   ├── connectivity/         # 连通性 (CC/Tarjan/Kosaraju)
-│   │   ├── flow/                 # 网络流 (Edmonds-Karp/Dinic)
-│   │   └── ...
+│   ├── algo/                      # 📦 算法模块 [~376 tests] P0-P5 ✅ (12 子模块)
+│   │   ├── traversal/            # 遍历 (BFS/DFS/环检测/拓扑排序) — ~47t
+│   │   ├── generators/           # 图生成器 (P0) — 56t
+│   │   ├── shortest_path/        # 最短路径 (P1) — Dijkstra/BF/FW, 32t
+│   │   ├── mst/                  # 最小生成树 (P2) — Kruskal/Prim, 16t
+│   │   ├── connectivity/         # 连通性 (P2) — CC/Tarjan/Kosaraju, 21t
+│   │   ├── flow/                 # 网络流 (P3) — Edmonds-Karp/Dinic, 33t
+│   │   ├── matching/             # 图匹配 (P4) — Hungarian, 21t 🆕
+│   │   ├── euler/                # 欧拉路径 (P5-A) — Hierholzer, 22t 🆕
+│   │   ├── cutpoints/            # 割点与桥 (P5-B) — Tarjan, 15t 🆕
+│   │   ├── coloring/             # 图着色 (P5-C) — Greedy/WP/DSATUR/Exact, 21t 🆕
+│   │   ├── clique/               # 团/独立集/顶点覆盖 (P5-D) — Bron-Kerbosch, 14t 🆕
+│   │   └── hamiltonian/          # 哈密顿/TSP (P5-E) — Backtrack+NN+Held-Karp, 20t 🆕
 │   │
 │   └── utils/
 │       └── generators/           # 图生成器 [56 tests]
@@ -347,7 +359,7 @@ mbtgraph/
 │   ├── reference/                # 竞品调研 (8 份: NetworkX/petgraph/JGraphT...)
 │   └── architecture.md           # 架构总览
 │
-├── tests/                        # 317+ 测试用例
+├── tests/                        # 483 测试用例 (100% 通过)
 ├── CHANGELOG.md                  # 变更日志
 └── LICENSE                       # Apache-2.0
 ```
@@ -387,9 +399,10 @@ moon check src/algo/shortest_path
 
 | 版本 | 重点内容 | 当前状态 |
 |------|---------|:-------:|
-| **v0.1.0** | 核心基础 + P0-P3 | ✅ **当前版本** |
-| **v0.2.0** | P4 图匹配 + Dinic 算法 | 🔄 规划中 |
-| **v0.3.0** | P5-P7 + 性能基准测试 | ⬜ 远期 |
+| **v0.1.0** | 核心基础 + P0-P3 (8包, 317t) | ✅ 完成 |
+| **v0.4.0** | P4 匹配 + Dinic (9包, 391t) | ✅ Tagged |
+| **v0.5.0** | **P5 图论核心算法 (14包, 483t, 30+算法)** | ✅ **当前版本** 🎉 |
+| v0.6.0 | Ecosystem: CI/CD + 集成测试 + API 冻结 | ⬜ 下一步 |
 | **v1.0.0** | 生产就绪 + API 稳定 (semver) | 🌟 愿景 |
 
 **已完成里程碑**:
@@ -397,12 +410,17 @@ moon check src/algo/shortest_path
 - ✅ P1: Shortest Path (Dijkstra/BF/FW)
 - ✅ P2: MST (Kruskal/Prim) + Connectivity (CC/Tarjan/Kosaraju)
 - ✅ P3: Flow (Edmonds-Karp/Dinic)
+- ✅ P4: Matching (Hungarian)
+- ✅ P5-A: Euler 欧拉路径/回路 (Hierholzer)
+- ✅ P5-B: Cutpoints 割点与桥 (Tarjan)
+- ✅ P5-C: Coloring 图着色 (4种算法)
+- ✅ P5-D: Clique 最大团/独立集/顶点覆盖 (Bron-Kerbosch)
+- ✅ P5-E: Hamiltonian 哈密顿/TSP (回溯+启发式+DP)
 
 **规划中**:
-- 🔄 P4: Matching (Hungarian) + Coloring + Eulerian Path
-- ⬜ P5: PageRank + Community Detection (Louvain)
-- ⬜ P6: I/O 序列化 (DOT/GraphML/JSON)
-- ⬜ P7: CI/CD + Benchmark + 示例项目
+- ⬜ Phase 2: PageRank / Louvain 社区检测 / 中心性分析
+- ⬜ Phase 4: I/O 序列化 (DOT/GraphML/JSON)
+- ⬜ 工程化: CI/CD Pipeline + Benchmark 套件 + 集成测试
 
 ---
 

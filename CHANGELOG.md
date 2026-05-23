@@ -8,9 +8,99 @@
 ## [未发布]
 
 ### 新增
-- 流网络模块，包含 Edmonds-Karp 最大流算法
-- 完整的测试套件（179+ 测试用例）
-- 所有模块的完整文档
+- P5 图论核心算法扩展全部完成 (5 子模块, 92 tests)
+- Git Tags 版本管理 (v0.5.0 - v0.9.0)
+- 项目文档更新至 AGENTS.md v2.2.0 + MEMORY.md 最新
+
+---
+
+## [0.5.0] - 2026-05-23
+
+### 🎉 重大新增 - P5 图论核心算法扩展 (5 子模块, 92 tests, 30+ 算法)
+
+#### P5-A: Euler 欧拉路径/回路 ✅
+**路径**: `src/algo/euler/` | **测试**: **22**
+
+| 组件 | 算法 | 复杂度 |
+|------|------|:-----:|
+| Hierholzer 无向图欧拉回路 | O(E) | |
+| Hierholzer 有向图欧拉路径 | O(E) | |
+| is_eulerian 判定 | O(V) | |
+
+#### P5-B: Cutpoints 割点与桥 ✅
+**路径**: `src/algo/cutpoints/` | **测试**: **15**
+
+| 组件 | 算法 | 复杂度 |
+|------|------|:-----:|
+| Tarjan 割点检测 | O(V+E) | |
+| Tarjan 桥检测 | O(V+E) | |
+
+#### P5-C: Coloring 图着色 ✅
+**路径**: `src/algo/coloring/` | **测试**: **21**
+
+| 组件 | 算法 | 复杂度 |
+|------|------|:-----:|
+| Greedy 贪心着色 | O(V²) | |
+| Welch-Powell 着色 | O(V²+VE) | |
+| DSATUR 启发式 | O(V²+kV) | |
+| 回溯精确着色 | O(k^V) | |
+
+#### P5-D: Clique 团/独立集/顶点覆盖 ✅
+**路径**: `src/algo/clique/` | **测试**: **14**
+
+| 组件 | 算法 | 复杂度 |
+|------|------|:-----:|
+| Bron-Kerbosch 最大团 | O(3^{V/3}) | |
+| 最大独立集 (补图法) | O(3^{V/3}) | |
+| 最小顶点覆盖 (精确+近似) | 精确 O(3^{V/3}) / 近似 O(V²) | |
+
+#### P5-E: Hamiltonian 哈密顿/TSP ✅
+**路径**: `src/algo/hamiltonian/` | **测试**: **20**
+
+| 组件 | 算法 | 复杂度 |
+|------|------|:-----:|
+| 哈密顿快速检查 | O(V+E) | |
+| 哈密顿路径回溯 | O(V!) | |
+| 哈密顿回路回溯 | O(V!) | |
+| TSP 最近邻启发式 | O(V²) | |
+| TSP Held-Karp 精确解 | O(2^V·V²) (V≤12) | |
+
+### 统计数据
+- **总测试数**: 483 (从 391 增加 92, +23.5%)
+- **包数量**: 14 个 (从 9 增加 5)
+- **算法总数**: 30+ (从 ~18 增加 12+)
+- **代码行数**: ~11,040 行
+
+### 文档更新
+- AGENTS.md 升级至 v2.2.0 (P5模块完整信息)
+- MEMORY.md 添加P5决策记录和最新测试数据
+- README.mbt.md 更新至v0.5.0内容
+- Git Tags: v0.5.0 → v0.6.0 → v0.7.0 → v0.8.0 → v0.9.0
+
+---
+
+## [0.4.0] - 2026-05-19
+
+### 🔥 重大新增 - P4 匹配 + Dinic 双算法
+
+#### P4: Matching 图匹配 ✅
+**路径**: `src/algo/matching/` | **测试**: **21**
+
+| 组件 | 算法 | 复杂度 |
+|------|------|:-----:|
+| Hungarian 匈牙利算法 | O(VE) | |
+
+#### Flow: Dinic 最大流算法 ✨
+**路径**: `src/algo/flow/dinic.mbt` | **测试**: **16** (含3个EK一致性验证)
+
+| 组件 | 算法 | 复杂度 |
+|------|------|:-----:|
+| Dinic 分层阻塞流 | O(E√V) | 比 EK 快一个数量级 |
+
+### 统计数据
+- **总测试数**: 391 (从 317 增加 74, +23.3%)
+- **包数量**: 9 个 (增加 matching 模块)
+- **网络流双算法并存**: EK 教学友好 / Dinic 性能更优
 
 ---
 
@@ -239,5 +329,7 @@
 
 ---
 
-[Unreleased]: https://github.com/morning-start/mbtgraph/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/morning-start/mbtgraph/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/morning-start/mbtgraph/releases/tag/v0.5.0
+[0.4.0]: https://github.com/morning-start/mbtgraph/releases/tag/v0.4.0
 [0.3.0]: https://github.com/morning-start/mbtgraph/releases/tag/v0.3.0
