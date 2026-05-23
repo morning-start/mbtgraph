@@ -1,545 +1,365 @@
----
-title: "mbtgraph 发展路线图 (ROADMAP)"
-version: "2.2.0"
-status: "active (v0.4.1 — P5 图论核心算法扩展完成)"
-type: "roadmap"
-role: "战略蓝图 — Module-level 技术方向与架构演进"
-source: "ARCHITECTURE.md v3.0"
-created: "2026-05-18"
-updated: "2026-05-22"
-author: "morning-start"
-license: "Apache-2.0"
-tags: ["roadmap", "graph-algorithms", "moonbit", "trait-based", "strategy"]
----
+# mbtgraph 项目路线图
 
-# mbtgraph 发展路线图 (ROADMAP)
-
-> **定位**: 🗺️ **战略蓝图** (Strategic Blueprint) — Module 级别、展望性、技术方向
->
-> **版本**: v2.2.0 | **基准架构**: [ARCHITECTURE.md](./ARCHITECTURE.md) v3.0 (SOLID 4.0/5)
->
-> **📖 配套文档**: [TODO.md](./TODO.md) = 行动清单（近期任务/可执行项）
+> **最后更新**: 2026-05-23 | **当前版本**: v0.5.0 | **状态**: 🎉 P0-P5 核心算法全部完成
 
 ---
 
-## 架构基线
+## 📌 项目愿景
 
-### 当前状态快照
+**成为 MoonBit 生态系统中最完整、最高质量的图算法库，覆盖从基础遍历到高级图分析的全面需求。**
+
+### 核心定位
+
+- **目标用户**: 算法竞赛选手、科研工作者、图数据库开发者、需要图算法的生产系统
+- **差异化优势**:
+  - ✅ 唯一覆盖 **6 大算法领域**的 MoonBit 图库（遍历/路径/流/匹配/图论/NP-Hard）
+  - ✅ 业界领先的 **6 层 Trait 设计**（对标 petgraph 的 3 层）
+  - ✅ **8 种存储结构**（比 petgraph 多 2 种）
+  - ✅ **原生多后端**支持（wasm/js/native）
+  - ✅ **超小体积**（wasm < 1MB）
+
+---
+
+## 🎯 年度目标与关键结果 (OKR)
+
+### O1: 完成 v1.0.0 生产就绪版本（2026 Q2-Q3）
+
+**目标**: 将 mbtgraph 从"算法原型库"升级为"生产级图计算引擎"
+
+#### KR1.1: 扩展高级图分析算法套件 [Must]
+
+- [ ] 实现 **PageRank** 算法（迭代/幂法，O(kE)）
+- [ ] 实现 **中心性分析** 套件（度/介数/接近/特征向量中心性）
+- [ ] 实现 **社区检测** 算法（Louvain/Girvan-Newman/Label Propagation）
+- [ ] 新增 **~100+ 测试用例**，覆盖率 ≥ 90%
+- **衡量标准**: 3 个新模块 + 100 tests + 完整文档
+
+#### KR1.2: 完善 I/O 与序列化能力 [Should]
+
+- [ ] 实现 **DOT 格式** 解析器/生成器（Graphviz 兼容）
+- [ ] 实现 **GraphML** 格式读写（XML-based）
+- [ ] 实现 **JSON** 序列化（自定义 schema）
+- [ ] 支持从文件/字符串构建图对象
+- **衡量标准**: 3 种格式 + 双向读写 + 40+ 测试
+
+#### KR1.3: 达到工程化生产标准 [Must]
+
+- [ ] 建立 **CI/CD Pipeline**（GitHub Actions: lint/test/build/release）
+- [ ] 创建 **Benchmark 套件**（性能基线测试 + 回归检测）
+- [ ] 实现 **API 冻结前审查**（semver 兼容性检查）
+- [ ] 编写 **迁移指南**（v0.x → v1.0 breaking changes 文档）
+- **衡量标准**: CI 绿色 + Benchmark 通过 + API 审计报告
+
+---
+
+### O2: 构建活跃的开源社区（2026 Q3-Q4）
+
+**目标**: 从个人项目成长为有贡献者的 MoonBit 标准库候选
+
+#### KR2.1: 提升项目可见度与易用性 [Should]
+
+- [ ] 发布到 **mooncakes.io** 包仓库（官方推荐渠道）
+- [ ] 编写 **10+ 使用示例**（教程/最佳实践/常见问题）
+- [ ] 创建 **交互式 Demo**（wasm 在线运行，类似 playground）
+- [ ] 翻译文档为 **英文版**（国际化准备）
+- **衡量标准**: 月下载量 > 100 + Star > 50 + 文档完整度 100%
+
+#### KR2.2: 建立质量保障体系 [Must]
+
+- [ ] 达成 **代码覆盖率 ≥ 85%**（核心模块 ≥ 95%）
+- [ ] 引入 **Fuzz Testing**（随机图生成器 + 属性验证）
+- [ ] 添加 **性能回归检测**（每次 PR 自动 benchmark 对比）
+- [ ] 建立 **Issue/PR 模板**（标准化贡献流程）
+- **衡量标准**: 覆盖率报告 + Fuzz suite + 性能基线数据
+
+#### KR2.3: 培养早期贡献者 [Could]
+
+- [ ] 标记 **"Good First Issue"** 任务（降低参与门槛）
+- [ ] 编写 **贡献者指南**（CONTRIBUTING.md 详细流程）
+- [ ] 举办 **1 次 MoonBit 图算法分享会**（社区推广）
+- **衡量标准**: ≥ 3 个外部 PR + 1 个长期贡献者
+
+---
+
+### O3: 探索前沿图计算方向（2026 Q4+）
+
+**目标**: 保持技术领先性，探索 MoonBit 特有的图计算优势
+
+#### KR3.1: 图机器学习基础 [Could]
+
+- [ ] 调研 **GNN (图神经网络)** 在 MoonBit 的可行性
+- [ ] 实现 **Node2Vec/DeepWalk** 嵌入算法
+- [ ] 探索 **WebAssembly 加速**机会（SIMD/WASM GC）
+- **衡量标准**: 可行性报告 + 1 个 PoC 原型
+
+#### KR3.2: 大规模图处理能力 [Could]
+
+- [ ] 实现 **外部存储**支持（内存映射文件/磁盘溢出）
+- [ ] 开发 **分布式图计算**接口设计（预留扩展点）
+- [ ] 优化 **CSR/CSC** 的批量操作性能（向量化/SIMD）
+- **衡量标准**: 支持 1M+ 节点的性能基准测试
+
+---
+
+## 📅 里程碑时间轴
 
 ```
-mbtgraph v0.4.1 (P5 完成) ────────────────────────────────
+2026 Q2 (当前) ────────────────────────────────────── ✅ v0.5.0 已发布
 │
-│  📦 包数:     14 个 (core / storage / algo×12 / utils)
-│  🧪 测试:     483 个 (100% 通过) ↑+92
-│  🔌 公开API:  ~120 个函数/类型/trait
-│  📄 文档:      14/14 README + Design Doc (100%)
-│  🏗️ 架构评分: ⭐⭐⭐⭐☆ 4.0/5 (SOLID 十维评审)
-│  ⚡ 后端:      native / wasm 双后端
-│  🏷️ Tags:     v0.1.0 → v0.2.0 → v0.3.0 → v0.4.0 → v0.4.1
+├─ 5月23日: P5 图论核心算法完成 (483 tests)
 │
-└───────────────────────────────────────────────────────
-```
-
-### 四层架构模型（来自 ARCHITECTURE.md §项目目录结构）
-
-```
-                    ┌──────────────────┐
-                    │    utils/        │ ← 工具层 (generators 56t)
-                    ├──────────────────┤
-                    │    algo/         │ ← 算法层 (283t, 12 子模块) 🆕
-                    │  traversal/sp/mst│
-                    │  conn/flow/match│
-                    │  euler/cutpoints │ ← P5 新增
-                    │  coloring/clique │
-                    │  hamiltonian     │
-                    ├──────────────────┤
-                    │   storage/       │ ← 存储层 (~107t, 8 种实现)
-                    │ 有向/无向/只读   │
-                    ├──────────────────┤
-                    │    core/         │ ← 核心抽象层 (68t, 6 层 trait)
-                    │ types/traits/err│
-                    └──────────────────┘
-```
-
-### Trait 分层体系（6 层，12 方法）
-
-| 层级 | Trait | 方法数 | 职责 |
-|:----:|-------|:-----:|------|
-| L0 | `GraphReadable` | **12** | 最小只读接口 (node/edge/neighbor/degree/iter) |
-| L1a | `GraphWritable` | **6** | 动态修改 (add/remove node+edge+clear) |
-| L1b | `BatchReadable` | **2** | 批量查询 (nodes/edges_batch) |
-| L1c | `EdgeIterable` | **1** | 边迭代 (edges_iter → Kruskal) |
-| L2 | `GraphDirected` | **6** | 有向图扩展 (in/out neighbor/degree/succ/pred) |
-| L3 | `GraphFull` | **0** | 组合别名 = Writable + Directed |
-
----
-
-## Phase 进度总览
-
-> 数据来源: [ARCHITECTURE.md](./ARCHITECTURE.md) §开发路线图
-
-```
-Phase 1: MVP 基础     ████████████████████████ 200% ✅ 超额完成
-Phase 2: 网络分析增强   ████████████░░░░░░░░░░░   50% 🔄 进行中
-Phase 3: 高级算法补全   ██████████████████████ 100% ✅ P5全部完成 🎉
-Phase 4: 生态完善       ░░░░░░░░░░░░░░░░░░░░░░░    0% ⬜ 未开始
-```
-
----
-
-## 1. 已完成模块 ✅
-
-### M1-M3: 基础设施层
-
-| # | 模块 | 路径 | 测试数 | Trait 实现 | 完成日期 |
-|---|------|------|:------:|-----------|:--------:|
-| M1 | **核心类型 + Trait** (6 层) | `src/core/` | **68** | 定义方 | 2026-05-17 |
-| M2 | **8 种存储实现** | `src/storage/` | **~107** | Full/Writable/Read | 2026-05-17 |
-| M3 | **遍历算法** (BFS/DFS/环检测/拓扑) | `src/algo/traversal/` | **~47** | GraphReadable | 2026-05-18 |
-
-**M 层关键设计决策** (ARCHITECTURE.md §内部基础设施分布策略):
-- ✅ 组件内聚: 无 `internal/` 包，私有数据结构定义在使用方内部
-- ✅ CSR 只读: 故意不实现 GraphWritable (LSP 原则)
-- ✅ Converter 三层架构: 有向转换/无向转换/语义转换 (as_*)
-
-### P0-P3: 核心算法模块
-
-#### P0: 图生成器 ✅
-
-| 类别 | 函数数 | 测试数 | 位置 |
-|------|:-----:|:-----:|------|
-| 经典图 | 8 | 24 | `src/utils/generators/classic.mbt` |
-| 网格拓扑 | 3 | 12 | `src/utils/generators/grid.mbt` |
-| 随机图 | 4 | 12 | `src/utils/generators/random.mbt` |
-| 二分图专用 | 2 | 8 | `src/utils/generators/bipartite.mbt` |
-| **合计** | **16** | **56** | |
-
-#### P1: 最短路径 ✅
-
-| 算法 | 复杂度 | 私有组件 | 测试数 |
-|------|:-----:|---------|:-----:|
-| Dijkstra | O((V+E)log V) | BinaryHeap (priv) | 9+2=11 |
-| Bellman-Ford | O(VE) | — | 6 |
-| Floyd-Warshall | O(V³) | — | 5 |
-| **跨存储兼容** | — | AdjList/Matrix/EdgeList | 6 |
-| **合计** | | | **32** |
-
-#### P2: MST + 连通性 ✅
-
-| 算法 | 复杂度 | 私有组件 | 测试数 |
-|------|:-----:|---------|:-----:|
-| Kruskal | O(E log E) | UnionFind (priv) | 7 |
-| Prim | O(V²) | — | 5 |
-| ConnectedComponents | O(V+E) | — | 7 |
-| Tarjan SCC | O(V+E) | TarjanState (priv) | 7 |
-| Kosaraju SCC | O(V+E) | — | 7 |
-| **跨存储兼容** | — | | 3 |
-| **MST 一致性验证** | — | Kruskal vs Prim | 1 |
-| **合计** | | | **37** |
-
-#### P3: 网络流 ✅
-
-> **完成日期**: 2026-05-19 | **状态**: ✅ **全部完成 (双算法)**
-
-| 组件 | 设计模式 | 测试数 |
-|------|---------|:-----:|
-| FlowNetwork (独立类型) | 不适配 Graph trait | 5 |
-| Edmonds-Karp | deep_copy 纯函数语义, O(VE²) | 11 |
-| **Dinic** ✨ | **BFS分层+DFS阻塞流, O(E√V)** | **16** |
-| **合计** | | **33** |
-
-**P3 关键设计**: FlowNetwork 为独立类型（矩阵表示），不强制适配 GraphReadable。
-双算法并存: EK 教学友好 / Dinic 性能更优，可交叉验证正确性。
-
-#### P4: 图匹配 ✅
-
-> **完成日期**: 2026-05-19 | **状态**: ✅ **全部完成**
-
-| 组件 | 复杂度 | 测试数 |
-|------|:-----:|:-----:|
-| MatchingResult 类型 + 3 方法 | — | 5 |
-| Hungarian 匈牙利算法 | O(VE) | 16 |
-| bipartite_matching_graph (Trait 版本) | O(VE) | — |
-| **合计** | | **21** |
-
-**P4 关键设计**: 二分图最大匹配，DFS 增广路搜索。
-提供纯数据版本（零依赖）和 GraphReadable trait 版本（与存储层集成）。
-
----
-
-#### P5: 图论核心算法扩展 ✅🆕
-
-> **完成日期**: 2026-05-22 | **状态**: ✅ **全部完成 (5 子模块, 92 tests)**
-
-##### P5-A: Euler 欧拉路径/回路 ✅
-
-> **路径**: `src/algo/euler/` | **测试**: **22** | **Git**: `e538ea4`
-
-| 组件 | 算法 | 复杂度 | 测试数 |
-|------|------|:-----:|:-----:|
-| EulerResult 类型 | — | — | 5 |
-| Hierholzer 无向图欧拉回路 | O(E) | 7 |
-| Hierholzer 有向图欧拉路径 | O(E) | 5 |
-| is_eulerian 判定 | O(V) | 5 |
-| **合计** | | | **22** |
-
-##### P5-B: 割点与桥 (Cutpoints) ✅
-
-> **路径**: `src/algo/cutpoints/` | **测试**: **15** | **Git**: `a74d8ac`
-
-| 组件 | 算法 | 复杂度 | 测试数 |
-|------|------|:-----:|:-----:|
-| CutpointResult / BridgeResult | — | — | 4 |
-| Tarjan 割点检测 | O(V+E) | 6 |
-| Tarjan 桥检测 | O(V+E) | 5 |
-| **合计** | | | **15** |
-
-##### P5-C: 图着色 (Coloring) ✅
-
-> **路径**: `src/algo/coloring/` | **测试**: **21** | **Git**: `2226aee`
-
-| 组件 | 算法 | 复杂度 | 测试数 |
-|------|------|:-----:|:-----:|
-| ColoringResult / ChromaticResult | — | — | 5 |
-| Greedy 贪心着色 | O(V²) | 4 |
-| Welch-Powell 着色 | O(V²+VE) | 4 |
-| DSATUR 启发式 | O(V²+kV) | 4 |
-| 回溯精确着色 | O(k^V) | 4 |
-| **合计** | | | **21** |
-
-##### P5-D: 团/独立集/顶点覆盖 (Clique) ✅
-
-> **路径**: `src/algo/clique/` | **测试**: **14** | **Git**: `b021639`
-
-| 组件 | 算法 | 复杂度 | 测试数 |
-|------|------|:-----:|:-----:|
-| CliqueResult / IndependentSetResult / VertexCoverResult | — | — | 3 |
-| Bron-Kerbosch 最大团 | O(3^{V/3}) | 6 |
-| 最大独立集 (补图法) | O(3^{V/3}) | 3 |
-| 最小顶点覆盖 (精确 + 近似) | 精确 O(3^{V/3}) / 近似 O(V²) | 2 |
-| **合计** | | | **14** |
-
-##### P5-E: 哈密顿路径/TSP (Hamiltonian) ✅
-
-> **路径**: `src/algo/hamiltonian/` | **测试**: **20** | **Git**: `821ac95`
-
-| 组件 | 算法 | 复杂度 | 测试数 |
-|------|------|:-----:|:-----:|
-| HamiltonianResult / TSPResult | — | — | 2 |
-| 哈密顿快速检查 | O(V+E) | 6 |
-| 哈密顿路径回溯 | O(V!) | 3 |
-| 哈密顿回路回溯 | O(V!) | 3 |
-| TSP 最近邻启发式 | O(V²) | 3 |
-| TSP Held-Karp 精确解 | O(V!)/O(2^V·V²) V≤12 | 3 |
-| **合计** | | | **20** |
-
-**P5 总计**: **5 子模块 / 15+ 算法 / 92 tests / 11 commits**
-
----
-
-## 2. 项目仪表盘
-
-### 代码产出统计
-
-| 层级 | 模块 | 源文件 | 代码行 | 公共 API | 测试 | Git 提交 |
-|------|------|:-----:|:-----:|:------:|:-----:|:-------:|
-| **L3 核心** | Core | 4 | ~400 | 20+ types/traits | 68 | 3 |
-| | Storage | 12 | ~2000 | 8 structs + 8 converters | ~107 | 5 |
-| | Traversal | 4 | ~500 | 4 functions | ~47 | 2 |
-| **L2 算法** | Generators | 5 | ~600 | 16 functions | 56 | 1 |
-| | Shortest Path | 6 | ~550 | 5 functions | 32 | 1 |
-| | MST | 5 | ~350 | 2 functions | 16 | 1 |
-| | Connectivity | 6 | ~450 | 3 functions | 21 | 1 |
-| | Flow | 7 | ~540 | 4 functions | 33 | 6 |
-| | Matching | 5 | ~250 | 2+3 methods | 21 | 1 |
-| **Euler 🆕** | 5 | ~400 | 3 functions | **22** | 3 |
-| **Cutpoints 🆕** | 5 | ~300 | 2 functions | **15** | 3 |
-| **Coloring 🆕** | 6 | ~500 | 5 functions | **21** | 3 |
-| **Clique 🆕** | 6 | ~450 | 4 functions | **14** | 3 |
-| **Hamiltonian 🆕** | 6 | ~400 | 4 functions | **20** | 3 |
-| **文档** | Design Docs | 13~14 | ~2800 | — | — | 6 |
-| | READMEs | 14 | ~2000 | — | — | 4 |
-| **总计** | **~96** | **~11040** | **~120** | **~483** | **~45** |
-
-### 测试分布热力图
-
-```
-Storage:      ████████████████████████████████ 107 (22%)  ← 最大
-Core:         ████████████████████ 68 (14%)
-Generators:   █████████████████████ 56 (12%)
-Flow:         ███████████████████ 33 (7%)
-Traversal:    ██████████████ 47 (10%)
-ShortestPath: ███████████████ 32 (7%)
-**Euler 🆕:**   █████████████████ **22 (5%)**
-**Coloring 🆕:** █████████████████ **21 (4%)**
-Connectivity: ███████████████ 21 (4%)
-Matching:     ███████████████ 21 (4%)
-**Hamiltonian 🆕:** ███████████████ **20 (4%)**
-**Cutpoints 🆕:** ████████████ **15 (3%)**
-**Clique 🆕:**   ████████████ **14 (3%)**
-MST:          ██████████ 16 (3%)
-───────────────────────────────────────────────────
-Total:        ████████████████████████████████████████ 483 tests (100%) ✅
+│
+2026 Q2-Q3 ─────────────────────────────────────────── 🔨 v0.6.0 - v0.8.0 开发中
+│
+├─ 📍 里程碑 M1: 高级图分析算法 (目标: 6月底)
+│  ├─ PageRank + 中心性分析 (~35 tests)
+│  ├─ 社区检测算法 (~40 tests)
+│  └─ 版本号: v0.6.0
+│
+├─ 📍 里程碑 M2: I/O 序列化 (目标: 7月中旬)
+│  ├─ DOT/GraphML/JSON 格式支持 (~45 tests)
+│  └─ 版本号: v0.7.0
+│
+├─ 📍 里程碑 M3: 工程化完善 (目标: 7月底)
+│  ├─ CI/CD Pipeline 上线
+│  ├─ Benchmark 套件建立
+│  └─ 版本号: v0.8.0
+│
+│
+2026 Q3 ───────────────────────────────────────────── 🚀 v0.9.0 Beta → v1.0.0 RC
+│
+├─ 📍 里程碑 M4: API 冻结与文档完善 (目标: 8月中)
+│  ├─ API 审计 + Breaking Changes 文档
+│  ├─ 迁移指南 + 英文文档
+│  └─ 版本号: v0.9.0 (Beta)
+│
+├─ 📍 里程碑 M5: v1.0.0 正式发布 (目标: 8月底)
+│  ├─ semver 稳定版
+│  ├─ mooncakes.io 发布
+│  └─ 交互式 Demo 上线
+│
+│
+2026 Q4 ───────────────────────────────────────────── 🌟 v1.1.0 - v1.2.0 生态扩展
+│
+├─ 📍 里程碑 M6: 社区建设初见成效 (目标: 10月)
+│  ├─ 首个外部贡献者 PR 合并
+│  ├─ Fuzz Testing + 性能回归上线
+│  └─ 版本号: v1.1.0
+│
+├─ 📍 里程碑 M7: 前沿探索 (目标: 12月)
+│  ├─ GNN 可行性报告 / Node2Vec PoC
+│  ├─ 大规模图处理优化
+│  └─ 版本号: v1.2.0
+│
+│
+2027+ ─────────────────────────────────────────────── 🔮 长期愿景
+│
+└─ 成为 MoonBit 官方推荐图算法库
+   └─ 支持工业级场景（社交网络分析/知识图谱/推荐系统）
 ```
 
 ---
 
-## 3. 远期模块规划 (Backlog)
+## ⚠️ 风险评估与缓解策略
 
-> 📝 **近期可执行任务见 [TODO.md](./TODO.md)** | 本节为 Module-level 技术方向
+### 🔴 高风险
 
-### Phase 2 待完成: 网络分析增强 (50% → 100%)
+| 风险 | 影响 | 概率 | 缓解措施 |
+|------|------|:----:|---------|
+| **MoonBit 语言稳定性** | API breaking changes 导致大量重构 | 中 | 密切跟踪 changelog；抽象层隔离语言变更 |
+| **性能瓶颈** | 复杂算法在 wasm/native 后端性能不达标 | 中 | 早期 benchmark；关键路径手写优化 |
+| **维护负担** | 个人项目难以持续维护 30+ 算法 | 高 | 优先级排序（P0>P1>P2）；吸引贡献者 |
 
-> 当前状态: MST + Generators 已提前完成；PageRank / Louvain / 中心性 待开发
+### 🟡 中风险
 
-| 模块路径 | 核心算法 | 复杂度 | Trait 约束 | 优先级 | 状态 |
-|----------|---------|:-----:|-----------|:-----:|:----:|
-| `algo/analysis/centrality` | PageRank | O(kE) 迭代 | GraphDirected | ⭐⭐ | ⬜ |
-| | Betweenness Centrality | O(VE²) | GraphReadable | ⭐ | ⬜ |
-| `algo/analysis/community` | Louvain 社区检测 | O(m log n) | GraphWritable | ⭐⭐⭐ | ⬜ |
-| | Label Propagation | O(m) | GraphWritable | ⭐⭐ | ⬜ |
-| `algo/analysis/clustering` | Clustering Coefficient | O(Vd²) | GraphReadable | ⭐ | ⬜ |
+| 风险 | 影响 | 概率 | 缓解措施 |
+|------|------|:----:|---------|
+| **竞品出现** | 其他 MoonBit 图库分流用户 | 低 | 差异化（Trait 设计/算法广度/文档质量） |
+| **测试覆盖不足** | 边界 case 导致生产 bug | 中 | Fuzz testing + 属性验证 + 集成测试 |
+| **文档滞后** | 代码更新但文档过时 | 高 | 强制文档更新（CI check）；自动化生成 |
 
-**技术要点** (ARCHITECTURE.md §PageRank/Louvain):
-- PageRank: 阻尼因子 d=0.85, 容忍度 ε=1e-6, 通常 10-20 次迭代收敛
-- Louvain: 两阶段迭代 (节点移动 + 超图聚合), 接近线性复杂度
-- **差异化定位**: 这是 mbtgraph 相对竞品的**核心卖点** (NetworkX 强但慢, petgraph 无此功能)
+### 🟢 低风险
 
-### Phase 3 待完成: 高级算法补全 (100% ✅) 🎉
-
-> 当前状态: **✅ 全部完成！** P0-P5 + Dinic + Matching + Euler + Cutpoints + Coloring + Clique + Hamiltonian
-
-| 模块路径 | 核心算法 | 复杂度 | 说明 | 优先级 | 状态 |
-|----------|---------|:-----:|------|:-----:|:----:|
-| `algo/flow/dinic` | Dinic 最大流 | O(E√V) | 比 EK 快一个数量级 | 🔥🔥 | **✅ 已完成** |
-| `algo/flow/push_relabel` | Push-Relabel | O(V³) | 理论最优实践 | ⭐ | ⬜ 可选 |
-| `algo/matching` | Hungarian 匈牙利 | O(VE) | 二分图最大匹配 | 🔥🔥🔥 | **✅ 已完成** |
-| | Edmonds Blossom | O(V³) | 一般图最大匹配 | ⭐⭐ | ⬜ 远期 |
-| `algo/euler` | Hierholzer | O(E) | 欧拉回路构造 | ⭐⭐ | **✅ 已完成** |
-| `algo/cutpoints` | Tarjan | O(V+E) | 割点/桥检测 | ⭐⭐ | **✅ 已完成** |
-| `algo/coloring` | DSatur/Welsh-Powell | O(V²)~O(k^V) | 图着色 (NP-C) | ⭐⭐ | **✅ 已完成** |
-| `algo/clique` | Bron-Kerbosch | O(3^{V/3}) | 团/独立集/顶点覆盖 | ⭐⭐ | **✅ 已完成** |
-| `algo/hamiltonian` | 回溯 + 最近邻 + Held-Karp | O(V!)~O(2^V) | 哈密顿/TSP (NP-Hard) | ⭐⭐ | **✅ 已完成** |
-
-### Phase 4: 生态完善 (0%)
-
-| 模块路径 | 内容 | 说明 | 优先级 |
-|----------|------|------|:-----:|
-| `utils/io` | DOT / GraphML / JSON / CSV 序列化 | 与 NetworkX/Gephi 互通 | ⭐⭐ |
-| `utils/layout` | Force-directed / Circular / Hierarchical | 可视化布局引擎 | ⭐ |
-| CI/CD | GitHub Actions 自动化流水线 | fmt → check → test → coverage | 🔥🔥 → [TODO](./TODO.md) |
-| 发布 | moonpkg 注册中心发布 | semver 管理 | 🔥🔥 → [TODO](./TODO.md) |
+| 风险 | 影响 | 概率 | 缓解措施 |
+|------|------|:----:|---------|
+| **包管理变更** | mooncakes.io 迁移或规则变化 | 低 | 关注官方公告；保持兼容性 |
+| **依赖冲突** | 第三方依赖版本不兼容 | 低 | 最小化依赖；锁定版本 |
 
 ---
 
-## 4. 架构演进路线
+## 📊 资源需求与优先级矩阵
 
-> 基于 ARCHITECTURE.md §架构合理性审查报告 (SOLID 4.0/5)
+### MoSCoW 优先级（v1.0.0 前）
 
-### 当前风险矩阵
-
-| # | 风险 | 严重度 | 影响范围 | 缓解方案 |
-|---|------|:-----:|---------|---------|
-| **R1** | FlowNetwork 独立于 Graph trait | 🟡 中 | flow 模块 | Adapter 模式桥接 (v0.3+) |
-| **R2** | 缺少 analysis 层 | 🟢 低 | Phase 2 | 正在开发中 |
-| **R3** | 无 IO/Layout 支持 | 🟢 低 | Phase 4 | 外部工具链弥补 |
-| **R4** | 无集中集成测试 | 🟡 中 | 全局质量 | 添加 integration_test (v0.5) |
-| **R5** | 性能未基准测试 | 🟡 中 | 优化依据 | Benchmark 套件 (v0.5) |
-
-### 改进优先级 (ARCHITECTURE.md §改进优先级)
-
-| 优先级 | 改进项 | 版本目标 | 预期收益 |
-|:-----:|--------|:-------:|---------|
-| **P0** | 集成测试 (跨模块端到端) | v0.5.0 | 提升整体信心 |
-| **P1** | 性能基准测试套件 | v0.5.0 | 数据驱动优化决策 |
-| **P2** | FlowNetwork → Graph 适配器 | v0.5.0+ | 统一抽象层 |
-| **P3** | CI/CD 自动化 | v0.5.0 | 工程质量提升 |
-| **P4** | API 冻结 (semver) | v0.5.0 | 生态基础 |
+| 类别 | 功能 | 优先级 | 理由 |
+|------|------|:------:|------|
+| **Must** | PageRank + 中心性 + 社区检测 | P0 | 补齐图分析核心能力，提升实用性 |
+| **Must** | I/O 序列化 (DOT/JSON) | P0 | 生产环境必需，否则无法导入真实数据 |
+| **Must** | CI/CD + Benchmark | P0 | 工程化基础，保证质量 |
+| **Should** | GraphML 支持 | P1 | XML 格式较复杂，可后续补充 |
+| **Should** | 英文文档 + 教程 | P1 | 国际化重要但非阻塞 |
+| **Should** | 交互式 Demo | P1 | 提升体验但开发成本高 |
+| **Could** | GNN/Node2Vec | P2 | 前沿探索，非核心功能 |
+| **Could** | 分布式图计算 | P2 | 过早优化，待实际需求驱动 |
+| **Won't** | GUI 可视化编辑器 | — | 超出范围，应使用现有工具（如 yEd） |
 
 ---
 
-## 5. 版本里程碑
+## 🔄 迭代计划（Sprint 视图）
 
-```
-时间轴 ─────────────────────────────────────────────────────────────►
+### Sprint 1: 高级图分析算法（2 周）
 
-v0.1.0  ★              v0.3.0           v0.4.0  ★       v0.4.1 ★当前    v0.5.0            v1.0.0
-  │                     │                │               │             │                 │
-  │ M1-M3 + P0-P3       │ P4+Dinic       │ P4+Dinic      │ P5 全部      │ Analysis        │ API稳定
-  │ 317 tests           │ CI/CD          │ 391t          │ 483t         │ CI/CD+API       │ 全覆盖
-  │ 8 packages          │ API冻结         │ 9 packages    │ 14 packages  │ Benchmark        │ 生产就绪
-  │                     │ 集成测试        │               │ 30+ algorithms│ Integration      │
-  │ 2026-05-19          │ 2026-05-26      │ 2026-05-19     │ 2026-05-22   │ 2026-06         │ 2026-Q3
-```
+**目标**: 完成 PageRank、中心性分析、社区检测三大模块
 
-| 版本 | 代号 | 核心内容 | 目标日期 | 状态 | 详情 |
-|:----:|------|---------|:--------:|:----:|------|
-| **v0.1.0** | Foundation | M1-M3 + P0-P3 基础设施 + 核心算法 | 2026-05-19 | ✅ 完成 | 8 包 / 317t / 82 API |
-| **v0.2.0** | Expansion | P4 匹配 + Dinic + CI/CD + API 冻结 | 2026-05-26 | 🔄 进行中 | → [TODO.md](./TODO.md) |
-| **v0.3.0** | Analysis | PageRank + Louvain + Benchmark 套件 | 2026-06-09 | ⬜ 远期 | 差异化核心竞争力 |
-| **v0.4.0** | Enhanced Flow+Match | P4 Matching + Dinic 双算法 | 2026-05-19 | ✅ Tagged | 9 包 / 391t / 86 API |
-| **v0.4.1** | **P5 Core Algorithms** | **Euler/Cutpoints/Coloring/Clique/Hamiltonian** | **2026-05-22** | **✅ 完成** | **14 包 / 483t / 120 API / 30+ 算法** |
-| v0.5.0 | Ecosystem | IO 序列化 + Layout + CI/CD + 集成测试 | 2026-06 | ⬜ 下一步 | 生态完善 |
-| v1.0.0 | Production | API 稳定 (semver) + 全覆盖 + 文档完整 | 2026-Q3 | 🌟 愿景 | 生产就绪 |
+**交付物**:
+- `src/algo/pagerank/` — PageRank 算法实现（~200 行, 15 tests）
+- `src/algo/centrality/` — 4 种中心性指标（~350 行, 25 tests）
+- `src/algo/community/` — Louvain + Label Propagation（~400 行, 30 tests）
+- README.md + design doc 各模块
+- **总测试数**: ~70 new tests
+
+**验收标准**:
+- [ ] `moon test` 全部通过（0 failure）
+- [ ] `moon check` 零错误零警告
+- [ ] 覆盖率 ≥ 85%（新模块）
+- [ ] 文档包含使用示例 + 复杂度分析
 
 ---
 
-## 6. 依赖关系图
+### Sprint 2: I/O 序列化（1.5 周）
 
-```
-已完成 (✅) — v0.1.0:
-═══════════════════════════════════════════════════
-M1 Core ─┬─ M2 Storage ── M3 Traversal
-          │                 │
-          └─────────────────┘
-                    ↓
-          ┌──────────────────────────────────────┐
-          │                                      │
-    P0 Gen(utils)←─ 测试基建依赖 ─→ P1 ShortestPath
-          │                         │           │
-          │                         ↓           │
-          │                   P2 MST+Conn       │
-          │                         │           │
-          └─────────────────────────→ P3 Flow ←┘
-═══════════════════════════════════════════════════
+**目标**: 实现 DOT/GraphML/JSON 三种格式的双向转换
 
-已完成 (✅) — v0.4.0:
-═══════════════════════════════════════════════════
-P3 Flow ──┬── Edmonds-Karp (O(VE²))
-            └── Dinic ✨ (O(E√V))
-P4 Matching ✅ ── Hungarian (O(VE))
-═══════════════════════════════════════════════════
+**交付物**:
+- `src/io/dot.mbt` — DOT 解析器/生成器（~300 行, 20 tests）
+- `src/io/graphml.mbt` — GraphML 读写（~250 行, 12 tests）
+- `src/io/json_serializer.mbt` — JSON 序列化（~150 行, 10 tests）
+- 集成测试：真实 .dot/.graphml/.json 文件
+- **总测试数**: ~42 new tests
 
-已完成 (✅) — v0.4.1 🆕 P5 全部完成:
-═══════════════════════════════════════════════════
-P5-A Euler ──┬─ Hierholzer O(E) ────────────── 22 tests
-             │
-P5-B Cutpoints ── Tarjan O(V+E) ─────────── 15 tests
-             │
-P5-C Coloring ──┬─ Greedy/WP/DSATUR ─────── 21 tests
-             │  └─ Backtracking Exact
-             │
-P5-D Clique ──┬─ Bron-Kerbosch O(3^{V/3}) ─ 14 tests
-             │  └─ Independent Set / Vertex Cover
-             │
-P5-E Hamiltonian ─┬─ Backtrack Path/Circuit ─ 20 tests
-                  └─ TSP Nearest Neighbor / Held-Karp
-═══════════════════════════════════════════════════
-
-待开发 (⬜) — v0.5.0+:
-═══════════════════════════════════════════════════
-Phase 2 Analysis (差异化核心):
-  Centrality ←── PageRank / Betweenness
-  Community ←── Louvain / LPA
-  Clustering ←── Local / Global Coef
-
-Phase 4 Ecosystem:
-  CI/CD Pipeline ── fmt → check → test → coverage
-  IO Serialization ── DOT / GraphML / JSON
-═══════════════════════════════════════════════════
-```
+**验收标准**:
+- [ ] 支持 NetworkX/petgraph 生成的标准 DOT 文件
+- [ ] GraphML 与 JGraphT 互操作
+- [ ] JSON schema 向后兼容
+- [ ] 错误处理完善（ malformed input 友好提示）
 
 ---
 
-## 7. 更新日志
+### Sprint 3: 工程化基础设施（1 周）
 
-| 日期 | 版本 | 操作 | 说明 |
-|------|:----:|------|------|
-| 2026-05-18 | v0.0.1 | 创建 | 初始化路线图，定义 P0-P3 需求 |
-| 2026-05-18 | v0.1.0-alpha | **P0 完成** | 16 个图生成器, 56 tests |
-| 2026-05-18 | v0.1.0-beta | **P1-P2 完成** | 最短路径(32) + MST+连通性(37), 69 tests |
-| 2026-05-19 | v0.1.0 | **P3 完成** | 网络流(17), **P0-P3 全部完成**, 317 tests |
-| 2026-05-19 | v1.0.0 | **首次拆分** | TODO/ROADMAP 分离，行动 vs 战略 |
-| 2026-05-19 | v2.0.0 | **基于 ARCHITECT 重构** | 以 ARCHITECTURE.md v3.0 为唯一数据源 |
-| 2026-05-19 | **v2.1.0** | **🎉 P4+Dinic 完成 + v0.4.0 Tagged** | **P4 匹配(21t) + Dinic(16t), 391 tests, 9 packages** |
-| **2026-05-22** | **v2.2.0** | **🎉🎉 P5 图论核心算法扩展全部完成** | **Euler(22t) + Cutpoints(15t) + Coloring(21t) + Clique(14t) + Hamiltonian(20t), 483 tests, 14 packages, 30+ 算法** |
+**目标**: 建立 CI/CD 和 Benchmark 体系
 
----
+**交付物**:
+- `.github/workflows/ci.yml` — 自动化流水线（lint/test/build）
+- `.github/workflows/benchmark.yml` — 性能回归检测
+- `benchmarks/` — 基准测试脚本（各算法性能数据）
+- `scripts/api_compat_check.sh` — semver 兼容性检查
+- **文档**: CONTRIBUTING.md + CI 说明
 
-## 8. 参考文档
-
-### 内部文档 (docs/)
-
-| 文档 | 角色 | 内容 |
-|------|:----:|------|
-| **[TODO.md](./TODO.md)** | 🎯 行动清单 | 近期任务 (Task-level, 可执行) |
-| **[ARCHITECTURE.md](./ARCHITECTURE.md)** | 🏗️ 架构权威 | 项目结构/Trait分层/SOLID评审/竞品对比 |
-| **[AGENTS.md](../AGENTS.md)** | 🤖 Agent 协作 | 开发规范 + Top 10 陷阱 + 算法 SOP |
-| **[MEMORY.md](../MEMORY.md)** | 🧠 项目记忆 | 语法陷阱 + 关键决策记录 |
-| **Design Docs** (`design/*.md`) | 📐 模块设计 | 各算法模块详细设计规范 |
-| **Reference** (`reference/*.md`) | 📚 竞品调研 | C++/Go/Java/Python/Rust 图库分析 |
-
-### 外部参考
-
-| 库 | 语言 | 借鉴点 | 参考价值 |
-|----|:----:|--------|:-------:|
-| petgraph | Rust | 所有权安全/Index-based 节点 | ⭐⭐⭐⭐⭐ 架构参考 |
-| NetworkX | Python | 模块化组织/算法全面性 | ⭐⭐⭐⭐ API 参考 |
-| Boost.Graph | C++ | 模板元编程/极致性能 | ⭐⭐⭐⭐ 性能参考 |
-| JGraphT | Java | 接口丰富性/扩展性设计 | ⭐⭐⭐ 扩展参考 |
-| LEMON (C++) | C++ | 高性能流算法实现 | ⭐⭐⭐ Flow 参考 |
+**验收标准**:
+- [ ] PR 自动触发 CI（通过才能 merge）
+- [ ] Benchmark 数据可视化（趋势图）
+- [ ] API breaking change 自动检测
+- [ ] 文档覆盖率 100%
 
 ---
 
-## 9. 快速导航
+### Sprint 4: 文档与发布准备（1 周）
 
-### 对于新开发者
+**目标**: 完善文档体系，准备 v1.0.0 发布
 
-```bash
-git clone https://github.com/morning-start/mbtgraph.git && cd mbtgraph
-moon test                           # 全量测试 (483 tests ✅)
-moon test src/algo/hamiltonian       # P5 最新模块测试 (20 tests)
-moon test src/algo/euler             # 欧拉路径模块 (22 tests)
-cat AGENTS.md                       # 开发规范 (Top 10 陷阱)
-cat TODO.md                         # 📋 近期待办 ← 从这里开始
-```
+**交付物**:
+- 英文版 README.md
+- Migration Guide (v0.x → v1.0)
+- API Reference（自动生成或手动整理）
+- 10+ Tutorial 示例（Jupyter notebook 风格）
+- Changelog 更新至 v1.0.0
+- Git Tag: v1.0.0
 
-### 对于贡献者
-
-```bash
-cat CONTRIBUTING.md                  # 贡献指南
-cat docs/ARCHITECTURE.md             # 架构设计 (必读)
-cat docs/ROADMAP.md                 # 本文件: 远期规划
-# → 选择 TODO.md 中的任务开始贡献
-```
+**验收标准**:
+- [ ] 所有公开 API 有文档注释
+- [ ] 示例代码可直接运行
+- [ ] Breaking changes 完整列出
+- [ ] 发布说明（Release Notes）撰写完毕
 
 ---
 
-## 附录 A: MoonBit 语法速查 (Top 10 陷阱)
+## 📈 成功度量指标
 
-详见 [AGENTS.md §错误速查](../AGENTS.md):
+### 技术指标
 
-| # | 陷阱 | 正确写法 | 来源 |
-|---|------|---------|:-----:|
-| 1 | mut self | `(self)` + 内部 `let g = self` | 编译 E3002 |
-| 2 | For 元组解构 | 先绑定再 match | 编译 E3002 |
-| 3 | Match 多语句 | `{ stmt; stmt }` | 编译 E3002 |
-| 4 | pub struct 失败 | 核心类型必须 `pub(all)` | 编译 E4036 |
-| 5 | Trait 方法未绑定 | `@core.Trait::method()` | 编译 E4021 |
-| **6** | **嵌套泛型 `>>`** | **`Array[Array[T?]]`** | flow 模块实战 |
-| **7** | **保留字 `fn`/`var`** | **改名或用 `let mut`** | flow 模块实战 |
-| **8** | **返回值不能 ignore** | **链式赋值 `let x = func(x)`** | flow 模块实战 |
-| **9** | **数组引用副作用** | **算法前深拷贝** | clique 模块实战 |
-| **10** | **loop 废弃语法** | **`while true {}`** | 废弃警告 |
+| 指标 | 当前值 (v0.5.0) | 目标值 (v1.0.0) | 衡量方式 |
+|------|:---------------:|:---------------:|---------|
+| **测试总数** | ~551 | **≥ 700** | `moon test --count` |
+| **代码覆盖率** | ~80% | **≥ 85%** | `moon coverage analyze` |
+| **算法数量** | 30+ | **40+** | 统计 pub fn 数量 |
+| **文档完整度** | 90% | **100%** | 人工审计 + CI check |
+| **构建时间** | < 30s | **< 60s**（含 benchmark）| CI 日志 |
+| **wasm 体积** | ~900KB | **< 1MB** | `moon build --target wasm` |
 
----
+### 社区指标
 
-## 附录 B: 算法模块开发 SOP
-
-详见 [AGENTS.md §算法模块开发流程](../AGENTS.md)：
-
-```
-1️⃣ 设计阶段    → brainstorming → 用户确认 → design doc
-2️⃣ 基础类型    → moon.pkg + types.mbt + 数据结构     [Commit 1: feat]
-3️⃣ 算法实现    → priv fn 辅助函数 + pub fn 公开 API   [Commit 2: feat]
-4️⃣ 测试文件    → make_xxx + 正常/边界/属性测试         [Commit 3: test]
-5️⃣ 文档        → README.md (8 大章节) + design doc    [Commit 4: docs]
-6️⃣ 验证        → moon check → test (✅) → git log
-```
+| 指标 | 当前值 | 目标值 (v1.0.0 后 3 个月) | 衡量方式 |
+|------|:-----:|:------------------------:|---------|
+| **GitHub Stars** | - | **≥ 50** | GitHub API |
+| **月下载量** | - | **≥ 100** | mooncakes.io 统计 |
+| **Contributors** | 1 | **≥ 3** | GitHub 贡献者列表 |
+| **Open Issues** | 0 | **≤ 10**（及时关闭）| Issue tracker |
+| **PR 合并率** | - | **≥ 80%** | GitHub 统计 |
 
 ---
 
-> **🎯 战略总结**: mbtgraph 以 **Trait 驱动的模块化架构** 为核心竞争力，
-> **v0.4.1 已完成 P5 图论核心算法扩展** (483 tests / 14 packages / 30+ algorithms)，
-> **下一步**: [TODO.md](./TODO.md) 中的 CI/CD + API 冻结 + 集成测试 (v0.5.0 Ecosystem)，
-> **Phase 2 的网络分析模块 (PageRank/Louvain)** 将是 v0.5.0+ 差异化突破口。
+## 🎯 下一步行动（立即执行）
+
+### 本周任务（Week of 5.23 - 5.30）
+
+1. **[P0]** 创建 `src/algo/pagerank/` 目录结构 + types.mbt
+2. **[P0]** 开始 PageRank 幂法实现（迭代公式 + 收敛判断）
+3. **[P1]** 调研 DOT format 规范（参考 NetworkX 实现）
+4. **[P1]** 设计 JSON serialization schema（字段映射表）
+
+### 关键决策点
+
+- [ ] **I/O 模块位置**: 放在 `src/io/` 还是 `src/utils/io/`？
+- [ ] **PageRank 实现**: 是否支持 personalized/damping factor 配置？
+- [ ] **Benchmark 工具**: 使用 Criterion.rs 风格还是简单计时？
+
+---
+
+## 📚 相关文档
+
+- **详细设计文档**: [docs/design/](docs/design/) （每个算法的设计决策）
+- **竞品调研**: [docs/reference/](docs/reference/) （NetworkX/petgraph/JGraphT 分析）
+- **架构总览**: [docs/architecture.md](docs/architecture.md)
+- **编码规范**: [AGENTS.md](../AGENTS.md) （Top 10 陷阱 + 错误速查）
+- **更新日志**: [CHANGELOG.md](../CHANGELOG.md) （版本历史）
+- **记忆系统**: [MEMORY.md](../MEMORY.md) （关键决策记录）
+
+---
+
+## 🙏 致谢与参考
+
+本路线图参考了以下项目的成熟实践：
+
+- **[NetworkX](https://networkx.org/)** (Python) — 算法分类与优先级
+- **[petgraph](https://github.com/petgraph/petgraph)** (Rust) — Trait 设计理念
+- **[JGraphT](https://jgrapht.org/)** (Java) — 模块化架构
+- **[LEMON](https://lemon.cs.elte.hu/)** (C++) — 性能优化思路
+
+---
+
+## 📝 版本历史
+
+| 版本 | 日期 | 主要变更 |
+|------|------|---------|
+| **v1.0.0-draft** | 2026-05-23 | 🎉 初始版本：基于 v0.5.0 现状重新规划，聚焦 v1.0.0 生产就绪目标 |
+
+---
+
+<div align="center">
+
+**🎯 让我们一起打造 MoonBit 最强的图算法库！**
+
+*最后更新: 2026-05-23 | 维护者: @morning-start | 下次评审: 2026-06-23*
+
+</div>
