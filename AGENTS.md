@@ -1,9 +1,9 @@
 ---
 name: mbtgraph-agents
-version: v2.2.0
+version: v2.3.0
 author: mbtgraph-team
-description: MoonBit 图算法库 Agent 协作配置（含实战经验固化 + P5 模块扩展）
-tags: [moonbit, graph-algorithms, trait-based, storage-patterns, network-flow, p5-complete]
+description: MoonBit 图算法库 Agent 协作配置（含实战经验固化 + P5 模块扩展 + 文档更新规范）
+tags: [moonbit, graph-algorithms, trait-based, storage-patterns, network-flow, p5-complete, doc-guide]
 ---
 
 # mbtgraph — MoonBit 图算法库
@@ -285,6 +285,53 @@ git add file.mbt && git commit -m "feat(module): description"
 
 | 版本 | 日期 | 主要变更 |
 |------|------|---------|
+| **v2.3.0** | 2026-05-23 | 📝 **新增文档更新规范**：创建UPDATE_GUIDE.md + 自动化检查脚本，定义配置/文档更新触发条件和规则矩阵 |
 | **v2.2.0** | 2026-05-23 | 🎉 **P5 模块扩展完成**：项目结构更新至12子模块/Trait分层6层/测试数据~551t/Git Tags版本管理 |
 | **v2.1.0** | 2026-05-19 | 🔥 固化 flow 模块经验：Top10陷阱/算法开发流程/Git规范/错误速查扩展 |
 | **v2.0.0** | 2026-05-18 | 初始版本：基础编码规则/Trait分层/测试指南 |
+
+---
+
+## 📚 文档更新规范
+
+> **详细指南**: [docs/UPDATE_GUIDE.md](docs/UPDATE_GUIDE.md) — **Agent必读**
+>
+> **自动化检查**: `bash scripts/check_doc_consistency.sh` — 一键验证一致性
+
+### 核心原则
+
+每次代码提交或模块完成后，**必须**按优先级更新以下文件：
+
+#### P0 必须（立即更新）
+
+| 文件 | 触发条件 | 更新内容 |
+|------|---------|----------|
+| `moon.mod.json` | 新模块完成 / 版本发布 | version + description |
+| `AGENTS.md` | 任何变更 | version + 项目结构/规范 |
+| `MEMORY.md` | 重要决策 / 模块完成 | 包结构 + 测试数 + 决策记录 |
+| `README.mbt.md` | 新模块 / 版本发布 | 算法表 + 统计 + 路线图 |
+| `CHANGELOG.md` | 功能添加 / 版本发布 | 变更记录 |
+| Git Tag | 里程碑完成 | `git tag -a v0.X.0` |
+
+#### P1 推荐（尽快更新）
+
+| 文件 | 更新时机 |
+|------|---------|
+| `docs/ROADMAP.md` | 状态变更 / 统计更新 |
+| `docs/TODO.md` | 任务完成标记 |
+
+### 快速参考
+
+```bash
+# 完成新模块后的标准操作流：
+# 1️⃣ 更新 moon.mod.json (version+1)
+# 2️⃣ 更新 AGENTS.md (添加模块行)
+# 3️⃣ 更新 MEMORY.md (包结构+决策)
+# 4️⃣ 更新 README.mbt.md (算法表+统计)
+# 5️⃣ 更新 CHANGELOG.md (新版本章节)
+# 6️⃣ 创建 Git Tag
+# 7️⃣ 运行一致性检查: bash scripts/check_doc_consistency.sh
+# 8️⃣ 提交: git commit -m "release(v0.X.0): ..."
+```
+
+详见 [docs/UPDATE_GUIDE.md](docs/UPDATE_GUIDE.md) 的完整触发条件矩阵和场景化示例。
