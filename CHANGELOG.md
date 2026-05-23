@@ -8,9 +8,88 @@
 ## [未发布]
 
 ### 新增
-- P5 图论核心算法扩展全部完成 (5 子模块, 92 tests)
-- Git Tags 版本管理 (v0.5.0 - v0.9.0)
-- 项目文档更新至 AGENTS.md v2.2.0 + MEMORY.md 最新
+- 📋 Sprint任务体系重构：TODO.md采用4-Sprint格式，聚焦v1.0.0生产就绪目标
+- 📝 文档更新规范体系成熟：UPDATE_GUIDE.md + 自动化检查脚本全面应用
+- 🔧 AGENTS.md升级至v2.4.0（Sprint系统+文档规范化）
+- 📊 MEMORY.md新增3条关键决策记录
+
+### 改进
+- ROADMAP.md聚焦v1.0.0里程碑，明确生产就绪标准
+- TODO.md从线性列表升级为Sprint任务体系
+- 项目文档版本号统一至基准
+
+---
+
+## [0.9.0] - 2026-05-22
+
+### 🎯 新增 - P5-E: Hamiltonian 哈密顿路径/TSP 算法 ✅
+**路径**: `src/algo/hamiltonian/` | **测试**: **20**
+
+| 组件 | 算法 | 复杂度 |
+|------|------|:-----:|
+| 哈密顿快速检查 | O(V+E) | |
+| 哈密顿路径回溯 | O(V!) | |
+| 哈密顿回路回溯 | O(V!) | |
+| TSP 最近邻启发式 | O(V²) | |
+| TSP Held-Karp 精确解 | O(2^V·V²) (V≤12) |
+
+**提交记录**:
+- `feat(hamiltonian)`: 添加基础类型和包配置
+- `feat(hamiltonian)`: 实现哈密顿路径/回路和 TSP 算法
+
+---
+
+## [0.8.0] - 2026-05-22
+
+### 🔗 新增 - P5-D: Clique 最大团/独立集/顶点覆盖 ✅
+**路径**: `src/algo/clique/` | **测试**: **14**
+
+| 组件 | 算法 | 复杂度 |
+|------|------|:-----:|
+| Bron-Kerbosch 最大团 | O(3^{V/3}) | |
+| 最大独立集 (补图法) | O(3^{V/3}) | |
+| 最小顶点覆盖 (精确+近似) | 精确 O(3^{V/3}) / 近似 O(V²) | |
+
+**提交记录**:
+- `feat(clique)`: add base types and package configuration
+- `feat(clique)`: 实现 Bron-Kerbosch 最大团、独立集、顶点覆盖算法
+- `test(clique)`: 添加完整测试套件 (14 tests)
+
+---
+
+## [0.7.0] - 2026-05-22
+
+### 🎨 新增 - P5-C: Coloring 图着色算法 ✅
+**路径**: `src/algo/coloring/` | **测试**: **21**
+
+| 组件 | 算法 | 复杂度 |
+|------|------|:-----:|
+| Greedy 贪心着色 | O(V²) | |
+| Welch-Powell 着色 | O(V²+VE) | |
+| DSATUR 启发式 | O(V²+kV) | |
+| 回溯精确着色 | O(k^V) | |
+
+**提交记录**:
+- `feat(coloring)`: add base types and package configuration
+- `feat(coloring)`: implement greedy/Welsh-Powell/DSATUR/exact chromatic algorithms with tests
+- `docs(coloring)`: add comprehensive README and documentation comments
+
+---
+
+## [0.6.0] - 2026-05-22
+
+### ✂️ 新增 - P5-B: Cutpoints 割点与桥检测 ✅
+**路径**: `src/algo/cutpoints/` | **测试**: **15**
+
+| 组件 | 算法 | 复杂度 |
+|------|------|:-----:|
+| Tarjan 割点检测 | O(V+E) | |
+| Tarjan 桥检测 | O(V+E) | |
+
+**提交记录**:
+- `feat(cutpoints)`: add base types and package configuration
+- `feat(cutpoints)`: 实现 Tarjan 割点与桥检测算法
+- `test(cutpoints)`: 添加完整测试套件
 
 ---
 
@@ -329,7 +408,11 @@
 
 ---
 
-[Unreleased]: https://github.com/morning-start/mbtgraph/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/morning-start/mbtgraph/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/morning-start/mbtgraph/releases/tag/v0.9.0
+[0.8.0]: https://github.com/morning-start/mbtgraph/releases/tag/v0.8.0
+[0.7.0]: https://github.com/morning-start/mbtgraph/releases/tag/v0.7.0
+[0.6.0]: https://github.com/morning-start/mbtgraph/releases/tag/v0.6.0
 [0.5.0]: https://github.com/morning-start/mbtgraph/releases/tag/v0.5.0
 [0.4.0]: https://github.com/morning-start/mbtgraph/releases/tag/v0.4.0
 [0.3.0]: https://github.com/morning-start/mbtgraph/releases/tag/v0.3.0

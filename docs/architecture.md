@@ -1202,7 +1202,6 @@ pub fn edmonds_karp(net : FlowNetwork, ...) -> MaxFlowResult { ... }
 | **v0.2.0** | P4 图匹配 + CI/CD | 🔄 规划中 | Hungarian + Dinic + GitHub Actions |
 | **v0.3.0** | P5-P7 + 性能基准 | ⬜ 远期 | 着色 + 欧拉路径 + TSP + Benchmark |
 | **v0.4.0** | 生态完善 | ⬜ 远期 | I/O 序列化 + Layout + 示例项目 |
-| **v1.0.0** | 生产就绪 | 🌟 愿景 | API 稳定 (semver) + 全覆盖 + 文档完整 |
 
 ---
 

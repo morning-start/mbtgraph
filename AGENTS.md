@@ -1,9 +1,9 @@
 ---
 name: mbtgraph-agents
-version: v2.3.0
+version: v2.4.0
 author: mbtgraph-team
-description: MoonBit 图算法库 Agent 协作配置（含实战经验固化 + P5 模块扩展 + 文档更新规范）
-tags: [moonbit, graph-algorithms, trait-based, storage-patterns, network-flow, p5-complete, doc-guide]
+description: MoonBit 图算法库 Agent 协作配置（含实战经验固化 + P5 模块扩展 + 文档更新规范 + Sprint任务体系）
+tags: [moonbit, graph-algorithms, trait-based, storage-patterns, network-flow, p5-complete, doc-guide, sprint-system]
 ---
 
 # mbtgraph — MoonBit 图算法库
@@ -285,6 +285,7 @@ git add file.mbt && git commit -m "feat(module): description"
 
 | 版本 | 日期 | 主要变更 |
 |------|------|---------|
+| **v2.4.0** | 2026-05-23 | 📋 **Sprint任务体系建立**：重写TODO.md为Sprint格式 + ROADMAP聚焦v1.0.0 + 文档规范化体系成熟 |
 | **v2.3.0** | 2026-05-23 | 📝 **新增文档更新规范**：创建UPDATE_GUIDE.md + 自动化检查脚本，定义配置/文档更新触发条件和规则矩阵 |
 | **v2.2.0** | 2026-05-23 | 🎉 **P5 模块扩展完成**：项目结构更新至12子模块/Trait分层6层/测试数据~551t/Git Tags版本管理 |
 | **v2.1.0** | 2026-05-19 | 🔥 固化 flow 模块经验：Top10陷阱/算法开发流程/Git规范/错误速查扩展 |

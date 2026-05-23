@@ -50,7 +50,7 @@
 ### 安装
 
 ```bash
-moon add morning-start/mbtgraph@0.5.0
+moon add morning-start/mbtgraph
 ```
 
 ### 基础用法
@@ -401,9 +401,8 @@ moon check src/algo/shortest_path
 |------|---------|:-------:|
 | **v0.1.0** | 核心基础 + P0-P3 (8包, 317t) | ✅ 完成 |
 | **v0.4.0** | P4 匹配 + Dinic (9包, 391t) | ✅ Tagged |
-| **v0.5.0** | **P5 图论核心算法 (14包, 483t, 30+算法)** | ✅ **当前版本** 🎉 |
-| v0.6.0 | Ecosystem: CI/CD + 集成测试 + API 冻结 | ⬜ 下一步 |
-| **v1.0.0** | 生产就绪 + API 稳定 (semver) | 🌟 愿景 |
+| **v0.5.0** | **P5 图论核心算法 (14包, 483t, 30+算法)** | ✅ Tagged |
+| **v0.9.0** | **P5全部完成 + 文档体系成熟 (Sprint/UPDATE_GUIDE)** | ✅ **当前版本** |
 
 **已完成里程碑**:
 - ✅ P0: Core + Storage + Traversal + Generators
@@ -452,7 +451,7 @@ moon check src/algo/shortest_path
 
 ## 📄 许可证
 
-本项目采用 [Apache-2.0](LICENSE) 许可证开源。
+本项目采用 [MIT](LICENSE) 许可证开源。
 
 ---
 
