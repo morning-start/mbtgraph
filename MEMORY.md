@@ -56,15 +56,20 @@ src/storage/
 ```
 src/
 ├── core/          # 基础类型(3) + trait定义(6) + 错误类型(1) + 测试(68)
-├── storage/       # 存储实现(8结构体) + 转换器(8) + 工具(4) + 测试(101) + 文档
-├── algorithms/    # 图算法模块 ⭐ P0-P3 全部完成
-│   ├── traversal/      # 遍历 (BFS/DFS)
+├── storage/       # 存储实现(8结构体) + 转换器(8) + 工具(4) + 测试(~107) + 文档
+├── algo/          # 图算法模块 ⭐ P0-P5 全部完成 (12 子模块)
+│   ├── traversal/      # 遍历 (BFS/DFS/环检测/拓扑) — ~47 tests ✅
 │   ├── generators/     # 图生成器 (P0) — 16 函数, 56 tests ✅
 │   ├── shortest_path/  # 最短路径 (P1) — Dijkstra/BF/FW, 32 tests ✅
 │   ├── mst/            # 最小生成树 (P2) — Kruskal/Prim, 16 tests ✅
 │   ├── connectivity/   # 连通性 (P2) — CC/Tarjan/Kosaraju, 21 tests ✅
-│   └── flow/           # 网络流 (P3) — Edmonds-Karp, 17 tests ✅
-├── generators/    # ~~图生成器（已迁移至 algorithms/generators）~~
+│   ├── flow/           # 网络流 (P3) — Edmonds-Karp + Dinic, 33 tests ✅
+│   ├── matching/       # 图匹配 (P4) — Hungarian, 21 tests ✅
+│   ├── euler/          # 欧拉路径 (P5-A) — Hierholzer, 22 tests ✅🆕
+│   ├── cutpoints/      # 割点与桥 (P5-B) — Tarjan, 15 tests ✅🆕
+│   ├── coloring/       # 图着色 (P5-C) — Greedy/WP/DSATUR/Exact, 21 tests ✅🆕
+│   ├── clique/         # 团/独立集/顶点覆盖 (P5-D) — Bron-Kerbosch, 14 tests ✅🆕
+│   └── hamiltonian/    # 哈密顿/TSP (P5-E) — Backtrack+NN+Held-Karp, 20 tests ✅🆕
 └── utils/         # 工具层（序列化等）— 待开发
 ```
 
@@ -118,15 +123,22 @@ src/
 | 包 | 黑盒 | 白盒 | 总计 | 状态 |
 |----|:----:|:----:|:----:|:----:|
 | core | 49 | 19 | **68** | ✅ 全通过 |
-| storage | 92 | 15 | **107** | ✅ 全通过 |
-| algorithms | **142** | **0** | **142** | ✅ 全通过 |
+| storage | 92 | 15 | **~107** | ✅ 全通过 |
+| algo (总计) | **~376** | **0** | **~376** | ✅ 全通过 |
+| ├─ traversal | ~47 | - | ~47 | ✅ |
 | ├─ generators | 56 | - | 56 | ✅ |
 | ├─ shortest_path | 32 | - | 32 | ✅ |
 | ├─ mst | 16 | - | 16 | ✅ |
 | ├─ connectivity | 21 | - | 21 | ✅ |
-| └─ flow | 17 | - | 17 | ✅ |
+| ├─ flow | 33 | - | 33 | ✅ |
+| ├─ matching | 21 | - | 21 | ✅ |
+| ├─ euler 🆕 | 22 | - | 22 | ✅ |
+| ├─ cutpoints 🆕 | 15 | - | 15 | ✅ |
+| ├─ coloring 🆕 | 21 | - | 21 | ✅ |
+| ├─ clique 🆕 | 14 | - | 14 | ✅ |
+| └─ hamiltonian 🆕 | 20 | - | 20 | ✅ |
 | root | 0 | 0 | 0 | — |
-| **合计** | **283** | **34** | **317** | **✅** |
+| **合计** | **~517** | **34** | **~551** | **✅** |
 
 ### Core 测试详情
 
@@ -192,3 +204,12 @@ moon coverage analyze    # 覆盖率分析
 | **2026-05-19** | **深拷贝纯函数语义** | **算法修改输入数据时必须 deep_copy，保证原网络不被修改** |
 | **2026-05-19** | **AGENTS.md v2.1.0 固化经验** | **Top10陷阱/算法开发流程/Git规范/错误速查扩展（避免重复踩坑）** |
 | **2026-05-19** | **Roadmap P0-P3 全部完成** | **图生成器+最短路径+MST+连通性+网络流，包文档覆盖率 8/8 (100%)** |
+| **2026-05-19** | **Dinic 最大流算法实现** | **比 EK 快一个数量级 O(E√V)，双算法并存可交叉验证** |
+| **2026-05-19** | **Hungarian 匈牙利算法实现** | **二分图最大匹配 O(VE)，提供纯数据版本和 Trait 版本** |
+| **2026-05-22** | **P5 图论核心算法扩展全部完成** | **Euler/Cutpoints/Coloring/Clique/Hamiltonian 共 5 模块, 92 tests** |
+| **2026-05-22** | **Hierholzer 欧拉算法** | **O(E) 时间复杂度，支持有向/无向图路径和回路检测** |
+| **2026-05-22** | **Tarjan 割点与桥检测** | **O(V+E) 单次 DFS，基于 DFN/Low 时间戳** |
+| **2026-05-22** | **图着色算法集（4种）** | **贪心/Welsh-Powell/DSATUR启发式 + 回溯精确解，覆盖多项式和NP-C** |
+| **2026-05-22** | **Bron-Kerbosch 最大团算法** | **O(3^{V/3}) 带枢轴优化，派生独立集和顶点覆盖** |
+| **2026-05-22** | **哈密顿路径/TSP 算法集** | **回溯精确 + 最近邻启发式 + Held-Karp DP，覆盖 NP-Hard 场景** |
+| **2026-05-23** | **Git Tags 版本管理 v0.5.0-v0.9.0** | **为每个 P5 模块创建独立的 minor 版本标签，清晰追踪模块完成节点** |

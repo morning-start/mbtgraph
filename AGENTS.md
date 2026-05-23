@@ -1,9 +1,9 @@
 ---
 name: mbtgraph-agents
-version: v2.1.0
+version: v2.2.0
 author: mbtgraph-team
-description: MoonBit 图算法库 Agent 协作配置（含实战经验固化）
-tags: [moonbit, graph-algorithms, trait-based, storage-patterns, network-flow]
+description: MoonBit 图算法库 Agent 协作配置（含实战经验固化 + P5 模块扩展）
+tags: [moonbit, graph-algorithms, trait-based, storage-patterns, network-flow, p5-complete]
 ---
 
 # mbtgraph — MoonBit 图算法库
@@ -33,23 +33,29 @@ moon check src/algorithms/flow  # 检查单模块编译
 src/
 ├── core/                     # 类型 + trait 定义
 │   ├── types.mbt            # NodeId, Node, Edge
-│   ├── traits.mbt           # GraphReadable 等核心 trait
+│   ├── traits.mbt           # GraphReadable 等核心 trait (6 层)
 │   └── error.mbt            # GraphError
-├── storage/                  # 存储实现
+├── storage/                  # 存储实现 (8 种)
 │   ├── directed_adj_list.mbt # 有向邻接表（参考实现）⭐
 │   ├── undirected_adj_list.mbt # 无向邻接表（半存储优化）
 │   ├── shared_helpers.mbt   # 公共辅助函数（同包直接调用）
-│   └── converter.mbt        # 格式转换器
-└── algorithms/               # 算法模块 ⭐ P0-P3 已完成
-    ├── traversal/           # 遍历 (BFS/DFS)
+│   └── converter.mbt        # 格式转换器 (8 函数)
+└── algo/                     # 算法模块 ⭐ P0-P5 全部完成 (12 子模块)
+    ├── traversal/           # 遍历 (BFS/DFS/环检测/拓扑) — ~47 tests
     ├── generators/          # 图生成器 (P0) — 16 函数, 56 tests
     ├── shortest_path/       # 最短路径 (P1) — Dijkstra/BF/FW, 32 tests
     ├── mst/                 # 最小生成树 (P2) — Kruskal/Prim, 16 tests
     ├── connectivity/        # 连通性 (P2) — CC/Tarjan/Kosaraju, 21 tests
-    └── flow/                # 网络流 (P3) — Edmonds-Karp, 17 tests
+    ├── flow/                # 网络流 (P3) — Edmonds-Karp + Dinic, 33 tests
+    ├── matching/            # 图匹配 (P4) — Hungarian, 21 tests
+    ├── euler/               # 欧拉路径 (P5-A) — Hierholzer, 22 tests 🆕
+    ├── cutpoints/           # 割点与桥 (P5-B) — Tarjan, 15 tests 🆕
+    ├── coloring/            # 图着色 (P5-C) — Greedy/WP/DSATUR/Exact, 21 tests 🆕
+    ├── clique/              # 团/独立集/顶点覆盖 (P5-D) — Bron-Kerbosch, 14 tests 🆕
+    └── hamiltonian/         # 哈密顿/TSP (P5-E) — Backtrack+NN+Held-Karp, 20 tests 🆕
 ```
 
-**关键入口**: 新类型→`types.mbt` | 新trait→`traits.mbt` | 新存储→参考 `directed_adj_list.mbt` | 新算法→参考 `flow/`
+**关键入口**: 新类型→`types.mbt` | 新trait→`traits.mbt` | 新存储→参考 `directed_adj_list.mbt` | 新算法→参考 `flow/` 或任意 P5 模块
 
 ## 编码规范
 
@@ -86,12 +92,14 @@ src/
 
 ## 架构概要
 
-### Trait 分层（4层）
+### Trait 分层（6 层）
 
 ```
-GraphReadable (所有存储)
-├── GraphWritable (仅动态存储: AdjList/Matrix/EdgeList)
-└── GraphDirected (仅 Directed* 存储)
+GraphReadable (所有存储, 12 方法)
+├── GraphWritable (仅动态存储: AdjList/Matrix/EdgeList, +6 方法)
+├── BatchReadable (批量优化: CSR/CSC, +2 方法)
+├── EdgeIterable (边排序: Kruskal 友好, +1 方法)
+└── GraphDirected (仅 Directed* 存储, +6 方法)
     └── GraphFull = Writable + Directed
 ```
 
@@ -277,5 +285,6 @@ git add file.mbt && git commit -m "feat(module): description"
 
 | 版本 | 日期 | 主要变更 |
 |------|------|---------|
+| **v2.2.0** | 2026-05-23 | 🎉 **P5 模块扩展完成**：项目结构更新至12子模块/Trait分层6层/测试数据~551t/Git Tags版本管理 |
 | **v2.1.0** | 2026-05-19 | 🔥 固化 flow 模块经验：Top10陷阱/算法开发流程/Git规范/错误速查扩展 |
 | **v2.0.0** | 2026-05-18 | 初始版本：基础编码规则/Trait分层/测试指南 |
