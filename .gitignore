@@ -5,3 +5,4 @@ _build/
 .agents/
 *.generated.mbti
 memory/
+.trae
