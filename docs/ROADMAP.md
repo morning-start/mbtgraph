@@ -1,6 +1,6 @@
 # mbtgraph 项目路线图
 
-> **最后更新**: 2026-05-23 | **当前版本**: v0.5.0 | **状态**: 🎉 P0-P5 核心算法全部完成
+> **最后更新**: 2026-05-25 | **当前版本**: v0.9.0 | **状态**: 🎉 P5 图论核心算法完成，进入阶段 1: 基础算法扩展
 
 ---
 
@@ -12,151 +12,655 @@
 
 - **目标用户**: 算法竞赛选手、科研工作者、图数据库开发者、需要图算法的生产系统
 - **差异化优势**:
-  - ✅ 唯一覆盖 **6 大算法领域**的 MoonBit 图库（遍历/路径/流/匹配/图论/NP-Hard）
+  - ✅ 唯一覆盖 **8 大算法领域**的 MoonBit 图库（遍历/路径/MST/连通性/流/匹配/图论/NP-Hard + 高级分析）
   - ✅ 业界领先的 **6 层 Trait 设计**（对标 petgraph 的 3 层）
   - ✅ **8 种存储结构**（比 petgraph 多 2 种）
-  - ✅ **原生多后端**支持（wasm/js/native）
-  - ✅ **超小体积**（wasm < 1MB）
+  - ✅ 原生多后端支持（wasm/js/native）
+  - ✅ 超小体积（wasm < 1MB）
 
 ---
 
-## 🎯 年度目标与关键结果 (OKR)
+## 🎯 四阶段发展规划
 
-### O1: 完成 v1.0.0 生产就绪版本（2026 Q2-Q3）
-
-**目标**: 将 mbtgraph 从"算法原型库"升级为"生产级图计算引擎"
-
-#### KR1.1: 扩展高级图分析算法套件 [Must]
-
-- [ ] 实现 **PageRank** 算法（迭代/幂法，O(kE)）
-- [ ] 实现 **中心性分析** 套件（度/介数/接近/特征向量中心性）
-- [ ] 实现 **社区检测** 算法（Louvain/Girvan-Newman/Label Propagation）
-- [ ] 新增 **~100+ 测试用例**，覆盖率 ≥ 90%
-- **衡量标准**: 3 个新模块 + 100 tests + 完整文档
-
-#### KR1.2: 完善 I/O 与序列化能力 [Should]
-
-- [ ] 实现 **DOT 格式** 解析器/生成器（Graphviz 兼容）
-- [ ] 实现 **GraphML** 格式读写（XML-based）
-- [ ] 实现 **JSON** 序列化（自定义 schema）
-- [ ] 支持从文件/字符串构建图对象
-- **衡量标准**: 3 种格式 + 双向读写 + 40+ 测试
-
-#### KR1.3: 达到工程化生产标准 [Must]
-
-- [ ] 建立 **CI/CD Pipeline**（GitHub Actions: lint/test/build/release）
-- [ ] 创建 **Benchmark 套件**（性能基线测试 + 回归检测）
-- [ ] 实现 **API 冻结前审查**（semver 兼容性检查）
-- [ ] 编写 **迁移指南**（v0.x → v1.0 breaking changes 文档）
-- **衡量标准**: CI 绿色 + Benchmark 通过 + API 审计报告
-
----
-
-### O2: 构建活跃的开源社区（2026 Q3-Q4）
-
-**目标**: 从个人项目成长为有贡献者的 MoonBit 标准库候选
-
-#### KR2.1: 提升项目可见度与易用性 [Should]
-
-- [ ] 发布到 **mooncakes.io** 包仓库（官方推荐渠道）
-- [ ] 编写 **10+ 使用示例**（教程/最佳实践/常见问题）
-- [ ] 创建 **交互式 Demo**（wasm 在线运行，类似 playground）
-- [ ] 翻译文档为 **英文版**（国际化准备）
-- **衡量标准**: 月下载量 > 100 + Star > 50 + 文档完整度 100%
-
-#### KR2.2: 建立质量保障体系 [Must]
-
-- [ ] 达成 **代码覆盖率 ≥ 85%**（核心模块 ≥ 95%）
-- [ ] 引入 **Fuzz Testing**（随机图生成器 + 属性验证）
-- [ ] 添加 **性能回归检测**（每次 PR 自动 benchmark 对比）
-- [ ] 建立 **Issue/PR 模板**（标准化贡献流程）
-- **衡量标准**: 覆盖率报告 + Fuzz suite + 性能基线数据
-
-#### KR2.3: 培养早期贡献者 [Could]
-
-- [ ] 标记 **"Good First Issue"** 任务（降低参与门槛）
-- [ ] 编写 **贡献者指南**（CONTRIBUTING.md 详细流程）
-- [ ] 举办 **1 次 MoonBit 图算法分享会**（社区推广）
-- **衡量标准**: ≥ 3 个外部 PR + 1 个长期贡献者
-
----
-
-### O3: 探索前沿图计算方向（2026 Q4+）
-
-**目标**: 保持技术领先性，探索 MoonBit 特有的图计算优势
-
-#### KR3.1: 图机器学习基础 [Could]
-
-- [ ] 调研 **GNN (图神经网络)** 在 MoonBit 的可行性
-- [ ] 实现 **Node2Vec/DeepWalk** 嵌入算法
-- [ ] 探索 **WebAssembly 加速**机会（SIMD/WASM GC）
-- **衡量标准**: 可行性报告 + 1 个 PoC 原型
-
-#### KR3.2: 大规模图处理能力 [Could]
-
-- [ ] 实现 **外部存储**支持（内存映射文件/磁盘溢出）
-- [ ] 开发 **分布式图计算**接口设计（预留扩展点）
-- [ ] 优化 **CSR/CSC** 的批量操作性能（向量化/SIMD）
-- **衡量标准**: 支持 1M+ 节点的性能基准测试
-
----
-
-## 📅 里程碑时间轴
+### 核心理念：先做深，再做广；先有价值，再完美
 
 ```
-2026 Q2 (当前) ────────────────────────────────────── ✅ v0.5.0 已发布
-│
-├─ 5月23日: P5 图论核心算法完成 (483 tests)
-│
-│
-2026 Q2-Q3 ─────────────────────────────────────────── 🔨 v0.6.0 - v0.8.0 开发中
-│
-├─ 📍 里程碑 M1: 高级图分析算法 (目标: 6月底)
-│  ├─ PageRank + 中心性分析 (~35 tests)
-│  ├─ 社区检测算法 (~40 tests)
-│  └─ 版本号: v0.6.0
-│
-├─ 📍 里程碑 M2: I/O 序列化 (目标: 7月中旬)
-│  ├─ DOT/GraphML/JSON 格式支持 (~45 tests)
-│  └─ 版本号: v0.7.0
-│
-├─ 📍 里程碑 M3: 工程化完善 (目标: 7月底)
-│  ├─ CI/CD Pipeline 上线
-│  ├─ Benchmark 套件建立
-│  └─ 版本号: v0.8.0
-│
-│
-2026 Q3 ───────────────────────────────────────────── 🚀 v0.9.0 Beta → v1.0.0 RC
-│
-├─ 📍 里程碑 M4: API 冻结与文档完善 (目标: 8月中)
-│  ├─ API 审计 + Breaking Changes 文档
-│  ├─ 迁移指南 + 英文文档
-│  └─ 版本号: v0.9.0 (Beta)
-│
-├─ 📍 里程碑 M5: v1.0.0 正式发布 (目标: 8月底)
-│  ├─ semver 稳定版
-│  ├─ mooncakes.io 发布
-│  └─ 交互式 Demo 上线
-│
-│
-2026 Q4 ───────────────────────────────────────────── 🌟 v1.1.0 - v1.2.0 生态扩展
-│
-├─ 📍 里程碑 M6: 社区建设初见成效 (目标: 10月)
-│  ├─ 首个外部贡献者 PR 合并
-│  ├─ Fuzz Testing + 性能回归上线
-│  └─ 版本号: v1.1.0
-│
-├─ 📍 里程碑 M7: 前沿探索 (目标: 12月)
-│  ├─ GNN 可行性报告 / Node2Vec PoC
-│  ├─ 大规模图处理优化
-│  └─ 版本号: v1.2.0
-│
-│
-2027+ ─────────────────────────────────────────────── 🔮 长期愿景
-│
-└─ 成为 MoonBit 官方推荐图算法库
-   └─ 支持工业级场景（社交网络分析/知识图谱/推荐系统）
+┌─────────────────────────────────────────────────────────────┐
+│ 阶段 1: 基础算法完成 + 接口完善     → 核心竞争力             │
+│   v0.10.0 🔍 社交网络分析套件                                  │
+│   v0.11.0 📊 数据交换与可视化                                 │
+│   v0.12.0 🚀 经典算法增强                                    │
+│   v0.13.0 🛠️ 接口重构与 API 冻结准备                          │
+├─────────────────────────────────────────────────────────────┤
+│ 阶段 2: 优化 + 结构体/接口调整       → 质量提升               │
+│   v0.14.0 ⚡ 性能优化专项                                     │
+│   v0.15.0 🔧 API 冻结候选 (=v1.0.0-rc.1)                    │
+├─────────────────────────────────────────────────────────────┤
+│ 阶段 3: 工程化 → v1.0.0            → 生产就绪               │
+│   v1.0.0-rc.2 🔄 CI/CD 上线                                 │
+│   v1.0.0 🎉 正式发布 🚀                                      │
+├─────────────────────────────────────────────────────────────┤
+│ 阶段 4: 拓展和高级算法              → 生态扩展               │
+│   v1.1.0 🌐 高级图机器学习基础                               │
+│   v1.2.0 📈 大规模图处理                                     │
+│   v1.3.0+ 🚀 生态与社区                                      │
+└─────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## 📊 当前基线 (v0.9.0)
+
+### 已完成资产
+
+| 维度 | 数值 | 说明 |
+|------|:----:|------|
+| **算法模块** | 12 | P0-P5 全覆盖 |
+| **算法总数** | 30+ | 遍历/路径/MST/连通性/流/匹配/图论/NP-Hard |
+| **测试用例** | 551 | 黑盒 517 + 白盒 34, 全通过 ✅ |
+| **代码行数** | ~8000+ | 含测试和文档 |
+| **Git Tags** | 5 | v0.5.0 → v0.9.0 |
+
+### 已有算法清单
+
+```
+✅ 遍历: BFS, DFS
+✅ 最短路径: Dijkstra, Bellman-Ford, Floyd-Warshall
+✅ MST: Kruskal, Prim
+✅ 连通性: CC, Tarjan SCC, Kosaraju SCC
+✅ 流网络: Edmonds-Karp, Dinic (最大流)
+✅ 匹配: Hungarian (二分图)
+✅ 图论: Euler, Cutpoints/Bridges, Coloring, Clique, Hamiltonian/TSP
+✅ 图生成器: 16 种随机图生成
+```
+
+### 关键缺口识别
+
+#### 🔴 P0 缺失基础算法（必须补齐）
+
+| 算法 | 分类 | 复杂度 | 用途 | 估算测试数 |
+|------|------|--------|------|:----------:|
+| **A* 启发式搜索** | 最短路径 | O(b^d) | 导航/游戏AI | 15 |
+| **Johnson 全源最短路径** | 最短路径 | O(V²logV + VE) | 稠密图全源 | 12 |
+| **最小费用最大流** | 流网络 | O(V²E) | 物流/资源分配 | 18 |
+| **Hopcroft-Karp** | 匹配 | O(E√V) | 快速二分图匹配 | 15 |
+| **一般图匹配 (Edmonds)** | 匹配 | O(V³) | 非二分图匹配 | 20 |
+
+**小计**: 5 算法 | **~80 tests**
+
+#### 🟡 P1 高级分析算法（重要实用）
+
+| 算法/模块 | 分类 | 复杂度 | 用途 | 估算测试数 |
+|-----------|------|--------|------|:----------:|
+| **PageRank** | 图分析 | O(kE) | 网页排序/影响力 | 15 |
+| **度中心性** | 中心性 | O(V+E) | 基础指标 | 8 |
+| **介数中心性 (Brandes)** | 中心性 | O(VE) | 关键节点 | 12 |
+| **接近中心性** | 中心性 | O(V(E+VlogV)) | 中心位置 | 10 |
+| **特征向量中心性** | 中心性 | O(kE) | 影响力传播 | 10 |
+| **Louvain 社区检测** | 社区 | O(N log N) | 社群发现 | 20 |
+| **标签传播算法** | 社区 | O(kE) | 快速聚类 | 15 |
+
+**小计**: 7 模块 | **~100 tests**
+
+#### 🟢 P2 I/O 与工具（生产必需）
+
+| 功能 | 分类 | 复杂度 | 用途 | 估算测试数 |
+|------|------|--------|------|:----------:|
+| **DOT 格式解析/生成** | I/O | O(N) | Graphviz 兼容 | 20 |
+| **JSON 序列化** | I/O | O(N) | 数据交换 | 12 |
+| **图统计信息** | 工具 | O(V+E) | 快速洞察 | 10 |
+
+**小计**: 3 功能 | **~42 tests**
+
+---
+
+## 🚀 版本计划详情
+
+### 阶段 1: 基础算法完成 + 接口完善
+
+> **时间范围**: 2026 Q2-Q3 (5月25日 - 7月中旬)
+> **目标版本**: v0.10.0 → v0.13.0
+> **新增测试**: ~222 tests (总计 ~773)
+> **核心产出**: 补齐所有基础算法 + 高级分析能力
+
+---
+
+#### 📍 Version 0.10.0: 🔍 社交网络分析套件
+
+**发布日期**: 2026-06-05 (预计 2 周)
+**主题**: 让 mbtgraph 具备完整的社交网络分析能力
+
+##### 模块组成
+
+```
+src/algo/
+├── pagerank/                    # [NEW] PageRank 算法
+│   ├── moon.pkg
+│   ├── types.mbt               # PageRankResult { ranks, iterations, converged }
+│   ├── pagerank.mbt            # 幂法迭代实现 (~120 行)
+│   └── pagerank_test.mbt       # 15 tests
+│
+├── centrality/                  # [NEW] 中心性分析套件
+│   ├── moon.pkg
+│   ├── types.mbt               # CentralityResult { scores, normalized }
+│   ├── degree_centrality.mbt   # 度中心性 (~60 行)
+│   ├── betweenness_centrality.mbt # 介数中心性 Brandes (~150 行)
+│   ├── closeness_centrality.mbt # 接近中心性 (~80 行)
+│   ├── eigenvector_centrality.mbt # 特征向量中心性 (~100 行)
+│   └── centrality_test.mbt     # 45 tests (各算法 8-15 个)
+│
+└── community/                   # [NEW] 社区检测
+    ├── moon.pkg
+    ├── types.mbt               # CommunityResult { labels, modularity, levels }
+    ├── louvain.mbt             # Louvain 算法 (~250 行)
+    ├── label_propagation.mbt   # 标签传播 (~120 行)
+    └── community_test.mbt      # 35 tests
+```
+
+##### 技术亮点
+
+1. **PageRank 幂法优化**
+   - 支持 dangling nodes 处理（无出边节点）
+   - 可配置 damping factor (默认 0.85)
+   - 收敛阈值 ε = 1e-6
+   - 个人化 PageRank (Personalized PageRank) 可选
+
+2. **Brandes 介数中心性**
+   - O(VE) 比朴素 O(V³) 快
+   - 支持有向/无向图
+   - 归一化选项
+
+3. **Louvain 社区检测**
+   - Phase 1: 贪心 Modularity 最大化
+   - Phase 2: 超图聚合
+   - Resolution 参数可调
+   - 适用于 Karate Club / Dolphin 经典数据集
+
+##### 测试策略
+
+| 模块 | 基础功能 | 边界情况 | 属性验证 | 性能基准 | 总计 |
+|------|:--------:|:--------:|:--------:|:--------:|:----:|
+| PageRank | 5 | 3 | 4 | 3 | **15** |
+| 度中心性 | 4 | 2 | 2 | — | **8** |
+| 介数中心性 | 6 | 3 | 3 | — | **12** |
+| 接近中心性 | 5 | 2 | 3 | — | **10** |
+| 特征向量中心性 | 5 | 2 | 3 | — | **10** |
+| Louvain | 8 | 4 | 4 | 4 | **20** |
+| 标签传播 | 6 | 4 | 3 | 2 | **15** |
+| **合计** | **39** | **20** | **22** | **9** | **~95** |
+
+##### 验收标准
+
+- [ ] `moon test` 全部通过 (551 + 95 = 646 tests)
+- [ ] `moon check` 零错误零警告
+- [ ] 覆盖率 ≥ 88%（新模块）
+- [ ] 文档包含使用示例 + 复杂度说明
+- [ ] 经典数据集测试通过（Karate Club / Dolphin / Football）
+
+##### 接口完善工作（本版本附带）
+
+在实现过程中，识别并重构公共接口：
+
+1. **统一结果类型模式**
+   ```moonbit
+   pub type AnalysisResult[T] {
+     values : Array[T]
+     metadata : ResultMetadata  // { iterations, time_ms, converged }
+   }
+   ```
+
+2. **Trait 扩展（如需要）**
+   - `GraphWeighted` trait（如果多个算法需要权重访问）
+   - `GraphIterable` trait（如果需要更高效的迭代器）
+
+---
+
+#### 📍 Version 0.11.0: 📊 数据交换与可视化
+
+**发布日期**: 2026-06-19 (预计 2 周)
+**主题**: 让图数据可以导入导出，连接外部生态
+
+##### 模块组成
+
+```
+src/io/                           # [NEW] I/O 模块
+├── moon.pkg
+├── types.mbt                    # IOError 变体 + 格式配置
+├── dot.mbt                      # DOT 格式解析器/生成器 (~300 行)
+│   ├── parse_dot()              # 解析 DOT 字符串 → 图对象
+│   └── write_dot()              # 图对象 → DOT 字符串
+├── json_serializer.mbt          # JSON 序列化 (~150 行)
+│   ├── to_json()                # 图对象 → JSON 字符串
+│   └── from_json()              # JSON 字符串 → 图对象
+├── graph_stats.mbt             # [NEW] 图统计信息工具 (~80 行)
+│   ├── basic_stats()            # V, E, 密度, 直方图
+│   ├── degree_distribution()    # 度分布序列
+│   └── connectivity_stats()     # 连通分量统计
+└── io_test.mbt                  # 42 tests
+    ├── dot_test.mbt             # 20 tests (解析/生成/往返)
+    ├── json_test.mbt           # 12 tests (序列化/反序列化/Schema)
+    └── stats_test.mbt          # 10 tests (统计正确性)
+```
+
+##### 技术亮点
+
+1. **DOT 格式支持**
+   - 兼容 Graphviz / NetworkX 标准
+   - 支持有向图 (`digraph`) 和无向图 (`graph`)
+   - 保留节点/边属性（label/color/shape/weight）
+   - 错误处理：语法错误时提供行号提示
+
+2. **JSON Schema 设计**
+   ```json
+   {
+     "version": "1.0",
+     "directed": true,
+     "multigraph": false,
+     "nodes": [
+       {"id": 0, "data": {"label": "A"}},
+       {"id": 1, "data": {"label": "B"}}
+     ],
+     "edges": [
+       {"source": 0, "target": 1, "weight": 1.5}
+     ],
+     "metadata": {"name": "example", "created": "2026-06-19"}
+   }
+   ```
+
+3. **图统计信息**
+   - 基础指标：节点数、边数、密度、自环数
+   - 度分布：度序列、平均度、最大/最小度
+   - 连通性：连通分量数、最大分量大小
+   - 可视化友好：可直接用于绘图库输入
+
+##### 测试策略
+
+| 模块 | 正常场景 | 异常处理 | 往返一致性 | 性能 | 总计 |
+|------|:--------:|:--------:|:----------:|:----:|:----:|
+| DOT 解析 | 8 | 6 | 4 | 2 | **20** |
+| JSON 序列化 | 5 | 3 | 3 | 1 | **12** |
+| 图统计 | 6 | 2 | — | 2 | **10** |
+| **合计** | **19** | **11** | **7** | **5** | **42** |
+
+##### 验收标准
+
+- [ ] 可解析 NetworkX/petgraph 生成的标准 .dot 文件
+- [ ] JSON 往返转换无损（parse → graph → serialize → parse → 对比）
+- [ ] 图统计结果与手动计算一致
+- [ ] 大文件性能：10K 节点图序列化 < 1s
+
+##### 接口完善工作（本版本附带）
+
+1. **标准化数据访问接口**
+   - 确保 I/O 模块可支持所有 8 种存储类型
+   - 统一 `to_adj_list()` / `from_adj_list()` 模式
+
+2. **错误类型体系**
+   ```moonbit
+   pub type IOError {
+     ParseError(String)
+     UnsupportedFormat(String)
+     InvalidData(String)
+     FileNotFound(String)
+   }
+   ```
+
+---
+
+#### 📍 Version 0.12.0: 🚀 经典算法增强
+
+**发布日期**: 2026-07-03 (预计 2 周)
+**主题**: 补齐经典图算法的最后几块拼图
+
+##### 模块组成
+
+```
+src/algo/
+├── shortest_path/               # [ENHANCED] 新增算法
+│   ├── a_star.mbt             # [NEW] A* 启发式搜索 (~130 行)
+│   └── johnson.mbt            # [NEW] Johnson 全源最短路径 (~90 行)
+│
+├── flow/                        # [ENHANCED] 新增算法
+│   └── min_cost_max_flow.mbt  # [NEW] 最小费用最大流 (~200 行)
+│
+├── matching/                     # [ENHANCED] 新增算法
+│   ├── hopcroft_karp.mbt      # [NEW] Hopcroft-Karp (~120 行)
+│   └── edmonds_matching.mbt   # [NEW] 一般图匹配 Edmonds (~180 行)
+│
+└── traversal/                    # [ENHANCED] 新增变体
+    └── bidirectional_bfs.mbt  # [NEW] 双向 BFS (~80 行)
+```
+
+##### 技术亮点
+
+1. **A* 启发式搜索**
+   - 支持自定义启发函数（曼哈顿距离/欧几里得等）
+   - 适用于网格图/道路网络
+   - 比 Dijkstra 快几个数量级（有良好启发函数时）
+   - 应用场景：游戏 AI寻路、导航系统
+
+2. **Johnson 全源最短路径**
+   - 使用 Bellman-Ford + Dijkstra 组合
+   - 时间复杂度 O(V²logV + VE)，比 Floyd-Warshall O(V³) 更适合稀疏图
+   - 可处理负权边（但无负权环）
+
+3. **最小费用最大流 (Successive Shortest Path)**
+   - 基于 SPFA/Bellman-Ford 找最短路
+   - 每次增广最短费用路径
+   - 应用场景：物流调度、资源分配、交通流
+
+4. **Hopcroft-Karp 二分图匹配**
+   - O(E√V) 比 Hungarian O(VE) 快
+   - 使用 BFS 分层 + DFS 增广
+   - 适用于大规模稀疏二分图
+
+5. **Edmonds 一般图匹配 (Blossom Algorithm)**
+   - O(V³) 或 O(V²E) 实现
+   - 处理奇数环（blossom）收缩/展开
+   - 填补非二分图匹配空白
+
+6. **双向 BFS**
+   - 从起点和终点同时搜索
+   - 理论加速 O(b^(d/2))
+   - 适用于无权图最短路径
+
+##### 测试策略
+
+| 算法 | 基础正确性 | 特殊案例 | 性能对比 | 总计 |
+|------|:----------:|:--------:|:--------:|:----:|
+| A* | 6 | 5 (启发函数/网格/障碍) | 3 (vs Dijkstra) | **14** |
+| Johnson | 5 | 4 (负权/稠密 vs FW) | 3 | **12** |
+| 最小费用最大流 | 8 | 5 (多商品/退化) | 3 (vs EK) | **16** |
+| Hopcroft-Karp | 6 | 4 (完备性/边界) | 3 (vs Hungarian) | **13** |
+| Edmonds 匹配 | 8 | 6 ( blossom/非二分) | 3 | **17** |
+| 双向 BFS | 5 | 3 (奇偶层/不连通) | 3 (vs BFS) | **11** |
+| **合计** | **38** | **27** | **18** | **~83** |
+
+##### 验收标准
+
+- [ ] A* 在网格图中找到最优路径（与 Dijkstra 一致）
+- [ ] Johnson 结果与 Floyd-Warshall 一致（误差 < 1e-6）
+- [ ] 最小费用最大流满足流量守恒 + 费用最优
+- [ ] Hopcroft-Karp 与 Hungarian 结果一致
+- [ ] Edmonds 匹配通过一般图测试集
+- [ ] 双向 BFS 访问节点数 ≤ 单向 BFS
+
+##### 接口完善工作（本版本附带）
+
+1. **算法 Trait 抽象**
+   ```moonbit
+   pub trait ShortestPathAlgorithm {
+     find_shortest_path(G, source, target) -> PathResult
+     find_distances(G, source) -> Array[Double]
+   }
+
+   pub trait MatchingAlgorithm {
+     find_maximum_matching(G) -> MatchingResult
+   }
+   ```
+
+2. **性能优化接口**
+   - 为 CSR/CSC 存储提供专用快速路径
+   - 启发函数的 Trait 约束
+
+---
+
+#### 📍 Version 0.13.0: 🛠️ 接口重构与 API 冻结准备
+
+**发布日期**: 2026-07-17 (预计 2 周)
+**主题**: 整理阶段 1 的技术债务，为 v1.0.0 冻结 API
+
+##### 主要工作
+
+1. **API 审计与 Breaking Changes 文档**
+   - 扫描所有 `pub` 函数签名
+   - 识别不稳定或设计不佳的 API
+   - 编写 Migration Guide (v0.x → v1.0)
+
+2. **结构体重构**
+   - 合并重复的类型定义
+   - 统一命名规范（如 `Result` 后缀）
+   - 优化字段顺序（常用字段前置）
+
+3. **Trait 体系优化**
+   - 评估是否需要新增/删除/合并 Trait
+   - 确保 LSP 原则不被违反
+   - 为未来扩展预留 extension point
+
+4. **性能回归测试建立**
+   - 建立 Benchmark 基线（v0.13.0 性能数据）
+   - 关键算法性能 profiling
+   - 识别热点并记录优化机会
+
+5. **文档同步更新**
+   - AGENTS.md 更新至 v3.0.0
+   - MEMORY.md 决策记录整理
+   - README.mbt.md 算法表更新至完整版
+
+##### 交付物
+
+- [ ] `docs/migration_guide.md` - API 迁移指南
+- [ ] `docs/api_audit_report.md` - API 审计报告
+- [ ] `benchmarks/baseline_v0.13.0.csv` - 性能基线数据
+- [ ] Git Tag: v0.13.0
+
+##### 验收标准
+
+- [ ] 100% 公开 API 有文档注释
+- [ ] Breaking Changes 完整列出并有迁移路径
+- [ ] Benchmark 基线已建立
+- [ ] 所有文档一致性检查通过
+
+---
+
+### 阶段 2: 优化 + 结构体/接口调整
+
+> **时间范围**: 2026 Q3 (7月-8月)
+> **目标版本**: v0.14.0 → v0.15.0
+> **核心产出**: 性能优化 + 内存优化 + API 稳定
+
+---
+
+#### 📍 Version 0.14.0: ⚡ 性能优化专项
+
+**发布日期**: 2026-07-31 (预计 2 周)
+**主题**: 让关键算法在生产环境跑得更快
+
+##### 优化重点
+
+1. **存储层优化**
+   - CSR/CSC 批量操作 SIMD 向量化探索
+   - AdjList 缓存友好的内存布局调整
+   - Matrix 稀疏存储支持（>50% 零元素时自动转换）
+
+2. **算法级优化**
+   - Dijkstra 使用斐波那契堆（理论改进）
+   - Dinic 当前弧优化 (current arc optimization)
+   - Louvain 精细-grained 锁（未来并发准备）
+
+3. **编译器级优化**
+   - 内联关键路径函数
+   - 减少 dynamic dispatch
+   - 利用 MoonBit 的 native 后端特性
+
+##### 交付物
+
+- [ ] 性能对比报告（优化前/后 Benchmark）
+- [ ] 热点函数列表及优化措施
+- [ ] 内存占用对比报告
+- [ ] Git Tag: v0.14.0
+
+---
+
+#### 📍 Version 0.15.0: 🔧 API 冻结候选
+
+**发布日期**: 2026-08-14 (预计 2 周)
+**主题**: 最终 API 敲定，进入稳定期
+
+##### 主要工作
+
+1. **API 最终审查**
+   - 确认所有公开 API 符合 semver 规范
+   - 标记 `@deprecated` 的 API（如有）
+   - 冻结 Trait 方法签名
+
+2. **向后兼容性保证**
+   - 编写兼容性测试套件
+   - 确保 v0.15.0 的代码可在 v1.0.0 无修改运行
+
+3. **Release Candidate 准备**
+   - 生成 API Reference 文档
+   - 准备 Changelog 初稿
+   - 确认版本号升至 v1.0.0-rc.1
+
+##### 交付物
+
+- [ ] API Reference 文档（自动生成或手动整理）
+- [ ] 兼容性测试套件 (compat_test.mbt)
+- [ ] Git Tag: v0.15.0 (= v1.0.0-rc.1)
+
+---
+
+### 阶段 3: 工程化 → v1.0.0
+
+> **时间范围**: 2026 Q3 (8月-9月初)
+> **目标版本**: v1.0.0 正式发布 🚀
+> **核心产出**: 生产级质量保证 + 发布流程
+
+---
+
+#### 📍 Version 1.0.0-rc.2: 🔄 CI/CD 上线
+
+**发布日期**: 2026-08-28 (预计 2 周)
+
+##### 主要工作
+
+1. **GitHub Actions Pipeline**
+   ```
+   PR/Push 触发:
+     ├─ Lint: moon fmt --check
+     ├─ Type Check: moon check (全量零错误)
+     ├─ Test: moon test (全量通过 + 覆盖率报告)
+     ├─ Build: moon build --target {native,wasm,js}
+     └─ Docs: 文档生成 + 一致性检查
+   ```
+
+2. **自动化质量门禁**
+   - 代码覆盖率 ≥ 85%（核心模块 ≥ 95%）
+   - Benchmark 回归检测（性能下降 > 5% 时告警）
+   - API breaking change 自动检测
+
+3. **贡献者基础设施**
+   - CONTRIBUTING.md 贡献者指南
+   - Issue/PR 模板
+   - Code Review 检查清单
+
+##### 交付物
+
+- [ ] `.github/workflows/ci.yml` - CI 配置
+- [ ] `.github/workflows/benchmark.yml` - 性能回归检测
+- [ ] `CONTRIBUTING.md` - 贡献指南
+- [ ] GitHub 绿色 badge 显示在 README
+
+---
+
+#### 📍 Version 1.0.0: 🎉 正式发布
+
+**发布日期**: 2026-09-11 (预计 2 周)
+
+##### 发布物料
+
+1. **CHANGELOG.md v1.0.0 章节**
+   - ✨ 主要新功能（社交网络分析/I/O/经典算法增强）
+   - 📊 统计数据（773+ tests / 40+ 算法 / 15 模块）
+   - 🔄 Migration Guide 链接
+   - 🙏 致谢贡献者
+
+2. **GitHub Release**
+   - Release Notes（专业排版）
+   - 二进制下载链接（native/wasm/js）
+   - 安装指南更新
+
+3. **包发布**
+   - mooncakes.io 发布配置（如可用）
+   - 版本 tag: v1.0.0
+
+4. **示例项目集合** (可选但推荐)
+   - 3-5 个完整可运行示例
+   - 覆盖主要使用场景
+
+##### 验收标准（最终质量门禁）
+
+- [ ] `moon check` 零错误零警告 ✅
+- [ ] `moon test` 全部通过（773+ tests, 0 failure）✅
+- [ ] 覆盖率 ≥ 85%（核心模块 ≥ 95%）✅
+- [ ] 文档覆盖率 100%（所有公开 API 有注释）✅
+- [ ] CI Pipeline 绿色 ✅
+- [ ] Benchmark 基线已建立 ✅
+- [ ] Breaking Changes 文档完整 ✅
+- [ ] Examples 全部可运行 ✅
+- [ ] AGENTS.md / MEMORY.md 已更新至最新状态 ✅
+
+---
+
+### 阶段 4: 拓展和高级算法
+
+> **时间范围**: 2026 Q4+
+> **目标版本**: v1.1.0 → v1.3.0+
+> **核心产出**: 前沿探索 + 生态扩展
+
+---
+
+#### 📍 Version 1.1.0: 🌐 高级图机器学习基础
+
+**预计时间**: 2026 Q4 (10月-11月)
+
+##### 可能的功能
+
+- [ ] Node2Vec / DeepWalk 图嵌入算法
+- [ ] 图神经网络 (GNN) 可行性 PoC
+- [ ] WebAssembly 加速探索（SIMD/WASM GC）
+
+---
+
+#### 📍 Version 1.2.0: 📈 大规模图处理
+
+**预计时间**: 2026 Q4 - 2027 Q1
+
+##### 可能的功能
+
+- [ ] 外部存储支持（内存映射文件/磁盘溢出）
+- [ ] 分布式图计算接口设计
+- [ ] 1M+ 节点的性能优化
+
+---
+
+#### 📍 Version 1.3.0+: 🚀 生态与社区
+
+**预计时间**: 2027+
+
+##### 可能的功能
+
+- [ ] 交互式 Demo（Wasm Playground）
+- [ ] Fuzz Testing 集成
+- [ ] 多语言绑定（如有需求）
+- [ ] 成为 MoonBit 官方推荐图算法库
+
+---
+
+## 📈 版本总览表
+
+| 版本 | 主题 | 新增模块 | 新增测试 | 累计测试 | 关键里程碑 |
+|------|------|:--------:|:--------:|:--------:|------------|
+| **v0.9.0** | P5 完成 | 5 (euler→hamiltonian) | 92 | 551 | 🎉 图论核心完成 |
+| **v0.10.0** | 🔍 社交网络分析 | 3 (pagerank/centrality/community) | ~95 | **~646** | 高级分析能力 |
+| **v0.11.0** | 📊 数据交换 | 1 (io) + stats 工具 | ~42 | **~688** | I/O 生态打通 |
+| **v0.12.0** | 🚀 经典算法增强 | 6 (a*/johnson/费用流/hk/edmonds/bfs) | ~83 | **~771** | 基础算法补齐 |
+| **v0.13.0** | 🛠️ 接口重构 | — | — | **~771** | API 冻结准备 |
+| **v0.14.0** | ⚡ 性能优化 | — | — | **~771** | 生产级性能 |
+| **v0.15.0** | 🔧 API 冻结 | — | — | **~771** | RC 候选 |
+| **v1.0.0** | 🎉 正式发布 | — | — | **~771+** | 🚀 生产就绪 |
+| **v1.1.0+** | 🌐 高级拓展 | TBD | TBD | TBD | 前沿探索 |
 
 ---
 
@@ -166,121 +670,68 @@
 
 | 风险 | 影响 | 概率 | 缓解措施 |
 |------|------|:----:|---------|
-| **MoonBit 语言稳定性** | API breaking changes 导致大量重构 | 中 | 密切跟踪 changelog；抽象层隔离语言变更 |
-| **性能瓶颈** | 复杂算法在 wasm/native 后端性能不达标 | 中 | 早期 benchmark；关键路径手写优化 |
-| **维护负担** | 个人项目难以持续维护 30+ 算法 | 高 | 优先级排序（P0>P1>P2）；吸引贡献者 |
+| **v0.10.0 工作量过大** (3 大模块) | 延期 1-2 周 | 中 | 拆分为 v0.10.0-alpha (PageRank) + v0.10.0 (全部) |
+| **Edmonds 匹配复杂度高** | 可能推迟到 v0.13.0 | 中 | 降级为 P2，先用 Hopcroft-Karp 满足大部分场景 |
+| **MoonBit 语言变更导致重构** | API breaking changes | 低 | 密切跟踪 changelog；抽象层隔离 |
 
 ### 🟡 中风险
 
 | 风险 | 影响 | 概率 | 缓解措施 |
 |------|------|:----:|---------|
-| **竞品出现** | 其他 MoonBit 图库分流用户 | 低 | 差异化（Trait 设计/算法广度/文档质量） |
-| **测试覆盖不足** | 边界 case 导致生产 bug | 中 | Fuzz testing + 属性验证 + 集成测试 |
-| **文档滞后** | 代码更新但文档过时 | 高 | 强制文档更新（CI check）；自动化生成 |
+| **DOT 解析器 bug** | I/O 功能不稳定 | 中 | 先实现子集，参考 NetworkX test suite |
+| **性能优化效果不明显** | v0.14.0 价值降低 | 低 | 提前 profiling，只优化确认的热点 |
+| **文档滞后于代码** | 用户困惑 | 中 | 强制"代码+测试+文档"原子提交 |
 
 ### 🟢 低风险
 
 | 风险 | 影响 | 概率 | 缓解措施 |
 |------|------|:----:|---------|
-| **包管理变更** | mooncakes.io 迁移或规则变化 | 低 | 关注官方公告；保持兼容性 |
-| **依赖冲突** | 第三方依赖版本不兼容 | 低 | 最小化依赖；锁定版本 |
+| **测试覆盖率不足** | 边界 case bug | 低 | 每个 module 要求 ≥ 85% 覆盖率 |
+| **Benchmark 数据波动** | 误判回归 | 低 | 多次运行取中位数 + 固定测试环境 |
 
 ---
 
-## 📊 资源需求与优先级矩阵
+## 💡 开发节奏建议
 
-### MoSCoW 优先级（v1.0.0 前）
+### 每日工作流
 
-| 类别 | 功能 | 优先级 | 理由 |
-|------|------|:------:|------|
-| **Must** | PageRank + 中心性 + 社区检测 | P0 | 补齐图分析核心能力，提升实用性 |
-| **Must** | I/O 序列化 (DOT/JSON) | P0 | 生产环境必需，否则无法导入真实数据 |
-| **Must** | CI/CD + Benchmark | P0 | 工程化基础，保证质量 |
-| **Should** | GraphML 支持 | P1 | XML 格式较复杂，可后续补充 |
-| **Should** | 英文文档 + 教程 | P1 | 国际化重要但非阻塞 |
-| **Should** | 交互式 Demo | P1 | 提升体验但开发成本高 |
-| **Could** | GNN/Node2Vec | P2 | 前沿探索，非核心功能 |
-| **Could** | 分布式图计算 | P2 | 过早优化，待实际需求驱动 |
-| **Won't** | GUI 可视化编辑器 | — | 超出范围，应使用现有工具（如 yEd） |
+```
+上午: 实现 1 个算法函数 + 核心逻辑
+下午: 编写对应测试 + 调试
+傍晚: 文档注释 + git commit
+```
 
----
+### 每周里程碑
 
-## 🔄 迭代计划（Sprint 视图）
+```
+周五: 集成测试 + 代码审查 + 周报
+周末: (可选) 技术调研/阅读论文
+```
 
-### Sprint 1: 高级图分析算法（2 周）
+### 双周发布节奏
 
-**目标**: 完成 PageRank、中心性分析、社区检测三大模块
-
-**交付物**:
-- `src/algo/pagerank/` — PageRank 算法实现（~200 行, 15 tests）
-- `src/algo/centrality/` — 4 种中心性指标（~350 行, 25 tests）
-- `src/algo/community/` — Louvain + Label Propagation（~400 行, 30 tests）
-- README.md + design doc 各模块
-- **总测试数**: ~70 new tests
-
-**验收标准**:
-- [ ] `moon test` 全部通过（0 failure）
-- [ ] `moon check` 零错误零警告
-- [ ] 覆盖率 ≥ 85%（新模块）
-- [ ] 文档包含使用示例 + 复杂度分析
+```
+第 1 周结束: Alpha 版本 (内部测试)
+第 2 周结束: 正式版本 + Git Tag + Release Notes
+```
 
 ---
 
-### Sprint 2: I/O 序列化（1.5 周）
+## 🎯 下一步行动（立即执行）
 
-**目标**: 实现 DOT/GraphML/JSON 三种格式的双向转换
+### 本周任务（Week of 5.25 - 5.30）
 
-**交付物**:
-- `src/io/dot.mbt` — DOT 解析器/生成器（~300 行, 20 tests）
-- `src/io/graphml.mbt` — GraphML 读写（~250 行, 12 tests）
-- `src/io/json_serializer.mbt` — JSON 序列化（~150 行, 10 tests）
-- 集成测试：真实 .dot/.graphml/.json 文件
-- **总测试数**: ~42 new tests
+1. **[P0]** 创建 `src/algo/pagerank/` 目录结构 + types.mbt
+2. **[P0]** 开始 PageRank 幂法实现（迭代公式 + 收敛判断）
+3. **[P1]** 创建 `src/algo/centrality/` 目录结构
+4. **[P1]** 创建 `src/algo/community/` 目录结构
 
-**验收标准**:
-- [ ] 支持 NetworkX/petgraph 生成的标准 DOT 文件
-- [ ] GraphML 与 JGraphT 互操作
-- [ ] JSON schema 向后兼容
-- [ ] 错误处理完善（ malformed input 友好提示）
+### 关键决策点
 
----
-
-### Sprint 3: 工程化基础设施（1 周）
-
-**目标**: 建立 CI/CD 和 Benchmark 体系
-
-**交付物**:
-- `.github/workflows/ci.yml` — 自动化流水线（lint/test/build）
-- `.github/workflows/benchmark.yml` — 性能回归检测
-- `benchmarks/` — 基准测试脚本（各算法性能数据）
-- `scripts/api_compat_check.sh` — semver 兼容性检查
-- **文档**: CONTRIBUTING.md + CI 说明
-
-**验收标准**:
-- [ ] PR 自动触发 CI（通过才能 merge）
-- [ ] Benchmark 数据可视化（趋势图）
-- [ ] API breaking change 自动检测
-- [ ] 文档覆盖率 100%
-
----
-
-### Sprint 4: 文档与发布准备（1 周）
-
-**目标**: 完善文档体系，准备 v1.0.0 发布
-
-**交付物**:
-- 英文版 README.md
-- Migration Guide (v0.x → v1.0)
-- API Reference（自动生成或手动整理）
-- 10+ Tutorial 示例（Jupyter notebook 风格）
-- Changelog 更新至 v1.0.0
-- Git Tag: v1.0.0
-
-**验收标准**:
-- [ ] 所有公开 API 有文档注释
-- [ ] 示例代码可直接运行
-- [ ] Breaking changes 完整列出
-- [ ] 发布说明（Release Notes）撰写完毕
+- [x] **ROADMAP 重构**: 采用方案C（功能集群）+ 小步快跑 ✅
+- [ ] **I/O 模块位置**: 放在 `src/io/` （已确定）
+- [ ] **PageRank 实现**: 支持 personalized/damping factor 配置（待实现时确认）
+- [ ] **Benchmark 工具**: 使用简单计时（待阶段 3 确定）
 
 ---
 
@@ -288,52 +739,35 @@
 
 ### 技术指标
 
-| 指标 | 当前值 (v0.5.0) | 目标值 (v1.0.0) | 衡量方式 |
+| 指标 | 当前值 (v0.9.0) | 目标值 (v1.0.0) | 衡量方式 |
 |------|:---------------:|:---------------:|---------|
-| **测试总数** | ~551 | **≥ 700** | `moon test --count` |
+| **测试总数** | 551 | **≥ 773** | `moon test` |
 | **代码覆盖率** | ~80% | **≥ 85%** | `moon coverage analyze` |
 | **算法数量** | 30+ | **40+** | 统计 pub fn 数量 |
 | **文档完整度** | 90% | **100%** | 人工审计 + CI check |
-| **构建时间** | < 30s | **< 60s**（含 benchmark）| CI 日志 |
+| **构建时间** | < 30s | < 60s（含 benchmark） | CI 日志 |
 | **wasm 体积** | ~900KB | **< 1MB** | `moon build --target wasm` |
 
 ### 社区指标
 
 | 指标 | 当前值 | 目标值 (v1.0.0 后 3 个月) | 衡量方式 |
 |------|:-----:|:------------------------:|---------|
-| **GitHub Stars** | - | **≥ 50** | GitHub API |
-| **月下载量** | - | **≥ 100** | mooncakes.io 统计 |
+| **GitHub Stars** | — | **≥ 50** | GitHub API |
+| **月下载量** | — | **≥ 100** | mooncakes.io 统计 |
 | **Contributors** | 1 | **≥ 3** | GitHub 贡献者列表 |
-| **Open Issues** | 0 | **≤ 10**（及时关闭）| Issue tracker |
-| **PR 合并率** | - | **≥ 80%** | GitHub 统计 |
-
----
-
-## 🎯 下一步行动（立即执行）
-
-### 本周任务（Week of 5.23 - 5.30）
-
-1. **[P0]** 创建 `src/algo/pagerank/` 目录结构 + types.mbt
-2. **[P0]** 开始 PageRank 幂法实现（迭代公式 + 收敛判断）
-3. **[P1]** 调研 DOT format 规范（参考 NetworkX 实现）
-4. **[P1]** 设计 JSON serialization schema（字段映射表）
-
-### 关键决策点
-
-- [ ] **I/O 模块位置**: 放在 `src/io/` 还是 `src/utils/io/`？
-- [ ] **PageRank 实现**: 是否支持 personalized/damping factor 配置？
-- [ ] **Benchmark 工具**: 使用 Criterion.rs 风格还是简单计时？
+| **Open Issues** | 0 | **≤ 10**（及时关闭） | Issue tracker |
+| **PR 合并率** | — | **≥ 80%** | GitHub 统计 |
 
 ---
 
 ## 📚 相关文档
 
-- **详细设计文档**: [docs/design/](docs/design/) （每个算法的设计决策）
-- **竞品调研**: [docs/reference/](docs/reference/) （NetworkX/petgraph/JGraphT 分析）
-- **架构总览**: [docs/architecture.md](docs/architecture.md)
+- **详细设计文档**: [docs/design/roadmap_v2_redesign_2026-05-25.md](design/roadmap_v2_redesign_2026-05-25.md) （本次重构的完整设计决策）
+- **架构总览**: [docs/design/graph_trait_and_module_architecture.md](design/graph_trait_and_module_architecture.md)
 - **编码规范**: [AGENTS.md](../AGENTS.md) （Top 10 陷阱 + 错误速查）
+- **项目记忆**: [MEMORY.md](../MEMORY.md) （关键决策记录）
 - **更新日志**: [CHANGELOG.md](../CHANGELOG.md) （版本历史）
-- **记忆系统**: [MEMORY.md](../MEMORY.md) （关键决策记录）
+- **TODO 清单**: [TODO.md](TODO.md) （任务分解）
 
 ---
 
@@ -352,7 +786,8 @@
 
 | 版本 | 日期 | 主要变更 |
 |------|------|---------|
-| **v1.0.0-draft** | 2026-05-23 | 🎉 初始版本：基于 v0.5.0 现状重新规划，聚焦 v1.0.0 生产就绪目标 |
+| **v2.0.0** | 2026-05-25 | 🎉 **重大重构**: 采用方案C（功能集群）+ 四阶段规划 + 小步快跑，优先算法完整性而非工程化 |
+| **v1.0.0-draft** | 2026-05-23 | 初始版本：基于 v0.5.0 现状重新规划，聚焦 v1.0.0 生产就绪目标 |
 
 ---
 
@@ -360,6 +795,6 @@
 
 **🎯 让我们一起打造 MoonBit 最强的图算法库！**
 
-*最后更新: 2026-05-23 | 维护者: @morning-start | 下次评审: 2026-06-23*
+*最后更新: 2026-05-25 | 维护者: @morning-start | 下次评审: 2026-06-25*
 
 </div>
