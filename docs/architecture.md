@@ -53,7 +53,7 @@
 ```
 mbtgraph/
 ├── moon.mod.json                    # 模块元数据
-├── LICENSE                          # Apache-2.0
+├── LICENSE                          # MIT
 ├── README.mbt.md                    # 库说明文档
 ├── AGENTS.md                       # Agent 协作配置 (v2.1.0, 含 Top10陷阱)
 ├── MEMORY.md                       # 项目主记忆 (15 条语法陷阱 + 15 条关键决策)

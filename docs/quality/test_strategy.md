@@ -6,7 +6,7 @@ type: "test-strategy"
 created: "2026-05-02"
 updated: "2026-05-02"
 author: "morning-start"
-license: "Apache-2.0"
+license: "MIT"
 tags: ["testing", "quality", "graph", "algorithm"]
 traceability:
   source:

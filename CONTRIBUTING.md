@@ -6,7 +6,7 @@ type: "contributing"
 created: "2026-05-02"
 updated: "2026-05-02"
 author: "morning-start"
-license: "Apache-2.0"
+license: "MIT"
 tags: ["contributing", "guide", "development"]
 ---
 

@@ -155,4 +155,4 @@ moon test src/algo/euler
 
 ## 许可证
 
-Apache-2.0 (与项目整体一致)
+MIT (与项目整体一致)

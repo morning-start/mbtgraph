@@ -6,7 +6,7 @@ type: "survey"
 created: "2026-05-07"
 updated: "2026-05-07"
 author: "morning-start"
-license: "Apache-2.0"
+license: "MIT"
 tags: ["graph", "storage", "data-structure", "survey"]
 traceability:
   source:

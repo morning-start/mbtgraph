@@ -361,7 +361,7 @@ mbtgraph/
 │
 ├── tests/                        # 483 测试用例 (100% 通过)
 ├── CHANGELOG.md                  # 变更日志
-└── LICENSE                       # Apache-2.0
+└── LICENSE                       # MIT
 ```
 
 ---

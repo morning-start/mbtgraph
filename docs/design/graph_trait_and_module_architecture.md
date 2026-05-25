@@ -7,7 +7,7 @@ type: "design"
 created: "2026-05-08"
 updated: "2026-05-08"
 author: "morning-start"
-license: "Apache-2.0"
+license: "MIT"
 tags: \["graph", "trait", "module", "architecture", "design"]
 traceability:
 source:

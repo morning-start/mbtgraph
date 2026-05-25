@@ -7,7 +7,7 @@
 | **库名称** | petgraph ("pet" = personal, "graph") |
 | **编程语言** | Rust |
 | **最新版本** | 0.8.3 (稳定版) |
-| **开源协议** dual-licensed: MIT OR Apache-2.0 |
+| **开源协议** dual-licensed: MIT OR MIT |
 | **Crates.io 下载量** | 月均数百万次 |
 | **GitHub Stars** | 2k+ |
 | **文档地址** | [docs.rs/petgraph](https://docs.rs/petgraph/latest/petgraph/) |

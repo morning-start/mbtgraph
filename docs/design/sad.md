@@ -6,7 +6,7 @@ type: "sad"
 created: "2026-05-02"
 updated: "2026-05-08"
 author: "morning-start"
-license: "Apache-2.0"
+license: "MIT"
 tags: ["architecture", "design", "graph", "library"]
 traceability:
   source:

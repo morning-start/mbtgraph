@@ -6,7 +6,7 @@ type: "srs"
 created: "2026-05-02"
 updated: "2026-05-02"
 author: "morning-start"
-license: "Apache-2.0"
+license: "MIT"
 tags: ["requirements", "graph", "algorithm", "library"]
 traceability:
   source: "docs/architecture/project_structure_design.md"
@@ -492,7 +492,7 @@ let g = DirectedGraph::new()
 
 | 约束项 | 说明 |
 |--------|------|
-| **许可证** | Apache-2.0 |
+| **许可证** | MIT |
 | **包发布** | 兼容 mooncakes.io 发布规范 |
 | **文档语言** | 中文为主，关键 API 提供英文注释 |
 
