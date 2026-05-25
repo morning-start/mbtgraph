@@ -134,12 +134,12 @@ MoonBit 作为新兴的多后端编程语言（支持 native/wasm/js），在 20
 ### 在图算法库领域的位置
 
 ```
-                    高级功能 (ML/GNN)
-                    ↑
-                    │    NetworkX (Python)
-                    │    (功能最全，性能一般)
-                    │
-   功能丰富度  │         mbtgraph (MoonBit)
+                 高级功能 (ML/GNN)
+              ↑
+              │    NetworkX (Python)
+              │    (功能最全，性能一般)
+              │
+  功能丰富度  │         mbtgraph (MoonBit)
               │         (🎯 平衡点：功能+性能+体积)
               │              petgraph (Rust)
               │              (高性能，功能较少)
