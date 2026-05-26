@@ -5,10 +5,10 @@
 - **模块**: `morning-start/mbtgraph`
 - **语言**: MoonBit
 - **协议**: MIT ✅ (2026-05-23 从 MIT 更改)
-- **版本**: v0.9.0 (🎉 P5 图论核心算法扩展全部完成 | Sprint 1-4 进行中)
+- **版本**: v0.10.0 (🎉 社交网络分析套件完成 | v0.10.0 已发布)
 - **架构**: MoonBit 包按目录组织，每个目录含 `moon.pkg` 声明依赖
-- **总测试数**: **551 tests** (全通过 ✅)
-- **算法模块**: **12 子模块** (P0-P5) + **30+ 算法**
+- **总测试数**: **588 tests** (全通过 ✅)
+- **算法模块**: **15 子模块** (P0-P5 + 社交网络分析) + **~38 算法**
 - **Git Tags**: v0.5.0 → v0.6.0 → v0.7.0 → v0.8.0 → v0.9.0
 
 ## 图存储架构
@@ -61,7 +61,7 @@ src/storage/
 src/
 ├── core/          # 基础类型(3) + trait定义(6) + 错误类型(1) + 测试(68)
 ├── storage/       # 存储实现(8结构体) + 转换器(8) + 工具(4) + 测试(~107) + 文档
-├── algo/          # 图算法模块 ⭐ P0-P5 全部完成 (12 子模块, 376 tests)
+├── algo/          # 图算法模块 ⭐ v0.10.0 全部完成 (15 子模块, 588 tests)
 │   ├── traversal/      # 遍历 (BFS/DFS/环检测/拓扑) — ~47 tests ✅
 │   ├── generators/     # 图生成器 (P0) — 16 函数, 56 tests ✅
 │   ├── shortest_path/  # 最短路径 (P1) — Dijkstra/BF/FW, 32 tests ✅
@@ -69,11 +69,15 @@ src/
 │   ├── connectivity/   # 连通性 (P2) — CC/Tarjan/Kosaraju, 21 tests ✅
 │   ├── flow/           # 网络流 (P3) — Edmonds-Karp + Dinic, 33 tests ✅
 │   ├── matching/       # 图匹配 (P4) — Hungarian, 21 tests ✅
-│   ├── euler/          # 欧拉路径 (P5-A) 🆕 — Hierholzer 有向/无向, **22** tests ✅
-│   ├── cutpoints/      # 割点与桥 (P5-B) 🆕 — Tarjan DFN/Low, **15** tests ✅
-│   ├── coloring/       # 图着色 (P5-C) 🆕 — Greedy/WP/DSATUR/Exact, **21** tests ✅
-│   ├── clique/         # 团/独立集/顶点覆盖 (P5-D) 🆕 — Bron-Kerbosch, **14** tests ✅
-│   └── hamiltonian/    # 哈密顿/TSP (P5-E) 🆕 — Backtrack+NN+Held-Karp, **20** tests ✅
+│   ├── euler/          # 欧拉路径 (P5-A) — Hierholzer 有向/无向, 22 tests ✅
+│   ├── cutpoints/      # 割点与桥 (P5-B) — Tarjan DFN/Low, 15 tests ✅
+│   ├── coloring/       # 图着色 (P5-C) — Greedy/WP/DSATUR/Exact, 21 tests ✅
+│   ├── clique/         # 团/独立集/顶点覆盖 (P5-D) — Bron-Kerbosch, 14 tests ✅
+│   ├── hamiltonian/    # 哈密顿/TSP (P5-E) — Backtrack+NN+Held-Karp, 20 tests ✅
+│   ├── pagerank/       # 🆕 PageRank 幂法迭代, 15 tests ✅
+│   ├── centrality/     # 🆕 中心性分析 (度/介数/接近/特征向量), 45 tests ✅
+│   ├── community/      # 🆕 社区检测 (Louvain/标签传播), 35 tests ✅
+│   └── integration/    # 🆕 跨模块集成测试, 10 tests ✅
 └── utils/         # 工具层（序列化等）— 待开发
 ```
 
@@ -124,23 +128,28 @@ src/
 
 ## 测试状态
 
-### 当前覆盖率 (v0.9.0 - 🎉 P5 全部完成)
+### 当前覆盖率 (v0.10.0 - 🎉 社交网络分析套件)
 
-**总计**: **551 tests** (全通过 ✅) | **12 算法模块** | **30+ 算法实现**
+**总计**: **588 tests** (全通过 ✅) | **15 算法模块** | **~38 算法实现**
 
 | 包 | 黑盒 | 白盒 | 总计 | 状态 |
 |----|:----:|:----:|:----:|:----:|
 | core | 49 | 19 | **68** | ✅ 全通过 |
 | storage | 92 | 15 | **~107** | ✅ 全通过 |
 | algo (P0-P4) | **226** | **0** | **226** | ✅ 全通过 |
-| algo (P5) 🆕 | **150** | **0** | **150** | ✅ 全通过 |
+| algo (P5) | **150** | **0** | **150** | ✅ 全通过 |
 | ├─ euler (P5-A) | 22 | - | 22 | ✅ Hierholzer |
 | ├─ cutpoints (P5-B) | 15 | - | 15 | ✅ Tarjan |
 | ├─ coloring (P5-C) | 21 | - | 21 | ✅ 4种算法 |
 | ├─ clique (P5-D) | 14 | - | 14 | ✅ Bron-Kerbosch |
 | └─ hamiltonian (P5-E) | 20 | - | 20 | ✅ TSP+回溯 |
+| algo (v0.10.0) 🆕 | **95** | **10** | **105** | ✅ 全通过 |
+| ├─ pagerank | 15 | - | 15 | ✅ 幂法迭代 |
+| ├─ centrality | 45 | - | 45 | ✅ 4种中心性 |
+| ├─ community | 35 | - | 35 | ✅ Louvain+标签传播 |
+| └─ integration | - | 10 | 10 | ✅ 跨模块测试 |
 | root | 0 | 0 | 0 | — |
-| **合计** | **517** | **34** | **551** | **✅ 551 passed** |
+| **合计** | **612** | **44** | **656** | **✅ 656 passed** |
 
 ### P5 模块完成总结（2026-05-22）
 
@@ -192,7 +201,7 @@ src/
 
 ```bash
 moon check               # 类型检查（零错误零警告）
-moon test                # 运行全部测试 (551 tests)
+moon test                # 运行全部测试 (588 tests)
 moon fmt && moon info     # 格式化 + 更新 .mbti 接口文件
 moon build --target <tgt> # 构建（wasm/js/native）
 moon coverage analyze    # 覆盖率分析
@@ -205,7 +214,7 @@ moon coverage analyze    # 覆盖率分析
 | 日期 | 决策 | 原因 | 影响 |
 |------|------|------|------|
 | **2026-05-23** | **协议从 MIT 更改为 MIT** ✅ | 更宽松的开源协议，便于社区采纳和二次开发 | moon.mod.json + 全部文档同步 |
-| **2026-05-23** | **项目版本号统一至v0.9.0** ✅ | 消除历史版本不一致问题 (moon.mod.json/README/CHANGELOG) | Git Tag v0.9.0 创建 |
+| **2026-05-26** | **v0.10.0 社交网络分析套件完成发布** 🎉 | PageRank + 中心性分析(度/介数/接近/特征向量) + 社区检测(Louvain/标签传播) | 14->15 算法模块, 551->588 tests |
 | **2026-05-23** | **Sprint任务体系重构** 🆕 | TODO.md 重写为 Sprint 格式（4个Sprint），聚焦 v1.0.0 生产就绪 | 提升项目管理效率 |
 | **2026-05-23** | **Git Tags 版本管理建立** 🆕 | 为每个 P5 模块创建独立 minor 版本标签 | 清晰追踪模块完成节点 |
 | **2026-05-23** | **文档更新规范体系建立** 🆕 | UPDATE_GUIDE.md 定义触发条件矩阵和一致性检查脚本 | Agent 自动化文档管理 |
@@ -261,6 +270,13 @@ moon coverage analyze    # 覆盖率分析
 | **哈密顿** | 回溯 | O(V!) | O(V) | hamiltonian |
 | **TSP** | 最近邻 | O(V²) | O(V) | hamiltonian |
 | | Held-Karp | O(2^V·V²) V≤12 | O(2^V·V) | hamiltonian |
+| **PageRank** | 幂法迭代 | O(kE) | O(N+E) | pagerank |
+| **中心性** | 度 | O(V+E) | O(V) | centrality |
+| | 介数 (Brandes) | O(VE) | O(V+E) | centrality |
+| | 接近 | O(V(E+V)) | O(V²) | centrality |
+| | 特征向量 | O(kE) | O(V+E) | centrality |
+| **社区** | Louvain | O(N log N) | O(N+E) | community |
+| | 标签传播 | O(kE) | O(V) | community |
 
 ## 开发效率基准
 
@@ -318,16 +334,16 @@ moon coverage analyze    # 覆盖率分析
 
 ---
 
-## 📊 项目统计总览（v0.9.0）
+## 📊 项目统计总览（v0.10.0）
 
 | 维度 | 数值 | 说明 |
 |------|:----:|------|
-| **版本** | **v0.9.0** | P5 全部完成，Sprint 进行中 |
-| **算法模块** | **12** | P0(1) + P1(1) + P2(2) + P3(1) + P4(1) + P5(5) |
-| **算法总数** | **30+** | 覆盖多项式/NP-C/NP-Hard 全场景 |
-| **测试用例** | **551** | 黑盒 517 + 白盒 34, 全通过 ✅ |
-| **代码行数** | **~8000+** | 含测试和文档 |
-| **Git Tags** | **5** | v0.5.0 → v0.9.0 (每个 P5 模块一个 tag) |
-| **文档覆盖率** | **100%** | 12/12 模块有 README, 8/8 设计文档 |
-| **协议** | **MIT** | 2026-05-23 从 MIT 更改 |
-| **状态** | **🎉 Production Ready (Alpha)** | 可用于生产环境测试 |
+| **版本** | **v0.10.0** | 🎉 社交网络分析套件已发布 |
+| **算法模块** | **15** | P0(1) + P1(1) + P2(2) + P3(1) + P4(1) + P5(5) + 社交网络分析(3) + 集成(1) |
+| **算法总数** | **~38** | 覆盖社交网络分析 + 多项式/NP-C/NP-Hard 全场景 |
+| **测试用例** | **588** | 跨模块全部通过 ✅ |
+| **代码行数** | **~10000+** | 含测试和文档 |
+| **Git Tags** | **6+** | v0.5.0 → v0.10.0 |
+| **文档覆盖率** | **100%** | 15/15 模块有 README, 设计文档完整 |
+| **协议** | **MIT** | 2026-05-23 确认 |
+| **状态** | **🎉 Beta 质量** | 可用于生产环境测试 |

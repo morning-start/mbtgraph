@@ -247,6 +247,28 @@ match @traversal.topo_sort_kahn(course_dependency_graph) {
 | **网格** | `grid_2d()`, `hexagonal_grid()`, `triangular_grid()` |
 | **二分图** | `complete_bipartite()`, `random_bipartite()` |
 
+### PageRank ([`src/algo/pagerank`](src/algo/pagerank/))
+
+| 函数 | 说明 | 复杂度 |
+|------|------:|:------:|
+| `pagerank(g, damping, max_iter, tol)` | 幂法迭代 PageRank | O(kE) |
+
+### 中心性分析 ([`src/algo/centrality`](src/algo/centrality/))
+
+| 函数 | 说明 | 复杂度 |
+|------|------:|:------:|
+| `degree_centrality(g, mode)` | 度中心性（入/出/总度） | O(V+E) |
+| `betweenness_centrality(g, norm)` | 介数中心性（Brandes） | O(VE) |
+| `closeness_centrality(g, norm)` | 接近中心性（多源 BFS） | O(V(E+V)) |
+| `eigenvector_centrality(g, max_iter, tol)` | 特征向量中心性（幂法） | O(kE) |
+
+### 社区检测 ([`src/algo/community`](src/algo/community/))
+
+| 函数 | 说明 | 复杂度 |
+|------|------:|:------:|
+| `louvain(g, resolution)` | Louvain 贪心模块度优化 | O(N log N) |
+| `label_propagation(g, max_iter)` | 标签传播异步迭代 | O(kE) |
+
 ---
 
 ## ⚡ 性能对比
@@ -336,19 +358,23 @@ mbtgraph/
 │   │   ├── converter.mbt         # 10 个格式转换函数
 │   │   └── ... (共 8 种存储)
 │   │
-│   ├── algo/                      # 📦 算法模块 [~376 tests] P0-P5 ✅ (12 子模块)
+│   ├── algo/                      # 📦 算法模块 [~588 tests] P0-P5+SN ✅ (15 子模块)
 │   │   ├── traversal/            # 遍历 (BFS/DFS/环检测/拓扑排序) — ~47t
 │   │   ├── generators/           # 图生成器 (P0) — 56t
 │   │   ├── shortest_path/        # 最短路径 (P1) — Dijkstra/BF/FW, 32t
 │   │   ├── mst/                  # 最小生成树 (P2) — Kruskal/Prim, 16t
 │   │   ├── connectivity/         # 连通性 (P2) — CC/Tarjan/Kosaraju, 21t
 │   │   ├── flow/                 # 网络流 (P3) — Edmonds-Karp/Dinic, 33t
-│   │   ├── matching/             # 图匹配 (P4) — Hungarian, 21t 🆕
-│   │   ├── euler/                # 欧拉路径 (P5-A) — Hierholzer, 22t 🆕
-│   │   ├── cutpoints/            # 割点与桥 (P5-B) — Tarjan, 15t 🆕
-│   │   ├── coloring/             # 图着色 (P5-C) — Greedy/WP/DSATUR/Exact, 21t 🆕
-│   │   ├── clique/               # 团/独立集/顶点覆盖 (P5-D) — Bron-Kerbosch, 14t 🆕
-│   │   └── hamiltonian/          # 哈密顿/TSP (P5-E) — Backtrack+NN+Held-Karp, 20t 🆕
+│   │   ├── matching/             # 图匹配 (P4) — Hungarian, 21t
+│   │   ├── euler/                # 欧拉路径 (P5-A) — Hierholzer, 22t
+│   │   ├── cutpoints/            # 割点与桥 (P5-B) — Tarjan, 15t
+│   │   ├── coloring/             # 图着色 (P5-C) — Greedy/WP/DSATUR/Exact, 21t
+│   │   ├── clique/               # 团/独立集/顶点覆盖 (P5-D) — Bron-Kerbosch, 14t
+│   │   ├── hamiltonian/          # 哈密顿/TSP (P5-E) — Backtrack+NN+Held-Karp, 20t
+│   │   ├── pagerank/             # 🆕 PageRank 幂法迭代, 15t
+│   │   ├── centrality/           # 🆕 中心性分析 (度/介数/接近/特征向量), 45t
+│   │   ├── community/            # 🆕 社区检测 (Louvain/标签传播), 35t
+│   │   └── integration/          # 🆕 跨模块集成测试, 10t
 │   │
 │   └── utils/
 │       └── generators/           # 图生成器 [56 tests]

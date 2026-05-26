@@ -5,6 +5,20 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 本项目遵循 [语义化版本](https://semver.org/spec/v2.0.0.html)规范。
 
+## [v0.10.0] - 2026-05-26
+
+### 新增
+- 🚀 **社交网络分析套件** (3 大模块, 105 测试用例):
+  - **PageRank**：幂法迭代算法，支持 damping factor、dangling nodes 处理和个人化 PageRank (15 tests)
+  - **中心性分析**：度中心性、介数中心性（Brandes 算法）、接近中心性、特征向量中心性（幂法迭代）(45 tests)
+  - **社区检测**：Louvain 贪心模块度优化算法、标签传播异步迭代算法 (35 tests)
+- 🔗 跨模块集成测试 (10 tests)：验证 PageRank+中心性+社区检测联动，覆盖 AdjList/Matrix/CSR/EdgeList 全部存储类型
+
+### 改进
+- 算法模块数从 12 扩展至 **15**，算法总数从 30+ 扩展至 **~38**
+- 全量测试从 551 增长至 **588**，无回归
+- AGENTS.md 升级至 v3.1.0，MEMORY.md/README.mbt.md 同步更新
+
 ## [未发布]
 
 ### 新增

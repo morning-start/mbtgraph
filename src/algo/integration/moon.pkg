@@ -1,0 +1,13 @@
+import {
+  "morning-start/mbtgraph/src/core" @core,
+  "morning-start/mbtgraph/src/storage" @storage,
+  "morning-start/mbtgraph/src/algo/centrality" @centrality,
+  "morning-start/mbtgraph/src/algo/community" @community,
+  "morning-start/mbtgraph/src/algo/pagerank" @pagerank,
+}
+
+warnings = "-unused_value-unused_package"
+
+options(
+  "is-main": false,
+)
