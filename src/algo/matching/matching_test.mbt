@@ -288,8 +288,10 @@ fn make_hk_simple() -> @storage.DirectedAdjList {
   for i in 0..<4 {
     @core.GraphWritable::add_node(g, i.to_double()) |> ignore
   }
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(2), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(3), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(3), 1.0)
+  |> ignore
   g
 }
 
@@ -301,7 +303,8 @@ fn make_hk_k33() -> @storage.DirectedAdjList {
   }
   for i in 0..<3 {
     for j in 3..<6 {
-      @core.GraphWritable::add_edge(g, @core.NodeId(i), @core.NodeId(j), 1.0) |> ignore
+      @core.GraphWritable::add_edge(g, @core.NodeId(i), @core.NodeId(j), 1.0)
+      |> ignore
     }
   }
   g
@@ -313,14 +316,22 @@ fn make_hk_multi() -> @storage.DirectedAdjList {
   for i in 0..<8 {
     @core.GraphWritable::add_node(g, i.to_double()) |> ignore
   }
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(4), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(5), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(4), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(6), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(5), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(7), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(6), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(7), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(4), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(5), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(4), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(6), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(5), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(7), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(6), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(7), 1.0)
+  |> ignore
   g
 }
 
@@ -330,10 +341,14 @@ fn make_hk_star() -> @storage.DirectedAdjList {
   for i in 0..<5 {
     @core.GraphWritable::add_node(g, i.to_double()) |> ignore
   }
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(2), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(3), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(4), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(3), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(4), 1.0)
+  |> ignore
   g
 }
 
@@ -343,9 +358,12 @@ fn make_hk_all_to_one() -> @storage.DirectedAdjList {
   for i in 0..<4 {
     @core.GraphWritable::add_node(g, i.to_double()) |> ignore
   }
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(3), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(3), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(3), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(3), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
+  |> ignore
   g
 }
 
@@ -366,16 +384,8 @@ test "hopcroft_karp_simple_matching" {
 ///|
 test "hopcroft_karp_complete_bipartite" {
   let g = make_hk_k33()
-  let left = [
-    @core.NodeId(0),
-    @core.NodeId(1),
-    @core.NodeId(2),
-  ]
-  let right = [
-    @core.NodeId(3),
-    @core.NodeId(4),
-    @core.NodeId(5),
-  ]
+  let left = [@core.NodeId(0), @core.NodeId(1), @core.NodeId(2)]
+  let right = [@core.NodeId(3), @core.NodeId(4), @core.NodeId(5)]
   let result = hopcroft_karp(g, left, right)
   assert_true(result.cardinality == 3)
 }
@@ -397,6 +407,422 @@ test "hopcroft_karp_chain_graph" {
   ]
   let result = hopcroft_karp(g, left, right)
   assert_true(result.cardinality == 4)
+}
+
+// ============================================================================
+// Edmonds 一般图最大匹配 — 测试辅助函数
+// ============================================================================
+
+///|
+fn make_edmonds_simple() -> @storage.UndirectedAdjList {
+  let g = @storage.new_undirected()
+  @core.GraphWritable::add_node(g, 1.0) |> ignore
+  @core.GraphWritable::add_node(g, 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  g
+}
+
+///|
+fn make_edmonds_triangle() -> @storage.UndirectedAdjList {
+  let g = @storage.new_undirected()
+  for i in 0..<3 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+  |> ignore
+  g
+}
+
+///|
+fn make_edmonds_square() -> @storage.UndirectedAdjList {
+  let g = @storage.new_undirected()
+  for i in 0..<4 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(0), 1.0)
+  |> ignore
+  g
+}
+
+///|
+fn make_edmonds_house() -> @storage.UndirectedAdjList {
+  let g = @storage.new_undirected()
+  for i in 0..<5 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  // 4-cycle with one diagonal: two triangles 0-1-3 and 0-2-3, plus tail 3-4
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(3), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(3), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(4), 1.0)
+  |> ignore
+  g
+}
+
+///|
+fn make_edmonds_butterfly() -> @storage.UndirectedAdjList {
+  let g = @storage.new_undirected()
+  for i in 0..<5 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  // Two triangles sharing node 0: triangle 0-1-2 and triangle 0-3-4
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(3), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(4), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(4), 1.0)
+  |> ignore
+  g
+}
+
+///|
+fn make_edmonds_pentagon() -> @storage.UndirectedAdjList {
+  let g = @storage.new_undirected()
+  for i in 0..<5 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  // 5-cycle: 0-1-2-3-4-0
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(4), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(4), @core.NodeId(0), 1.0)
+  |> ignore
+  g
+}
+
+///|
+fn make_edmonds_k4() -> @storage.UndirectedAdjList {
+  let g = @storage.new_undirected()
+  for i in 0..<4 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  for i in 0..<4 {
+    let mut j = i + 1
+    while j < 4 {
+      @core.GraphWritable::add_edge(
+        g,
+        @core.NodeId(i),
+        @core.NodeId(j),
+        1.0,
+      ) |> ignore
+      j = j + 1
+    }
+  }
+  g
+}
+
+///|
+fn make_edmonds_p4() -> @storage.UndirectedAdjList {
+  let g = @storage.new_undirected()
+  for i in 0..<4 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  // Path: 0-1-2-3
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
+  |> ignore
+  g
+}
+
+///|
+fn make_edmonds_star_k13() -> @storage.UndirectedAdjList {
+  let g = @storage.new_undirected()
+  for i in 0..<4 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  // Center node 0, leaves 1,2,3
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(3), 1.0)
+  |> ignore
+  g
+}
+
+///|
+fn make_edmonds_two_components() -> @storage.UndirectedAdjList {
+  let g = @storage.new_undirected()
+  for i in 0..<5 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  // Component 1: path 0-1-2
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+  |> ignore
+  // Component 2: edge 3-4
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(4), 1.0)
+  |> ignore
+  g
+}
+
+///|
+fn make_edmonds_maximum_possible() -> @storage.UndirectedAdjList {
+  let g = @storage.new_undirected()
+  for i in 0..<4 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  // Two disjoint edges: 0-1, 2-3 (perfect matching on 4 nodes)
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
+  |> ignore
+  g
+}
+
+///|
+fn make_edmonds_odd_path() -> @storage.UndirectedAdjList {
+  let g = @storage.new_undirected()
+  for i in 0..<3 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  // Path: 0-1-2 (3 nodes, odd count)
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+  |> ignore
+  g
+}
+
+///|
+fn make_edmonds_ugraph() -> @storage.UndirectedAdjList {
+  let g = @storage.new_undirected()
+  for i in 0..<6 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  // A general graph with odd cycles:
+  // Triangle 0-1-2 plus triangle 3-4-5, with a bridge 2-3
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(4), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(5), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(4), @core.NodeId(5), 1.0)
+  |> ignore
+  g
+}
+
+// ============================================================================
+// Edmonds 基础正确性测试 (8)
+// ============================================================================
+
+///|
+test "edmonds_simple_edge" {
+  let g = make_edmonds_simple()
+  let result = edmonds_maximum_matching(g)
+  assert_true(result.cardinality == 1)
+  assert_true(result.size() == 1)
+}
+
+///|
+test "edmonds_triangle" {
+  let g = make_edmonds_triangle()
+  let result = edmonds_maximum_matching(g)
+  assert_true(result.cardinality == 1)
+}
+
+///|
+test "edmonds_square" {
+  let g = make_edmonds_square()
+  let result = edmonds_maximum_matching(g)
+  assert_true(result.cardinality == 2)
+}
+
+///|
+test "edmonds_house_graph" {
+  let g = make_edmonds_house()
+  let result = edmonds_maximum_matching(g)
+  assert_true(result.cardinality == 2)
+}
+
+///|
+test "edmonds_butterfly" {
+  let g = make_edmonds_butterfly()
+  let result = edmonds_maximum_matching(g)
+  assert_true(result.cardinality == 2)
+}
+
+///|
+test "edmonds_pentagon" {
+  let g = make_edmonds_pentagon()
+  let result = edmonds_maximum_matching(g)
+  assert_true(result.cardinality == 2)
+}
+
+///|
+test "edmonds_complete_graph_k4" {
+  let g = make_edmonds_k4()
+  let result = edmonds_maximum_matching(g)
+  assert_true(result.cardinality == 2)
+}
+
+///|
+test "edmonds_path_graph_p4" {
+  let g = make_edmonds_p4()
+  let result = edmonds_maximum_matching(g)
+  assert_true(result.cardinality == 2)
+}
+
+// ============================================================================
+// Edmonds 边界情况测试 (6)
+// ============================================================================
+
+///|
+test "edmonds_empty_graph" {
+  let g = @storage.new_undirected()
+  let result = edmonds_maximum_matching(g)
+  assert_true(result.cardinality == 0)
+  assert_true(result.matching_edges.length() == 0)
+}
+
+///|
+test "edmonds_single_node" {
+  let g = @storage.new_undirected()
+  @core.GraphWritable::add_node(g, 1.0) |> ignore
+  let result = edmonds_maximum_matching(g)
+  assert_true(result.cardinality == 0)
+}
+
+///|
+test "edmonds_star_graph_k13" {
+  let g = make_edmonds_star_k13()
+  let result = edmonds_maximum_matching(g)
+  assert_true(result.cardinality == 1)
+}
+
+///|
+test "edmonds_two_components" {
+  let g = make_edmonds_two_components()
+  let result = edmonds_maximum_matching(g)
+  // Component 1 (3 nodes path): max 1, Component 2 (2 nodes edge): max 1
+  assert_true(result.cardinality == 2)
+}
+
+///|
+test "edmonds_maximum_possible" {
+  let g = make_edmonds_maximum_possible()
+  let result = edmonds_maximum_matching(g)
+  assert_true(result.cardinality == 2)
+  assert_true(result.cardinality * 2 == 4)
+}
+
+///|
+test "edmonds_odd_node_count" {
+  let g = make_edmonds_odd_path()
+  let result = edmonds_maximum_matching(g)
+  // 3 nodes, max matching = floor(3/2) = 1
+  assert_true(result.cardinality == 1)
+}
+
+// ============================================================================
+// Edmonds 跨存储测试 (3)
+// ============================================================================
+
+///|
+test "edmonds_cross_storage_adjlist" {
+  let g = @storage.new_undirected()
+  for i in 0..<5 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  // Butterfly: two triangles sharing node 0
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(3), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(4), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(4), 1.0)
+  |> ignore
+  let result = edmonds_maximum_matching(g)
+  assert_true(result.cardinality == 2)
+}
+
+///|
+test "edmonds_cross_storage_matrix" {
+  let g = @storage.new_undirected_matrix(5)
+  for i in 0..<5 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  // Triangle 0-1-2
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+  |> ignore
+  // Tail: 2-3-4 path
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(4), 1.0)
+  |> ignore
+  let result = edmonds_maximum_matching(g)
+  // Triangle can give 1 pair, and 3-4 can give another pair
+  assert_true(result.cardinality == 2)
+}
+
+///|
+test "edmonds_cross_storage_edgelist" {
+  let g = @storage.new_undirected_edge_list()
+  for i in 0..<5 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  // Same graph as matrix test
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(4), 1.0)
+  |> ignore
+  let result = edmonds_maximum_matching(g)
+  assert_true(result.cardinality == 2)
 }
 
 ///|
@@ -425,16 +851,8 @@ test "hopcroft_karp_no_edges" {
   for i in 0..<6 {
     @core.GraphWritable::add_node(g, i.to_double()) |> ignore
   }
-  let left = [
-    @core.NodeId(0),
-    @core.NodeId(1),
-    @core.NodeId(2),
-  ]
-  let right = [
-    @core.NodeId(3),
-    @core.NodeId(4),
-    @core.NodeId(5),
-  ]
+  let left = [@core.NodeId(0), @core.NodeId(1), @core.NodeId(2)]
+  let right = [@core.NodeId(3), @core.NodeId(4), @core.NodeId(5)]
   let result = hopcroft_karp(g, left, right)
   assert_true(result.cardinality == 0)
   assert_true(result.matching_edges.length() == 0)
@@ -491,7 +909,12 @@ test "hopcroft_karp_all_connected_to_one" {
 test "hopcroft_karp_star_graph" {
   let g = make_hk_star()
   let left = [@core.NodeId(0)]
-  let right = [@core.NodeId(1), @core.NodeId(2), @core.NodeId(3), @core.NodeId(4)]
+  let right = [
+    @core.NodeId(1),
+    @core.NodeId(2),
+    @core.NodeId(3),
+    @core.NodeId(4),
+  ]
   let result = hopcroft_karp(g, left, right)
   assert_true(result.cardinality == 1)
 }
@@ -506,14 +929,22 @@ test "hopcroft_karp_cross_storage_adjlist" {
   for i in 0..<8 {
     @core.GraphWritable::add_node(g, i.to_double()) |> ignore
   }
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(4), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(5), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(4), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(6), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(5), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(7), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(6), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(7), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(4), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(5), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(4), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(6), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(5), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(7), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(6), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(7), 1.0)
+  |> ignore
 
   let left = [
     @core.NodeId(0),
@@ -537,14 +968,22 @@ test "hopcroft_karp_cross_storage_matrix" {
   for i in 0..<8 {
     @core.GraphWritable::add_node(g, i.to_double()) |> ignore
   }
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(4), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(5), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(4), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(6), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(5), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(7), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(6), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(7), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(4), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(5), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(4), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(6), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(5), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(7), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(6), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(7), 1.0)
+  |> ignore
 
   let left = [
     @core.NodeId(0),
@@ -568,14 +1007,22 @@ test "hopcroft_karp_cross_storage_edgelist" {
   for i in 0..<8 {
     @core.GraphWritable::add_node(g, i.to_double()) |> ignore
   }
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(4), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(5), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(4), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(6), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(5), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(7), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(6), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(7), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(4), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(5), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(4), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(6), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(5), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(7), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(6), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(7), 1.0)
+  |> ignore
 
   let left = [
     @core.NodeId(0),
