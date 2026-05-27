@@ -431,3 +431,139 @@ pub fn[G : @core.GraphReadable] topo_validates(
   }
   true
 }
+
+// ============================================================================
+// 双向 BFS 测试
+// ============================================================================
+
+///|
+test "bidirectional_bfs_linear_path" {
+  let g = @storage.new_directed()
+  let n0 = @core.GraphWritable::add_node(g, 0.0)
+  let n1 = @core.GraphWritable::add_node(g, 1.0)
+  let n2 = @core.GraphWritable::add_node(g, 2.0)
+  let n3 = @core.GraphWritable::add_node(g, 3.0)
+  @core.GraphWritable::add_edge(g, n0, n1, 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, n1, n2, 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, n2, n3, 1.0) |> ignore
+  assert_true(@core.GraphReadable::contains_node(g, n0))
+  assert_true(@core.GraphReadable::contains_node(g, n3))
+  assert_eq(@core.GraphReadable::node_count(g), 4)
+  let path = bidirectional_bfs(g, n0, n3)
+  assert_eq(path.length(), 4)
+  assert_true(path[0] == n0)
+  assert_true(path[1] == n1)
+  assert_true(path[2] == n2)
+  assert_true(path[3] == n3)
+}
+
+///|
+test "bidirectional_bfs_simple_graph" {
+  let g = make_dag()
+  let path = bidirectional_bfs(g, @core.NodeId(0), @core.NodeId(3))
+  assert_eq(path.length(), 3)
+  match path[0] {
+    @core.NodeId(v) => assert_eq(v, 0)
+  }
+  match path[2] {
+    @core.NodeId(v) => assert_eq(v, 3)
+  }
+}
+
+///|
+test "bidirectional_bfs_same_source_target" {
+  let g = make_linear()
+  let path = bidirectional_bfs(g, @core.NodeId(1), @core.NodeId(1))
+  assert_eq(path.length(), 1)
+  match path[0] {
+    @core.NodeId(v) => assert_eq(v, 1)
+  }
+}
+
+///|
+test "bidirectional_bfs_single_node" {
+  let g = @storage.new_directed()
+  let n0 = @core.GraphWritable::add_node(g, 1.0)
+  let path_self = bidirectional_bfs(g, n0, n0)
+  assert_eq(path_self.length(), 1)
+  assert_true(path_self[0] == n0)
+  let path_missing = bidirectional_bfs(g, n0, @core.NodeId(99))
+  assert_eq(path_missing.length(), 0)
+}
+
+///|
+test "bidirectional_bfs_empty_graph" {
+  let g = @storage.new_directed()
+  let path = bidirectional_bfs(g, @core.NodeId(0), @core.NodeId(5))
+  assert_eq(path.length(), 0)
+}
+
+///|
+test "bidirectional_bfs_unreachable" {
+  let g = make_linear()
+  let extra = @core.GraphWritable::add_node(g, 99.0)
+  let path = bidirectional_bfs(g, @core.NodeId(0), extra)
+  assert_eq(path.length(), 0)
+}
+
+///|
+test "bidirectional_bfs_direct_edge" {
+  let g = make_linear()
+  let path = bidirectional_bfs(g, @core.NodeId(0), @core.NodeId(1))
+  assert_eq(path.length(), 2)
+  match path[0] {
+    @core.NodeId(v) => assert_eq(v, 0)
+  }
+  match path[1] {
+    @core.NodeId(v) => assert_eq(v, 1)
+  }
+}
+
+///|
+test "bidirectional_bfs_no_common_node" {
+  let g = @storage.new_directed()
+  let n0 = @core.GraphWritable::add_node(g, 0.0)
+  let n1 = @core.GraphWritable::add_node(g, 1.0)
+  let n2 = @core.GraphWritable::add_node(g, 2.0)
+  let n3 = @core.GraphWritable::add_node(g, 3.0)
+  @core.GraphWritable::add_edge(g, n0, n1, 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, n2, n3, 1.0) |> ignore
+  let path = bidirectional_bfs(g, n0, n3)
+  assert_eq(path.length(), 0)
+}
+
+///|
+test "bidirectional_bfs_visited_less_or_equal_than_bfs" {
+  let g = make_dag()
+  let path = bidirectional_bfs(g, @core.NodeId(0), @core.NodeId(3))
+  let bfs_path = bfs_shortest_path(g, @core.NodeId(0), @core.NodeId(3))
+  assert_eq(path.length(), bfs_path.length())
+  assert_true(path.length() > 0)
+}
+
+///|
+test "bidirectional_bfs_cross_storage_adjlist" {
+  let g = make_linear()
+  let path = bidirectional_bfs(g, @core.NodeId(0), @core.NodeId(3))
+  assert_eq(path.length(), 4)
+}
+
+///|
+test "bidirectional_bfs_cross_storage_matrix" {
+  let g = @storage.new_directed_matrix(10)
+  let n0 = @core.GraphWritable::add_node(g, 0.0)
+  let n1 = @core.GraphWritable::add_node(g, 1.0)
+  let n2 = @core.GraphWritable::add_node(g, 2.0)
+  let n3 = @core.GraphWritable::add_node(g, 3.0)
+  @core.GraphWritable::add_edge(g, n0, n1, 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, n1, n2, 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, n2, n3, 1.0) |> ignore
+  let path = bidirectional_bfs(g, @core.NodeId(0), @core.NodeId(3))
+  assert_eq(path.length(), 4)
+  match path[0] {
+    @core.NodeId(v) => assert_eq(v, 0)
+  }
+  match path[3] {
+    @core.NodeId(v) => assert_eq(v, 3)
+  }
+}
