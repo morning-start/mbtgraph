@@ -5,6 +5,20 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 本项目遵循 [语义化版本](https://semver.org/spec/v2.0.0.html)规范。
 
+## [v0.12.0] - 2026-05-26
+
+### 新增
+- 🚀 **经典算法增强** (5 个新算法, 71 测试用例):
+  - **A\* 启发式搜索** (`shortest_path/a_star.mbt`): 可配置启发函数，支持闭包 `|NodeId| -> Double`，零启发退化为 Dijkstra (14 tests)
+  - **双向 BFS** (`traversal/bidirectional_bfs.mbt`): 层交替双向搜索，从起点和终点同时 BFS，相遇重建最短路径 (11 tests)
+  - **Hopcroft-Karp** (`matching/hopcroft_karp.mbt`): O(E√V) 二分图最大匹配，BFS 分层 + DFS 增广交替 (13 tests)
+  - **最小费用最大流** (`flow/min_cost_max_flow.mbt`): CostFlowNetwork 类型，SSP 算法 (Bellman-Ford 最短费用路径) (16 tests)
+  - **Edmonds 一般图匹配** (`matching/edmonds_matching.mbt`): Blossom 算法，三态标签体系奇环检测与收缩 (17 tests)
+
+### 改进
+- 全量测试从 630 增长至 **701** (+71)，无回归
+- 5 个新创建文件，12 个变更文件，+2332 行
+
 ## [v0.11.0] - 2026-05-26
 
 ### 新增
