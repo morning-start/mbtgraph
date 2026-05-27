@@ -1,6 +1,6 @@
 # mbtgraph 任务清单 (TODO)
 
-> **最后更新**: 2026-05-26 | **当前版本**: v0.10.0 ✅ 🔍 社交网络分析套件
+> **最后更新**: 2026-05-26 | **当前版本**: v0.11.0 ✅ 📊 数据交换与可视化
 > **下次评审**: 2026-06-01（每周日）
 
 ---
@@ -21,8 +21,8 @@
 
 ```
 ✅ v0.9.0  P5 图论核心完成 (551 tests)
-✅ v0.10.0 🔍 社交网络分析套件 (588 tests)  ← 已发布
-⬜ v0.11.0 📊 数据交换与可视化
+✅ v0.10.0 🔍 社交网络分析套件 (588 tests)
+✅ v0.11.0 📊 数据交换与可视化 (630 tests) ← 已发布
 ⬜ v0.12.0 🚀 经典算法增强
 ⬜ v0.13.0 🛠️ 接口重构
 ⬜ v1.0.0  🎉 正式发布
@@ -403,6 +403,97 @@
 
 ---
 
+## 🎯 v0.11.0: 📊 数据交换与可视化
+
+> **时间范围**: 2026-05-26（1 天 🚀）
+> **新增测试**: 42 tests（总计 630）
+> **核心产出**: DOT 格式读写 + JSON 序列化 + 图统计工具
+
+---
+
+### 模块 A: I/O 基础设施
+
+#### TASK-101: 创建目录结构与类型定义
+
+- [x] 创建 `src/io/` 目录
+- [x] 创建 `moon.pkg`（依赖 `@core` 和 `@storage`）
+- [x] 定义错误类型:
+  ```moonbit
+  pub(all) enum IOError {
+    ParseError(String)
+    UnsupportedFormat(String)
+    InvalidData(String)
+  }
+  ```
+- [x] 定义图统计类型:
+  - `GraphStats`（节点/边/密度/有向标志/度分布统计）
+  - `ConnectivityStats`（连通分量信息）
+  - `DegreeDistribution`（度分布直方图）
+- **验收**: `moon check src/io` 通过
+
+---
+
+#### TASK-102: DOT 格式序列化与解析
+
+- [x] `write_dot[G : @core.GraphReadable]` — 泛型 DOT 序列化
+- [x] `parse_dot_into[G : @core.GraphWritable]` — DOT 解析（状态机+递归下降）
+- [x] 支持 `digraph` / `graph` 两种关键字
+- [x] 支持 `[weight=...]` 边属性
+- [x] 支持 `//`、`#` 行注释和 `/* */` 块注释
+- [x] 兼容 AdjList / Matrix / CSR / EdgeList 全部存储类型
+- **验收**: 20 个测试全部通过
+
+---
+
+#### TASK-103: JSON 格式序列化与解析
+
+- [x] `graph_to_json[G : @core.GraphReadable]` — 泛型 JSON 序列化（compact/pretty）
+- [x] `parse_json_into[G : @core.GraphWritable]` — JSON 解析（手动递归实现）
+- [x] 格式规范: `{ mbtgraph, directed, nodes, edges }` 四字段
+- [x] 往返测试验证: JSON → 图 → JSON 一致性
+- **验收**: 12 个测试全部通过
+
+---
+
+#### TASK-104: 图统计工具
+
+- [x] `basic_stats[G : @core.GraphReadable]` — 基本统计（节点/边/密度/度数）
+- [x] `degree_distribution[G : @core.GraphReadable]` — 度分布直方图
+- [x] `connectivity_stats[G : @core.GraphReadable]` — 连通性统计（基于 DFS）
+- **验收**: 10 个测试全部通过
+
+---
+
+#### TASK-105: 编写 I/O 测试套件 (42 tests)
+
+| 分类 | 数量 | 测试项 |
+|------|:----:|--------|
+| DOT 序列化 | 5 | 有向/无向/自定义名/单节点/空图 |
+| DOT 解析 | 10 | 基础有向/无向/权重/无名称/注释(3种)/多边/错误处理/已存在图 |
+| DOT 往返 | 5 | 有向/无向/链图/单节点/空图 |
+| JSON 序列化 | 4 | 有向/无向/pretty/空图 |
+| JSON 解析 | 4 | 基础/多边/已存在图/错误输入 |
+| JSON 往返 | 4 | 有向/无向/链图/pretty |
+| 图统计 | 10 | 基本(4) + 度分布(3) + 连通性(3) |
+| **合计** | **42** | |
+
+- **验收**: `moon test src/io` 42/42 全部通过
+
+---
+
+### 模块 B: 发布准备
+
+#### TASK-106: 项目文档与版本发布
+
+- [x] TODO.md 更新（v0.11.0 完成标记）
+- [x] AGENTS.md 更新（测试数 588→630）
+- [x] MEMORY.md 更新（I/O 模块记录）
+- [x] CHANGELOG.md 新增 v0.11.0 条目
+- [x] Git 提交 v0.11.0 发布
+- **验收**: 文档一致性检查通过
+
+---
+
 ## 📅 开发计划时间线
 
 > **实际完成**: 2026-05-26（比计划提前 10 天 🚀）
@@ -463,11 +554,10 @@
 
 ## 🔄 下一步 (v0.10.0 之后)
 
-完成 v0.10.0 后，按 ROADMAP v2.0.0 继续：
+完成 v0.11.0 后，按 ROADMAP v2.0.0 继续：
 
 ```
-v0.11.0 📊 数据交换与可视化 (DOT + JSON + 图统计)   ← 下一个
-v0.12.0 🚀 经典算法增强 (A*/费用流/HK/Edmonds/BFS)
+v0.12.0 🚀 经典算法增强 (A*/费用流/HK/Edmonds/BFS)   ← 下一个
 v0.13.0 🛠️ 接口重构与 API 冻结准备
 ...
 v1.0.0  🎉 正式发布

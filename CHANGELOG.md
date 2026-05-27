@@ -5,6 +5,20 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 本项目遵循 [语义化版本](https://semver.org/spec/v2.0.0.html)规范。
 
+## [v0.11.0] - 2026-05-26
+
+### 新增
+- 📊 **数据交换与可视化模块** (全新 `src/io/` 模块, 42 测试用例):
+  - **DOT 格式读写**：泛型 `write_dot` 序列化、`parse_dot_into` 递归下降解析器，支持 `digraph`/`graph`、`[weight=...]` 属性、`//`/`#`/`/* */` 注释 (20 tests)
+  - **JSON 格式读写**：`graph_to_json` (compact/pretty)、`parse_json_into` 完整 JSON 解析器，`{ mbtgraph, directed, nodes, edges }` 格式 (12 tests)
+  - **图统计工具**：`basic_stats`、`degree_distribution`、`connectivity_stats` 泛型图统计 (10 tests)
+- 🔗 全部 I/O 函数兼容 8 种存储类型（AdjList/Matrix/CSR/EdgeList 有向/无向变体）
+
+### 改进
+- 全量测试从 588 增长至 **630**（+42），无回归
+- MEMORY.md 更新包结构，新增 I/O 模块行
+- AGENTS.md 项目统计更新
+
 ## [v0.10.0] - 2026-05-26
 
 ### 新增
