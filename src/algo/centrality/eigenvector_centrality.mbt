@@ -1,5 +1,5 @@
+///|
 /// 特征向量中心性算法实现
-
 pub fn[G : @core.GraphReadable] eigenvector_centrality(
   graph : G,
   max_iterations : Int,
@@ -42,9 +42,10 @@ pub fn[G : @core.GraphReadable] eigenvector_centrality(
     }
   }
 
-  CentralityResult::{ scores: scores, normalized: true }
+  CentralityResult::{ scores, normalized: true }
 }
 
+///|
 fn[G : @core.GraphReadable] build_eigenvector_adjacency_ev(
   graph : G,
   n : Int,
@@ -67,6 +68,7 @@ fn[G : @core.GraphReadable] build_eigenvector_adjacency_ev(
   a
 }
 
+///|
 fn eigenvector_iterate_ev(
   old_scores : Array[Double],
   in_adj : Array[Array[Int]],
@@ -88,6 +90,7 @@ fn eigenvector_iterate_ev(
   ns
 }
 
+///|
 fn normalize_vector_ev(vec : Array[Double]) -> Array[Double] {
   let mut norm_sq = 0.0
   for v in vec {
@@ -102,20 +105,28 @@ fn normalize_vector_ev(vec : Array[Double]) -> Array[Double] {
   result
 }
 
+///|
 fn max_diff_eigen_ev(a : Array[Double], b : Array[Double], n : Int) -> Double {
   let mut md = 0.0
   let mut i = 0
   while i < n {
     let mut delta = a[i] - b[i]
-    if delta < 0.0 { delta = -delta }
-    if delta > md { md = delta }
+    if delta < 0.0 {
+      delta = -delta
+    }
+    if delta > md {
+      md = delta
+    }
     i = i + 1
   }
   md
 }
 
+///|
 fn sqrt_double_ev(x : Double) -> Double {
-  if x <= 0.0 { return 0.0 }
+  if x <= 0.0 {
+    return 0.0
+  }
   let mut guess = x / 2.0
   let mut j = 0
   while j < 20 {

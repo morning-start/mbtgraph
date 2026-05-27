@@ -28,12 +28,10 @@ pub fn[G : @core.GraphReadable] find_maximum_clique(g : G) -> CliqueResult {
     clique_nodes.push(@core.NodeId(idx))
   }
 
-  CliqueResult::{
-    maximum_clique: clique_nodes,
-    size: size,
-  }
+  CliqueResult::{ maximum_clique: clique_nodes, size }
 }
 
+///|
 fn[G : @core.GraphReadable] bk_recursive(
   g : G,
   r : Array[Int],
@@ -75,7 +73,12 @@ fn[G : @core.GraphReadable] bk_recursive(
   best
 }
 
-fn[G : @core.GraphReadable] get_neighbor_indices(g : G, v : Int, n : Int) -> Array[Int] {
+///|
+fn[G : @core.GraphReadable] get_neighbor_indices(
+  g : G,
+  v : Int,
+  n : Int,
+) -> Array[Int] {
   let result : Array[Int] = []
   let neighbors = @core.GraphReadable::neighbors(g, @core.NodeId(v))
   for neighbor in neighbors {

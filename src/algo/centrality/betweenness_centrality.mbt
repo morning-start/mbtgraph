@@ -1,5 +1,5 @@
+///|
 /// 介数中心性算法实现 (Brandes 算法)
-
 pub fn[G : @core.GraphReadable] betweenness_centrality(
   graph : G,
   normalized : Bool,
@@ -13,7 +13,7 @@ pub fn[G : @core.GraphReadable] betweenness_centrality(
       zero_scores.push(0.0)
       i = i + 1
     }
-    return CentralityResult::{ scores: zero_scores, normalized: normalized }
+    return CentralityResult::{ scores: zero_scores, normalized }
   }
 
   let is_directed = @core.GraphReadable::is_directed(graph)
@@ -38,7 +38,7 @@ pub fn[G : @core.GraphReadable] betweenness_centrality(
     }
   }
 
-  CentralityResult::{ scores: betweenness, normalized: normalized }
+  CentralityResult::{ scores: betweenness, normalized }
 }
 
 ///|
@@ -92,7 +92,7 @@ fn[G : @core.GraphReadable] brandes_accumulate(
     let w = stack[si]
     for v in pred[w] {
       if sigma[w] > 0.0 {
-        delta[v] = delta[v] + (sigma[v] / sigma[w]) * (1.0 + delta[w])
+        delta[v] = delta[v] + sigma[v] / sigma[w] * (1.0 + delta[w])
       }
     }
     if w != source {
@@ -102,6 +102,7 @@ fn[G : @core.GraphReadable] brandes_accumulate(
   }
 }
 
+///|
 fn[G : @core.GraphReadable] get_neighbor_list_br(
   graph : G,
   node_id : @core.NodeId,

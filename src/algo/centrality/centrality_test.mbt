@@ -1,5 +1,5 @@
+///|
 /// 中心性分析测试套件
-
 fn make_central_star() -> @storage.DirectedAdjList {
   let g = @storage.new_directed()
   let mut i = 0
@@ -7,13 +7,18 @@ fn make_central_star() -> @storage.DirectedAdjList {
     @core.GraphWritable::add_node(g, 0.0) |> ignore
     i = i + 1
   }
-  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(0), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(0), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(0), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(4), @core.NodeId(0), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(0), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(0), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(0), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(4), @core.NodeId(0), 1.0)
+  |> ignore
   g
 }
 
+///|
 fn make_path_graph_4() -> @storage.DirectedAdjList {
   let g = @storage.new_directed()
   let mut i = 0
@@ -21,12 +26,16 @@ fn make_path_graph_4() -> @storage.DirectedAdjList {
     @core.GraphWritable::add_node(g, 0.0) |> ignore
     i = i + 1
   }
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
+  |> ignore
   g
 }
 
+///|
 fn make_complete_4() -> @storage.DirectedAdjList {
   let g = @storage.new_directed()
   let mut i = 0
@@ -49,6 +58,7 @@ fn make_complete_4() -> @storage.DirectedAdjList {
   g
 }
 
+///|
 fn make_bridge_graph() -> @storage.DirectedAdjList {
   let g = @storage.new_directed()
   let mut i = 0
@@ -56,27 +66,46 @@ fn make_bridge_graph() -> @storage.DirectedAdjList {
     @core.GraphWritable::add_node(g, 0.0) |> ignore
     i = i + 1
   }
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(4), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(4), @core.NodeId(5), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(4), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(4), @core.NodeId(5), 1.0)
+  |> ignore
   g
 }
 
+///|
 fn approx_eq(a : Double, b : Double, eps : Double) -> Bool {
   let d = a - b
-  if d < 0.0 { -d < eps } else { d < eps }
+  if d < 0.0 {
+    -d < eps
+  } else {
+    d < eps
+  }
 }
 
-fn int_to_double(x : Int) -> Double { x.to_double() }
+///|
+fn int_to_double(x : Int) -> Double {
+  x.to_double()
+}
 
+///|
 fn abs_double(x : Double) -> Double {
-  if x < 0.0 { -x } else { x }
+  if x < 0.0 {
+    -x
+  } else {
+    x
+  }
 }
 
 // 度中心性 (8 tests)
 
+///|
 test "degree_star_center_highest" {
   let g = make_central_star()
   let result = degree_centrality(g, DegreeMode::In)
@@ -86,6 +115,7 @@ test "degree_star_center_highest" {
   }
 }
 
+///|
 test "degree_out_mode" {
   let g = make_path_graph_4()
   let result = degree_centrality(g, DegreeMode::Out)
@@ -100,6 +130,7 @@ test "degree_out_mode" {
   }
 }
 
+///|
 test "degree_total_mode" {
   let g = make_central_star()
   let result_total = degree_centrality(g, DegreeMode::Total)
@@ -112,6 +143,7 @@ test "degree_total_mode" {
   }
 }
 
+///|
 test "degree_complete_uniform" {
   let g = make_complete_4()
   let result = degree_centrality(g, DegreeMode::Out)
@@ -121,12 +153,14 @@ test "degree_complete_uniform" {
   }
 }
 
+///|
 test "degree_empty_graph" {
   let g = @storage.new_directed()
   let result = degree_centrality(g, DegreeMode::Total)
   assert_true(result.scores.length() == 0)
 }
 
+///|
 test "degree_single_node" {
   let g = @storage.new_directed()
   @core.GraphWritable::add_node(g, 0.0) |> ignore
@@ -138,6 +172,7 @@ test "degree_single_node" {
   }
 }
 
+///|
 test "degree_normalized_range" {
   let g = make_complete_4()
   let result = degree_centrality(g, DegreeMode::Out)
@@ -147,6 +182,7 @@ test "degree_normalized_range" {
   }
 }
 
+///|
 test "degree_max_node_method" {
   let g = make_central_star()
   let result = degree_centrality(g, DegreeMode::In)
@@ -158,6 +194,7 @@ test "degree_max_node_method" {
 
 // 介数中心性 (12 tests)
 
+///|
 test "betweenness_bridge_node_highest" {
   let g = make_bridge_graph()
   let result = betweenness_centrality(g, true)
@@ -168,6 +205,7 @@ test "betweenness_bridge_node_highest" {
   }
 }
 
+///|
 test "betweenness_endpoints_zero" {
   let g = make_path_graph_4()
   let result = betweenness_centrality(g, true)
@@ -182,6 +220,7 @@ test "betweenness_endpoints_zero" {
   }
 }
 
+///|
 test "betweenness_complete_zero" {
   let g = make_complete_4()
   let result = betweenness_centrality(g, true)
@@ -190,6 +229,7 @@ test "betweenness_complete_zero" {
   }
 }
 
+///|
 test "betweenness_star_center_max" {
   let g = make_central_star()
   let result = betweenness_centrality(g, true)
@@ -199,6 +239,7 @@ test "betweenness_star_center_max" {
   }
 }
 
+///|
 test "betweenness_path_middle_higher" {
   let g = make_path_graph_4()
   let result = betweenness_centrality(g, true)
@@ -210,6 +251,7 @@ test "betweenness_path_middle_higher" {
   }
 }
 
+///|
 test "betweenness_symmetric_property" {
   let g = make_path_graph_4()
   let r1 = betweenness_centrality(g, false)
@@ -222,17 +264,20 @@ test "betweenness_symmetric_property" {
   }
 }
 
+///|
 test "betweenness_empty_graph" {
   let g = @storage.new_directed()
   let result = betweenness_centrality(g, true)
   assert_true(result.scores.length() == 0)
 }
 
+///|
 test "betweenness_two_nodes" {
   let g = @storage.new_directed()
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_node(g, 0.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
   let result = betweenness_centrality(g, true)
   assert_true(result.scores.length() == 2)
   for s in result.scores {
@@ -240,6 +285,7 @@ test "betweenness_two_nodes" {
   }
 }
 
+///|
 test "betweenness_normalized_range" {
   let g = make_bridge_graph()
   let result = betweenness_centrality(g, true)
@@ -249,6 +295,7 @@ test "betweenness_normalized_range" {
   }
 }
 
+///|
 test "betweenness_nonzero_count" {
   let g = make_path_graph_4()
   let result = betweenness_centrality(g, true)
@@ -257,6 +304,7 @@ test "betweenness_nonzero_count" {
   assert_true(nz <= 4)
 }
 
+///|
 test "betweenness_immutability" {
   let original_g = make_path_graph_4()
   let nc_before = @core.GraphReadable::node_count(original_g)
@@ -265,6 +313,7 @@ test "betweenness_immutability" {
   assert_eq(nc_before, nc_after)
 }
 
+///|
 test "betweenness_triangle_fair" {
   let g = @storage.new_directed()
   let mut i = 0
@@ -272,8 +321,10 @@ test "betweenness_triangle_fair" {
     @core.GraphWritable::add_node(g, 0.0) |> ignore
     i = i + 1
   }
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+  |> ignore
   let result = betweenness_centrality(g, true)
   let s1 = result.get_score(@core.NodeId(1))
   match s1 {
@@ -284,6 +335,7 @@ test "betweenness_triangle_fair" {
 
 // 接近中心性 (10 tests)
 
+///|
 test "closeness_center_highest" {
   let g = make_path_graph_4()
   let result = closeness_centrality(g, true)
@@ -293,6 +345,7 @@ test "closeness_center_highest" {
   }
 }
 
+///|
 test "closeness_path_ends_lower" {
   let g = make_path_graph_4()
   let result = closeness_centrality(g, true)
@@ -304,6 +357,7 @@ test "closeness_path_ends_lower" {
   }
 }
 
+///|
 test "closeness_complete_uniform" {
   let g = make_complete_4()
   let result = closeness_centrality(g, true)
@@ -313,6 +367,7 @@ test "closeness_complete_uniform" {
   }
 }
 
+///|
 test "closeness_disconnected_low" {
   let g = @storage.new_directed()
   let mut i = 0
@@ -320,14 +375,17 @@ test "closeness_disconnected_low" {
     @core.GraphWritable::add_node(g, 0.0) |> ignore
     i = i + 1
   }
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
+  |> ignore
   let result = closeness_centrality(g, true)
   for s in result.scores {
     assert_true(s >= 0.0)
   }
 }
 
+///|
 test "closeness_single_node" {
   let g = @storage.new_directed()
   @core.GraphWritable::add_node(g, 0.0) |> ignore
@@ -335,12 +393,14 @@ test "closeness_single_node" {
   assert_true(result.scores.length() == 1)
 }
 
+///|
 test "closeness_empty_graph" {
   let g = @storage.new_directed()
   let result = closeness_centrality(g, true)
   assert_true(result.scores.length() == 0)
 }
 
+///|
 test "closeness_normalized_range" {
   let g = make_complete_4()
   let result = closeness_centrality(g, true)
@@ -350,6 +410,7 @@ test "closeness_normalized_range" {
   }
 }
 
+///|
 test "closeness_positive_reachable" {
   let g = make_path_graph_4()
   let result = closeness_centrality(g, false)
@@ -359,6 +420,7 @@ test "closeness_positive_reachable" {
   }
 }
 
+///|
 test "closeness_immutability" {
   let original_g = make_path_graph_4()
   let nc_before = @core.GraphReadable::node_count(original_g)
@@ -367,6 +429,7 @@ test "closeness_immutability" {
   assert_eq(nc_before, nc_after)
 }
 
+///|
 test "closeness_star_vs_path" {
   let star = make_central_star()
   let path = make_path_graph_4()
@@ -382,12 +445,14 @@ test "closeness_star_vs_path" {
 
 // 特征向量中心性 (10 tests)
 
+///|
 test "eigenvector_converges" {
   let g = make_complete_4()
   let result = eigenvector_centrality(g, 100, 0.000001)
   assert_true(result.scores.length() == 4)
 }
 
+///|
 test "eigenvector_hub_highest" {
   let g = make_central_star()
   let result = eigenvector_centrality(g, 100, 0.000001)
@@ -397,6 +462,7 @@ test "eigenvector_hub_highest" {
   }
 }
 
+///|
 test "eigenvector_complete_uniform" {
   let g = make_complete_4()
   let result = eigenvector_centrality(g, 100, 0.000001)
@@ -410,12 +476,14 @@ test "eigenvector_complete_uniform" {
   assert_true(all_same)
 }
 
+///|
 test "eigenvector_empty_graph" {
   let g = @storage.new_directed()
   let result = eigenvector_centrality(g, 100, 0.000001)
   assert_true(result.scores.length() == 0)
 }
 
+///|
 test "eigenvector_single_node" {
   let g = @storage.new_directed()
   @core.GraphWritable::add_node(g, 0.0) |> ignore
@@ -427,6 +495,7 @@ test "eigenvector_single_node" {
   }
 }
 
+///|
 test "eigenvector_non_negative" {
   let g = make_path_graph_4()
   let result = eigenvector_centrality(g, 100, 0.000001)
@@ -435,6 +504,7 @@ test "eigenvector_non_negative" {
   }
 }
 
+///|
 test "eigenvector_immutability" {
   let original_g = make_path_graph_4()
   let nc_before = @core.GraphReadable::node_count(original_g)
@@ -443,12 +513,14 @@ test "eigenvector_immutability" {
   assert_eq(nc_before, nc_after)
 }
 
+///|
 test "eigenvector_iterate_reasonable" {
   let g = make_central_star()
   let result = eigenvector_centrality(g, 100, 0.000001)
   assert_true(result.normalized)
 }
 
+///|
 test "eigenvector_path_ordering" {
   let g = make_path_graph_4()
   let result = eigenvector_centrality(g, 100, 0.000001)
@@ -460,6 +532,7 @@ test "eigenvector_path_ordering" {
   }
 }
 
+///|
 test "eigenvector_normalized_flag" {
   let g = make_complete_4()
   let result = eigenvector_centrality(g, 100, 0.000001)
@@ -468,6 +541,7 @@ test "eigenvector_normalized_flag" {
 
 // 集成对比测试 (5 tests)
 
+///|
 test "integration_all_on_star" {
   let g = make_central_star()
   let dc = degree_centrality(g, DegreeMode::In)
@@ -486,6 +560,7 @@ test "integration_all_on_star" {
   assert_true(cc.scores.length() == ec.scores.length())
 }
 
+///|
 test "integration_degree_betweenness_correlation" {
   let g = make_bridge_graph()
   let dc = degree_centrality(g, DegreeMode::Total)
@@ -501,6 +576,7 @@ test "integration_degree_betweenness_correlation" {
   }
 }
 
+///|
 test "integration_all_handle_empty" {
   let g = @storage.new_directed()
   let dc = degree_centrality(g, DegreeMode::Total)
@@ -513,6 +589,7 @@ test "integration_all_handle_empty" {
   assert_true(ec.scores.length() == 0)
 }
 
+///|
 test "integration_all_handle_single" {
   let g = @storage.new_directed()
   @core.GraphWritable::add_node(g, 0.0) |> ignore
@@ -526,6 +603,7 @@ test "integration_all_handle_single" {
   assert_true(ec.scores.length() == 1)
 }
 
+///|
 test "integration_consistent_lengths" {
   let g = make_complete_4()
   let n = @core.GraphReadable::node_count(g)

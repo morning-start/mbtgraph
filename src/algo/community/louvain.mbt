@@ -10,13 +10,19 @@ pub fn[G : @core.GraphReadable] louvain(
 
   if n == 0 {
     return CommunityResult::{
-      labels: [], modularity: 0.0, num_communities: 0, levels: 0,
+      labels: [],
+      modularity: 0.0,
+      num_communities: 0,
+      levels: 0,
     }
   }
 
   if n == 1 {
     return CommunityResult::{
-      labels: [0], modularity: 0.0, num_communities: 1, levels: 1,
+      labels: [0],
+      modularity: 0.0,
+      num_communities: 1,
+      levels: 1,
     }
   }
 
@@ -97,8 +103,8 @@ pub fn[G : @core.GraphReadable] louvain(
         let tgt_sum = sum_tot[target_comm]
 
         let gain = compute_gain(
-          curr_int, curr_sum, tgt_int, tgt_sum,
-          deg_i, deg_to_comm, total_weight, res_factor,
+          curr_int, curr_sum, tgt_int, tgt_sum, deg_i, deg_to_comm, total_weight,
+          res_factor,
         )
 
         if gain > best_gain {
@@ -117,8 +123,12 @@ pub fn[G : @core.GraphReadable] louvain(
           count_edges_to_community(adjacency, node_i, community_of, best_comm),
         )
 
-        fine_internal[curr_comm] = fine_internal[curr_comm] - edges_to_curr * 2.0 - self_loop[node_i]
-        fine_internal[best_comm] = fine_internal[best_comm] + edges_to_best * 2.0 + self_loop[node_i]
+        fine_internal[curr_comm] = fine_internal[curr_comm] -
+          edges_to_curr * 2.0 -
+          self_loop[node_i]
+        fine_internal[best_comm] = fine_internal[best_comm] +
+          edges_to_best * 2.0 +
+          self_loop[node_i]
         sum_tot[curr_comm] = sum_tot[curr_comm] - deg_i
         sum_tot[best_comm] = sum_tot[best_comm] + deg_i
         community_of[node_i] = best_comm
@@ -144,34 +154,41 @@ pub fn[G : @core.GraphReadable] louvain(
 ///|
 /// 计算将节点 i 从 curr_comm 移到 target_comm 的模块度增益
 fn compute_gain(
-  curr_int : Double, curr_sum : Double,
-  tgt_int : Double, tgt_sum : Double,
-  deg_i : Double, deg_to_comm : Double,
-  total_weight : Double, res_factor : Double,
+  curr_int : Double,
+  curr_sum : Double,
+  tgt_int : Double,
+  tgt_sum : Double,
+  deg_i : Double,
+  deg_to_comm : Double,
+  total_weight : Double,
+  res_factor : Double,
 ) -> Double {
   let inv_2m = 1.0 / (2.0 * total_weight)
-  let two_m_sq = (2.0 * total_weight) * (2.0 * total_weight)
+  let two_m_sq = 2.0 * total_weight * (2.0 * total_weight)
 
   let gain_remove = -(curr_int - 2.0 * deg_to_comm) * inv_2m
-  let gain_remove = gain_remove + ((curr_sum - deg_i) * (curr_sum - deg_i)) / two_m_sq
+  let gain_remove = gain_remove +
+    (curr_sum - deg_i) * (curr_sum - deg_i) / two_m_sq
   let gain_remove = gain_remove + curr_int * inv_2m
-  let gain_remove = gain_remove - (curr_sum * curr_sum) / two_m_sq
-  let gain_remove = gain_remove - (deg_i * deg_i) / two_m_sq
+  let gain_remove = gain_remove - curr_sum * curr_sum / two_m_sq
+  let gain_remove = gain_remove - deg_i * deg_i / two_m_sq
 
   let gain_add = (tgt_int + 2.0 * deg_to_comm) * inv_2m
-  let gain_add = gain_add - ((tgt_sum + deg_i) * (tgt_sum + deg_i)) / two_m_sq
+  let gain_add = gain_add - (tgt_sum + deg_i) * (tgt_sum + deg_i) / two_m_sq
   let gain_add = gain_add - tgt_int * inv_2m
-  let gain_add = gain_add + (tgt_sum * tgt_sum) / two_m_sq
-  let gain_add = gain_add + (deg_i * deg_i) / two_m_sq
+  let gain_add = gain_add + tgt_sum * tgt_sum / two_m_sq
+  let gain_add = gain_add + deg_i * deg_i / two_m_sq
 
   (gain_remove + gain_add) * res_factor
 }
 
+///|
 priv struct EdgeInfo {
   edge_count : Int
   adjacency : Array[(Int, Int)]
 }
 
+///|
 fn[G : @core.GraphReadable] build_edge_info(graph : G, n : Int) -> EdgeInfo {
   let adj : Array[(Int, Int)] = []
   let mut ec = 0
@@ -191,6 +208,7 @@ fn[G : @core.GraphReadable] build_edge_info(graph : G, n : Int) -> EdgeInfo {
   EdgeInfo::{ edge_count: ec, adjacency: adj }
 }
 
+///|
 fn find_neighbor_communities(
   adjacency : Array[(Int, Int)],
   community_of : Array[Int],
@@ -221,6 +239,7 @@ fn find_neighbor_communities(
   result
 }
 
+///|
 fn count_edges_to_community(
   adjacency : Array[(Int, Int)],
   node : Int,
@@ -242,6 +261,7 @@ fn count_edges_to_community(
   count
 }
 
+///|
 fn relabel_communities(labels : Array[Int], n : Int) -> Array[Int] {
   let mapping : Array[Int] = Array::make(n, -1)
   let mut next_id = 0
@@ -259,6 +279,7 @@ fn relabel_communities(labels : Array[Int], n : Int) -> Array[Int] {
   result
 }
 
+///|
 fn count_unique_comms(labels : Array[Int], n : Int) -> Int {
   let mut max_id = 0
   let mut p = 0
@@ -271,6 +292,7 @@ fn count_unique_comms(labels : Array[Int], n : Int) -> Int {
   max_id + 1
 }
 
+///|
 fn compute_modularity(
   adjacency : Array[(Int, Int)],
   labels : Array[Int],

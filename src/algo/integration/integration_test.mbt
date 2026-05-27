@@ -1,3 +1,4 @@
+///|
 /// 跨模块集成测试
 ///
 /// 验证 PageRank + 中心性 + 社区检测 三个模块协同工作
@@ -15,6 +16,7 @@ fn approx_eq(a : Double, b : Double, eps : Double) -> Bool {
   }
 }
 
+///|
 fn int_to_double(x : Int) -> Double {
   x.to_double()
 }
@@ -28,10 +30,11 @@ fn make_two_clusters_connected() -> @storage.UndirectedAdjList {
     @core.GraphWritable::add_node(g, 0.0) |> ignore
     i = i + 1
   }
-  let edges = [(0,1),(0,2),(1,2),(3,4),(3,5),(4,5),(2,3)]
+  let edges = [(0, 1), (0, 2), (1, 2), (3, 4), (3, 5), (4, 5), (2, 3)]
   for e in edges {
     let (u, v) = e
-    @core.GraphWritable::add_edge(g, @core.NodeId(u), @core.NodeId(v), 1.0) |> ignore
+    @core.GraphWritable::add_edge(g, @core.NodeId(u), @core.NodeId(v), 1.0)
+    |> ignore
   }
   g
 }
@@ -47,7 +50,8 @@ fn make_directed_chain_5() -> @storage.DirectedAdjList {
   }
   let mut j = 0
   while j < 4 {
-    @core.GraphWritable::add_edge(g, @core.NodeId(j), @core.NodeId(j + 1), 1.0) |> ignore
+    @core.GraphWritable::add_edge(g, @core.NodeId(j), @core.NodeId(j + 1), 1.0)
+    |> ignore
     j = j + 1
   }
   g
@@ -67,7 +71,8 @@ test "pagerank_and_eigenvector_aligned_on_star" {
   }
   let mut j = 1
   while j < 5 {
-    @core.GraphWritable::add_edge(g, @core.NodeId(j), @core.NodeId(0), 1.0) |> ignore
+    @core.GraphWritable::add_edge(g, @core.NodeId(j), @core.NodeId(0), 1.0)
+    |> ignore
     j = j + 1
   }
   let pr_result = @pagerank.pagerank(g, 0.85, 100, 0.000001)
@@ -77,9 +82,7 @@ test "pagerank_and_eigenvector_aligned_on_star" {
   let pr_leaf = pr_result.get_rank(@core.NodeId(1))
 
   match (pr_center, pr_leaf) {
-    (Some(pc), Some(pl)) => {
-      assert_true(pc > pl)
-    }
+    (Some(pc), Some(pl)) => assert_true(pc > pl)
     _ => assert_true(false)
   }
 
@@ -97,7 +100,10 @@ test "louvain_detects_two_clusters" {
   assert_true(community_result.num_communities >= 2)
   assert_true(community_result.modularity > 0.3)
 
-  let dc_result = @centrality.degree_centrality(g, @centrality.DegreeMode::Total)
+  let dc_result = @centrality.degree_centrality(
+    g,
+    @centrality.DegreeMode::Total,
+  )
   let bridging_node = @core.NodeId(2)
   let bridge_score = dc_result.get_score(bridging_node)
   match bridge_score {
@@ -134,10 +140,14 @@ test "all_three_on_edge_list" {
     @core.GraphWritable::add_node(g, 0.0) |> ignore
     i = i + 1
   }
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(0), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(0), 1.0)
+  |> ignore
 
   let pr = @pagerank.pagerank(g, 0.85, 100, 0.000001)
   assert_true(pr.converged)
@@ -188,9 +198,12 @@ test "all_three_on_directed_matrix" {
     @core.GraphWritable::add_node(g, 0.0) |> ignore
     i = i + 1
   }
-  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(0), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(0), 1.0)
+  |> ignore
 
   let pr = @pagerank.pagerank(g, 0.85, 100, 0.000001)
   assert_true(pr.converged)
@@ -234,10 +247,11 @@ test "centrality_and_community_on_ring" {
     @core.GraphWritable::add_node(g, 0.0) |> ignore
     i = i + 1
   }
-  let ring_edges = [(0,1),(1,2),(2,3),(3,4),(4,5),(5,0)]
+  let ring_edges = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 0)]
   for e in ring_edges {
     let (u, v) = e
-    @core.GraphWritable::add_edge(g, @core.NodeId(u), @core.NodeId(v), 1.0) |> ignore
+    @core.GraphWritable::add_edge(g, @core.NodeId(u), @core.NodeId(v), 1.0)
+    |> ignore
   }
 
   let dc = @centrality.degree_centrality(g, @centrality.DegreeMode::Total)

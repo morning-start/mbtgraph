@@ -2,8 +2,9 @@
 /// 最大独立集算法
 ///
 /// 通过在补图（complement graph）上查找最大团来求解。
-
-pub fn[G : @core.GraphReadable] find_maximum_independent_set(g : G) -> IndependentSetResult {
+pub fn[G : @core.GraphReadable] find_maximum_independent_set(
+  g : G,
+) -> IndependentSetResult {
   let n = @core.GraphReadable::node_count(g)
 
   if n == 0 {
@@ -51,6 +52,7 @@ pub fn[G : @core.GraphReadable] find_maximum_independent_set(g : G) -> Independe
   }
 }
 
+///|
 fn[G : @core.GraphReadable] bk_recursive_complement(
   g : G,
   r : Array[Int],
@@ -92,11 +94,17 @@ fn[G : @core.GraphReadable] bk_recursive_complement(
   best
 }
 
-fn[G : @core.GraphReadable] get_non_neighbor_indices(g : G, v : Int, n : Int) -> Array[Int] {
+///|
+fn[G : @core.GraphReadable] get_non_neighbor_indices(
+  g : G,
+  v : Int,
+  n : Int,
+) -> Array[Int] {
   let result : Array[Int] = []
   let mut i = 0
   while i < n {
-    if i != v && !@core.GraphReadable::contains_edge(g, @core.NodeId(v), @core.NodeId(i)) {
+    if i != v &&
+      !@core.GraphReadable::contains_edge(g, @core.NodeId(v), @core.NodeId(i)) {
       result.push(i)
     }
     i = i + 1

@@ -1,6 +1,5 @@
 ///|
 /// 公共辅助函数（供 clique 模块内所有文件使用）
-
 fn copy_array_int(arr : Array[Int]) -> Array[Int] {
   let result : Array[Int] = []
   for elem in arr {
@@ -9,6 +8,7 @@ fn copy_array_int(arr : Array[Int]) -> Array[Int] {
   result
 }
 
+///|
 fn intersect_arrays(a : Array[Int], b : Array[Int]) -> Array[Int] {
   let result : Array[Int] = []
   for elem in a {
@@ -22,6 +22,7 @@ fn intersect_arrays(a : Array[Int], b : Array[Int]) -> Array[Int] {
   result
 }
 
+///|
 fn remove_from_array(arr : Array[Int], val : Int) -> Array[Int] {
   let result : Array[Int] = []
   for elem in arr {

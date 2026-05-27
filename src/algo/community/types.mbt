@@ -20,7 +20,10 @@ pub(all) struct CommunityResult {
 
 ///|
 /// 社区检测结果辅助方法
-pub fn CommunityResult::get_label(self : CommunityResult, node_id : @core.NodeId) -> Int? {
+pub fn CommunityResult::get_label(
+  self : CommunityResult,
+  node_id : @core.NodeId,
+) -> Int? {
   let id = node_id.0
   if id < 0 || id >= self.labels.length() {
     None
@@ -31,7 +34,10 @@ pub fn CommunityResult::get_label(self : CommunityResult, node_id : @core.NodeId
 
 ///|
 /// 获取属于指定社区的节点列表
-pub fn CommunityResult::nodes_in_community(self : CommunityResult, community_id : Int) -> Array[@core.NodeId] {
+pub fn CommunityResult::nodes_in_community(
+  self : CommunityResult,
+  community_id : Int,
+) -> Array[@core.NodeId] {
   let result : Array[@core.NodeId] = []
   let mut i = 0
   while i < self.labels.length() {

@@ -26,13 +26,19 @@ pub fn[G : @core.GraphReadable] label_propagation(
 
   if n == 0 {
     return CommunityResult::{
-      labels: [], modularity: 0.0, num_communities: 0, levels: 1,
+      labels: [],
+      modularity: 0.0,
+      num_communities: 0,
+      levels: 1,
     }
   }
 
   if n == 1 {
     return CommunityResult::{
-      labels: [0], modularity: 0.0, num_communities: 1, levels: 1,
+      labels: [0],
+      modularity: 0.0,
+      num_communities: 1,
+      levels: 1,
     }
   }
 
@@ -101,6 +107,7 @@ fn[G : @core.GraphReadable] build_lp_adjacency(
   adj
 }
 
+///|
 fn add_neighbor_to_list(adj : Array[Array[Int]], from : Int, to : Int) -> Unit {
   let old_list = adj[from]
   let new_list : Array[Int] = []
@@ -113,10 +120,7 @@ fn add_neighbor_to_list(adj : Array[Array[Int]], from : Int, to : Int) -> Unit {
 
 ///|
 /// 在邻居标签中找到出现最频繁的标签（平局取最小值）
-fn find_most_frequent_label(
-  labels : Array[Int],
-  neighbors : Array[Int],
-) -> Int {
+fn find_most_frequent_label(labels : Array[Int], neighbors : Array[Int]) -> Int {
   let max_label = find_max_label(labels, neighbors)
   let count_arr : Array[Int] = Array::make(max_label + 1, 0)
 
@@ -138,6 +142,7 @@ fn find_most_frequent_label(
   best_label
 }
 
+///|
 fn find_max_label(labels : Array[Int], neighbors : Array[Int]) -> Int {
   let mut max_lbl = 0
   for nbr in neighbors {
@@ -148,6 +153,7 @@ fn find_max_label(labels : Array[Int], neighbors : Array[Int]) -> Int {
   max_lbl
 }
 
+///|
 fn relabel_communities_lp(labels : Array[Int], n : Int) -> Array[Int] {
   let mapping : Array[Int] = Array::make(n, -1)
   let mut next_id = 0
@@ -165,6 +171,7 @@ fn relabel_communities_lp(labels : Array[Int], n : Int) -> Array[Int] {
   result
 }
 
+///|
 fn count_unique_comms_lp(labels : Array[Int], n : Int) -> Int {
   let mut max_id = 0
   let mut p = 0

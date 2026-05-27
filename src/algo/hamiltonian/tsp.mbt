@@ -29,6 +29,7 @@ fn find_nearest_unvisited(
   nearest
 }
 
+///|
 pub fn tsp_nearest_neighbor(weights : Array[Array[Double]]) -> TSPResult {
   let n = weights.length()
 
@@ -80,23 +81,20 @@ pub fn tsp_nearest_neighbor(weights : Array[Array[Double]]) -> TSPResult {
     total_cost = total_cost + weights[current][0]
   }
 
-  TSPResult::{
-    tour: tour,
-    total_cost: total_cost,
-    is_optimal: false,
-    algorithm: "最近邻",
-  }
+  TSPResult::{ tour, total_cost, is_optimal: false, algorithm: "最近邻" }
 }
 
 // ============================================================================
 // Held-Karp 精确算法（排列枚举，适用于小规模 V <= 12）
 // ============================================================================
 
+///|
 priv struct TSPState {
   tour : Array[Int]
   cost : Double
 }
 
+///|
 fn tsp_permute(
   weights : Array[Array[Double]],
   current_path : Array[Int],
@@ -137,7 +135,9 @@ fn tsp_permute(
 
     let new_remaining = remove_from_array(remaining, next_node)
 
-    let result = tsp_permute(weights, new_path, new_remaining, new_cost, new_best_cost, new_best_tour, n)
+    let result = tsp_permute(
+      weights, new_path, new_remaining, new_cost, new_best_cost, new_best_tour, n,
+    )
 
     if result.cost < new_best_cost || new_best_cost < 0.0 {
       new_best_cost = result.cost
@@ -148,6 +148,7 @@ fn tsp_permute(
   TSPState::{ tour: new_best_tour, cost: new_best_cost }
 }
 
+///|
 pub fn tsp_exact_held_karp(weights : Array[Array[Double]]) -> TSPResult {
   let n = weights.length()
 
@@ -196,7 +197,10 @@ pub fn tsp_exact_held_karp(weights : Array[Array[Double]]) -> TSPResult {
 // 从图构建权重矩阵
 // ============================================================================
 
-pub fn[G : @core.GraphReadable] build_weight_matrix(g : G) -> Array[Array[Double]] {
+///|
+pub fn[G : @core.GraphReadable] build_weight_matrix(
+  g : G,
+) -> Array[Array[Double]] {
   let n = @core.GraphReadable::node_count(g)
 
   let matrix : Array[Array[Double]] = []
@@ -207,10 +211,15 @@ pub fn[G : @core.GraphReadable] build_weight_matrix(g : G) -> Array[Array[Double
     while j < n {
       if i == j {
         row.push(0.0)
-      } else if @core.GraphReadable::contains_edge(g, @core.NodeId(i), @core.NodeId(j)) {
-        match @core.GraphReadable::get_edge(g, @core.NodeId(i), @core.NodeId(j)) {
-          Some(w) => { row.push(w); }
-          None => { row.push(-1.0); }
+      } else if @core.GraphReadable::contains_edge(
+          g,
+          @core.NodeId(i),
+          @core.NodeId(j),
+        ) {
+        match
+          @core.GraphReadable::get_edge(g, @core.NodeId(i), @core.NodeId(j)) {
+          Some(w) => row.push(w)
+          None => row.push(-1.0)
         }
       } else {
         row.push(-1.0)

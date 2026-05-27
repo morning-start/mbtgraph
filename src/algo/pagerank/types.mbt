@@ -25,7 +25,10 @@ pub(all) struct PageRankResult {
 /// 获取指定节点的 PageRank 值
 ///
 /// 当 node_id 超出范围时返回 None
-pub fn PageRankResult::get_rank(self : PageRankResult, node_id : @core.NodeId) -> Double? {
+pub fn PageRankResult::get_rank(
+  self : PageRankResult,
+  node_id : @core.NodeId,
+) -> Double? {
   let id = node_id.0
   if id < 0 || id >= self.ranks.length() {
     None
@@ -39,7 +42,10 @@ pub fn PageRankResult::get_rank(self : PageRankResult, node_id : @core.NodeId) -
 ///
 /// 返回按 rank 值降序排列的前 k 个 (NodeId, Double) 对。
 /// 当 k > 节点总数时返回全部节点；k <= 0 时返回空数组
-pub fn PageRankResult::top_nodes(self : PageRankResult, k : Int) -> Array[(@core.NodeId, Double)] {
+pub fn PageRankResult::top_nodes(
+  self : PageRankResult,
+  k : Int,
+) -> Array[(@core.NodeId, Double)] {
   if k <= 0 {
     return []
   }
@@ -69,7 +75,10 @@ pub fn PageRankResult::total_rank(self : PageRankResult) -> Double {
 
 ///|
 /// 对 (NodeId, Double) 数组按 Double 降序排列，返回前 k 个元素
-fn top_k_sort(arr : Array[(@core.NodeId, Double)], k : Int) -> Array[(@core.NodeId, Double)] {
+fn top_k_sort(
+  arr : Array[(@core.NodeId, Double)],
+  k : Int,
+) -> Array[(@core.NodeId, Double)] {
   let es = arr
   let n = es.length()
   let limit = if k < n { k } else { n }

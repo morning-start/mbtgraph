@@ -7,7 +7,9 @@
 // 快速检查（必要条件）
 // ============================================================================
 
-pub fn[G : @core.GraphReadable] has_hamiltonian_circuit_quick_check(g : G) -> Bool {
+pub fn[G : @core.GraphReadable] has_hamiltonian_circuit_quick_check(
+  g : G,
+) -> Bool {
   let n = @core.GraphReadable::node_count(g)
 
   if n < 3 {
@@ -29,7 +31,12 @@ pub fn[G : @core.GraphReadable] has_hamiltonian_circuit_quick_check(g : G) -> Bo
 // 回溯算法 - 哈密顿路径
 // ============================================================================
 
-fn[G : @core.GraphReadable] get_neighbors_list(g : G, v : Int, n : Int) -> Array[Int] {
+///|
+fn[G : @core.GraphReadable] get_neighbors_list(
+  g : G,
+  v : Int,
+  n : Int,
+) -> Array[Int] {
   let result : Array[Int] = []
   let neighbors = @core.GraphReadable::neighbors(g, @core.NodeId(v))
   for neighbor in neighbors {
@@ -41,6 +48,7 @@ fn[G : @core.GraphReadable] get_neighbors_list(g : G, v : Int, n : Int) -> Array
   result
 }
 
+///|
 fn[G : @core.GraphReadable] backtrack_path(
   g : G,
   current_path : Array[Int],
@@ -70,7 +78,10 @@ fn[G : @core.GraphReadable] backtrack_path(
   []
 }
 
-pub fn[G : @core.GraphReadable] find_hamiltonian_path_backtrack(g : G) -> HamiltonianResult {
+///|
+pub fn[G : @core.GraphReadable] find_hamiltonian_path_backtrack(
+  g : G,
+) -> HamiltonianResult {
   let n = @core.GraphReadable::node_count(g)
 
   if n == 0 {
@@ -130,6 +141,7 @@ pub fn[G : @core.GraphReadable] find_hamiltonian_path_backtrack(g : G) -> Hamilt
 // 回溯算法 - 哈密顿回路
 // ============================================================================
 
+///|
 fn[G : @core.GraphReadable] backtrack_circuit(
   g : G,
   current_path : Array[Int],
@@ -165,7 +177,10 @@ fn[G : @core.GraphReadable] backtrack_circuit(
   []
 }
 
-pub fn[G : @core.GraphReadable] find_hamiltonian_circuit_backtrack(g : G) -> HamiltonianResult {
+///|
+pub fn[G : @core.GraphReadable] find_hamiltonian_circuit_backtrack(
+  g : G,
+) -> HamiltonianResult {
   let n = @core.GraphReadable::node_count(g)
 
   if n < 3 {

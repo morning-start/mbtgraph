@@ -42,8 +42,8 @@ pub fn[G : @core.GraphReadable] pagerank(
       ranks: [],
       iterations: 0,
       converged: true,
-      damping_factor: damping_factor,
-      tolerance: tolerance,
+      damping_factor,
+      tolerance,
     }
   }
 
@@ -53,8 +53,8 @@ pub fn[G : @core.GraphReadable] pagerank(
       ranks: single_rank,
       iterations: 0,
       converged: true,
-      damping_factor: damping_factor,
-      tolerance: tolerance,
+      damping_factor,
+      tolerance,
     }
   }
 
@@ -93,11 +93,11 @@ pub fn[G : @core.GraphReadable] pagerank(
   }
 
   PageRankResult::{
-    ranks: ranks,
+    ranks,
     iterations: iter,
-    converged: converged,
-    damping_factor: damping_factor,
-    tolerance: tolerance,
+    converged,
+    damping_factor,
+    tolerance,
   }
 }
 

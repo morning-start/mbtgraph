@@ -104,12 +104,22 @@ fn make_random_sparse_graph(n : Int) -> @storage.DirectedAdjList {
     let src = j
     let dst = (j * 7 + 3) % n
     if src != dst {
-      @core.GraphWritable::add_edge(g, @core.NodeId(src), @core.NodeId(dst), 1.0)
+      @core.GraphWritable::add_edge(
+        g,
+        @core.NodeId(src),
+        @core.NodeId(dst),
+        1.0,
+      )
       |> ignore
     }
     let dst2 = (j * 13 + 7) % n
     if src != dst2 && dst2 != dst {
-      @core.GraphWritable::add_edge(g, @core.NodeId(src), @core.NodeId(dst2), 1.0)
+      @core.GraphWritable::add_edge(
+        g,
+        @core.NodeId(src),
+        @core.NodeId(dst2),
+        1.0,
+      )
       |> ignore
     }
     j = j + 1
@@ -238,9 +248,7 @@ test "damping_factor_effect" {
   let r0_low = result_low.get_rank(@core.NodeId(0))
 
   match (r0_high, r0_low) {
-    (Some(h), Some(l)) => {
-      assert_true(h < l)
-    }
+    (Some(h), Some(l)) => assert_true(h < l)
     _ => assert_true(false)
   }
 }

@@ -1,5 +1,5 @@
+///|
 /// 度中心性算法实现
-
 pub fn[G : @core.GraphReadable] degree_centrality(
   graph : G,
   mode : DegreeMode,
@@ -21,26 +21,29 @@ pub fn[G : @core.GraphReadable] degree_centrality(
   while i < n {
     let node_id = @core.NodeId(i)
     let deg = match mode {
-      DegreeMode::In => {
-        if is_directed { count_in_neighbors_dc(graph, node_id) }
-        else { @core.GraphReadable::degree(graph, node_id) }
-      }
-      DegreeMode::Out => { @core.GraphReadable::degree(graph, node_id) }
-      DegreeMode::Total => {
+      DegreeMode::In =>
         if is_directed {
-          @core.GraphReadable::degree(graph, node_id) + count_in_neighbors_dc(graph, node_id)
+          count_in_neighbors_dc(graph, node_id)
         } else {
           @core.GraphReadable::degree(graph, node_id)
         }
-      }
+      DegreeMode::Out => @core.GraphReadable::degree(graph, node_id)
+      DegreeMode::Total =>
+        if is_directed {
+          @core.GraphReadable::degree(graph, node_id) +
+          count_in_neighbors_dc(graph, node_id)
+        } else {
+          @core.GraphReadable::degree(graph, node_id)
+        }
     }
     scores.push(int_to_double(deg) / int_to_double(n - 1))
     i = i + 1
   }
 
-  CentralityResult::{ scores: scores, normalized: true }
+  CentralityResult::{ scores, normalized: true }
 }
 
+///|
 fn[G : @core.GraphReadable] count_in_neighbors_dc(
   graph : G,
   target : @core.NodeId,
@@ -49,7 +52,7 @@ fn[G : @core.GraphReadable] count_in_neighbors_dc(
   let edges = @core.GraphReadable::edges(graph)
   for edge in edges {
     match edge {
-      (_, v, _) => { if v == target { count = count + 1 } }
+      (_, v, _) => if v == target { count = count + 1 }
     }
   }
   count

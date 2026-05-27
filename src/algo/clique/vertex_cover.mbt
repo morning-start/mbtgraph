@@ -2,7 +2,6 @@
 /// 最小顶点覆盖算法
 ///
 /// 提供精确解（基于独立集）和近似解（贪心算法）。
-
 fn[G : @core.GraphReadable] compute_degrees(g : G) -> Array[Int] {
   let n = @core.GraphReadable::node_count(g)
   let degrees : Array[Int] = []
@@ -14,6 +13,7 @@ fn[G : @core.GraphReadable] compute_degrees(g : G) -> Array[Int] {
   degrees
 }
 
+///|
 fn find_max_degree_node(covered : Array[Bool], degrees : Array[Int]) -> Int {
   let mut max_degree = -1
   let mut best_node = -1
@@ -28,7 +28,12 @@ fn find_max_degree_node(covered : Array[Bool], degrees : Array[Int]) -> Int {
   best_node
 }
 
-fn[G : @core.GraphReadable] mark_neighbors_covered(g : G, node : Int, covered : Array[Bool]) -> Array[Bool] {
+///|
+fn[G : @core.GraphReadable] mark_neighbors_covered(
+  g : G,
+  node : Int,
+  covered : Array[Bool],
+) -> Array[Bool] {
   let new_covered = covered
   new_covered[node] = true
   let neighbors = @core.GraphReadable::neighbors(g, @core.NodeId(node)).to_array()
@@ -41,7 +46,11 @@ fn[G : @core.GraphReadable] mark_neighbors_covered(g : G, node : Int, covered : 
   new_covered
 }
 
-fn[G : @core.GraphReadable] validate_vertex_cover(g : G, cover : Array[@core.NodeId]) -> Bool {
+///|
+fn[G : @core.GraphReadable] validate_vertex_cover(
+  g : G,
+  cover : Array[@core.NodeId],
+) -> Bool {
   let n = @core.GraphReadable::node_count(g)
 
   let in_cover : Array[Bool] = []
@@ -75,6 +84,7 @@ fn[G : @core.GraphReadable] validate_vertex_cover(g : G, cover : Array[@core.Nod
   true
 }
 
+///|
 fn sort_cover(cover : Array[Int]) -> Array[@core.NodeId] {
   let sorted = cover
   let mut i = 0
@@ -98,7 +108,10 @@ fn sort_cover(cover : Array[Int]) -> Array[@core.NodeId] {
   result
 }
 
-pub fn[G : @core.GraphReadable] find_minimum_vertex_cover_exact(g : G) -> VertexCoverResult {
+///|
+pub fn[G : @core.GraphReadable] find_minimum_vertex_cover_exact(
+  g : G,
+) -> VertexCoverResult {
   let n = @core.GraphReadable::node_count(g)
 
   if n == 0 {
@@ -139,7 +152,10 @@ pub fn[G : @core.GraphReadable] find_minimum_vertex_cover_exact(g : G) -> Vertex
   }
 }
 
-pub fn[G : @core.GraphReadable] find_minimum_vertex_cover_approx(g : G) -> VertexCoverResult {
+///|
+pub fn[G : @core.GraphReadable] find_minimum_vertex_cover_approx(
+  g : G,
+) -> VertexCoverResult {
   let n = @core.GraphReadable::node_count(g)
 
   if n == 0 {

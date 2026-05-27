@@ -1,5 +1,5 @@
+///|
 /// 接近中心性算法实现
-
 pub fn[G : @core.GraphReadable] closeness_centrality(
   graph : G,
   normalized : Bool,
@@ -13,7 +13,7 @@ pub fn[G : @core.GraphReadable] closeness_centrality(
       scores.push(0.0)
       i = i + 1
     }
-    return CentralityResult::{ scores: scores, normalized: normalized }
+    return CentralityResult::{ scores, normalized }
   }
 
   let closeness : Array[Double] = Array::make(n, 0.0)
@@ -48,9 +48,10 @@ pub fn[G : @core.GraphReadable] closeness_centrality(
     }
   }
 
-  CentralityResult::{ scores: closeness, normalized: normalized }
+  CentralityResult::{ scores: closeness, normalized }
 }
 
+///|
 fn[G : @core.GraphReadable] bfs_distances_cl(
   graph : G,
   source : Int,
@@ -81,6 +82,7 @@ fn[G : @core.GraphReadable] bfs_distances_cl(
   dist
 }
 
+///|
 fn[G : @core.GraphReadable] get_neighbor_list_cl(
   graph : G,
   node_id : @core.NodeId,

@@ -29,7 +29,10 @@ pub(all) struct CentralityResult {
 /// 获取指定节点的中心性得分
 ///
 /// 当 node_id 超出范围时返回 None
-pub fn CentralityResult::get_score(self : CentralityResult, node_id : @core.NodeId) -> Double? {
+pub fn CentralityResult::get_score(
+  self : CentralityResult,
+  node_id : @core.NodeId,
+) -> Double? {
   let id = node_id.0
   if id < 0 || id >= self.scores.length() {
     None
@@ -40,7 +43,9 @@ pub fn CentralityResult::get_score(self : CentralityResult, node_id : @core.Node
 
 ///|
 /// 获取得分最高的节点及其分数
-pub fn CentralityResult::max_node(self : CentralityResult) -> (@core.NodeId, Double)? {
+pub fn CentralityResult::max_node(
+  self : CentralityResult,
+) -> (@core.NodeId, Double)? {
   let n = self.scores.length()
   if n == 0 {
     return None
