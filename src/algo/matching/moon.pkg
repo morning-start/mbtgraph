@@ -1,5 +1,6 @@
 import {
   "morning-start/mbtgraph/src/core" @core,
+  "morning-start/mbtgraph/src/storage" @storage,
 }
 
 warnings = "-unused_value-unused_package"

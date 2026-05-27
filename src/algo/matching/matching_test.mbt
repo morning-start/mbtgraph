@@ -277,3 +277,318 @@ test "property_matching_edges_count_equals_cardinality" {
   let result = bipartite_matching(n_l, n_r, edges)
   assert_true(result.matching_edges.length() == result.cardinality)
 }
+
+// ============================================================================
+// Hopcroft-Karp 算法测试辅助函数
+// ============================================================================
+
+///|
+fn make_hk_simple() -> @storage.DirectedAdjList {
+  let g = @storage.new_directed()
+  for i in 0..<4 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(2), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(3), 1.0) |> ignore
+  g
+}
+
+///|
+fn make_hk_k33() -> @storage.DirectedAdjList {
+  let g = @storage.new_directed()
+  for i in 0..<6 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  for i in 0..<3 {
+    for j in 3..<6 {
+      @core.GraphWritable::add_edge(g, @core.NodeId(i), @core.NodeId(j), 1.0) |> ignore
+    }
+  }
+  g
+}
+
+///|
+fn make_hk_multi() -> @storage.DirectedAdjList {
+  let g = @storage.new_directed()
+  for i in 0..<8 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(4), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(5), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(4), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(6), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(5), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(7), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(6), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(7), 1.0) |> ignore
+  g
+}
+
+///|
+fn make_hk_star() -> @storage.DirectedAdjList {
+  let g = @storage.new_directed()
+  for i in 0..<5 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(2), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(3), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(4), 1.0) |> ignore
+  g
+}
+
+///|
+fn make_hk_all_to_one() -> @storage.DirectedAdjList {
+  let g = @storage.new_directed()
+  for i in 0..<4 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(3), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(3), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0) |> ignore
+  g
+}
+
+// ============================================================================
+// Hopcroft-Karp 基础正确性测试 (6)
+// ============================================================================
+
+///|
+test "hopcroft_karp_simple_matching" {
+  let g = make_hk_simple()
+  let left = [@core.NodeId(0), @core.NodeId(1)]
+  let right = [@core.NodeId(2), @core.NodeId(3)]
+  let result = hopcroft_karp(g, left, right)
+  assert_true(result.cardinality == 2)
+  assert_true(result.size() == 2)
+}
+
+///|
+test "hopcroft_karp_complete_bipartite" {
+  let g = make_hk_k33()
+  let left = [
+    @core.NodeId(0),
+    @core.NodeId(1),
+    @core.NodeId(2),
+  ]
+  let right = [
+    @core.NodeId(3),
+    @core.NodeId(4),
+    @core.NodeId(5),
+  ]
+  let result = hopcroft_karp(g, left, right)
+  assert_true(result.cardinality == 3)
+}
+
+///|
+test "hopcroft_karp_chain_graph" {
+  let g = make_hk_multi()
+  let left = [
+    @core.NodeId(0),
+    @core.NodeId(1),
+    @core.NodeId(2),
+    @core.NodeId(3),
+  ]
+  let right = [
+    @core.NodeId(4),
+    @core.NodeId(5),
+    @core.NodeId(6),
+    @core.NodeId(7),
+  ]
+  let result = hopcroft_karp(g, left, right)
+  assert_true(result.cardinality == 4)
+}
+
+///|
+test "hopcroft_karp_result_equals_hungarian" {
+  let g = make_hk_multi()
+  let left = [
+    @core.NodeId(0),
+    @core.NodeId(1),
+    @core.NodeId(2),
+    @core.NodeId(3),
+  ]
+  let right = [
+    @core.NodeId(4),
+    @core.NodeId(5),
+    @core.NodeId(6),
+    @core.NodeId(7),
+  ]
+  let hk_result = hopcroft_karp(g, left, right)
+  let hg_result = bipartite_matching_graph(g, left, right)
+  assert_true(hk_result.cardinality == hg_result.cardinality)
+}
+
+///|
+test "hopcroft_karp_no_edges" {
+  let g = @storage.new_directed()
+  for i in 0..<6 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  let left = [
+    @core.NodeId(0),
+    @core.NodeId(1),
+    @core.NodeId(2),
+  ]
+  let right = [
+    @core.NodeId(3),
+    @core.NodeId(4),
+    @core.NodeId(5),
+  ]
+  let result = hopcroft_karp(g, left, right)
+  assert_true(result.cardinality == 0)
+  assert_true(result.matching_edges.length() == 0)
+}
+
+///|
+test "hopcroft_karp_single_left" {
+  let g = @storage.new_directed()
+  @core.GraphWritable::add_node(g, 1.0) |> ignore
+  let left = [@core.NodeId(0)]
+  let right : Array[@core.NodeId] = []
+  let result = hopcroft_karp(g, left, right)
+  assert_true(result.cardinality == 0)
+}
+
+// ============================================================================
+// Hopcroft-Karp 边界情况测试 (4)
+// ============================================================================
+
+///|
+test "hopcroft_karp_empty_left" {
+  let g = @storage.new_directed()
+  for i in 0..<3 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  let left : Array[@core.NodeId] = []
+  let right = [@core.NodeId(0), @core.NodeId(1), @core.NodeId(2)]
+  let result = hopcroft_karp(g, left, right)
+  assert_true(result.cardinality == 0)
+}
+
+///|
+test "hopcroft_karp_empty_right" {
+  let g = @storage.new_directed()
+  for i in 0..<3 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  let left = [@core.NodeId(0), @core.NodeId(1), @core.NodeId(2)]
+  let right : Array[@core.NodeId] = []
+  let result = hopcroft_karp(g, left, right)
+  assert_true(result.cardinality == 0)
+}
+
+///|
+test "hopcroft_karp_all_connected_to_one" {
+  let g = make_hk_all_to_one()
+  let left = [@core.NodeId(0), @core.NodeId(1), @core.NodeId(2)]
+  let right = [@core.NodeId(3)]
+  let result = hopcroft_karp(g, left, right)
+  assert_true(result.cardinality == 1)
+}
+
+///|
+test "hopcroft_karp_star_graph" {
+  let g = make_hk_star()
+  let left = [@core.NodeId(0)]
+  let right = [@core.NodeId(1), @core.NodeId(2), @core.NodeId(3), @core.NodeId(4)]
+  let result = hopcroft_karp(g, left, right)
+  assert_true(result.cardinality == 1)
+}
+
+// ============================================================================
+// Hopcroft-Karp 跨存储测试 (3)
+// ============================================================================
+
+///|
+test "hopcroft_karp_cross_storage_adjlist" {
+  let g = @storage.new_directed()
+  for i in 0..<8 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(4), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(5), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(4), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(6), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(5), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(7), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(6), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(7), 1.0) |> ignore
+
+  let left = [
+    @core.NodeId(0),
+    @core.NodeId(1),
+    @core.NodeId(2),
+    @core.NodeId(3),
+  ]
+  let right = [
+    @core.NodeId(4),
+    @core.NodeId(5),
+    @core.NodeId(6),
+    @core.NodeId(7),
+  ]
+  let result = hopcroft_karp(g, left, right)
+  assert_true(result.cardinality == 4)
+}
+
+///|
+test "hopcroft_karp_cross_storage_matrix" {
+  let g = @storage.new_directed_matrix(8)
+  for i in 0..<8 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(4), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(5), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(4), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(6), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(5), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(7), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(6), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(7), 1.0) |> ignore
+
+  let left = [
+    @core.NodeId(0),
+    @core.NodeId(1),
+    @core.NodeId(2),
+    @core.NodeId(3),
+  ]
+  let right = [
+    @core.NodeId(4),
+    @core.NodeId(5),
+    @core.NodeId(6),
+    @core.NodeId(7),
+  ]
+  let result = hopcroft_karp(g, left, right)
+  assert_true(result.cardinality == 4)
+}
+
+///|
+test "hopcroft_karp_cross_storage_edgelist" {
+  let g = @storage.new_edge_list()
+  for i in 0..<8 {
+    @core.GraphWritable::add_node(g, i.to_double()) |> ignore
+  }
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(4), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(5), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(4), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(6), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(5), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(7), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(6), 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(7), 1.0) |> ignore
+
+  let left = [
+    @core.NodeId(0),
+    @core.NodeId(1),
+    @core.NodeId(2),
+    @core.NodeId(3),
+  ]
+  let right = [
+    @core.NodeId(4),
+    @core.NodeId(5),
+    @core.NodeId(6),
+    @core.NodeId(7),
+  ]
+  let result = hopcroft_karp(g, left, right)
+  assert_true(result.cardinality == 4)
+}
