@@ -145,7 +145,8 @@ fn hopcroft_karp_dfs(
         return true
       }
       Some(u2) =>
-        if dist[u2] == dist[u] + 1 && hopcroft_karp_dfs(u2, adj, pair_u, pair_v, dist) {
+        if dist[u2] == dist[u] + 1 &&
+          hopcroft_karp_dfs(u2, adj, pair_u, pair_v, dist) {
           pair_u[u] = Some(v)
           pair_v[v] = Some(u)
           return true

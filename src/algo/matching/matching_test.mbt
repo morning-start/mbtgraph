@@ -528,12 +528,8 @@ fn make_edmonds_k4() -> @storage.UndirectedAdjList {
   for i in 0..<4 {
     let mut j = i + 1
     while j < 4 {
-      @core.GraphWritable::add_edge(
-        g,
-        @core.NodeId(i),
-        @core.NodeId(j),
-        1.0,
-      ) |> ignore
+      @core.GraphWritable::add_edge(g, @core.NodeId(i), @core.NodeId(j), 1.0)
+      |> ignore
       j = j + 1
     }
   }

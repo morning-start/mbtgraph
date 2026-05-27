@@ -78,6 +78,7 @@ pub fn[G : @core.GraphReadable] edmonds_maximum_matching(
 //   label[v] == 1 → 偶点（S集合，在交替树中距离为偶数）
 //   label[v] == 2 → 奇点（T集合，在交替树中距离为奇数）
 
+///|
 fn augment_from(
   root : Int,
   n : Int,
@@ -157,13 +158,9 @@ fn augment_from(
 // LCA（最近公共祖先）
 // ============================================================================
 
+///|
 /// 在 BFS 树中查找 x 和 y 的最近公共祖先（在基空间中）。
-fn find_lca(
-  x : Int,
-  y : Int,
-  parent : Array[Int],
-  base : Array[Int],
-) -> Int {
+fn find_lca(x : Int, y : Int, parent : Array[Int], base : Array[Int]) -> Int {
   let n = parent.length()
   let mark : Array[Bool] = Array::make(n, false)
 
@@ -198,6 +195,7 @@ fn find_lca(
 // 花收缩
 // ============================================================================
 
+///|
 /// 将路径 v → lca_base 上的节点收缩到 lca_base 中。
 /// 路径上标记为奇点的节点变为偶点并入队。
 fn contract_blossom(
@@ -243,18 +241,15 @@ fn contract_blossom(
 // 增广路径翻转
 // ============================================================================
 
+///|
 /// 沿增广路径从 goal 回溯到根节点，翻转匹配。
 /// 增广路径结构：root -> ... -> goal
 /// 其中路径上匹配边和未匹配边交替出现。
-fn flip_matching(
-  match_ : Array[Int],
-  parent : Array[Int],
-  goal : Int,
-) -> Unit {
+fn flip_matching(match_ : Array[Int], parent : Array[Int], goal : Int) -> Unit {
   // 路径结构：root = v0 - u1(奇) - v1(偶) - u2(奇) - v2(偶) - ... - goal
   // parent[goal] = 前一个节点(v_k), parent[v_k] = u_k, parent[u_k] = v_{k-1}, ...
   // 翻转后：root 与 v1 匹配, v1 与 v2 匹配, ..., v_k 与 goal 匹配
-  
+
   let mut cur = goal
   while true {
     let pv = parent[cur]
