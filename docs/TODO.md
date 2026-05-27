@@ -1,7 +1,8 @@
 # mbtgraph 任务清单 (TODO)
 
-> **最后更新**: 2026-05-26 | **当前版本**: v0.12.0 ✅ 🚀 经典算法增强
+> **最后更新**: 2026-05-27 | **当前版本**: v0.12.0 ✅ 🚀 经典算法增强
 > **下次评审**: 2026-06-01（每周日）
+> **下个版本**: v0.13.0 🛠️ 接口重构（详见 [重构分析](design/v0130_refactoring_analysis.md)）
 
 ---
 
@@ -626,16 +627,21 @@
 
 ---
 
-## 🔄 下一步 (v0.10.0 之后)
+## 🔄 下一步 (v0.12.0 之后)
 
-完成 v0.12.0 后，按 ROADMAP v2.0.0 继续：
+已完成 v0.12.0 的所有算法补齐。经过全面审计分析，v0.13.0 采用分步策略：
+详见 [design/v0130_refactoring_analysis.md](./design/v0130_refactoring_analysis.md)
 
 ```
-v0.13.0 🛠️ 接口重构与 API 冻结准备   ← 下一个
+v0.13.0 🛠️ 接口重构与 API 冻结准备
+  ├── 阶段 1: 快速修复 (connectivity 命名 + shared_helpers)
+  ├── 阶段 2: 补齐 P0 算法 (Johnson + SPFA + 边着色)
+  ├── 阶段 3: 全面重构 (Trait 精简 + API 审计 + 签名统一)
+  └── 阶段 4: 补齐 P1 算法 (BCC + 双向 Dijkstra + Yen's)
 v1.0.0  🎉 正式发布
 ```
 
-详细规划见: [ROADMAP.md](./ROADMAP.md)
+详细规划见: [ROADMAP.md](./ROADMAP.md) | [重构分析](./design/v0130_refactoring_analysis.md)
 
 ---
 

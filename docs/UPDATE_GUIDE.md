@@ -76,27 +76,26 @@
 | 优先级 | 文件路径 | 更新内容 | 必要性 |
 |:-----:|---------|----------|:-----:|
 | **P0** | **moon.mod.json** | **version → minor+1 (如 0.4.0→0.5.0)** | **⭐⭐⭐ 必须** |
-| **P0** | **AGENTS.md** | **项目结构添加新模块行 + version+1** | **⭐⭐⭐ 必须** |
 | **P0** | **MEMORY.md** | **包结构添加新模块 + 测试数据更新 + 决策记录** | **⭐⭐⭐ 必须** |
 | **P0** | **README.mbt.md** | **算法表格添加新模块 + 总测试数更新 + 版本路线图** | **⭐⭐⭐ 必须** |
 | **P0** | **CHANGELOG.md** | **新增版本章节 [vX.Y.Z] 记录完整变更** | **⭐⭐⭐ 必须** |
 | **P0** | **Git Tag** | **创建标签 `git tag v0.X.0 -m "..."`** | **⭐⭐⭐ 必须** |
 | P1 | docs/ROADMAP.md | 状态更新为✅ + 统计数据刷新 | ⭐⭐ 推荐 |
 | P1 | docs/TODO.md | 相关任务标记已完成 + 里程碑更新 | ⭐⭐ 推荐 |
-| P2 | src/algo/xxx/README.md | 确保存在且完整（8大章节） | ⭐ 可选（应已在开发中完成）|
+| P2 | AGENTS.md | 项目结构添加新模块行（仅低频更新） | ⭐ 可选 |
 
 **完整 Checklist**:
 ```bash
 # 假设完成 hamiltonian 模块后的标准操作流：
 
 ✅ P0-1: moon.mod.json        → "version": "0.5.0" (0.4.1→0.5.0)
-✅ P0-2: AGENTS.md           → version: v2.3.0 + algo/ 下添加 hamiltonian 行
-✅ P0-3: MEMORY.md           → 包结构添加 hamiltonian + 测试数 483→503? + 决策记录
-✅ P0-4: README.mbt.md       → 算法表添加 Hamiltonian 行 + 总测试数 + 路线图 v0.5.0当前
-✅ P0-5: CHANGELOG.md        → 新增 [0.5.0] 章节 + Unreleased 清空
-✅ P0-6: Git Tag             → git tag v0.5.0 -m "release(v0.5.0): ..."
+✅ P0-2: MEMORY.md           → 包结构添加 hamiltonian + 测试数 483→503? + 决策记录
+✅ P0-3: README.mbt.md       → 算法表添加 Hamiltonian 行 + 总测试数 + 路线图 v0.5.0当前
+✅ P0-4: CHANGELOG.md        → 新增 [0.5.0] 章节 + Unreleased 清空
+✅ P0-5: Git Tag             → git tag v0.5.0 -m "release(v0.5.0): ..."
 ✅ P1-1: docs/ROADMAP.md     → v0.5.0 状态改为✅ + 数据更新
 ✅ P1-2: docs/TODO.md        → T08 标记✅ + 里程碑表更新
+⏭️ P2:   AGENTS.md          → 仅低频更新（项目结构新增模块行）
 ⏭️ P2:   hamiltonian/README.md → 应在Commit 4: docs阶段已完成
 ```
 
@@ -181,33 +180,22 @@ git push origin master --tags
 ### 2. AGENTS.md（Agent协作配置）
 
 **路径**: 项目根目录  
-**更新频率**: 模块完成 / 架构变更 / 规范更新  
+**更新频率**: **低频**（仅架构变更/规范重大更新时）— 设计为稳定文档，避免版本号/日期/统计数等动态元数据  
 **关键区域**:
 
 | 区域 | 触发更新条件 | 更新内容 |
 |------|-------------|----------|
-| `version:` (frontmatter) | 每次更新此文件时 | v2.2.0 → v2.3.0 |
-| **项目结构** | 新增/删除模块 | `algo/` 下的模块列表 |
+| **项目结构** | 新增/删除模块（低频） | `algo/` 下的模块列表 |
 | **Trait分层** | Trait系统变更 | 层数/方法数描述 |
 | **编码规范** | 发现新陷阱或规则变更 | R1-R7 规则表 |
 | **错误速查** | 遇到新错误码 | 错误码速查表 |
 | **算法开发流程** | 流程优化 | SOP 步骤 |
-| **版本历史** | 每次更新 | 添加新版本行 |
 
-**更新模板**:
-```markdown
----
-version: v2.X.Y  # ← 每次+1
----
-
-## 项目结构
-└── algo/
-    ├── ...现有模块...
-    └── new_module 🆕  # ← 新增这行
-
-## 版本历史
-| v2.X.Y | 日期 | 主要变更 |  # ← 添加新行
-```
+**⚠️ 不要更新以下内容（避免版本膨胀）**:
+- 版本号/日期标记 — 委托给 CHANGELOG.md
+- 测试数/算法数等统计 — 委托给 CHANGELOG.md
+- 文档索引中的最后更新日期 — 仅保留路径和用途
+- 版本历史表 — 委托给 CHANGELOG.md
 
 ---
 
@@ -365,7 +353,7 @@ MOON_VERSION=$(grep '"version"' moon.mod.json | grep -o '[0-9]\.[0-9]\.[0-9]')
 echo "📦 moon.mod.json 版本: $MOON_VERSION"
 
 # 检查各文档是否包含该版本号
-for file in AGENTS.md README.mbt.md CHANGELOG.md; do
+for file in README.mbt.md CHANGELOG.md; do
   if grep -q "$MOON_VERSION" "$file"; then
     echo "✅ $file 版本一致"
   else
@@ -394,7 +382,7 @@ echo "✨ 检查完成!"
 
 每次更新文档后，**必须**验证：
 
-- [ ] **版本号一致性**: `moon.mod.json` = `AGENTS.md frontmatter` = `README.mbt.md` = `CHANGELOG.md最新版`
+- [ ] **版本号一致性**: `moon.mod.json` = `README.mbt.md` = `CHANGELOG.md最新版`
 - [ ] **测试数一致性**: `moon test输出` = `README.mbt.md总测试数` = `MEMORY.md合计` = `ROADMAP.md`
 - [ ] **模块列表完整性**: `src/algo/实际目录` = `AGENTS.md项目结构` = `README.mbt.md算法表` = `MEMORY.md包结构`
 - [ ] **Git Tag存在性**: 每个已发布的版本都有对应的tag
@@ -413,7 +401,6 @@ moon test src/algo/euler  # 22 passed ✅
 
 # Step 2: 更新P0文件（按顺序）
 vim moon.mod.json         # version: "0.4.1" → "0.5.0"
-vim AGENTS.md            # 添加 euler 行 + version+
 vim MEMORY.md            # 添加 euler 到包结构 + 测试数更新 + 决策记录
 vim README.mbt.md        # 算法表添加 Euler 行 + 总测试数 461→483
 vim CHANGELOG.md         # 添加 [0.5.0] 章节
@@ -430,7 +417,7 @@ vim docs/TODO.md         # T06 标记✅
 moon test                 # 全量测试 483/483 ✅
 
 # Step 6: 提交
-git add moon.mod.json AGENTS.md MEMORY.md README.mbt.md \
+git add moon.mod.json MEMORY.md README.mbt.md \
         CHANGELOG.md docs/ROADMAP.md docs/TODO.md
 git commit -m "release(v0.5.0): euler模块完成 + 文档同步更新"
 ```
@@ -464,7 +451,7 @@ git commit -m "fix: 修复xxx问题"
 moon check && moon test  # ✅
 
 # Step 2: 全面更新（架构变更影响大）
-vim AGENTS.md           # Trait分层图 + 编码规范
+vim AGENTS.md           # Trait分层图 + 编码规范（低频更新）
 vim MEMORY.md           # 关键决策记录（重要！）
 vim docs/ARCHITECTURE.md # 架构文档（核心！）
 vim README.mbt.md       # Trait分层体系说明
@@ -485,24 +472,23 @@ git commit -m "refactor(core): Trait分层从4层扩展至6层"
 
 这些文件**不更新会导致不一致或误导**：
 1. ✅ **moon.mod.json** - 版本号权威源
-2. ✅ **AGENTS.md** - Agent协作基础
-3. ✅ **MEMORY.md** - 项目记忆完整性
-4. ✅ **README.mbt.md** - 用户第一印象
-5. ✅ **CHANGELOG.md** - 变更追溯
-6. ✅ **Git Tags** - 版本快照
+2. ✅ **MEMORY.md** - 项目记忆完整性
+3. ✅ **README.mbt.md** - 用户第一印象
+4. ✅ **CHANGELOG.md** - 变更追溯
+5. ✅ **Git Tags** - 版本快照
 
 ### 应该尽快更新（P1 - Recommended）
 
 这些文件**延迟更新会影响项目管理**：
 1. ⚡ **docs/ROADMAP.md** - 战略规划
 2. ⚡ **docs/TODO.md** - 任务追踪
-3. ⚡ **模块README.md** - 模块文档完整性
 
 ### 有空再更新（P2 - Optional）
 
 这些文件**不影响功能，但完善度更好**：
-1. 💡 **设计文档** (`docs/design/*`) - 技术细节
-2. 💡 **竞品对比** (`docs/reference/*`) - 参考信息
+1. 💡 **AGENTS.md** - 仅架构变更时低频更新
+2. 💡 **设计文档** (`docs/design/*`) - 技术细节
+3. 💡 **竞品对比** (`docs/reference/*`) - 参考信息
 
 ---
 
