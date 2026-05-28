@@ -3,16 +3,6 @@
 ///
 /// 基于两次 DFS 的经典算法：第一次 DFS 记录完成顺序，
 /// 第二次按逆序 DFS 得到 SCC。时间复杂度 O(V+E)。
-fn[G : @core.GraphReadable] kosaraju_find_max_id(g : G) -> Int {
-  let mut m = -1
-  for nid in @core.GraphReadable::node_ids(g) {
-    if nid.0 > m {
-      m = nid.0
-    }
-  }
-  m
-}
-
 ///|
 fn[T] reverse_array(arr : Array[T]) -> Array[T] {
   let n = arr.length()
@@ -34,13 +24,13 @@ fn[T] reverse_array(arr : Array[T]) -> Array[T] {
 /// 通过两次 DFS 检测有向图的强连通分量。
 pub fn[G : @core.GraphDirected] kosaraju_scc(
   g : G,
-) -> StronglyConnectedComponents {
+) -> StronglyConnectedComponentsResult {
   let nc = @core.GraphReadable::node_count(g)
   if nc == 0 {
-    return StronglyConnectedComponents::{ components: [] }
+    return StronglyConnectedComponentsResult::{ components: [] }
   }
-  let max_id = kosaraju_find_max_id(g)
-  let size = max_int(max_id + 1, 1)
+  let max_id = @storage.find_max_node_id(g)
+  let size = @storage.int_max(max_id + 1, 1)
   let visited : Array[Bool] = Array::make(size, false)
   let finish_order : Array[@core.NodeId] = []
   for start in @core.GraphReadable::node_ids(g) {
@@ -98,7 +88,7 @@ pub fn[G : @core.GraphDirected] kosaraju_scc(
     }
     result.push(component)
   }
-  StronglyConnectedComponents::{ components: result }
+  StronglyConnectedComponentsResult::{ components: result }
 }
 
 ///|

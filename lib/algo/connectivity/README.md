@@ -16,7 +16,7 @@
 ```
 lib/algorithms/connectivity/
 ├── moon.pkg                # 包配置
-├── types.mbt               # ConnectedComponents + SCC 结果类型 + 方法
+├── types.mbt               # ConnectedComponentsResult + SCCResult 类型 + 方法
 ├── components.mbt          # 无向连通分量 (BFS 分组)
 ├── tarjan.mbt              # Tarjan 强连通分量 (lowlink 栈)
 ├── kosaraju.mbt            # Kosaraju 强连通分量 (双 DFS)
@@ -28,8 +28,8 @@ lib/algorithms/connectivity/
 ### 无向连通分量结果 — [types.mbt](types.mbt)
 
 ```moonbit
-pub(all) struct ConnectedComponents {
-  components : Array[Array[@core.NodeId>]   // 每个分量一组节点
+pub(all) struct ConnectedComponentsResult {
+  components : Array[Array[@core.NodeId]]   // 每个分量一组节点
 }
 ```
 
@@ -42,7 +42,7 @@ pub(all) struct ConnectedComponents {
 ### 强连通分量结果 — [types.mbt](types.mbt)
 
 ```moonbit
-pub(all) struct StronglyConnectedComponents {
+pub(all) struct StronglyConnectedComponentsResult {
   components : Array[Array[@core.NodeId>]
 }
 ```
@@ -58,7 +58,7 @@ pub(all) struct StronglyConnectedComponents {
 
 | 函数                      | Trait 约束      | 返回                  |
 | ------------------------- | --------------- | --------------------- |
-| `connected_components(g)` | `GraphReadable` | `ConnectedComponents` |
+| `connected_components(g)` | `GraphReadable` | `ConnectedComponentsResult` |
 
 **原理**: 对每个未访问节点启动 BFS，收集所有可达节点作为一个连通分量。重复直到所有节点被访问。
 
@@ -68,7 +68,7 @@ pub(all) struct StronglyConnectedComponents {
 
 | 函数            | Trait 约束      | 返回                          |
 | --------------- | --------------- | ----------------------------- |
-| `tarjan_scc(g)` | `GraphDirected` | `StronglyConnectedComponents` |
+| `tarjan_scc(g)` | `GraphDirected` | `StronglyConnectedComponentsResult` |
 
 **原理**:
 
@@ -83,7 +83,7 @@ pub(all) struct StronglyConnectedComponents {
 
 | 函数              | Trait 约束      | 返回                          |
 | ----------------- | --------------- | ----------------------------- |
-| `kosaraju_scc(g)` | `GraphDirected` | `StronglyConnectedComponents` |
+| `kosaraju_scc(g)` | `GraphDirected` | `StronglyConnectedComponentsResult` |
 
 **原理**:
 

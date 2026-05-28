@@ -1,11 +1,11 @@
 ///|
 /// 连通性分析结果类型
-pub(all) struct ConnectedComponents {
+pub(all) struct ConnectedComponentsResult {
   components : Array[Array[@core.NodeId]]
 }
 
 ///|
-pub fn ConnectedComponents::count(self : ConnectedComponents) -> Int {
+pub fn ConnectedComponentsResult::count(self : ConnectedComponentsResult) -> Int {
   self.components.length()
 }
 
@@ -20,17 +20,8 @@ fn array_contains(arr : Array[@core.NodeId], item : @core.NodeId) -> Bool {
 }
 
 ///|
-fn max_int(a : Int, b : Int) -> Int {
-  if a > b {
-    a
-  } else {
-    b
-  }
-}
-
-///|
-pub fn ConnectedComponents::component_of(
-  self : ConnectedComponents,
+pub fn ConnectedComponentsResult::component_of(
+  self : ConnectedComponentsResult,
   id : @core.NodeId,
 ) -> Int {
   let mut i = 0
@@ -44,8 +35,8 @@ pub fn ConnectedComponents::component_of(
 }
 
 ///|
-pub fn ConnectedComponents::size(
-  self : ConnectedComponents,
+pub fn ConnectedComponentsResult::size(
+  self : ConnectedComponentsResult,
   comp_id : Int,
 ) -> Int {
   if comp_id < 0 || comp_id >= self.components.length() {
@@ -60,20 +51,20 @@ pub fn ConnectedComponents::size(
 // ============================================================================
 
 ///|
-pub(all) struct StronglyConnectedComponents {
+pub(all) struct StronglyConnectedComponentsResult {
   components : Array[Array[@core.NodeId]]
 }
 
 ///|
-pub fn StronglyConnectedComponents::count(
-  self : StronglyConnectedComponents,
+pub fn StronglyConnectedComponentsResult::count(
+  self : StronglyConnectedComponentsResult,
 ) -> Int {
   self.components.length()
 }
 
 ///|
-pub fn StronglyConnectedComponents::component_of(
-  self : StronglyConnectedComponents,
+pub fn StronglyConnectedComponentsResult::component_of(
+  self : StronglyConnectedComponentsResult,
   id : @core.NodeId,
 ) -> Int {
   let mut i = 0

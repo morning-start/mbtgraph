@@ -59,3 +59,29 @@ pub fn bubble_sort_by_weight(
   }
   es
 }
+
+// ============================================================================
+// 算法层公共工具函数（跨模块复用）
+// ============================================================================
+
+///|
+/// 查找图中节点 ID 的最大值（用于分配数组大小时避免越界）
+pub fn[G : @core.GraphReadable] find_max_node_id(g : G) -> Int {
+  let mut m = -1
+  for nid in @core.GraphReadable::node_ids(g) {
+    if nid.0 > m {
+      m = nid.0
+    }
+  }
+  m
+}
+
+///|
+/// 返回两个整数中的较大值
+pub fn int_max(a : Int, b : Int) -> Int {
+  if a > b {
+    a
+  } else {
+    b
+  }
+}

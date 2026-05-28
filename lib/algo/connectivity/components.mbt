@@ -2,29 +2,19 @@
 /// 无向连通分量提取
 ///
 /// 基于 BFS/DFS 的 visited[] 数组分组。
-fn[G : @core.GraphReadable] conn_find_max_id(g : G) -> Int {
-  let mut m = -1
-  for nid in @core.GraphReadable::node_ids(g) {
-    if nid.0 > m {
-      m = nid.0
-    }
-  }
-  m
-}
-
 ///|
 /// 提取无向图的连通分量
 ///
 /// 返回每个连通分量包含的节点列表。
 pub fn[G : @core.GraphReadable] connected_components(
   g : G,
-) -> ConnectedComponents {
+) -> ConnectedComponentsResult {
   let nc = @core.GraphReadable::node_count(g)
   if nc == 0 {
-    return ConnectedComponents::{ components: [] }
+    return ConnectedComponentsResult::{ components: [] }
   }
-  let max_id = conn_find_max_id(g)
-  let size = max_int(max_id + 1, 1)
+  let max_id = @storage.find_max_node_id(g)
+  let size = @storage.int_max(max_id + 1, 1)
   let visited : Array[Bool] = Array::make(size, false)
   let result : Array[Array[@core.NodeId]] = []
   for start in @core.GraphReadable::node_ids(g) {
@@ -48,5 +38,5 @@ pub fn[G : @core.GraphReadable] connected_components(
     }
     result.push(component)
   }
-  ConnectedComponents::{ components: result }
+  ConnectedComponentsResult::{ components: result }
 }
