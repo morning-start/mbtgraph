@@ -48,19 +48,19 @@ fn a_star_reconstruct_path(
 /// ## 复杂度
 /// 取决于启发函数质量，最优时 O(b^d)，其中 b 是分支因子，d 是最优路径深度
 pub fn[G : @core.GraphReadable] a_star(
-  g : G,
+  graph : G,
   start : @core.NodeId,
   target : @core.NodeId,
   heuristic : (@core.NodeId) -> Double,
 ) -> Array[@core.NodeId] {
-  if start == target && @core.GraphReadable::contains_node(g, start) {
+  if start == target && @core.GraphReadable::contains_node(graph, start) {
     return [start]
   }
-  let nc = @core.GraphReadable::node_count(g)
-  if nc == 0 || !@core.GraphReadable::contains_node(g, start) {
+  let nc = @core.GraphReadable::node_count(graph)
+  if nc == 0 || !@core.GraphReadable::contains_node(graph, start) {
     return []
   }
-  let max_id = sp_find_max_id(g)
+  let max_id = sp_find_max_id(graph)
   let size = max_int(max_id + 1, 1)
   let g_scores : Array[Double?] = Array::make(size, None)
   let parents : Array[@core.NodeId?] = Array::make(size, None)
@@ -81,12 +81,12 @@ pub fn[G : @core.GraphReadable] a_star(
           continue
         }
         visited[uid] = true
-        for v in @core.GraphReadable::neighbors(g, u) {
+        for v in @core.GraphReadable::neighbors(graph, u) {
           let vid = v.0
           if vid < 0 || vid >= size || visited[vid] {
             continue
           }
-          match @core.GraphReadable::get_edge(g, u, v) {
+          match @core.GraphReadable::get_edge(graph, u, v) {
             Some(weight) => {
               let ug = match g_scores[uid] {
                 None => continue

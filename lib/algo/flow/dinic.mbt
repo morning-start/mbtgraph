@@ -144,8 +144,8 @@ fn dinic_dfs(
 ///
 /// ## 返回
 /// `MaxFlowResult` 包含最大流量值和流量矩阵
-pub fn dinic(net : FlowNetwork, source : Int, sink : Int) -> MaxFlowResult {
-  let n = net.node_count
+pub fn dinic(graph : FlowNetwork, source : Int, sink : Int) -> MaxFlowResult {
+  let n = graph.node_count
   if n == 0 ||
     source < 0 ||
     source >= n ||
@@ -155,11 +155,11 @@ pub fn dinic(net : FlowNetwork, source : Int, sink : Int) -> MaxFlowResult {
     return MaxFlowResult::{ max_flow: 0.0, flow_matrix: [] }
   }
 
-  let work_flow = dinic_deep_copy(net.flow)
+  let work_flow = dinic_deep_copy(graph.flow)
   let mut total_flow = 0.0
 
   while true {
-    let (level, can_reach) = dinic_bfs(net.capacity, work_flow, n, source, sink)
+    let (level, can_reach) = dinic_bfs(graph.capacity, work_flow, n, source, sink)
 
     if !can_reach {
       break
@@ -172,7 +172,7 @@ pub fn dinic(net : FlowNetwork, source : Int, sink : Int) -> MaxFlowResult {
         source,
         sink,
         1000000000000000000.0,
-        net.capacity,
+        graph.capacity,
         work_flow,
         level,
         current_arc,

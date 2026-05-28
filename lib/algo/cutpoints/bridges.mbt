@@ -112,20 +112,20 @@ fn[G : @core.GraphReadable] tarjan_bridge_dfs(
 /// }
 /// println("总桥数: ${result.count}")
 /// ```
-pub fn[G : @core.GraphReadable] find_bridges_undirected(g : G) -> BridgeResult {
-  let nc = @core.GraphReadable::node_count(g)
+pub fn[G : @core.GraphReadable] find_bridges_undirected(graph : G) -> BridgeResult {
+  let nc = @core.GraphReadable::node_count(graph)
   if nc == 0 {
     return BridgeResult::{ bridges: [], is_bridge: [], count: 0 }
   }
 
-  let max_id = bridge_find_max_id(g)
+  let max_id = bridge_find_max_id(graph)
   let size = if max_id + 1 > 1 { max_id + 1 } else { 1 }
 
   let state = new_bridge_state(size)
 
-  for node in @core.GraphReadable::node_ids(g) {
+  for node in @core.GraphReadable::node_ids(graph) {
     if state.disc[node.0] == -1 {
-      tarjan_bridge_dfs(state, g, node.0, -1)
+      tarjan_bridge_dfs(state, graph, node.0, -1)
     }
   }
 
@@ -133,7 +133,7 @@ pub fn[G : @core.GraphReadable] find_bridges_undirected(g : G) -> BridgeResult {
   for pair in state.bridges_list {
     match pair {
       (from, to) => {
-        let weight = match @core.GraphReadable::get_edge(g, from, to) {
+        let weight = match @core.GraphReadable::get_edge(graph, from, to) {
           Some(w) => w
           None => 0.0
         }
@@ -142,7 +142,7 @@ pub fn[G : @core.GraphReadable] find_bridges_undirected(g : G) -> BridgeResult {
     }
   }
 
-  let total_edges = @core.GraphReadable::edge_count(g)
+  let total_edges = @core.GraphReadable::edge_count(graph)
   let is_bridge = Array::make(total_edges, false)
 
   BridgeResult::{ bridges, is_bridge, count: bridges.length() }

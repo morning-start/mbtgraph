@@ -284,43 +284,6 @@ impl GraphBatchReadable for MockGraph with batch_edges(
   r
 }
 
-// --- GraphEdgeIterable (+1 method, inherits Readable) ---
-
-///|
-fn bubble_sort(
-  edges : Array[(NodeId, NodeId, Double)],
-) -> Array[(NodeId, NodeId, Double)] {
-  let es = edges
-  let n = es.length()
-  let mut j = 0
-  while j < n {
-    let mut k = 0
-    while k < n - j - 1 {
-      let (_, _, w1) = es[k]
-      let (_, _, w2) = es[k + 1]
-      if w1 > w2 {
-        let tmp = es[k]
-        es[k] = es[k + 1]
-        es[k + 1] = tmp
-      }
-      k = k + 1
-    }
-    j = j + 1
-  }
-  es
-}
-
-///|
-impl GraphEdgeIterable for MockGraph with edges_sorted(self) -> Iter[
-  (NodeId, NodeId, Double),
-] {
-  let all : Array[(NodeId, NodeId, Double)] = []
-  for e in self.edges {
-    all.push(e)
-  }
-  bubble_sort(all).iter()
-}
-
 // ============================================================================
 // Test cases
 // ============================================================================
@@ -621,25 +584,4 @@ test "MockGraph BatchReadable: batch_edges returns per-pair weights" {
   }
 }
 
-///|
-/// GraphEdgeIterable: edges_sorted returns ascending by weight
-test "MockGraph EdgeIterable: edges_sorted produces ascending weight order" {
-  let g = new_mock(true)
-  let a = GraphWritable::add_node(g, 1.0)
-  let b = GraphWritable::add_node(g, 2.0)
-  GraphWritable::add_edge(g, a, b, 5.0) |> ignore
-  GraphWritable::add_edge(g, a, b, 1.0) |> ignore
-  GraphWritable::add_edge(g, a, b, 3.0) |> ignore
 
-  let sorted = GraphEdgeIterable::edges_sorted(g).to_array()
-  assert_eq(sorted.length(), 3)
-
-  // Verify ascending order
-  let (_, _, w0) = sorted[0]
-  let (_, _, w1) = sorted[1]
-  let (_, _, w2) = sorted[2]
-  assert_true(w0 <= w1)
-  assert_true(w1 <= w2)
-  assert_eq(w0, 1.0)
-  assert_eq(w2, 5.0)
-}

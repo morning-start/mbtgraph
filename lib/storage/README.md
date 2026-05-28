@@ -91,9 +91,6 @@ let b = @core.GraphWritable::add_node(g, 2.0)
 // 双向查询均命中
 @core.GraphReadable::contains_edge(g, a, b)  // true
 @core.GraphReadable::contains_edge(g, b, a)  // true
-
-// 支持 Kruskal 友好的边排序
-@core.GraphEdgeIterable::edges_sorted(g)
 ```
 
 | 特征       | 值                                     |
@@ -225,9 +222,6 @@ let g = new_edge_list()
 @core.GraphWritable::add_node(g, 1.0) |> ignore
 @core.GraphWritable::add_node(g, 2.0) |> ignore
 @core.GraphWritable::add_edge(g, a, b, 5.0) |> ignore
-
-// Kruskal 核心：按权值排序的边
-@core.GraphEdgeIterable::edges_sorted(g)
 ```
 
 | 特征       | 值                                     |

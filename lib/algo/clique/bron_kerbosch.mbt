@@ -1,7 +1,7 @@
 ///|
 /// Bron-Kerbosch 最大团算法（简化版本）
-pub fn[G : @core.GraphReadable] find_maximum_clique(g : G) -> CliqueResult {
-  let n = @core.GraphReadable::node_count(g)
+pub fn[G : @core.GraphReadable] find_maximum_clique(graph : G) -> CliqueResult {
+  let n = @core.GraphReadable::node_count(graph)
 
   if n == 0 {
     return CliqueResult::{ maximum_clique: [], size: 0 }
@@ -20,7 +20,7 @@ pub fn[G : @core.GraphReadable] find_maximum_clique(g : G) -> CliqueResult {
   }
   let x : Array[Int] = []
 
-  let result = bk_recursive(g, r, p, x, n)
+  let result = bk_recursive(graph, r, p, x, n)
 
   let size = result.length()
   let clique_nodes : Array[@core.NodeId] = []

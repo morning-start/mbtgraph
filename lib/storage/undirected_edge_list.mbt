@@ -258,14 +258,5 @@ pub impl @core.GraphWritable for UndirectedEdgeListGraph with clear(self) -> Uni
   g.node_cnt = 0
 }
 
-///|
-pub impl @core.GraphEdgeIterable for UndirectedEdgeListGraph with edges_sorted(
-  self,
-) -> Iter[(@core.NodeId, @core.NodeId, Double)] {
-  let all : Array[(@core.NodeId, @core.NodeId, Double)] = []
-  for e in self.edges {
-    all.push((e.from, e.to, e.data))
-  }
-  let sorted = bubble_sort_by_weight(all)
-  sorted.iter()
-}
+
+

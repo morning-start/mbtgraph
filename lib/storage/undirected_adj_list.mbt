@@ -301,20 +301,5 @@ pub impl @core.GraphWritable for UndirectedAdjList with clear(self) -> Unit {
   g.edge_cnt = 0
 }
 
-///|
-pub impl @core.GraphEdgeIterable for UndirectedAdjList with edges_sorted(self) -> Iter[
-  (@core.NodeId, @core.NodeId, Double),
-] {
-  let all : Array[(@core.NodeId, @core.NodeId, Double)] = []
-  for i in 0..<self.nodes.length() {
-    if has_node(self.nodes, i) {
-      for entry in self.adj[i] {
-        match entry {
-          (nid, w) => all.push((@core.NodeId(i), nid, w))
-        }
-      }
-    }
-  }
-  let sorted = bubble_sort_by_weight(all)
-  sorted.iter()
-}
+
+

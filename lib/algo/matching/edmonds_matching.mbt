@@ -10,9 +10,9 @@
 /// ## 返回
 /// MatchingResult 包含匹配边列表和匹配数
 pub fn[G : @core.GraphReadable] edmonds_maximum_matching(
-  g : G,
+  graph : G,
 ) -> MatchingResult {
-  let n = @core.GraphReadable::node_count(g)
+  let n = @core.GraphReadable::node_count(graph)
   if n == 0 {
     return MatchingResult::{ matching_edges: [], cardinality: 0 }
   }
@@ -24,9 +24,9 @@ pub fn[G : @core.GraphReadable] edmonds_maximum_matching(
     adj[init_i] = []
     init_i = init_i + 1
   }
-  for u_node in @core.GraphReadable::node_ids(g) {
+  for u_node in @core.GraphReadable::node_ids(graph) {
     let u = u_node.0
-    for v_node in @core.GraphReadable::neighbors(g, u_node) {
+    for v_node in @core.GraphReadable::neighbors(graph, u_node) {
       let v = v_node.0
       if u != v {
         adj[u].push(v)

@@ -76,18 +76,18 @@ fn[G : @core.GraphDirected] tarjan_strongconnect(
 ///
 /// 使用 DFS 时间戳 + 低点（lowlink）检测强连通分量。
 pub fn[G : @core.GraphDirected] tarjan_scc(
-  g : G,
+  graph : G,
 ) -> StronglyConnectedComponentsResult {
-  let nc = @core.GraphReadable::node_count(g)
+  let nc = @core.GraphReadable::node_count(graph)
   if nc == 0 {
     return StronglyConnectedComponentsResult::{ components: [] }
   }
-  let max_id = @storage.find_max_node_id(g)
+  let max_id = @storage.find_max_node_id(graph)
   let size = @storage.int_max(max_id + 1, 1)
   let state = new_tarjan_state(size)
-  for node in @core.GraphReadable::node_ids(g) {
+  for node in @core.GraphReadable::node_ids(graph) {
     if state.index[node.0] == -1 {
-      tarjan_strongconnect(state, g, node)
+      tarjan_strongconnect(state, graph, node)
     }
   }
   StronglyConnectedComponentsResult::{ components: state.components }

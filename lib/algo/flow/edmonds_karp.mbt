@@ -103,11 +103,11 @@ fn deep_copy_matrix(src : Array[Array[Double]]) -> Array[Array[Double]] {
 /// 在流网络上计算从 source 到 sink 的最大流。
 /// 使用 BFS 每次找到最短增广路径，保证 O(VE²) 上界。
 pub fn edmonds_karp(
-  net : FlowNetwork,
+  graph : FlowNetwork,
   source : Int,
   sink : Int,
 ) -> MaxFlowResult {
-  let n = net.node_count
+  let n = graph.node_count
   if n == 0 ||
     source < 0 ||
     source >= n ||
@@ -116,23 +116,23 @@ pub fn edmonds_karp(
     source == sink {
     return MaxFlowResult::{ max_flow: 0.0, flow_matrix: [] }
   }
-  let work_flow = deep_copy_matrix(net.flow)
+  let work_flow = deep_copy_matrix(graph.flow)
   let mut total_flow = 0.0
   while true {
-    let (parent, found) = ek_bfs(net.capacity, work_flow, n, source, sink)
+    let (parent, found) = ek_bfs(graph.capacity, work_flow, n, source, sink)
     if !found {
       break
     }
     let bottleneck = ek_find_path_bottleneck(
       parent,
       sink,
-      net.capacity,
+      graph.capacity,
       work_flow,
     )
     if bottleneck <= 0.000001 {
       break
     }
-    ek_augment(parent, source, sink, net.capacity, work_flow, bottleneck)
+    ek_augment(parent, source, sink, graph.capacity, work_flow, bottleneck)
     total_flow = total_flow + bottleneck
   }
   let result_matrix : Array[Array[Double?]] = []

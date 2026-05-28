@@ -134,11 +134,11 @@ fn[G : @core.GraphReadable] find_max_node_id(g : G) -> Int {
 ///
 /// let result = has_euler_path_undirected(g) // 返回 true（存在欧拉回路）
 /// ```
-pub fn[G : @core.GraphReadable] has_euler_path_undirected(g : G) -> Bool {
-  if !is_connected_undirected(g) {
+pub fn[G : @core.GraphReadable] has_euler_path_undirected(graph : G) -> Bool {
+  if !is_connected_undirected(graph) {
     return false
   }
-  let (odd_count, _, _) = check_degree_parity(g)
+  let (odd_count, _, _) = check_degree_parity(graph)
   odd_count == 0 || odd_count == 2
 }
 
@@ -173,11 +173,11 @@ pub fn[G : @core.GraphReadable] has_euler_path_undirected(g : G) -> Bool {
 ///
 /// let result = has_euler_circuit_undirected(g) // 返回 true（三角形存在欧拉回路）
 /// ```
-pub fn[G : @core.GraphReadable] has_euler_circuit_undirected(g : G) -> Bool {
-  if !is_connected_undirected(g) {
+pub fn[G : @core.GraphReadable] has_euler_circuit_undirected(graph : G) -> Bool {
+  if !is_connected_undirected(graph) {
     return false
   }
-  let (odd_count, _, _) = check_degree_parity(g)
+  let (odd_count, _, _) = check_degree_parity(graph)
   odd_count == 0
 }
 

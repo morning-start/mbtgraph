@@ -10,13 +10,13 @@
 /// 成功返回 FloydWarshallResult（含距离矩阵和路径重建信息）。
 /// 如果检测到负环，返回 Err。
 pub fn[G : @core.GraphReadable] floyd_warshall(
-  g : G,
+  graph : G,
 ) -> Result[FloydWarshallResult, String] {
-  let nc = @core.GraphReadable::node_count(g)
+  let nc = @core.GraphReadable::node_count(graph)
   if nc == 0 {
     return Ok(FloydWarshallResult::{ distances: [], next: [] })
   }
-  let max_id = sp_find_max_id(g)
+  let max_id = sp_find_max_id(graph)
   let size = max_int(max_id + 1, 1)
   let inf = 1000000000000000000.0
   let dist : Array[Array[Double?]] = []
@@ -35,9 +35,9 @@ pub fn[G : @core.GraphReadable] floyd_warshall(
     dist.push(row_d)
     nxt.push(row_n)
   }
-  for u in @core.GraphReadable::node_ids(g) {
-    for v in @core.GraphReadable::neighbors(g, u) {
-      match @core.GraphReadable::get_edge(g, u, v) {
+  for u in @core.GraphReadable::node_ids(graph) {
+    for v in @core.GraphReadable::neighbors(graph, u) {
+      match @core.GraphReadable::get_edge(graph, u, v) {
         Some(w) => {
           let ui = u.0
           let vi = v.0

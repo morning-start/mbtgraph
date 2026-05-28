@@ -6,9 +6,9 @@
 
 ///|
 /// 单源 DFS：从 start 节点开始遍历（迭代式，显式栈）
-pub fn[G : @core.GraphReadable] dfs(g : G, start : @core.NodeId) -> DfsResult {
-  let nc = @core.GraphReadable::node_count(g)
-  if nc == 0 || !@core.GraphReadable::contains_node(g, start) {
+pub fn[G : @core.GraphReadable] dfs(graph : G, start : @core.NodeId) -> DfsResult {
+  let nc = @core.GraphReadable::node_count(graph)
+  if nc == 0 || !@core.GraphReadable::contains_node(graph, start) {
     let empty_v : Array[Bool] = []
     let empty_o : Array[@core.NodeId] = []
     let empty_p : Array[@core.NodeId?] = []
@@ -24,7 +24,7 @@ pub fn[G : @core.GraphReadable] dfs(g : G, start : @core.NodeId) -> DfsResult {
       exit_time: empty_x,
     }
   }
-  let max_id = dfs_find_max_id(g)
+  let max_id = dfs_find_max_id(graph)
   let size = max(max_id + 1, 1)
   let visited = Array::make(size, false)
   let order : Array[@core.NodeId] = []
@@ -40,7 +40,7 @@ pub fn[G : @core.GraphReadable] dfs(g : G, start : @core.NodeId) -> DfsResult {
   while stack_len > 0 {
     let cur = stack[stack_len - 1]
     let mut found = false
-    for nid in @core.GraphReadable::neighbors(g, cur) {
+    for nid in @core.GraphReadable::neighbors(graph, cur) {
       let idx = nid.0
       if idx >= 0 && idx < size && !visited[idx] {
         visited[idx] = true
@@ -69,8 +69,8 @@ pub fn[G : @core.GraphReadable] dfs(g : G, start : @core.NodeId) -> DfsResult {
 
 ///|
 /// 全图 DFS：遍历所有连通分量（迭代式）
-pub fn[G : @core.GraphReadable] dfs_all(g : G) -> DfsResult {
-  let nc = @core.GraphReadable::node_count(g)
+pub fn[G : @core.GraphReadable] dfs_all(graph : G) -> DfsResult {
+  let nc = @core.GraphReadable::node_count(graph)
   if nc == 0 {
     let empty_v : Array[Bool] = []
     let empty_o : Array[@core.NodeId] = []
@@ -87,7 +87,7 @@ pub fn[G : @core.GraphReadable] dfs_all(g : G) -> DfsResult {
       exit_time: empty_x,
     }
   }
-  let max_id = dfs_find_max_id(g)
+  let max_id = dfs_find_max_id(graph)
   let size = max(max_id + 1, 1)
   let visited = Array::make(size, false)
   let order : Array[@core.NodeId] = []
@@ -95,7 +95,7 @@ pub fn[G : @core.GraphReadable] dfs_all(g : G) -> DfsResult {
   let entry = Array::make(size, -1)
   let exit = Array::make(size, -1)
   let mut time = 0
-  for start in @core.GraphReadable::node_ids(g) {
+  for start in @core.GraphReadable::node_ids(graph) {
     if visited[start.0] {
       continue
     }
@@ -107,7 +107,7 @@ pub fn[G : @core.GraphReadable] dfs_all(g : G) -> DfsResult {
     while stack_len > 0 {
       let cur = stack[stack_len - 1]
       let mut found = false
-      for nid in @core.GraphReadable::neighbors(g, cur) {
+      for nid in @core.GraphReadable::neighbors(graph, cur) {
         let idx = nid.0
         if idx >= 0 && idx < size && !visited[idx] {
           visited[idx] = true

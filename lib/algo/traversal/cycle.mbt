@@ -8,11 +8,11 @@
 
 ///|
 /// 自动分派：根据 is_directed() 选择对应实现
-pub fn[G : @core.GraphReadable] has_cycle(g : G) -> Bool {
-  if @core.GraphReadable::is_directed(g) {
-    directed_cycle_impl(g)
+pub fn[G : @core.GraphReadable] has_cycle(graph : G) -> Bool {
+  if @core.GraphReadable::is_directed(graph) {
+    directed_cycle_impl(graph)
   } else {
-    undirected_cycle_impl(g)
+    undirected_cycle_impl(graph)
   }
 }
 
@@ -21,16 +21,16 @@ pub fn[G : @core.GraphReadable] has_cycle(g : G) -> Bool {
 ///
 /// 白(0)=未访问, 灰(1)=访问中, 黑(2)=已完成
 /// 遇到灰节点即发现反向边 → 存在环
-pub fn[G : @core.GraphDirected] has_directed_cycle(g : G) -> Bool {
-  directed_cycle_impl(g)
+pub fn[G : @core.GraphDirected] has_directed_cycle(graph : G) -> Bool {
+  directed_cycle_impl(graph)
 }
 
 ///|
 /// 无向环检测（DFS + 父节点排除）
 ///
 /// 无向图中，遇到已访问且非父节点的邻居 → 存在环
-pub fn[G : @core.GraphReadable] has_undirected_cycle(g : G) -> Bool {
-  undirected_cycle_impl(g)
+pub fn[G : @core.GraphReadable] has_undirected_cycle(graph : G) -> Bool {
+  undirected_cycle_impl(graph)
 }
 
 // ============================================================================

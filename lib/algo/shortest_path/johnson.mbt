@@ -11,16 +11,16 @@
 /// 对每个节点运行 Dijkstra，使用 Bellman-Ford 计算的重权重保证非负性。
 /// 返回 FloydWarshallResult，与 floyd_warshall 接口一致。
 pub fn[G : @core.GraphReadable] johnson(
-  g : G,
+  graph : G,
 ) -> Result[FloydWarshallResult, String] {
-  let nc = @core.GraphReadable::node_count(g)
+  let nc = @core.GraphReadable::node_count(graph)
   if nc == 0 {
     return Ok(FloydWarshallResult::{ distances: [], next: [] })
   }
-  let max_id = @storage.find_max_node_id(g)
+  let max_id = @storage.find_max_node_id(graph)
   let size = @storage.int_max(max_id + 1, 1)
   let node_list : Array[@core.NodeId] = []
-  for nid in @core.GraphReadable::node_ids(g) {
+  for nid in @core.GraphReadable::node_ids(graph) {
     node_list.push(nid)
   }
   let inf = 1000000000000000000.0
@@ -35,7 +35,7 @@ pub fn[G : @core.GraphReadable] johnson(
   for _ in 0..<nc {
     let mut updated = false
     for u in node_list {
-      for v in @core.GraphReadable::neighbors(g, u) {
+      for v in @core.GraphReadable::neighbors(graph, u) {
         let uid = u.0
         let vid = v.0
         if uid < 0 || uid >= size || vid < 0 || vid >= size {
@@ -49,7 +49,7 @@ pub fn[G : @core.GraphReadable] johnson(
         if uh >= inf {
           continue
         }
-        match @core.GraphReadable::get_edge(g, u, v) {
+        match @core.GraphReadable::get_edge(graph, u, v) {
           Some(w) => {
             let new_h = uh + w
             let hv_opt = h[vid]
@@ -71,7 +71,7 @@ pub fn[G : @core.GraphReadable] johnson(
     }
   }
   for u in node_list {
-    for v in @core.GraphReadable::neighbors(g, u) {
+    for v in @core.GraphReadable::neighbors(graph, u) {
       let uid = u.0
       let vid = v.0
       if uid < 0 || uid >= size || vid < 0 || vid >= size {
@@ -84,7 +84,7 @@ pub fn[G : @core.GraphReadable] johnson(
           if uh >= inf {
             continue
           } else {
-            match @core.GraphReadable::get_edge(g, u, v) {
+            match @core.GraphReadable::get_edge(graph, u, v) {
               Some(w) => {
                 let vh_opt = h[vid]
                 match vh_opt {
@@ -128,12 +128,12 @@ pub fn[G : @core.GraphReadable] johnson(
             continue
           }
           visited[uid] = true
-          for v in @core.GraphReadable::neighbors(g, u) {
+          for v in @core.GraphReadable::neighbors(graph, u) {
             let vid = v.0
             if vid < 0 || vid >= size || visited[vid] {
               continue
             }
-            match @core.GraphReadable::get_edge(g, u, v) {
+            match @core.GraphReadable::get_edge(graph, u, v) {
               Some(weight) => {
                 let uw_opt = h[uid]
                 let uw = match uw_opt {

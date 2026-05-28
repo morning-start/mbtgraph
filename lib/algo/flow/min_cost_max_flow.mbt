@@ -154,11 +154,11 @@ fn augment_flow(
 /// ## 返回
 /// `MinCostMaxFlowResult` 包含最大流量、最小费用和流量矩阵
 pub fn min_cost_max_flow(
-  net : CostFlowNetwork,
+  graph : CostFlowNetwork,
   source : Int,
   sink : Int,
 ) -> MinCostMaxFlowResult {
-  let n = net.node_count
+  let n = graph.node_count
   if n == 0 ||
     source < 0 ||
     source >= n ||
@@ -172,14 +172,14 @@ pub fn min_cost_max_flow(
     }
   }
 
-  let work_flow = mcmf_deep_copy(net.flow)
+  let work_flow = mcmf_deep_copy(graph.flow)
   let mut total_flow = 0.0
   let eps = 0.000001
 
   while true {
     let (parent, is_forward, found) = bellman_ford(
-      net.capacity,
-      net.cost,
+      graph.capacity,
+      graph.cost,
       work_flow,
       n,
       source,
@@ -192,7 +192,7 @@ pub fn min_cost_max_flow(
       parent,
       is_forward,
       sink,
-      net.capacity,
+      graph.capacity,
       work_flow,
     )
     if bottleneck <= eps {
@@ -206,7 +206,7 @@ pub fn min_cost_max_flow(
   for i in 0..<n {
     for j in 0..<n {
       if work_flow[i][j] > eps {
-        total_cost = total_cost + work_flow[i][j] * net.cost[i][j]
+        total_cost = total_cost + work_flow[i][j] * graph.cost[i][j]
       }
     }
   }

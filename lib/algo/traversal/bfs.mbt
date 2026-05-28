@@ -6,9 +6,9 @@
 
 ///|
 /// 单源 BFS：从 start 节点开始遍历
-pub fn[G : @core.GraphReadable] bfs(g : G, start : @core.NodeId) -> BfsResult {
-  let nc = @core.GraphReadable::node_count(g)
-  if nc == 0 || !@core.GraphReadable::contains_node(g, start) {
+pub fn[G : @core.GraphReadable] bfs(graph : G, start : @core.NodeId) -> BfsResult {
+  let nc = @core.GraphReadable::node_count(graph)
+  if nc == 0 || !@core.GraphReadable::contains_node(graph, start) {
     let empty_visited : Array[Bool] = []
     let empty_order : Array[@core.NodeId] = []
     let empty_parents : Array[@core.NodeId?] = []
@@ -22,7 +22,7 @@ pub fn[G : @core.GraphReadable] bfs(g : G, start : @core.NodeId) -> BfsResult {
       levels: empty_levels,
     }
   }
-  let max_id = bfs_find_max_id(g)
+  let max_id = bfs_find_max_id(graph)
   let size = max(max_id + 1, 1)
   let visited = Array::make(size, false)
   let order : Array[@core.NodeId] = []
@@ -38,7 +38,7 @@ pub fn[G : @core.GraphReadable] bfs(g : G, start : @core.NodeId) -> BfsResult {
     let cur = queue[head]
     head = head + 1
     order.push(cur)
-    for nid in @core.GraphReadable::neighbors(g, cur) {
+    for nid in @core.GraphReadable::neighbors(graph, cur) {
       let idx = nid.0
       if idx >= 0 && idx < size && !visited[idx] {
         visited[idx] = true
@@ -53,8 +53,8 @@ pub fn[G : @core.GraphReadable] bfs(g : G, start : @core.NodeId) -> BfsResult {
 
 ///|
 /// 多源 BFS：遍历全图所有连通分量
-pub fn[G : @core.GraphReadable] bfs_all(g : G) -> BfsResult {
-  let nc = @core.GraphReadable::node_count(g)
+pub fn[G : @core.GraphReadable] bfs_all(graph : G) -> BfsResult {
+  let nc = @core.GraphReadable::node_count(graph)
   if nc == 0 {
     let empty_visited : Array[Bool] = []
     let empty_order : Array[@core.NodeId] = []
@@ -69,13 +69,13 @@ pub fn[G : @core.GraphReadable] bfs_all(g : G) -> BfsResult {
       levels: empty_levels,
     }
   }
-  let max_id = bfs_find_max_id(g)
+  let max_id = bfs_find_max_id(graph)
   let size = max(max_id + 1, 1)
   let visited = Array::make(size, false)
   let order : Array[@core.NodeId] = []
   let parents : Array[@core.NodeId?] = Array::make(size, None)
   let levels = Array::make(size, -1)
-  for start in @core.GraphReadable::node_ids(g) {
+  for start in @core.GraphReadable::node_ids(graph) {
     if visited[start.0] {
       continue
     }
@@ -89,7 +89,7 @@ pub fn[G : @core.GraphReadable] bfs_all(g : G) -> BfsResult {
       let cur = queue[head]
       head = head + 1
       order.push(cur)
-      for nid in @core.GraphReadable::neighbors(g, cur) {
+      for nid in @core.GraphReadable::neighbors(graph, cur) {
         let idx = nid.0
         if idx >= 0 && idx < size && !visited[idx] {
           visited[idx] = true
@@ -109,14 +109,14 @@ pub fn[G : @core.GraphReadable] bfs_all(g : G) -> BfsResult {
 /// 返回从 start 到 target 的最短路径节点序列（含首尾）。
 /// 如果 target 不可达，返回空数组。
 pub fn[G : @core.GraphReadable] bfs_shortest_path(
-  g : G,
+  graph : G,
   start : @core.NodeId,
   target : @core.NodeId,
 ) -> Array[@core.NodeId] {
-  if start == target && @core.GraphReadable::contains_node(g, start) {
+  if start == target && @core.GraphReadable::contains_node(graph, start) {
     return [start]
   }
-  let result = bfs(g, start)
+  let result = bfs(graph, start)
   result.base.path_to(target)
 }
 

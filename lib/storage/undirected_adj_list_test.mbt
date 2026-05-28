@@ -159,24 +159,5 @@ test "self-loop in undirected graph" {
   assert_eq(@core.GraphReadable::degree(g, a), 1)
 }
 
-///|
-test "edges_sorted returns edges in ascending weight order" {
-  let g = new_undirected()
-  let a = @core.GraphWritable::add_node(g, 1.0)
-  let b = @core.GraphWritable::add_node(g, 2.0)
-  let c = @core.GraphWritable::add_node(g, 3.0)
-  @core.GraphWritable::add_edge(g, a, b, 5.0) |> ignore
-  @core.GraphWritable::add_edge(g, b, c, 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, a, c, 3.0) |> ignore
 
-  let sorted = @core.GraphEdgeIterable::edges_sorted(g).to_array()
-  assert_eq(sorted.length(), 3)
 
-  let (_, _, w0) = sorted[0]
-  let (_, _, w1) = sorted[1]
-  let (_, _, w2) = sorted[2]
-  assert_true(w0 <= w1)
-  assert_true(w1 <= w2)
-  assert_eq(w0, 1.0)
-  assert_eq(w2, 5.0)
-}

@@ -124,9 +124,9 @@ fn count_used_colors(ec : Array[Array[Int?]]) -> Int {
 /// - `max_degree`: 图的最大度数 Δ
 /// - `is_valid`: 是否为合法边着色
 pub fn[G : @core.GraphReadable] edge_coloring(
-  g : G,
+  graph : G,
 ) -> EdgeColoringResult {
-  let n = @core.GraphReadable::node_count(g)
+  let n = @core.GraphReadable::node_count(graph)
   if n == 0 {
     return EdgeColoringResult::{
       edge_colors: [],
@@ -138,7 +138,7 @@ pub fn[G : @core.GraphReadable] edge_coloring(
   let mut max_deg = 0
   let mut i = 0
   while i < n {
-    let d = @core.GraphReadable::degree(g, @core.NodeId(i))
+    let d = @core.GraphReadable::degree(graph, @core.NodeId(i))
     if d > max_deg {
       max_deg = d
     }
@@ -171,7 +171,7 @@ pub fn[G : @core.GraphReadable] edge_coloring(
   }
   let mut ui = 0
   while ui < n {
-    let neighbors = @core.GraphReadable::neighbors(g, @core.NodeId(ui))
+    let neighbors = @core.GraphReadable::neighbors(graph, @core.NodeId(ui))
     for neighbor in neighbors {
       let vi = neighbor.0
       if vi > ui && vi >= 0 && vi < n {
@@ -188,7 +188,7 @@ pub fn[G : @core.GraphReadable] edge_coloring(
     ui = ui + 1
   }
   let num_c = count_used_colors(ec)
-  let valid = validate_edge_coloring(g, ec)
+  let valid = validate_edge_coloring(graph, ec)
   EdgeColoringResult::{
     edge_colors: ec,
     num_colors: num_c,

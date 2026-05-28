@@ -98,8 +98,8 @@ core 包的核心是 **6 个分层 Trait**，遵循**接口隔离原则 (ISP)** 
 
   独立扩展:
   ┌─────────────────────┐
-  │ GraphEdgeIterable   │  ← 边排序能力（Kruskal 友好）
-  │ +1 方法             │
+  │ GraphBatchReadable  │  ← 批量读取优化（CSR/CSC）
+  │ +2 方法             │
   └─────────────────────┘
 ```
 
@@ -223,19 +223,7 @@ pub fn[G : @core.GraphFull] some_algo(g : G) { ... }
 
 ---
 
-#### 6. `GraphEdgeIterable` — 边遍历优化
-
-**继承**: `GraphReadable`
-
-**适用**: 边集数组、无向邻接表等支持边排序的存储
-
-| 方法           | 签名                                       | 说明               |
-| -------------- | ------------------------------------------ | ------------------ |
-| `edges_sorted` | `(Self) -> Iter[(NodeId, NodeId, Double)]` | 按权值升序排列的边 |
-
-**典型用途**: Kruskal 最小生成树算法需要边按权值排序。
-
----
+## 设计原则
 
 ## 错误类型
 
@@ -268,7 +256,6 @@ pub(all) enum GraphError {
 | **GraphDirected**      |       ✅        |        ❌         |       ✅       |        ❌        |   ❌    |      ❌       |           ❌            |
 | **GraphFull**          |       ✅        |        ❌         |       ✅       |        ❌        |   ❌    |      ❌       |           ❌            |
 | **GraphBatchReadable** |       ❌        |        ❌         |       ❌       |        ❌        |   ✅    |      ❌       |           ❌            |
-| **GraphEdgeIterable**  |       ❌        |        ✅         |       ❌       |        ❌        |   ❌    |      ✅       |           ✅            |
 
 ---
 
@@ -282,7 +269,6 @@ pub(all) enum GraphError {
 - 动态修改 → `GraphWritable`
 - 有向语义 → `GraphDirected`
 - 批量优化 → `GraphBatchReadable`
-- 边排序 → `GraphEdgeIterable`
 
 ### 里氏替换 (LSP)
 

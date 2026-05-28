@@ -135,16 +135,4 @@ pub(open) trait GraphBatchReadable: GraphReadable {
   batch_edges(Self, Array[(NodeId, NodeId)]) -> Array[Double?]
 }
 
-///|
-/// 边遍历优化接口
-///
-/// 适用于边集数组等存储，提供边排序能力。
-/// 主要用于 Kruskal 等需要边排序的算法。
-///
-/// # 继承关系
-///
-/// 继承自 `GraphReadable`
-pub(open) trait GraphEdgeIterable: GraphReadable {
-  /// 按权重排序的边迭代器
-  edges_sorted(Self) -> Iter[(NodeId, NodeId, Double)]
-}
+

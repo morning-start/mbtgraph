@@ -199,9 +199,9 @@ pub fn tsp_exact_held_karp(weights : Array[Array[Double]]) -> TSPResult {
 
 ///|
 pub fn[G : @core.GraphReadable] build_weight_matrix(
-  g : G,
+  graph : G,
 ) -> Array[Array[Double]] {
-  let n = @core.GraphReadable::node_count(g)
+  let n = @core.GraphReadable::node_count(graph)
 
   let matrix : Array[Array[Double]] = []
   let mut i = 0
@@ -212,12 +212,12 @@ pub fn[G : @core.GraphReadable] build_weight_matrix(
       if i == j {
         row.push(0.0)
       } else if @core.GraphReadable::contains_edge(
-          g,
+          graph,
           @core.NodeId(i),
           @core.NodeId(j),
         ) {
         match
-          @core.GraphReadable::get_edge(g, @core.NodeId(i), @core.NodeId(j)) {
+          @core.GraphReadable::get_edge(graph, @core.NodeId(i), @core.NodeId(j)) {
           Some(w) => row.push(w)
           None => row.push(-1.0)
         }

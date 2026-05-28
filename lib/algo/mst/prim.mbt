@@ -33,12 +33,12 @@ fn prim_min_key(
 /// Prim 最小生成树
 ///
 /// 从 root 节点开始构建最小生成树。
-pub fn[G : @core.GraphReadable] prim(g : G, root : @core.NodeId) -> MstResult {
-  let nc = @core.GraphReadable::node_count(g)
-  if nc == 0 || !@core.GraphReadable::contains_node(g, root) {
+pub fn[G : @core.GraphReadable] prim(graph : G, root : @core.NodeId) -> MstResult {
+  let nc = @core.GraphReadable::node_count(graph)
+  if nc == 0 || !@core.GraphReadable::contains_node(graph, root) {
     return MstResult::{ total_weight: 0.0, edges: [] }
   }
-  let max_id = mst_find_max_id(g)
+  let max_id = mst_find_max_id(graph)
   let size = max_int(max_id + 1, 1)
   let key : Array[Double?] = Array::make(size, None)
   let parent : Array[@core.NodeId?] = Array::make(size, None)
@@ -65,10 +65,10 @@ pub fn[G : @core.GraphReadable] prim(g : G, root : @core.NodeId) -> MstResult {
       None => ()
     }
     let unode = @core.NodeId(u)
-    for v in @core.GraphReadable::neighbors(g, unode) {
+    for v in @core.GraphReadable::neighbors(graph, unode) {
       let vid = v.0
       if vid >= 0 && vid < size && !in_mst[vid] {
-        match @core.GraphReadable::get_edge(g, unode, v) {
+        match @core.GraphReadable::get_edge(graph, unode, v) {
           Some(w) => {
             let should_update = match key[vid] {
               None => true

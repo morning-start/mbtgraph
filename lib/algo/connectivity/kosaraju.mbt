@@ -23,17 +23,17 @@ fn[T] reverse_array(arr : Array[T]) -> Array[T] {
 ///
 /// 通过两次 DFS 检测有向图的强连通分量。
 pub fn[G : @core.GraphDirected] kosaraju_scc(
-  g : G,
+  graph : G,
 ) -> StronglyConnectedComponentsResult {
-  let nc = @core.GraphReadable::node_count(g)
+  let nc = @core.GraphReadable::node_count(graph)
   if nc == 0 {
     return StronglyConnectedComponentsResult::{ components: [] }
   }
-  let max_id = @storage.find_max_node_id(g)
+  let max_id = @storage.find_max_node_id(graph)
   let size = @storage.int_max(max_id + 1, 1)
   let visited : Array[Bool] = Array::make(size, false)
   let finish_order : Array[@core.NodeId] = []
-  for start in @core.GraphReadable::node_ids(g) {
+  for start in @core.GraphReadable::node_ids(graph) {
     if visited[start.0] {
       continue
     }
@@ -54,7 +54,7 @@ pub fn[G : @core.GraphDirected] kosaraju_scc(
       stack_top = stack_top + 1
       processed[cur.0] = true
       let mut has_unvisited_nbr = false
-      for nbr in @core.GraphDirected::in_neighbors(g, cur) {
+      for nbr in @core.GraphDirected::in_neighbors(graph, cur) {
         if !visited[nbr.0] {
           visited[nbr.0] = true
           stack_data[stack_top] = nbr
@@ -79,7 +79,7 @@ pub fn[G : @core.GraphDirected] kosaraju_scc(
       let cur = queue[qhead]
       component.push(cur)
       qhead = qhead + 1
-      for nbr in @core.GraphReadable::neighbors(g, cur) {
+      for nbr in @core.GraphReadable::neighbors(graph, cur) {
         if !visited2[nbr.0] {
           visited2[nbr.0] = true
           queue.push(nbr)

@@ -12,7 +12,7 @@
 /// ## 返回
 /// MatchingResult 包含匹配边列表和匹配数
 pub fn[G : @core.GraphReadable] hopcroft_karp(
-  g : G,
+  graph : G,
   left_nodes : Array[@core.NodeId],
   right_nodes : Array[@core.NodeId],
 ) -> MatchingResult {
@@ -27,7 +27,7 @@ pub fn[G : @core.GraphReadable] hopcroft_karp(
   let mut u_idx = 0
   while u_idx < n_left {
     let u_node = left_nodes[u_idx]
-    for v_node in @core.GraphReadable::neighbors(g, u_node) {
+    for v_node in @core.GraphReadable::neighbors(graph, u_node) {
       match find_node_index(v_node, right_nodes) {
         Some(v_idx) => adj[u_idx].push(v_idx)
         None => ()

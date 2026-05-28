@@ -218,17 +218,7 @@ pub impl @core.GraphWritable for EdgeListGraph with clear(self) -> Unit {
   g.node_cnt = 0
 }
 
-///|
-pub impl @core.GraphEdgeIterable for EdgeListGraph with edges_sorted(self) -> Iter[
-  (@core.NodeId, @core.NodeId, Double),
-] {
-  let all : Array[(@core.NodeId, @core.NodeId, Double)] = []
-  for e in self.edges {
-    all.push((e.from, e.to, e.data))
-  }
-  let sorted = bubble_sort_by_weight(all)
-  sorted.iter()
-}
+
 
 ///|
 pub impl @core.GraphDirected for EdgeListGraph with in_neighbors(self, id) -> Iter[

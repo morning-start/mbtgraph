@@ -147,19 +147,19 @@ fn[G : @core.GraphReadable] build_result(
 /// assert(result.is_valid == true)
 /// println("使用颜色数: ${result.num_colors}")  // 通常 ≤ 2
 /// ```
-pub fn[G : @core.GraphReadable] greedy_coloring(g : G) -> ColoringResult {
-  let n = @core.GraphReadable::node_count(g)
+pub fn[G : @core.GraphReadable] greedy_coloring(graph : G) -> ColoringResult {
+  let n = @core.GraphReadable::node_count(graph)
   if n == 0 {
-    return build_result([], g)
+    return build_result([], graph)
   }
   let colors : Array[Int] = Array::make(n, -1)
   let mut u = 0
   while u < n {
-    let used = collect_used_colors(g, colors, u)
+    let used = collect_used_colors(graph, colors, u)
     colors[u] = find_min_available_color(used)
     u = u + 1
   }
-  build_result(colors, g)
+  build_result(colors, graph)
 }
 
 ///|
@@ -214,21 +214,21 @@ pub fn[G : @core.GraphReadable] greedy_coloring(g : G) -> ColoringResult {
 /// println("使用颜色数: ${result.num_colors}")
 /// ```
 pub fn[G : @core.GraphReadable] greedy_coloring_with_order(
-  g : G,
+  graph : G,
   order : Array[Int],
 ) -> ColoringResult {
-  let n = @core.GraphReadable::node_count(g)
+  let n = @core.GraphReadable::node_count(graph)
   if n == 0 || order.length() == 0 {
-    return build_result([], g)
+    return build_result([], graph)
   }
   let colors : Array[Int] = Array::make(n, -1)
   for u in order {
     if u >= 0 && u < n {
-      let used = collect_used_colors(g, colors, u)
+      let used = collect_used_colors(graph, colors, u)
       colors[u] = find_min_available_color(used)
     }
   }
-  build_result(colors, g)
+  build_result(colors, graph)
 }
 
 // ============================================================================
@@ -287,15 +287,15 @@ pub fn[G : @core.GraphReadable] greedy_coloring_with_order(
 /// // 轮图的色数为 3 或 4（取决于奇偶性）
 /// println("Welsh-Powell 使用颜色数: ${result.num_colors}")
 /// ```
-pub fn[G : @core.GraphReadable] welsh_powell(g : G) -> ColoringResult {
-  let n = @core.GraphReadable::node_count(g)
+pub fn[G : @core.GraphReadable] welsh_powell(graph : G) -> ColoringResult {
+  let n = @core.GraphReadable::node_count(graph)
   if n == 0 {
-    return build_result([], g)
+    return build_result([], graph)
   }
   let nodes : Array[(Int, Int)] = []
   let mut i = 0
   while i < n {
-    let d = @core.GraphReadable::degree(g, @core.NodeId(i))
+    let d = @core.GraphReadable::degree(graph, @core.NodeId(i))
     nodes.push((i, d))
     i = i + 1
   }
@@ -306,7 +306,7 @@ pub fn[G : @core.GraphReadable] welsh_powell(g : G) -> ColoringResult {
       (idx, _) => order.push(idx)
     }
   }
-  greedy_coloring_with_order(g, order)
+  greedy_coloring_with_order(graph, order)
 }
 
 ///|
@@ -403,27 +403,27 @@ fn sort_by_degree_desc(nodes : Array[(Int, Int)]) -> Array[(Int, Int)] {
 ///   println("节点 ${i} 的颜色: ${result.colors[i]}")
 /// }
 /// ```
-pub fn[G : @core.GraphReadable] dsatur_coloring(g : G) -> ColoringResult {
-  let n = @core.GraphReadable::node_count(g)
+pub fn[G : @core.GraphReadable] dsatur_coloring(graph : G) -> ColoringResult {
+  let n = @core.GraphReadable::node_count(graph)
   if n == 0 {
-    return build_result([], g)
+    return build_result([], graph)
   }
   let colors : Array[Int] = Array::make(n, -1)
   let saturation : Array[Int] = Array::make(n, 0)
   let mut colored_count = 0
   while colored_count < n {
-    let best = select_dsatur_node(g, colors, saturation, n)
+    let best = select_dsatur_node(graph, colors, saturation, n)
     match best {
       Some(u) => {
-        let used = collect_used_colors(g, colors, u)
+        let used = collect_used_colors(graph, colors, u)
         colors[u] = find_min_available_color(used)
-        update_saturation(g, colors, saturation, u)
+        update_saturation(graph, colors, saturation, u)
         colored_count = colored_count + 1
       }
       None => break
     }
   }
-  build_result(colors, g)
+  build_result(colors, graph)
 }
 
 ///|

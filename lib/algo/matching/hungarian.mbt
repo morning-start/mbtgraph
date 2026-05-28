@@ -136,7 +136,7 @@ fn find_node_index(node : @core.NodeId, nodes : Array[@core.NodeId]) -> Int? {
 /// ## 前置条件
 /// 图必须是二分图，所有边的端点分别属于 left_nodes 和 right_nodes。
 pub fn[G : @core.GraphReadable] bipartite_matching_graph(
-  g : G,
+  graph : G,
   left_nodes : Array[@core.NodeId],
   right_nodes : Array[@core.NodeId],
 ) -> MatchingResult {
@@ -151,7 +151,7 @@ pub fn[G : @core.GraphReadable] bipartite_matching_graph(
   let mut u_idx = 0
   while u_idx < n_left {
     let u_node = left_nodes[u_idx]
-    for v_node in @core.GraphReadable::neighbors(g, u_node) {
+    for v_node in @core.GraphReadable::neighbors(graph, u_node) {
       match find_node_index(v_node, right_nodes) {
         Some(v_idx) => edges.push((u_idx, v_idx))
         None => ()

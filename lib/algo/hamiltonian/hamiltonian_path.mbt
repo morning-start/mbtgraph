@@ -8,9 +8,9 @@
 // ============================================================================
 
 pub fn[G : @core.GraphReadable] has_hamiltonian_circuit_quick_check(
-  g : G,
+  graph : G,
 ) -> Bool {
-  let n = @core.GraphReadable::node_count(g)
+  let n = @core.GraphReadable::node_count(graph)
 
   if n < 3 {
     return false
@@ -18,7 +18,7 @@ pub fn[G : @core.GraphReadable] has_hamiltonian_circuit_quick_check(
 
   let mut i = 0
   while i < n {
-    if @core.GraphReadable::degree(g, @core.NodeId(i)) < 2 {
+    if @core.GraphReadable::degree(graph, @core.NodeId(i)) < 2 {
       return false
     }
     i = i + 1
@@ -80,9 +80,9 @@ fn[G : @core.GraphReadable] backtrack_path(
 
 ///|
 pub fn[G : @core.GraphReadable] find_hamiltonian_path_backtrack(
-  g : G,
+  graph : G,
 ) -> HamiltonianResult {
-  let n = @core.GraphReadable::node_count(g)
+  let n = @core.GraphReadable::node_count(graph)
 
   if n == 0 {
     return HamiltonianResult::{
@@ -113,7 +113,7 @@ pub fn[G : @core.GraphReadable] find_hamiltonian_path_backtrack(
       i = i + 1
     }
 
-    let result = backtrack_path(g, [start], remaining, n)
+    let result = backtrack_path(graph, [start], remaining, n)
     if result.length() == n {
       let path_nodes : Array[@core.NodeId] = []
       for idx in result {
@@ -179,9 +179,9 @@ fn[G : @core.GraphReadable] backtrack_circuit(
 
 ///|
 pub fn[G : @core.GraphReadable] find_hamiltonian_circuit_backtrack(
-  g : G,
+  graph : G,
 ) -> HamiltonianResult {
-  let n = @core.GraphReadable::node_count(g)
+  let n = @core.GraphReadable::node_count(graph)
 
   if n < 3 {
     return HamiltonianResult::{
@@ -199,7 +199,7 @@ pub fn[G : @core.GraphReadable] find_hamiltonian_circuit_backtrack(
     i = i + 1
   }
 
-  let result = backtrack_circuit(g, [0], remaining, 0, n)
+  let result = backtrack_circuit(graph, [0], remaining, 0, n)
   if result.length() == n {
     let path_nodes : Array[@core.NodeId] = []
     for idx in result {

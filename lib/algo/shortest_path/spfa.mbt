@@ -11,17 +11,17 @@
 /// 成功返回 ShortestPathResult。
 /// 如果检测到负环或源节点不存在，返回 Err。
 pub fn[G : @core.GraphReadable] spfa(
-  g : G,
+  graph : G,
   source : @core.NodeId,
 ) -> Result[ShortestPathResult, String] {
-  let nc = @core.GraphReadable::node_count(g)
+  let nc = @core.GraphReadable::node_count(graph)
   if nc == 0 {
     return Ok(ShortestPathResult::{ distances: [], parents: [] })
   }
-  if !@core.GraphReadable::contains_node(g, source) {
+  if !@core.GraphReadable::contains_node(graph, source) {
     return Err("source node not found")
   }
-  let max_id = @storage.find_max_node_id(g)
+  let max_id = @storage.find_max_node_id(graph)
   let size = @storage.int_max(max_id + 1, 1)
   let inf = 1000000000000000000.0
   let distances : Array[Double?] = Array::make(size, None)
@@ -46,12 +46,12 @@ pub fn[G : @core.GraphReadable] spfa(
       None => continue
       Some(d) => d
     }
-    for v in @core.GraphReadable::neighbors(g, u) {
+    for v in @core.GraphReadable::neighbors(graph, u) {
       let vid = v.0
       if vid < 0 || vid >= size {
         continue
       }
-      match @core.GraphReadable::get_edge(g, u, v) {
+      match @core.GraphReadable::get_edge(graph, u, v) {
         Some(weight) => {
           let new_dist = ud + weight
           let vd_opt = distances[vid]

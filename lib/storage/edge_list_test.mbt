@@ -91,23 +91,8 @@ test "edge list remove_node removes node and incident edges" {
   assert_eq(@core.GraphReadable::edge_count(g), 0)
 }
 
-///|
-test "edge list edges_sorted returns ascending weights" {
-  let g = new_edge_list()
-  let a = @core.GraphWritable::add_node(g, 1.0)
-  let b = @core.GraphWritable::add_node(g, 2.0)
-  @core.GraphWritable::add_edge(g, a, b, 5.0) |> ignore
-  @core.GraphWritable::add_edge(g, a, b, 1.0) |> ignore
-  @core.GraphWritable::add_edge(g, a, b, 3.0) |> ignore
 
-  let sorted = @core.GraphEdgeIterable::edges_sorted(g).to_array()
-  assert_eq(sorted.length(), 3)
 
-  let (_, _, w0) = sorted[0]
-  let (_, _, w2) = sorted[2]
-  assert_eq(w0, 1.0)
-  assert_eq(w2, 5.0)
-}
 
 ///|
 test "edge list clear empties everything" {
@@ -196,21 +181,5 @@ test "undirected edge list remove_edge works bidirectionally" {
   assert_true(!@core.GraphReadable::contains_edge(g, b, a))
 }
 
-///|
-test "undirected edge list edges_sorted ascending" {
-  let g = new_undirected_edge_list()
-  let a = @core.GraphWritable::add_node(g, 1.0)
-  let b = @core.GraphWritable::add_node(g, 2.0)
-  let c = @core.GraphWritable::add_node(g, 3.0)
-  @core.GraphWritable::add_edge(g, a, b, 5.0) |> ignore
-  @core.GraphWritable::add_edge(g, b, c, 2.0) |> ignore
-  @core.GraphWritable::add_edge(g, a, c, 8.0) |> ignore
 
-  let sorted = @core.GraphEdgeIterable::edges_sorted(g).to_array()
-  assert_eq(sorted.length(), 3)
 
-  let (_, _, w0) = sorted[0]
-  let (_, _, w2) = sorted[2]
-  assert_eq(w0, 2.0)
-  assert_eq(w2, 8.0)
-}

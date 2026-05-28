@@ -51,18 +51,18 @@ fn sort_edges(
 /// Kruskal 最小生成树
 ///
 /// 返回无向图的最小生成树。如果图不连通，返回森林（每个连通分量的 MST）。
-pub fn[G : @core.GraphReadable] kruskal(g : G) -> MstResult {
-  let nc = @core.GraphReadable::node_count(g)
+pub fn[G : @core.GraphReadable] kruskal(graph : G) -> MstResult {
+  let nc = @core.GraphReadable::node_count(graph)
   if nc == 0 {
     return MstResult::{ total_weight: 0.0, edges: [] }
   }
-  let max_id = mst_find_max_id(g)
+  let max_id = mst_find_max_id(graph)
   let size = max_int(max_id + 1, 1)
   let uf = uf_new(size)
   let raw_edges : Array[(@core.NodeId, @core.NodeId, Double)] = []
-  for u in @core.GraphReadable::node_ids(g) {
-    for v in @core.GraphReadable::neighbors(g, u) {
-      match @core.GraphReadable::get_edge(g, u, v) {
+  for u in @core.GraphReadable::node_ids(graph) {
+    for v in @core.GraphReadable::neighbors(graph, u) {
+      match @core.GraphReadable::get_edge(graph, u, v) {
         Some(w) => if u.0 < v.0 { raw_edges.push((u, v, w)) }
         None => ()
       }
