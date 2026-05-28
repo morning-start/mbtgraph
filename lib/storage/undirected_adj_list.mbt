@@ -11,6 +11,66 @@ pub(all) struct UndirectedAdjList {
 }
 
 ///|
+/// 添加边（无查重检查）
+///
+/// 与 add_edge 功能相同，但跳过边重复性检查。
+/// 调用方需确保 (from, to) 边不存在，否则可能导致重复边。
+pub fn UndirectedAdjList::add_edge_unchecked(
+  self : UndirectedAdjList,
+  from : @core.NodeId,
+  to : @core.NodeId,
+  data : Double,
+) -> Result[Unit, @core.GraphError] {
+  let fi = from.0
+  let ti = to.0
+  if fi < 0 || fi >= self.nodes.length() {
+    Err(@core.GraphError::InvalidNodeId)
+  } else {
+    match self.nodes[fi] {
+      None => Err(@core.GraphError::InvalidNodeId)
+      Some(_) =>
+        if ti < 0 || ti >= self.nodes.length() {
+          Err(@core.GraphError::InvalidNodeId)
+        } else {
+          match self.nodes[ti] {
+            None => Err(@core.GraphError::NodeNotFound(to))
+            Some(_) => {
+              let g = self
+              g.adj[fi].push((to, data))
+              g.adj[ti].push((from, data))
+              g.edge_cnt = g.edge_cnt + 1
+              Ok(())
+            }
+          }
+        }
+    }
+  }
+}
+
+///|
+/// 批量添加边
+///
+/// 使用 add_edge_unchecked 批量添加多条边。
+/// 一条添加失败则终止并返回错误。
+pub fn UndirectedAdjList::add_edges_batch(
+  self : UndirectedAdjList,
+  edges : Array[(@core.NodeId, @core.NodeId, Double)],
+) -> Result[Int, @core.GraphError] {
+  let mut count = 0
+  for edge in edges {
+    match edge {
+      (from, to, data) => {
+        match self.add_edge_unchecked(from, to, data) {
+          Ok(_) => count = count + 1
+          Err(e) => return Err(e)
+        }
+      }
+    }
+  }
+  Ok(count)
+}
+
+///|
 pub fn new_undirected() -> UndirectedAdjList {
   { node_cnt: 0, edge_cnt: 0, nodes: [], adj: [] }
 }

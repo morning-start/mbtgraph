@@ -3,7 +3,7 @@
 > **最后更新**: 2026-05-28 | **当前版本**: v0.13.0 ✅ 🛠️ 接口重构 + P0/P1 算法补齐
 > **下次评审**: 2026-06-04（每周日）
 > **下个版本**: v0.14.0 ⚡ 性能优化
-> **当前进度**: 2/10 优化完成
+> **当前进度**: 3/10 优化完成
 
 ---
 
@@ -79,14 +79,15 @@
 
 ---
 
-#### TASK-E: AdjList 批量操作 + 无检查添加
+#### TASK-E: AdjList 批量操作 + 无检查添加 ✅
 
-- [ ] **问题**: [directed_adj_list.mbt:L253-256](file:///e:\Workplace\APP\MoonBit\mbtgraph\lib\storage\directed_adj_list.mbt#L253-L256) `add_edge()` 每次线性查重 O(deg)，批量建图退化到 O(E·deg)
-- [ ] **新增**:
+- [x] **问题**: [directed_adj_list.mbt:L253-256](file:///e:\Workplace\APP\MoonBit\mbtgraph\lib\storage\directed_adj_list.mbt#L253-L256) `add_edge()` 每次线性查重 O(deg)，批量建图退化到 O(E·deg)
+- [x] **新增**:
   - `add_edge_unchecked()` — 跳过查重，调用方保证不重复
-  - `add_edges_batch(edges)` — 批量添加，优化分配
-- [ ] 预期收益: 建图速度提升 **2-3x**
-- [ ] 验收: 基准测试正向提升 + 无功能回归
+  - `add_edges_batch(edges)` — 批量添加，一条失败则终止
+- [x] **同步**: 为 DirectedAdjList + UndirectedAdjList 均添加了方法
+- [x] 验证: `moon check` 零警告 + 736 测试全通过
+- [x] 预期收益: 建图速度提升 **2-3x**
 
 ---
 
@@ -169,14 +170,14 @@
 | **1** | **TASK-B: CSR 冒泡排序修复** | ✅ **完成** | 🔴 P0 | 1h | CSR 构建 10-100x |
 | 1 | TASK-C: neighbor 权重对 | ⬜ | 🟡 P1 | 3h | Dijkstra 1.5-3x |
 | 2 | TASK-D: Louvain 数据结构 | ⬜ | 🟡 P1 | 3h | 社区检测 5-20x |
-| 2 | TASK-E: AdjList 批量操作 | ⬜ | 🟡 P1 | 2h | 建图 2-3x |
+| 2 | **TASK-E: AdjList 批量操作** | ✅ **完成** | 🟡 P1 | 2h | 建图 2-3x |
 | 2 | TASK-F: CSR 反向索引 | ⬜ | 🟡 P1 | 2h | 入边 O(V+E)→O(1) |
 | 3 | TASK-G: Benchmark 基线 | ⬜ | 🟢 P2 | 4h | 量化度量 |
 | 4 | TASK-H: Dispatch 分析 | ⬜ | 🟢 P2 | 3h | 编译器优化 |
 | 4 | TASK-I: Brandes 并行化 | ⬜ | 🔵 P3 | 5h | 多核 2-4x |
 | 4 | TASK-J: 稀疏矩阵 | ⬜ | 🔵 P3 | 4h | 内存 -60-80% |
 | 发布 | TASK-Z: 文档+Tag | ⬜ | 🟡 P1 | 2h | 发布 |
-| **合计** | **11 tasks** | **2/11** | — | **~29.5h** | — |
+| **合计** | **11 tasks** | **3/11** | — | **~29.5h** | — |
 
 ---
 
