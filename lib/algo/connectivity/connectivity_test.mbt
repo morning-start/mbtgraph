@@ -243,7 +243,92 @@ test "cross_storage_kosaraju_edgelist" {
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_node(g, 0.0) |> ignore
   @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
-  |> ignore
+    |> ignore
   let scc = kosaraju_scc(g)
   assert_true(scc.count() == 2)
+}
+
+// ============================================================================
+// 双连通分量 (BCC) 测试
+// ============================================================================
+
+///|
+test "bcc_simple_chain" {
+  let g = @storage.new_undirected()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+    |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+    |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
+    |> ignore
+  let bcc = biconnected_components(g)
+  assert_true(bcc.articulation_points.length() >= 1)
+  assert_true(bcc.is_articulation_point(@core.NodeId(1)) || bcc.is_articulation_point(@core.NodeId(2)))
+}
+
+///|
+test "bcc_complete_graph" {
+  let g = @storage.new_undirected()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+    |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(2), 1.0)
+    |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+    |> ignore
+  let bcc = biconnected_components(g)
+  assert_true(bcc.count() >= 1)
+}
+
+///|
+test "bcc_cycle_graph" {
+  let g = @storage.new_undirected()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+    |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+    |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
+    |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(0), 1.0)
+    |> ignore
+  let bcc = biconnected_components(g)
+  assert_true(bcc.articulation_points.length() == 0)
+}
+
+///|
+test "bcc_empty_graph" {
+  let g = @storage.new_undirected()
+  let bcc = biconnected_components(g)
+  assert_true(bcc.count() == 0)
+  assert_true(bcc.articulation_points.length() == 0)
+}
+
+///|
+test "bcc_articulation_points_count" {
+  let g = @storage.new_undirected()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+    |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+    |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
+    |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(4), 1.0)
+    |> ignore
+  let bcc = biconnected_components(g)
+  assert_true(bcc.articulation_points.length() >= 2)
 }

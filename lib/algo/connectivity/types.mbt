@@ -76,3 +76,37 @@ pub fn StronglyConnectedComponentsResult::component_of(
   }
   -1
 }
+
+// ============================================================================
+// 双连通分量结果类型
+// ============================================================================
+
+///|
+/// 双连通分量结果（点双连通 / Point Biconnected Components）
+pub(all) struct BiconnectedComponentsResult {
+  components : Array[Array[@core.NodeId]]
+  articulation_points : Array[@core.NodeId]
+}
+
+///|
+pub fn BiconnectedComponentsResult::count(self : BiconnectedComponentsResult) -> Int {
+  self.components.length()
+}
+
+///|
+fn bcc_array_contains(arr : Array[@core.NodeId], item : @core.NodeId) -> Bool {
+  for x in arr {
+    if x == item {
+      return true
+    }
+  }
+  false
+}
+
+///|
+pub fn BiconnectedComponentsResult::is_articulation_point(
+  self : BiconnectedComponentsResult,
+  id : @core.NodeId,
+) -> Bool {
+  bcc_array_contains(self.articulation_points, id)
+}
