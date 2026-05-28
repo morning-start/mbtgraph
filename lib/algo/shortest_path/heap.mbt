@@ -4,7 +4,7 @@
 /// 存储 (priority, NodeId) 元组，按 priority 升序排列。
 /// 用于 Dijkstra 算法的优先队列。
 priv struct BinaryHeap {
-  mut data : Array[(Double, @core.NodeId)]
+  data : Array[(Double, @core.NodeId)]
 }
 
 ///|
@@ -33,7 +33,7 @@ fn heap_pop(h : BinaryHeap) -> (BinaryHeap, (@core.NodeId, Double)?) {
   let top = hh.data[0]
   let last_idx = hh.data.length() - 1
   hh.data[0] = hh.data[last_idx]
-  hh.data = array_pop_last(hh.data)
+  let _ = hh.data.pop()
   if hh.data.length() > 0 {
     heap_sift_down(hh, 0)
   }
@@ -91,14 +91,4 @@ fn heap_sift_down(h : BinaryHeap, idx : Int) -> Unit {
   }
 }
 
-///|
-fn[T] array_pop_last(arr : Array[T]) -> Array[T] {
-  let result : Array[T] = []
-  let mut i = 0
-  let len = arr.length() - 1
-  while i < len {
-    result.push(arr[i])
-    i = i + 1
-  }
-  result
-}
+

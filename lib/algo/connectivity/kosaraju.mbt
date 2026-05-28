@@ -91,14 +91,4 @@ pub fn[G : @core.GraphDirected] kosaraju_scc(
   StronglyConnectedComponentsResult::{ components: result }
 }
 
-///|
-fn[T] array_pop_last(arr : Array[T]) -> Array[T] {
-  let result : Array[T] = []
-  let mut i = 0
-  let len = arr.length() - 1
-  while i < len {
-    result.push(arr[i])
-    i = i + 1
-  }
-  result
-}
+

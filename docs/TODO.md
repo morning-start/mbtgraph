@@ -3,6 +3,7 @@
 > **最后更新**: 2026-05-28 | **当前版本**: v0.13.0 ✅ 🛠️ 接口重构 + P0/P1 算法补齐
 > **下次评审**: 2026-06-04（每周日）
 > **下个版本**: v0.14.0 ⚡ 性能优化
+> **当前进度**: 1/10 优化完成
 
 ---
 
@@ -16,7 +17,7 @@
 ✅ v0.11.0  📊 数据交换与可视化 (630 tests)
 ✅ v0.12.0  🚀 经典算法增强 (701 tests)
 ✅ v0.13.0  🛠️ 接口重构 + P0/P1 算法补齐 (736 tests) ← 当前
-⬜ v0.14.0  ⚡ 性能优化
+🔶 v0.14.0  ⚡ 性能优化 (进行中...)
 ⬜ v0.15.0  🔧 API 冻结候选 (=v1.0.0-rc.1)
 ⬜ v1.0.0   🎉 正式发布
 ```
@@ -26,268 +27,156 @@
 ## 🎯 v0.14.0: ⚡ 性能优化专项
 
 > **时间范围**: 2026-05-28 起
-> **目标测试数**: 736+ (无新增算法，可能新增基准测试)
-> **核心产出**: 存储层优化 + 热点算法优化 + 性能基线建立
+> **目标测试数**: 736+ (无功能回归)
+> **核心产出**: P0 性能缺陷修复 + P1 核心算法优化 + 性能基线
 
 ---
 
-### 阶段 A: 性能基线建立
+### 🔴 第 1 波: 低垂果实（高收益、低风险）
 
-#### TASK-1401: 创建 Benchmark 基础设施
+#### TASK-A: 修复 heap.mbt `array_pop_last` O(n) 缺陷 ✅
 
-- [ ] 创建 `benchmarks/` 目录结构
-- [ ] 设计 Benchmark 框架:
-  ```moonbit
-  pub(all) struct BenchResult {
-    name : String
-    iterations : Int
-    total_time_ns : Int64
-    avg_time_ns : Double
-    min_time_ns : Int64
-    max_time_ns : Int64
-  }
-  ```
-- [ ] 实现高精度计时工具 (`bench_timer.mbt`)
-- [ ] 实现 CSV 报告生成器 (`bench_reporter.mbt`)
-- [ ] 创建 `moon.pkg` 配置文件
-- **工作量**: 2h
-- **验收**: 可运行独立 benchmark 并输出 CSV
+| 项目 | 内容 |
+|------|------|
+| **问题** | `heap_pop` 中 `array_pop_last` 每次 O(n) 拷贝整个数组，Dijkstra 从 O((V+E)logV) 退化 |
+| **影响范围** | Dijkstra / A* / Johnson / 双向Dijkstra / Yen's K短路 — 共 6 个算法 |
+| **修复** | 替换为 `Array::pop()` O(1) 直接移除末尾元素 |
+| **代码变更** | 2 文件：heap.mbt (替换函数+移除 `mut`) + kosaraju.mbt (移除死代码) |
+| **验证** | ✅ 全量 736 测试通过 |
+| **预期收益** | 最短路径模块整体加速 **2-5x** |
 
 ---
 
-#### TASK-1402: 建立核心算法性能基线
+#### TASK-B: 修复 CSR Builder 冒泡排序
 
-- [ ] 对以下算法采集基线数据 (100/1000/10000 节点随机图):
+- [ ] **问题**: [csr.mbt:L57-71](file:///e:\Workplace\APP\MoonBit\mbtgraph\lib\storage\csr.mbt#L57-L71) 使用冒泡排序 O(n²) 排序边，大图构建极慢
+- [ ] **修复**: 替换为快速排序 O(n log n)
+- [ ] 代码量: ~50 行修改
+- [ ] 预期收益: 大图 CSR 转换提速 **10-100x**
+- [ ] 验收: 转换基准提升 + 现有 15 测试全通过
+
+---
+
+#### TASK-C: `neighbors()` 返回权重对，消除内部 `get_edge()`
+
+- [ ] **问题**: [dijkstra.mbt:L59-65](file:///e:\Workplace\APP\MoonBit\mbtgraph\lib\algo\shortest_path\dijkstra.mbt#L59-L65) 邻居循环内调用 `get_edge()` 导致 O(deg) 冗余查找
+- [ ] **修复方案 A** (推荐): 新增 trait 方法 `neighbors_with_weight()` 返回 `Iter[(NodeId, Double)]`
+- [ ] **修复方案 B**: 修改 `neighbors()` 签名（Breaking Change，需评估）
+- [ ] 变更现有算法: Dijkstra / Bellman-Ford / A* 等使用 `neighbors`+`get_edge` 模式的算法
+- [ ] 预期收益: 消除 O(deg) 冗余查找，Dijkstra 再提速 **1.5-3x**
+
+---
+
+### 🟡 第 2 波: 核心算法优化（中等工作量）
+
+#### TASK-D: Louvain 数据结构重构
+
+- [ ] **问题**: [louvain.mbt:L212-262](file:///e:\Workplace\APP\MoonBit\mbtgraph\lib\algo\community\louvain.mbt#L212-L262) `find_neighbor_communities()` 和 `count_edges_to_community()` 全边扫描 → **O(E·V·K)**
+- [ ] **修复**: 改用邻接表表示（预建 `node→neighbors` 映射），消除全边扫描
+- [ ] 代码量: ~80 行修改
+- [ ] 预期收益: 10K 节点图提速 **5-20x**
+- [ ] 验收: 社区检测 35 测试全通过 + 基准提升
+
+---
+
+#### TASK-E: AdjList 批量操作 + 无检查添加
+
+- [ ] **问题**: [directed_adj_list.mbt:L253-256](file:///e:\Workplace\APP\MoonBit\mbtgraph\lib\storage\directed_adj_list.mbt#L253-L256) `add_edge()` 每次线性查重 O(deg)，批量建图退化到 O(E·deg)
+- [ ] **新增**:
+  - `add_edge_unchecked()` — 跳过查重，调用方保证不重复
+  - `add_edges_batch(edges)` — 批量添加，优化分配
+- [ ] 预期收益: 建图速度提升 **2-3x**
+- [ ] 验收: 基准测试正向提升 + 无功能回归
+
+---
+
+#### TASK-F: CSR `in_neighbors` 反向索引
+
+- [ ] **问题**: [csr.mbt:L244-290](file:///e:\Workplace\APP\MoonBit\mbtgraph\lib\storage\csr.mbt#L244-L290) `in_neighbors()` / `in_degree()` 扫描所有行 O(V+E)
+- [ ] **修复**: 构建时同步建立 `col_ptr` / `row_idx` 反向索引
+- [ ] 预期收益: 入边查询从 O(V+E) 降至 O(1)
+- [ ] 验收: CSR/CSC 测试全通过 + 基准提升
+
+---
+
+### 🔵 第 3 波: 基线建立与度量
+
+#### TASK-G: Benchmark 框架 + 基线数据采集
+
+- [ ] 创建 `benchmarks/` 目录结构 + `moon.pkg`
+- [ ] 设计 `BenchResult` 类型和计时工具
+- [ ] 采集关键算法基线（100/1000/10000 节点随机图）
 
 | 算法 | 图规模 | 关键指标 |
 |------|--------|---------|
+| Dijkstra | 10K 节点/50K 边 | 单源最短路时间 |
 | BFS/DFS | 10K 节点 | 遍历时间 |
-| Dijkstra | 10K 节点/50K 边 | 单源最短路 |
-| Floyd-Warshall | 500 节点 | 全源最短路 |
-| Kruskal | 10K 节点 | MST 构建 |
-| Dinic | 1K 节点 | 最大流 |
-| PageRank | 10K 节点 | 收敛迭代 |
-| Louvain | 10K 节点 | 社区检测 |
-| Brandes 介数 | 1K 节点 | 中心性计算 |
+| CSR 转换 | 10K 节点 | AdjList→CSR 时间 |
+| Dinic | 1K 节点 | 最大流时间 |
+| Louvain | 10K 节点 | 社区检测时间 |
 
-- [ ] 生成 `benchmarks/baseline_v0.13.0.csv`
-- [ ] 建立内存占用基线 (各存储类型 10K 节点)
-- **工作量**: 3h
-- **依赖**: TASK-1401
-- **验收**: 基线数据可重复、CSV 格式规范
+- [ ] 生成 `benchmarks/baseline_v0.14.0.csv`
+- 预期: ~4h
 
 ---
 
-### 阶段 B: 存储层优化
+### 🟣 第 4 波: 高级分析
 
-#### TASK-1403: AdjList 内存布局优化
+#### TASK-H: Dynamic Dispatch / 内联分析
 
-- [ ] 分析当前邻接表内存访问模式
-- [ ] 优化邻居数组存储布局 (缓存友好性):
-  - 节点 ID 连续分配
-  - 邻居数组预分配 + 动态扩容策略
-  - 减少 Array::push 频繁 realloc
-- [ ] 批量添加边接口 `add_edges_batch(edges : Array[Edge])`
-- [ ] 对比测试: 优化前后 10K 节点图构建速度
-- **复杂度预期**: 构建速度提升 20-40%
-- **代码量**: ~80 行修改
-- **工作量**: 3h
-- **验收**: 基准测试显示正向提升 + 无功能回归
-
----
-
-#### TASK-1404: CSR/CSC 批量操作优化
-
-- [ ] CSR Builder 模式优化:
-  - 边排序预处理 (按 source 排序)
-  - 偏移数组增量构建
-  - 目标数组批量写入
-- [ ] 新增 `csr_from_sorted_edges` 快速构造路径
-- [ ] CSC 对称优化 (列优先批量写入)
-- [ ] 对比测试: AdjList → CSR/CSC 转换速度
-- **复杂度预期**: 转换速度提升 30-50%
-- **代码量**: ~100 行修改
-- **工作量**: 2.5h
-- **验收**: 转换基准提升 + 现有 15 测试全通过
-
----
-
-#### TASK-1405: Matrix 稀疏存储支持
-
-- [ ] 实现稀疏度检测: `is_sparse(threshold : Double = 0.7)`
-- [ ] 当零元素 > 70% 时自动切换内部存储为 COO 格式:
-  ```moonbit
-  pub(all) struct SparseMatrixEntry {
-    row : Int
-    col : Int
-    value : Double
-  }
-  ```
-- [ ] 稀疏矩阵基本操作 (get/set/neighbors) 适配
-- [ ] 对比测试: 500 节点稀疏图 (密度 10%) vs 密集存储
-- **复杂度预期**: 稀疏场景内存降低 60-80%
-- **代码量**: ~150 行
-- **工作量**: 4h
-- **验收**: 稀疏图内存占用显著下降 + API 兼容
-
----
-
-### 阶段 C: 热点算法优化
-
-#### TASK-1406: Dijkstra 优先队列优化
-
-- [ ] 分析当前 BinaryHeap 实现性能瓶颈
-- [ ] 评估优化方案:
-
-| 方案 | 复杂度改进 | 实现难度 | 预期收益 |
-|------|:---------:|:--------:|:--------:|
-| 斐波那契堆 | O(V log V) → O(V log V) 均摊更优 | 高 | 理论最优 |
-| 二项堆 | O((V+E) log V) | 中 | 10-20% 提升 |
-| Bucket Queue (整数权) | O(V+E+W) | 低 | 整数权 3-5x |
-| Decrease-Key 缓存 | — | 低 | 5-15% 提升 |
-
-- [ ] 选定方案并实现
-- [ ] 对比测试: Dijkstra 10K 节点随机图
-- **工作量**: 4h
-- **验收**: 最短路径模块 76 测试全通过 + 基准提升
-
----
-
-#### TASK-1407: Dinic 当前弧优化 (Current Arc Optimization)
-
-- [ ] 实现 current_arc 数组记录每层已遍历边位置
-- [ ] DFS 增广时跳过已饱和边，避免重复检查
-- [ ] 优化效果: 每次 DFS 从 O(E) 降至 O(实际增广边数)
-- [ ] 对比测试: Dinic 1K 节点最大流
-- **复杂度预期**: 实际运行时间降低 30-60% (稠密图更明显)
-- **代码量**: ~50 行修改
-- **工作量**: 2h
-- **验收**: 流网络模块 49 测试全通过 + 基准提升
-
----
-
-#### TASK-1408: Louvain 细粒度锁准备 (数据结构层面)
-
-- [ ] 优化 Phase 1 内部数据结构:
-  - 社区总权重缓存 (避免重复计算 Σ_tot)
-  - ΔQ 增量计算公式简化
-  - 邻居社区集合快速查找 (用 HashMap 替代线性扫描)
-- [ ] 优化 Phase 2 超图聚合效率
-- [ ] 对比测试: Louvain Karate Club / 10K 节点随机图
-- **复杂度预期**: 运行时间降低 20-40%
-- **代码量**: ~120 行修改
-- **工作量**: 3h
-- **验收**: 社区检测 35 测试全通过 + 基准提升
-
----
-
-#### TASK-1409: Brandes 介数中心性并行化探索
-
-- [ ] 分析 Brandes 算法并行化可能性:
-  - 各源点 BFS 独立 → 数据并行
-  - 依赖累积阶段 → 归约模式
-- [ ] 评估 MoonBit 并发原语可用性
-- [ ] 如可行: 实现分块并行版本
-- [ ] 对比测试: Brandes 1K 节点
-- **复杂度预期**: 多核场景 2-4x 加速 (如并发可用)
-- **代码量**: ~200 行 (新文件)
-- **工作量**: 5h
-- **依赖**: MoonBit 并发能力调研
-- **验收**: 结果与串行完全一致 + 加速比可测
-
----
-
-### 阶段 D: 编译器级优化
-
-#### TASK-1410: 关键路径函数内联分析
-
-- [ ] 通过 profiling 识别 Top 10 热点函数:
-  - `@core.GraphReadable::neighbors` (被调用最频繁)
-  - `@core.GraphReadable::degree`
-  - 优先队列 push/pop
-  - 数组深拷贝 `deep_copy_*`
-- [ ] 标记内联候选函数 (`inline` 注解或等价机制)
-- [ ] 验证内联后二进制大小和运行时间变化
-- **工作量**: 2h
-- **验收**: profiling 报告 + 内联建议清单
-
----
-
-#### TASK-1411: Dynamic Dispatch 开销分析
-
-- [ ] 统计 trait 方法调用频率 (通过 code review)
-- [ ] 识别高频 trait 方法调用热点:
-  - `graph.neighbors(node_id)` — 几乎每个算法都调用
-  - `graph.node_count()` / `graph.edge_count()`
-- [ ] 评估 monomorphization 可能性 (编译期特化)
+- [ ] 统计 trait 方法调用频率（neighbors/node_count 等）
+- [ ] 标记内联候选函数
 - [ ] 编写分析报告: `docs/design/dispatch_analysis.md`
-- **工作量**: 2h
-- **交付物**: Dynamic Dispatch 开销分析报告
+- 预期: ~3h
 
 ---
 
-### 阶段 E: 验证与发布
+#### TASK-I: Brandes 介数中心性并行化探索
 
-#### TASK-1412: 性能回归测试框架
-
-- [ ] 编写 `benchmarks/regression_test.mbt`:
-  - 加载 v0.13.0 基线数据
-  - 运行当前版本 benchmark
-  - 自动对比 + 生成报告
-  - 回归阈值: 性能下降 > 5% 告警
-- [ ] 集成到开发工作流
-- **工作量**: 2h
-- **依赖**: TASK-1402, 1403-1411
-- **验收**: 可一键检测性能回归
+- [ ] 分析 MoonBit 并发原语可用性
+- [ ] 如可行: 实现分块并行版本
+- [ ] 预期: 多核场景 2-4x 加速
+- 预期: ~5h
 
 ---
 
-#### TASK-1413: 性能对比报告与文档
+#### TASK-J: Matrix 稀疏存储支持
 
-- [ ] 生成 `benchmarks/perf_report_v0.14.0.md`:
-  - 优化前后对比表格
-  - 各维度提升百分比
-  - 热点函数列表及优化措施
-  - 内存占用对比
-- [ ] 更新 MEMORY.md 性能相关记录
-- [ ] 更新 AGENTS.md 测试数/版本号
-- **工作量**: 1.5h
-- **依赖**: TASK-1412
-- **验收**: 报告数据驱动、结论清晰
+- [ ] 稀疏度检测 + COO 格式自动切换
+- [ ] 稀疏图内存降低 60-80%
+- 预期: ~4h
 
 ---
 
-#### TASK-1414: Git Tag v0.14.0 发布
+### 📦 发布准备
 
-- [ ] 最终验证:
-  - [ ] `moon check` 零错误零警告
-  - [ ] `moon test` 全通过 (736+ tests, 0 failure)
-  - [ ] 无功能回归 (全部现有测试通过)
-  - [ ] 性能基线已建立
-  - [ ] 性能报告完成
-- [ ] Git 操作:
-  ```bash
-  git add .
-  git commit -m "perf(v0.14.0): performance optimization baseline and hot-path improvements"
-  git tag -a v0.14.0 -m "perf(v0.14.0): ⚡ Performance Optimization"
-  ```
+#### TASK-Z: 性能报告文档 + Git Tag v0.14.0
+
+- [ ] 生成 `benchmarks/perf_report_v0.14.0.md`
+- [ ] 更新 MEMORY.md / AGENTS.md
 - [ ] CHANGELOG.md 新增 v0.14.0 章节
-- **工作量**: 1h
-- **依赖**: TASK-1413
-- **验收**: Tag 存在 + 性能报告可查阅
+- [ ] 最终验证: `moon check` + `moon test` 全部通过
+- [ ] Git Tag: `v0.14.0`
+- 预期: ~2h
 
 ---
 
 ## 📊 任务统计
 
-| 类别 | 任务数 | 预估工时 | 产出 |
-|------|:------:|:--------:|------|
-| **基线建立** | 2 (1401-1402) | 5h | Benchmark 框架 + 基线数据 |
-| **存储层优化** | 3 (1403-1405) | 9.5h | AdjList/CSR/Matrix 优化 |
-| **算法级优化** | 4 (1406-1409) | 14h | Dijkstra/Dinic/Louvain/Brandes |
-| **编译器级分析** | 2 (1410-1411) | 4h | 内联/Dispatch 分析报告 |
-| **验证与发布** | 3 (1412-1414) | 4.5h | 回归测试 + 报告 + 发布 |
-| **合计** | **14 tasks** | **~37h** | 性能提升 + 基线 |
+| 波次 | 任务 | 状态 | 优先级 | 工作量 | 预期收益 |
+|:----:|------|:----:|:------:|:------:|---------|
+| **1** | **TASK-A: heap pop O(n) 修复** | ✅ **完成** | 🔴 P0 | 0.5h | 最短路径 2-5x |
+| 1 | TASK-B: CSR 冒泡排序修复 | ⬜ | 🔴 P0 | 1h | CSR 构建 10-100x |
+| 1 | TASK-C: neighbor 权重对 | ⬜ | 🟡 P1 | 3h | Dijkstra 1.5-3x |
+| 2 | TASK-D: Louvain 数据结构 | ⬜ | 🟡 P1 | 3h | 社区检测 5-20x |
+| 2 | TASK-E: AdjList 批量操作 | ⬜ | 🟡 P1 | 2h | 建图 2-3x |
+| 2 | TASK-F: CSR 反向索引 | ⬜ | 🟡 P1 | 2h | 入边 O(V+E)→O(1) |
+| 3 | TASK-G: Benchmark 基线 | ⬜ | 🟢 P2 | 4h | 量化度量 |
+| 4 | TASK-H: Dispatch 分析 | ⬜ | 🟢 P2 | 3h | 编译器优化 |
+| 4 | TASK-I: Brandes 并行化 | ⬜ | 🔵 P3 | 5h | 多核 2-4x |
+| 4 | TASK-J: 稀疏矩阵 | ⬜ | 🔵 P3 | 4h | 内存 -60-80% |
+| 发布 | TASK-Z: 文档+Tag | ⬜ | 🟡 P1 | 2h | 发布 |
+| **合计** | **11 tasks** | **1/11** | — | **~29.5h** | — |
 
 ---
 
@@ -296,7 +185,7 @@
 | 版本 | 主题 | 测试数 | 核心产出 |
 |------|------|:------:|---------|
 | **v0.9.0** | P5 图论核心 | 551 | Euler/Cutpoints/Coloring/Clique/Hamiltonian |
-| **v0.10.0** | � 社交网络分析 | 588 | PageRank + 4种中心性 + Louvain/标签传播 |
+| **v0.10.0** | 🔍 社交网络分析 | 588 | PageRank + 4种中心性 + Louvain/标签传播 |
 | **v0.11.0** | 📊 数据交换 | 630 | DOT/JSON 序列化 + 图统计工具 |
 | **v0.12.0** | 🚀 经典算法增强 | 701 | A*/双向BFS/Hopcroft-Karp/费用流/Edmonds |
 | **v0.13.0** | 🛠️ 接口重构 | **736** | Johnson/SPFA/边着色/BCC/双向Dij/Yen's + Trait精简 |
@@ -305,16 +194,16 @@
 
 ---
 
-## � 成功度量指标
+## 📈 成功度量指标
 
 | 指标 | 基线值 (v0.13.0) | 目标值 (v0.14.0) | 衡量方式 |
 |------|:---------------:|:---------------:|---------|
 | **测试总数** | 736 | ≥ 736 (无回归) | `moon test` |
-| **Dijkstra 10K节点** | TBD (待基线) | ↓ 10-30% | Benchmark |
-| **Dinic 1K节点** | TBD (待基线) | ↓ 30-60% | Benchmark |
-| **Louvain 10K节点** | TBD (待基线) | ↓ 20-40% | Benchmark |
-| **CSR 转换速度** | TBD (待基线) | ↓ 30-50% | Benchmark |
-| **稀疏矩阵内存** | TBD (待基线) | ↓ 60-80% | 内存分析 |
+| **Dijkstra 10K节点** | 待基线 | ↓ 3-15x (含 TASK-A) | Benchmark |
+| **CSR 转换速度** | 待基线 | ↓ 10-100x | Benchmark |
+| **Louvain 10K节点** | 待基线 | ↓ 5-20x | Benchmark |
+| **建图速度** | 待基线 | ↓ 2-3x | Benchmark |
+| **CSR 入边查询** | 待基线 | O(V+E) → O(1) | Benchmark |
 | **代码覆盖率** | ~82% | ≥ 82% | `moon coverage analyze` |
 
 ---
