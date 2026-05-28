@@ -50,24 +50,48 @@ pub fn CSRBuilder::add_edge(
 }
 
 ///|
-pub fn CSRBuilder::build(self : CSRBuilder) -> CSRGraph {
-  let edges = self.edges
-  let n = edges.length()
-  let es = edges
-  let mut j = 0
-  while j < n {
-    let mut k = 0
-    while k < n - j - 1 {
-      let (fi1, _, _) = es[k]
-      let (fi2, _, _) = es[k + 1]
-      if fi1.0 > fi2.0 {
-        let tmp = es[k]
-        es[k] = es[k + 1]
-        es[k + 1] = tmp
-      }
-      k = k + 1
+fn csr_qsort(
+  es : Array[(@core.NodeId, @core.NodeId, Double)],
+  lo : Int,
+  hi : Int,
+) -> Unit {
+  if lo < hi {
+    let p = csr_partition(es, lo, hi)
+    csr_qsort(es, lo, p - 1)
+    csr_qsort(es, p + 1, hi)
+  }
+}
+
+///|
+fn csr_partition(
+  es : Array[(@core.NodeId, @core.NodeId, Double)],
+  lo : Int,
+  hi : Int,
+) -> Int {
+  let pivot = es[hi].0.0
+  let mut i = lo - 1
+  let mut j = lo
+  while j < hi {
+    if es[j].0.0 <= pivot {
+      i = i + 1
+      let tmp = es[i]
+      es[i] = es[j]
+      es[j] = tmp
     }
     j = j + 1
+  }
+  let tmp = es[i + 1]
+  es[i + 1] = es[hi]
+  es[hi] = tmp
+  i + 1
+}
+
+///|
+pub fn CSRBuilder::build(self : CSRBuilder) -> CSRGraph {
+  let es = self.edges
+  let n = es.length()
+  if n > 0 {
+    csr_qsort(es, 0, n - 1)
   }
   let nc = self.nodes.length()
   let rp = Array::make(nc + 1, 0)
