@@ -492,6 +492,123 @@ test "a_star_direct_edge" {
 }
 
 // ============================================================================
+// SPFA 最短路径测试
+// ============================================================================
+
+///|
+test "spfa_linear_same_as_dijkstra" {
+  let g = make_linear_graph()
+  match spfa(g, @core.NodeId(0)) {
+    Ok(sp) => {
+      assert_true(sp.distance_to(@core.NodeId(0)) == 0.0)
+      assert_true(sp.distance_to(@core.NodeId(4)) == 10.0)
+    }
+    Err(_) => assert_true(false)
+  }
+}
+
+///|
+test "spfa_matches_bellman_ford" {
+  let g = make_weighted_dag()
+  match (spfa(g, @core.NodeId(0)), bellman_ford(g, @core.NodeId(0))) {
+    (Ok(sr), Ok(br)) => {
+      assert_true(sr.distance_to(@core.NodeId(3)) == br.distance_to(@core.NodeId(3)))
+      assert_true(sr.distance_to(@core.NodeId(2)) == br.distance_to(@core.NodeId(2)))
+    }
+    _ => assert_true(false)
+  }
+}
+
+///|
+test "spfa_negative_edges" {
+  let g = make_negative_graph()
+  match spfa(g, @core.NodeId(0)) {
+    Ok(sp) => {
+      assert_true(sp.distance_to(@core.NodeId(0)) == 0.0)
+      assert_true(sp.distance_to(@core.NodeId(3)) >= -1.0)
+    }
+    Err(_) => assert_true(false)
+  }
+}
+
+///|
+test "spfa_negative_cycle_detected" {
+  let g = make_negative_cycle_graph()
+  match spfa(g, @core.NodeId(0)) {
+    Ok(_) => assert_true(false)
+    Err(_) => assert_true(true)
+  }
+}
+
+///|
+test "spfa_empty_graph" {
+  let g = @storage.new_directed()
+  match spfa(g, @core.NodeId(0)) {
+    Ok(sp) => assert_true(sp.distances.length() == 0)
+    Err(_) => assert_true(false)
+  }
+}
+
+///|
+test "spfa_source_not_found" {
+  let g = make_linear_graph()
+  match spfa(g, @core.NodeId(99)) {
+    Ok(_) => assert_true(false)
+    Err(_) => assert_true(true)
+  }
+}
+
+///|
+test "spfa_path_reconstruction" {
+  let g = make_weighted_dag()
+  match spfa(g, @core.NodeId(0)) {
+    Ok(sp) => {
+      let path = sp.path_to(@core.NodeId(3))
+      assert_true(path.length() > 0)
+      assert_true(path[0] == @core.NodeId(0))
+    }
+    Err(_) => assert_true(false)
+  }
+}
+
+///|
+test "spfa_reachable_count" {
+  let g = make_linear_graph()
+  match spfa(g, @core.NodeId(0)) {
+    Ok(sp) => {
+      assert_true(sp.reachable_count() == 5)
+      assert_true(sp.is_reachable(@core.NodeId(4)))
+    }
+    Err(_) => assert_true(false)
+  }
+}
+
+///|
+test "spfa_unreachable" {
+  let g = make_linear_graph()
+  match spfa(g, @core.NodeId(4)) {
+    Ok(sp) => {
+      assert_true(sp.distance_to(@core.NodeId(0)) == -1.0)
+      assert_true(!sp.is_reachable(@core.NodeId(0)))
+    }
+    Err(_) => assert_true(false)
+  }
+}
+
+///|
+test "spfa_single_node" {
+  let g = @storage.new_directed()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  match spfa(g, @core.NodeId(0)) {
+    Ok(sp) => {
+      assert_true(sp.distance_to(@core.NodeId(0)) == 0.0)
+      assert_true(sp.reachable_count() == 1)
+    }
+    Err(_) => assert_true(false)
+  }
+}
+
+// ============================================================================
 // Johnson 全源最短路径测试
 // ============================================================================
 
