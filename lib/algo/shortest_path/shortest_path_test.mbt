@@ -491,6 +491,132 @@ test "a_star_direct_edge" {
   assert_true(path[1] == @core.NodeId(1))
 }
 
+// ============================================================================
+// Johnson 全源最短路径测试
+// ============================================================================
+
+///|
+test "johnson_linear_graph" {
+  let g = make_linear_graph()
+  match johnson(g) {
+    Ok(jw) => {
+      assert_true(jw.distance(@core.NodeId(0), @core.NodeId(0)) == 0.0)
+      assert_true(jw.distance(@core.NodeId(0), @core.NodeId(4)) == 10.0)
+      assert_true(jw.distance(@core.NodeId(4), @core.NodeId(0)) == -1.0)
+    }
+    Err(_) => assert_true(false)
+  }
+}
+
+///|
+test "johnson_matches_floyd_warshall" {
+  let g = make_weighted_dag()
+  match (johnson(g), floyd_warshall(g)) {
+    (Ok(jw), Ok(fw)) => {
+      assert_true(jw.distance(@core.NodeId(0), @core.NodeId(3)) == fw.distance(@core.NodeId(0), @core.NodeId(3)))
+      assert_true(jw.distance(@core.NodeId(1), @core.NodeId(2)) == fw.distance(@core.NodeId(1), @core.NodeId(2)))
+      assert_true(jw.distance(@core.NodeId(0), @core.NodeId(1)) == fw.distance(@core.NodeId(0), @core.NodeId(1)))
+    }
+    _ => assert_true(false)
+  }
+}
+
+///|
+test "johnson_negative_edges" {
+  let g = make_negative_graph()
+  match johnson(g) {
+    Ok(jw) => {
+      assert_true(jw.distance(@core.NodeId(0), @core.NodeId(0)) == 0.0)
+      assert_true(jw.distance(@core.NodeId(0), @core.NodeId(3)) >= -1.0)
+    }
+    Err(_) => assert_true(false)
+  }
+}
+
+///|
+test "johnson_negative_cycle_detected" {
+  let g = make_negative_cycle_graph()
+  match johnson(g) {
+    Ok(_) => assert_true(false)
+    Err(msg) => assert_true(true)
+  }
+}
+
+///|
+test "johnson_empty_graph" {
+  let g = @storage.new_directed()
+  match johnson(g) {
+    Ok(jw) => assert_true(jw.distances.length() == 0)
+    Err(_) => assert_true(false)
+  }
+}
+
+///|
+test "johnson_self_distance_zero" {
+  let g = make_weighted_dag()
+  match johnson(g) {
+    Ok(jw) => {
+      assert_true(jw.distance(@core.NodeId(0), @core.NodeId(0)) == 0.0)
+      assert_true(jw.distance(@core.NodeId(1), @core.NodeId(1)) == 0.0)
+      assert_true(jw.distance(@core.NodeId(2), @core.NodeId(2)) == 0.0)
+      assert_true(jw.distance(@core.NodeId(3), @core.NodeId(3)) == 0.0)
+    }
+    Err(_) => assert_true(false)
+  }
+}
+
+///|
+test "johnson_path_reconstruction" {
+  let g = make_linear_graph()
+  match johnson(g) {
+    Ok(jw) => {
+      let path = jw.path(@core.NodeId(0), @core.NodeId(4))
+      assert_true(path.length() == 5)
+      assert_true(path[0] == @core.NodeId(0))
+      assert_true(path[path.length() - 1] == @core.NodeId(4))
+    }
+    Err(_) => assert_true(false)
+  }
+}
+
+///|
+test "johnson_cross_storage_adjlist" {
+  let g = make_linear_graph()
+  match johnson(g) {
+    Ok(jw) => assert_true(jw.distance(@core.NodeId(0), @core.NodeId(4)) == 10.0)
+    Err(_) => assert_true(false)
+  }
+}
+
+///|
+test "johnson_cross_storage_matrix" {
+  let g = @storage.new_directed_matrix(10)
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 5.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 3.0)
+  |> ignore
+  match johnson(g) {
+    Ok(jw) => assert_true(jw.distance(@core.NodeId(0), @core.NodeId(2)) == 8.0)
+    Err(_) => assert_true(false)
+  }
+}
+
+///|
+test "johnson_cross_storage_edgelist" {
+  let g = @storage.new_edge_list()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 7.0)
+  |> ignore
+  match johnson(g) {
+    Ok(jw) => assert_true(jw.distance(@core.NodeId(0), @core.NodeId(1)) == 7.0)
+    Err(_) => assert_true(false)
+  }
+}
+
 ///|
 test "a_star_zero_heuristic" {
   let g = make_weighted_dag()
