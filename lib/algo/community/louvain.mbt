@@ -34,23 +34,12 @@ pub fn[G : @core.GraphReadable] louvain(
   let inv_2m = 1.0 / (2.0 * total_weight)
 
   let community_of : Array[Int] = Array::make(n, 0)
-  let degree : Array[Double] = Array::make(n, 0.0)
-  let self_loop : Array[Double] = Array::make(n, 0.0)
+  let degree = edges_info.degree
+  let self_loop = edges_info.self_loop
   let mut i = 0
   while i < n {
     community_of[i] = i
     i = i + 1
-  }
-
-  let mut e = 0
-  while e < adjacency.length() {
-    let (u, v) = adjacency[e]
-    if u != v {
-      degree[u] = degree[u] + 1.0
-    } else {
-      self_loop[u] = self_loop[u] + 1.0
-    }
-    e = e + 1
   }
 
   let sum_tot : Array[Double] = Array::make(n, 0.0)
@@ -92,10 +81,16 @@ pub fn[G : @core.GraphReadable] louvain(
           continue
         }
 
-        let k_i_in = count_edges_to_community(
-          adjacency, node_i, community_of, target_comm,
+        let k_i_in_tgt = int_to_double(
+          count_edges_to_community(
+            adjacency, node_i, community_of, target_comm,
+          ),
         )
-        let deg_to_comm = int_to_double(k_i_in)
+        let k_i_in_curr = int_to_double(
+          count_edges_to_community(
+            adjacency, node_i, community_of, curr_comm,
+          ),
+        )
 
         let curr_int = fine_internal[curr_comm]
         let curr_sum = sum_tot[curr_comm]
@@ -103,7 +98,8 @@ pub fn[G : @core.GraphReadable] louvain(
         let tgt_sum = sum_tot[target_comm]
 
         let gain = compute_gain(
-          curr_int, curr_sum, tgt_int, tgt_sum, deg_i, deg_to_comm, total_weight,
+          curr_int, curr_sum, tgt_int, tgt_sum, deg_i,
+          k_i_in_curr, k_i_in_tgt, total_weight,
           res_factor,
         )
 
@@ -140,7 +136,7 @@ pub fn[G : @core.GraphReadable] louvain(
   let relabeled = relabel_communities(community_of, n)
   let num_comms = count_unique_comms(relabeled, n)
   let mod_val = compute_modularity(
-    adjacency, relabeled, degree, total_weight, n,
+    adjacency, self_loop, relabeled, degree, total_weight, n,
   )
 
   CommunityResult::{
@@ -154,30 +150,22 @@ pub fn[G : @core.GraphReadable] louvain(
 ///|
 /// 计算将节点 i 从 curr_comm 移到 target_comm 的模块度增益
 fn compute_gain(
-  curr_int : Double,
+  _curr_int : Double,
   curr_sum : Double,
-  tgt_int : Double,
+  _tgt_int : Double,
   tgt_sum : Double,
   deg_i : Double,
-  deg_to_comm : Double,
+  deg_to_curr : Double,
+  deg_to_tgt : Double,
   total_weight : Double,
   res_factor : Double,
 ) -> Double {
-  let inv_2m = 1.0 / (2.0 * total_weight)
-  let two_m_sq = 2.0 * total_weight * (2.0 * total_weight)
+  let m = total_weight
+  let two_m_sq = 2.0 * m * (2.0 * m)
+  let four_m_sq = 4.0 * m * m
 
-  let gain_remove = -(curr_int - 2.0 * deg_to_comm) * inv_2m
-  let gain_remove = gain_remove +
-    (curr_sum - deg_i) * (curr_sum - deg_i) / two_m_sq
-  let gain_remove = gain_remove + curr_int * inv_2m
-  let gain_remove = gain_remove - curr_sum * curr_sum / two_m_sq
-  let gain_remove = gain_remove - deg_i * deg_i / two_m_sq
-
-  let gain_add = (tgt_int + 2.0 * deg_to_comm) * inv_2m
-  let gain_add = gain_add - (tgt_sum + deg_i) * (tgt_sum + deg_i) / two_m_sq
-  let gain_add = gain_add - tgt_int * inv_2m
-  let gain_add = gain_add + tgt_sum * tgt_sum / two_m_sq
-  let gain_add = gain_add + deg_i * deg_i / two_m_sq
+  let gain_remove = -deg_to_curr / m + curr_sum * deg_i / two_m_sq - deg_i * deg_i / four_m_sq
+  let gain_add = deg_to_tgt / m - tgt_sum * deg_i / two_m_sq - deg_i * deg_i / four_m_sq
 
   (gain_remove + gain_add) * res_factor
 }
@@ -185,78 +173,73 @@ fn compute_gain(
 ///|
 priv struct EdgeInfo {
   edge_count : Int
-  adjacency : Array[(Int, Int)]
+  adjacency : Array[Array[Int]]
+  self_loop : Array[Double]
+  degree : Array[Double]
 }
 
 ///|
 fn[G : @core.GraphReadable] build_edge_info(graph : G, n : Int) -> EdgeInfo {
-  let adj : Array[(Int, Int)] = []
+  let adj : Array[Array[Int]] = []
+  let mut i = 0
+  while i < n {
+    adj.push([])
+    i = i + 1
+  }
+  let self_loop : Array[Double] = Array::make(n, 0.0)
+  let degree : Array[Double] = Array::make(n, 0.0)
+  let mut ui = 0
+  while ui < n {
+    for vi in @core.GraphReadable::neighbors(graph, @core.NodeId(ui)) {
+      if vi.0 != ui {
+        adj[ui].push(vi.0)
+        degree[ui] = degree[ui] + 1.0
+      } else {
+        self_loop[ui] = self_loop[ui] + 1.0
+      }
+    }
+    ui = ui + 1
+  }
   let mut ec = 0
   let edges = @core.GraphReadable::edges(graph)
   for edge in edges {
-    match edge {
-      (u, v, _) => {
-        let ui = u.0
-        let vi = v.0
-        if ui >= 0 && ui < n && vi >= 0 && vi < n {
-          adj.push((ui, vi))
-          ec = ec + 1
-        }
-      }
-    }
+    ec = ec + 1
   }
-  EdgeInfo::{ edge_count: ec, adjacency: adj }
+  EdgeInfo::{ edge_count: ec, adjacency: adj, self_loop: self_loop, degree: degree }
 }
 
 ///|
 fn find_neighbor_communities(
-  adjacency : Array[(Int, Int)],
+  adjacency : Array[Array[Int]],
   community_of : Array[Int],
   node : Int,
   n : Int,
 ) -> Array[Int] {
   let seen : Array[Bool] = Array::make(n, false)
   let result : Array[Int] = []
-  let mut e = 0
-  while e < adjacency.length() {
-    let (u, v) = adjacency[e]
-    if u == node {
-      let comm = community_of[v]
-      if !seen[comm] {
-        seen[comm] = true
-        result.push(comm)
-      }
+  for nb in adjacency[node] {
+    let comm = community_of[nb]
+    if !seen[comm] {
+      seen[comm] = true
+      result.push(comm)
     }
-    if v == node {
-      let comm = community_of[u]
-      if !seen[comm] {
-        seen[comm] = true
-        result.push(comm)
-      }
-    }
-    e = e + 1
   }
   result
 }
 
 ///|
+///|
 fn count_edges_to_community(
-  adjacency : Array[(Int, Int)],
+  adjacency : Array[Array[Int]],
   node : Int,
   community_of : Array[Int],
   target_comm : Int,
 ) -> Int {
   let mut count = 0
-  let mut e = 0
-  while e < adjacency.length() {
-    let (u, v) = adjacency[e]
-    if u == node && community_of[v] == target_comm {
+  for nb in adjacency[node] {
+    if community_of[nb] == target_comm {
       count = count + 1
     }
-    if v == node && v != u && community_of[u] == target_comm {
-      count = count + 1
-    }
-    e = e + 1
   }
   count
 }
@@ -294,7 +277,8 @@ fn count_unique_comms(labels : Array[Int], n : Int) -> Int {
 
 ///|
 fn compute_modularity(
-  adjacency : Array[(Int, Int)],
+  adjacency : Array[Array[Int]],
+  self_loop : Array[Double],
   labels : Array[Int],
   degree : Array[Double],
   total_weight : Double,
@@ -302,13 +286,17 @@ fn compute_modularity(
 ) -> Double {
   let inv_2m = 1.0 / (2.0 * total_weight)
   let mut q = 0.0
-  let mut e = 0
-  while e < adjacency.length() {
-    let (u, v) = adjacency[e]
-    if labels[u] == labels[v] {
-      q = q + 1.0 - degree[u] * degree[v] * inv_2m
+  let mut i = 0
+  while i < n {
+    for j in adjacency[i] {
+      if labels[i] == labels[j] {
+        q = q + 1.0 - degree[i] * degree[j] * inv_2m
+      }
     }
-    e = e + 1
+    if self_loop[i] > 0.0 {
+      q = q + self_loop[i] - degree[i] * degree[i] * self_loop[i] * inv_2m
+    }
+    i = i + 1
   }
   q * inv_2m
 }
