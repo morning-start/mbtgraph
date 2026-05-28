@@ -70,7 +70,7 @@
 
 ```
 mbtgraph/
-├── src/
+├── lib/
 │   ├── core/                        # 🔵 基础定义层
 │   │   ├── types.mbt               # 核心类型: NodeId, Node, Edge, Weight
 │   │   ├── traits.mbt              # 6 层 Trait 定义 (架构核心)
@@ -373,7 +373,7 @@ DijkstraResult { distances, paths, visited }
 #### 方向 A: 性能优化层
 
 ```
-src/
+lib/
 ├── storage/
 │   ├── concurrent_adj_list.mbt  # [NEW] 并发安全邻接表
 │   └── memory_mapped_graph.mbt # [NEW] 内存映射大图
@@ -386,7 +386,7 @@ src/
 #### 方向 B: 序列化与 I/O 层
 
 ```
-src/
+lib/
 ├── io/
 │   ├── dot.mbt                 # ✅ DOT 格式 (v0.11.0)
 │   ├── json_serializer.mbt     # ✅ JSON (v0.11.0)
@@ -399,7 +399,7 @@ src/
 #### 方向 C: 高级算法层
 
 ```
-src/algo/
+lib/algo/
 ├── advanced_path/              # [FUTURE]
 │   ├── a_star.mbt              # A* 启发式搜索 (v0.12.0)
 │   └── johnson.mbt             # Johnson 全源最短路径 (v0.12.0)
@@ -491,7 +491,7 @@ src/algo/
 
 ```
 1️⃣ 创建目录结构
-   mkdir src/algo/new_module
+   mkdir lib/algo/new_module
    touch moon.pkg types.mbt algorithm.mbt algorithm_test.mbt
 
 2️⃣ 定义类型 (types.mbt)
@@ -512,8 +512,8 @@ src/algo/
    - 与竞品对比
 
 6️⃣ 集成验证
-   moon check src/algo/new_module  # 编译通过
-   moon test src/algo/new_module   # 测试全过
+   moon check lib/algo/new_module  # 编译通过
+   moon test lib/algo/new_module   # 测试全过
    git commit -m "feat(algo): add new module"
 ```
 

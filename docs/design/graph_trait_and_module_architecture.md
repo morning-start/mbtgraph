@@ -12,13 +12,13 @@ tags: \["graph", "trait", "module", "architecture", "design"]
 traceability:
 source:
 \- "docs/design/graph\_storage\_survey.md"
-\- "src/core/types.mbt"
-\- "src/core/traits.mbt"
-\- "src/core/error.mbt"
+\- "lib/core/types.mbt"
+\- "lib/core/traits.mbt"
+\- "lib/core/error.mbt"
 targets:
-\- "src/core/"
-\- "src/storage/"
-\- "src/algorithms/"
+\- "lib/core/"
+\- "lib/storage/"
+\- "lib/algorithms/"
 --------------------
 
 # 图存储 Trait 与模块架构设计
@@ -409,7 +409,7 @@ pub impl Show for GraphError with to_string(self : GraphError) -> String {
 **设计原则**: 初期采用扁平结构,当单文件超过 400 行或子包内文件超过 3 个时再拆分。
 
 ```
-src/
+lib/
 ├── core/                          # 核心抽象层
 │   ├── moon.pkg
 │   ├── types.mbt                  # NodeId, Node, Edge
@@ -492,7 +492,7 @@ src/
 
 ### 4.3 moon.pkg 配置
 
-**src/core/moon.pkg**
+**lib/core/moon.pkg**
 
 ```
 options(
@@ -500,37 +500,37 @@ options(
 )
 ```
 
-**src/storage/moon.pkg**
+**lib/storage/moon.pkg**
 
 ```
 options(
   "is-main": false,
 )
-import "mbtgraph/src/core"
+import "mbtgraph/lib/core"
 ```
 
-**src/algorithms/moon.pkg**
-
-```
-options(
-  "is-main": false,
-)
-import "mbtgraph/src/core"
-```
-
-**src/generators/moon.pkg**
+**lib/algorithms/moon.pkg**
 
 ```
 options(
   "is-main": false,
 )
-import "mbtgraph/src/core"
-import "mbtgraph/src/storage"
+import "mbtgraph/lib/core"
+```
+
+**lib/generators/moon.pkg**
+
+```
+options(
+  "is-main": false,
+)
+import "mbtgraph/lib/core"
+import "mbtgraph/lib/storage"
 ```
 
 ### 4.4 模块导出
 
-**src/core/mod.mbt**
+**lib/core/mod.mbt**
 
 ```moonbit
 /// 核心模块导出
@@ -546,7 +546,7 @@ pub use "traits" {
 }
 ```
 
-**src/storage/mod.mbt**
+**lib/storage/mod.mbt**
 
 ```moonbit
 /// 存储模块导出
@@ -557,7 +557,7 @@ pub use "edge_list" { EdgeListGraph }
 pub use "converter" { GraphConverter }
 ```
 
-**src/algorithms/mod.mbt**
+**lib/algorithms/mod.mbt**
 
 ```moonbit
 /// 算法模块导出
@@ -568,7 +568,7 @@ pub use "connectivity" { connected_components }
 pub use "topology" { topological_sort }
 ```
 
-**src/lib.mbt**
+**lib/lib.mbt**
 
 ```moonbit
 /// mbtgraph — MoonBit 图算法库
@@ -1055,7 +1055,7 @@ pub struct Node[T] {
 
 ### 11.1 当前状态
 
-现有 `src/core/` 目录包含：
+现有 `lib/core/` 目录包含：
 
 - `types.mbt`: `NodeId`, `Node`, `Edge` 定义（MVP 使用 `Double`）
 - `traits.mbt`: 分层 trait 定义（已实现）

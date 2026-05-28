@@ -43,14 +43,14 @@
 
 #### TASK-001: 创建目录结构与包配置
 
-- [x] 创建 `src/algo/pagerank/` 目录
+- [x] 创建 `lib/algo/pagerank/` 目录
 - [x] 创建 `moon.pkg` 配置文件（依赖 `@core`）
 - [x] 创建空文件骨架:
   - `types.mbt`
   - `pagerank.mbt`
   - `pagerank_test.mbt`
 - **工作量**: 0.5h
-- **验收**: `moon check src/algo/pagerank` 通过（空模块编译 OK）
+- **验收**: `moon check lib/algo/pagerank` 通过（空模块编译 OK）
 
 ---
 
@@ -114,13 +114,13 @@
 
 - **工作量**: 2h
 - **依赖**: TASK-003
-- **验收**: `moon test src/algo/pagerank` 全通过 + 覆盖率 ≥ 90%
+- **验收**: `moon test lib/algo/pagerank` 全通过 + 覆盖率 ≥ 90%
 
 ---
 
 #### TASK-005: 编写 PageRank 文档
 
-- [x] `src/algo/pagerank/README.md`:
+- [x] `lib/algo/pagerank/README.md`:
   - API 使用示例（3 个典型场景）
   - 参数说明表（damping/max_iter/tolerance）
   - 时间/空间复杂度
@@ -139,7 +139,7 @@
 
 #### TASK-006: 创建目录结构与类型定义
 
-- [x] 创建 `src/algo/centrality/` 目录
+- [x] 创建 `lib/algo/centrality/` 目录
 - [x] 创建 `moon.pkg`（依赖 `@core`）
 - [x] 定义通用结果类型:
   ```moonbit
@@ -266,7 +266,7 @@
 
 #### TASK-012: 创建目录结构与类型定义
 
-- [x] 创建 `src/algo/community/` 目录
+- [x] 创建 `lib/algo/community/` 目录
 - [x] 创建 `moon.pkg`（依赖 `@core`）
 - [x] 定义结果类型:
   ```moonbit
@@ -347,7 +347,7 @@
 
 - **工作量**: 3h
 - **依赖**: TASK-013~014
-- **验收**: `moon test src/algo/community` 全部通过 (35/35)
+- **验收**: `moon test lib/algo/community` 全部通过 (35/35)
 
 ---
 
@@ -416,7 +416,7 @@
 
 #### TASK-101: 创建目录结构与类型定义
 
-- [x] 创建 `src/io/` 目录
+- [x] 创建 `lib/io/` 目录
 - [x] 创建 `moon.pkg`（依赖 `@core` 和 `@storage`）
 - [x] 定义错误类型:
   ```moonbit
@@ -430,7 +430,7 @@
   - `GraphStats`（节点/边/密度/有向标志/度分布统计）
   - `ConnectivityStats`（连通分量信息）
   - `DegreeDistribution`（度分布直方图）
-- **验收**: `moon check src/io` 通过
+- **验收**: `moon check lib/io` 通过
 
 ---
 
@@ -478,7 +478,7 @@
 | 图统计 | 10 | 基本(4) + 度分布(3) + 连通性(3) |
 | **合计** | **42** | |
 
-- **验收**: `moon test src/io` 42/42 全部通过
+- **验收**: `moon test lib/io` 42/42 全部通过
 
 ---
 

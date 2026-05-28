@@ -116,7 +116,7 @@ chmod +x .git/hooks/*
 ## 项目结构概览
 
 ```
-src/
+lib/
 ├── core/                      # 核心抽象层 [68 tests]
 │   ├── types.mbt             # NodeId / Node / Edge 基础类型
 │   ├── traits.mbt            # 6 层 Trait 分层体系
@@ -286,20 +286,20 @@ pub fn[G : @core.GraphReadable] bfs(g : G, start : @core.NodeId) -> BfsResult {
 
 | Scope | 说明 | 对应目录 |
 |-------|------|---------|
-| `core` | 核心类型 + Trait | `src/core/` |
-| `storage` | 存储实现层 | `src/storage/` |
-| `traversal` | 遍历算法 | `src/algo/traversal/` |
-| `shortest_path` | 最短路径 | `src/algo/shortest_path/` |
-| `mst` | 最小生成树 | `src/algo/mst/` |
-| `connectivity` | 连通性分析 | `src/algo/connectivity/` |
-| `flow` | 网络流 | `src/algo/flow/` |
-| `matching` | 图匹配 | `src/algo/matching/` |
-| `euler` | 欧拉路径 | `src/algo/euler/` |
-| `cutpoints` | 割点与桥 | `src/algo/cutpoints/` |
-| `coloring` | 图着色 | `src/algo/coloring/` |
-| `clique` | 团检测 | `src/algo/clique/` |
-| `hamiltonian` | 哈密顿/TSP | `src/algo/hamiltonian/` |
-| `generators` | 图生成器 | `src/utils/generators/` |
+| `core` | 核心类型 + Trait | `lib/core/` |
+| `storage` | 存储实现层 | `lib/storage/` |
+| `traversal` | 遍历算法 | `lib/algo/traversal/` |
+| `shortest_path` | 最短路径 | `lib/algo/shortest_path/` |
+| `mst` | 最小生成树 | `lib/algo/mst/` |
+| `connectivity` | 连通性分析 | `lib/algo/connectivity/` |
+| `flow` | 网络流 | `lib/algo/flow/` |
+| `matching` | 图匹配 | `lib/algo/matching/` |
+| `euler` | 欧拉路径 | `lib/algo/euler/` |
+| `cutpoints` | 割点与桥 | `lib/algo/cutpoints/` |
+| `coloring` | 图着色 | `lib/algo/coloring/` |
+| `clique` | 团检测 | `lib/algo/clique/` |
+| `hamiltonian` | 哈密顿/TSP | `lib/algo/hamiltonian/` |
+| `generators` | 图生成器 | `lib/utils/generators/` |
 | `test` | 测试代码 | 各模块 `*_test.mbt` |
 | `docs` | 文档 | `docs/` |
 | `ci` | CI/CD | `.github/workflows/` |
@@ -370,15 +370,15 @@ Closes #123
 moon test
 
 # 运行特定模块测试
-moon test src/algo/hamiltonian       # P5 最新模块 (20 tests)
-moon test src/algo/euler             # 欧拉路径模块 (22 tests)
-moon test src/algo/flow              # 网络流模块 (33 tests)
+moon test lib/algo/hamiltonian       # P5 最新模块 (20 tests)
+moon test lib/algo/euler             # 欧拉路径模块 (22 tests)
+moon test lib/algo/flow              # 网络流模块 (33 tests)
 
 # 更新快照
 moon test --update
 
 # 检查单模块编译
-moon check src/algorithms/shortest_path
+moon check lib/algorithms/shortest_path
 ```
 
 ---

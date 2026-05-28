@@ -12,7 +12,7 @@ traceability:
   source:
     - "docs/design/sad.md"
   targets:
-    - "src/core/"
+    - "lib/core/"
 ---
 
 # 图数据存储方式调研分析

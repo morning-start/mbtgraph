@@ -47,7 +47,7 @@
 **示例**:
 ```bash
 # 在 flow 模块新增 dinic 函数后
-✅ 更新: src/algo/flow/README.md (添加dinic API文档)
+✅ 更新: lib/algo/flow/README.md (添加dinic API文档)
 ✅ 更新: CHANGELOG.md (Unreleased区添加"+ Dinic算法")
 ⏭️ 跳过: MEMORY.md (无架构决策变更)
 ```
@@ -71,7 +71,7 @@
 
 #### 2.1 完成新的算法子模块（如 euler/clique）
 
-**触发条件**: 一个新的 `src/algo/xxx/` 子模块全部完成（类型+算法+测试+文档）
+**触发条件**: 一个新的 `lib/algo/xxx/` 子模块全部完成（类型+算法+测试+文档）
 
 | 优先级 | 文件路径 | 更新内容 | 必要性 |
 |:-----:|---------|----------|:-----:|
@@ -207,7 +207,7 @@ git push origin master --tags
 
 | 区域 | 触发更新条件 | 更新内容 |
 |------|-------------|----------|
-| **包结构** | 新增/删除/重命名模块 | `src/` 目录树 |
+| **包结构** | 新增/删除/重命名模块 | `lib/` 目录树 |
 | **测试状态** | 测试数变化 | 覆盖率表格 |
 | **关键决策记录** | 重要技术决策 | 决策表追加行 |
 | **语法陷阱** | 遇到新陷阱 | 陷阱表追加行 |
@@ -372,7 +372,7 @@ else
 fi
 
 # 3. 模块计数检查
-MODULE_COUNT=$(ls -d src/algo/*/ 2>/dev/null | wc -l)
+MODULE_COUNT=$(ls -d lib/algo/*/ 2>/dev/null | wc -l)
 echo "📂 实际模块数: $MODULE_COUNT"
 
 echo "✨ 检查完成!"
@@ -384,7 +384,7 @@ echo "✨ 检查完成!"
 
 - [ ] **版本号一致性**: `moon.mod.json` = `README.mbt.md` = `CHANGELOG.md最新版`
 - [ ] **测试数一致性**: `moon test输出` = `README.mbt.md总测试数` = `MEMORY.md合计` = `ROADMAP.md`
-- [ ] **模块列表完整性**: `src/algo/实际目录` = `AGENTS.md项目结构` = `README.mbt.md算法表` = `MEMORY.md包结构`
+- [ ] **模块列表完整性**: `lib/algo/实际目录` = `AGENTS.md项目结构` = `README.mbt.md算法表` = `MEMORY.md包结构`
 - [ ] **Git Tag存在性**: 每个已发布的版本都有对应的tag
 - [ ] **无过期信息**: 没有"即将完成"、"规划中"但实际已完成的内容
 - [ ] **链接有效性**: 内部Markdown链接可正常跳转
@@ -397,7 +397,7 @@ echo "✨ 检查完成!"
 
 ```bash
 # Step 1: 确认测试通过
-moon test src/algo/euler  # 22 passed ✅
+moon test lib/algo/euler  # 22 passed ✅
 
 # Step 2: 更新P0文件（按顺序）
 vim moon.mod.json         # version: "0.4.1" → "0.5.0"

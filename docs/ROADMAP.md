@@ -134,7 +134,7 @@
 ##### 模块组成
 
 ```
-src/algo/
+lib/algo/
 ├── pagerank/                    # [NEW] PageRank 算法
 │   ├── moon.pkg
 │   ├── types.mbt               # PageRankResult { ranks, iterations, converged }
@@ -208,7 +208,7 @@ src/algo/
 ##### 模块组成
 
 ```
-src/io/                           # [NEW] I/O 模块
+lib/io/                           # [NEW] I/O 模块
 ├── moon.pkg
 ├── types.mbt                    # IOError 变体 + 格式配置
 ├── dot.mbt                      # DOT 格式解析器/生成器 (~300 行)
@@ -300,7 +300,7 @@ src/io/                           # [NEW] I/O 模块
 ##### 模块组成
 
 ```
-src/algo/
+lib/algo/
 ├── shortest_path/               # [ENHANCED] 新增算法
 │   └── a_star.mbt             # [NEW] A* 启发式搜索 (~130 行)
 │
@@ -712,7 +712,7 @@ src/algo/
 ### 关键决策点
 
 - [x] **ROADMAP 重构**: 采用方案C（功能集群）+ 小步快跑 ✅
-- [x] **I/O 模块位置**: 放在 `src/io/` ✅
+- [x] **I/O 模块位置**: 放在 `lib/io/` ✅
 - [x] **PageRank 实现**: 支持 personalized/damping factor 配置 ✅
 - [x] **DOT/JSON 格式**: 状态机解析 + 递归下降 ✅
 - [x] **v0.12.0 算法优先级**: A*/双向BFS/费用流/Hopcroft-Karp/Edmonds匹配 ✅

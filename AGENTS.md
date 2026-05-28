@@ -19,7 +19,7 @@ MoonBit 生态首个生产级图算法库：8 种存储 + 6 层 Trait + 30+ 算�
 ```bash
 moon fmt && moon info        # 格式化 + 更新接口
 moon test                    # 运行测试
-moon check src/algo/pagerank  # 检查单模块编译
+moon check lib/algo/pagerank  # 检查单模块编译
 ```
 
 ---
@@ -39,7 +39,7 @@ moon check src/algo/pagerank  # 检查单模块编译
 ## 项目结构
 
 ```
-src/
+lib/
 ├── core/                        # 🔵 基础定义层
 │   ├── types.mbt               # NodeId, Node, Edge, Weight
 │   ├── traits.mbt              # 6 层 Trait 定义
@@ -211,7 +211,7 @@ let result = edmonds_karp(net, 0, 5)
 
 ```bash
 moon test                    # 全量测试
-moon test src/algo/pagerank  # 单模块测试
+moon test lib/algo/pagerank  # 单模块测试
 moon test --update           # 更新快照
 moon coverage analyze        # 覆盖率分析
 ```

@@ -1,6 +1,6 @@
 # PageRank 算法设计文档
 
-> **模块**: `src/algo/pagerank/`
+> **模块**: `lib/algo/pagerank/`
 > **创建日期**: 2026-05-25
 > **状态**: ✅ 已完成 (TASK-001 ~ TASK-005)
 

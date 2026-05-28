@@ -15,8 +15,8 @@ traceability:
     - "AGENTS.md"
     - "MEMORY.md"
   targets:
-    - "src/**/*_test.mbt"
-    - "src/**/*_wbtest.mbt"
+    - "lib/**/*_test.mbt"
+    - "lib/**/*_wbtest.mbt"
 ---
 
 # mbtgraph 测试策略与计划
@@ -71,7 +71,7 @@ traceability:
 > **关键决策**: 测试文件**跟随源码放置在各包目录内**，非独立 `test/` 目录。
 
 ```
-src/
+lib/
 ├── core/                            # 基础类型 + Trait 定义
 │   ├── types.mbt                    # NodeId, Node, Edge
 │   ├── traits.mbt                   # 6 层 trait 定义
@@ -584,9 +584,9 @@ moon test --target wasm      # Wasm 后端
 moon test --target js        # JavaScript 后端
 
 # === 单模块测试 ===
-moon test src/algorithms/flow       # 流网络模块
-moon test src/algorithms/traversal  # 遍历模块
-moon test src/storage               # 存储层全部
+moon test lib/algorithms/flow       # 流网络模块
+moon test lib/algorithms/traversal  # 遍历模块
+moon test lib/storage               # 存储层全部
 
 # === 覆盖率分析 ===
 moon coverage analyze > uncovered.log

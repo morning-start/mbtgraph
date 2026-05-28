@@ -26,12 +26,12 @@ moon add morning-start/mbtgraph
 ### 五分钟上手：从创建图到运行算法
 
 ```moonbit
-import { morning-start/mbtgraph/src/core } @core
-import { morning-start/mbtgraph/src/storage } @storage
-import { morning-start/mbtgraph/src/algo/traversal } @traversal
-import { morning-start/mbtgraph/src/algo/shortest_path } @sp
-import { morning-start/mbtgraph/src/algo/mst } @mst
-import { morning-start/mbtgraph/src/algo/flow } @flow
+import { morning-start/mbtgraph/lib/core } @core
+import { morning-start/mbtgraph/lib/storage } @storage
+import { morning-start/mbtgraph/lib/algo/traversal } @traversal
+import { morning-start/mbtgraph/lib/algo/shortest_path } @sp
+import { morning-start/mbtgraph/lib/algo/mst } @mst
+import { morning-start/mbtgraph/lib/algo/flow } @flow
 
 // === 1. 创建有向邻接表（推荐默认选择）===
 let g = @storage.new_directed()
@@ -103,7 +103,7 @@ match @traversal.topo_sort_kahn(g) {
 | **PageRank** | 幂法迭代 (dangling/damping/个性化) | `algo/pagerank` |
 | **中心性分析** | 度/介数/接近/特征向量 | `algo/centrality` |
 | **社区检测** | Louvain · 标签传播 | `algo/community` |
-| **I/O 序列化** | DOT 格式 · JSON 格式 · 图统计 | `src/io` |
+| **I/O 序列化** | DOT 格式 · JSON 格式 · 图统计 | `lib/io` |
 | **图生成器** | 经典图/随机图/网格/二分图 (16 个生成函数) | `algo/generators` |
 
 > 详细 API 文档请查看各模块源码及 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
@@ -189,9 +189,9 @@ match @traversal.topo_sort_kahn(g) {
 
 ```bash
 moon test                          # 全量测试 (701 tests)
-moon test src/algo/flow            # 单模块测试
-moon test src/io                   # I/O 模块测试
-moon check src/algo/shortest_path  # 单模块编译检查
+moon test lib/algo/flow            # 单模块测试
+moon test lib/io                   # I/O 模块测试
+moon check lib/algo/shortest_path  # 单模块编译检查
 ```
 
 **测试策略**: Blackbox (`*_test.mbt`) + Whitebox (`*_wbtest.mbt`) 双轨制，含跨存储一致性验证与结果不可变性验证。

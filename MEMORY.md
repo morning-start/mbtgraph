@@ -34,7 +34,7 @@ GraphReadable          ← 基础只读（12 方法，所有存储都实现）
 ### 存储层完整清单
 
 ```
-src/storage/
+lib/storage/
 ├── 有向图 (3)
 │   ├── directed_adj_list.mbt     ⭐ 默认推荐 | Readable + Writable + Directed
 │   ├── directed_matrix.mbt       小规模稠密图 | Readable + Writable + Directed
@@ -58,7 +58,7 @@ src/storage/
 ### 包结构
 
 ```
-src/
+lib/
 ├── core/          # 基础类型(3) + trait定义(6) + 错误类型(1) + 测试(68)
 ├── storage/       # 存储实现(8结构体) + 转换器(8) + 工具(4) + 测试(~107) + 文档
 ├── algo/          # 图算法模块 ⭐ v0.10.0 全部完成 (15 子模块, 588 tests)
