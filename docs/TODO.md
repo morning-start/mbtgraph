@@ -3,7 +3,7 @@
 > **最后更新**: 2026-05-28 | **当前版本**: v0.13.0 ✅ 🛠️ 接口重构 + P0/P1 算法补齐
 > **下次评审**: 2026-06-04（每周日）
 > **下个版本**: v0.14.0 ⚡ 性能优化
-> **当前进度**: 3/10 优化完成
+> **当前进度**: 4/10 优化完成
 
 ---
 
@@ -91,12 +91,13 @@
 
 ---
 
-#### TASK-F: CSR `in_neighbors` 反向索引
+#### TASK-F: CSR `in_neighbors` 反向索引 ✅
 
-- [ ] **问题**: [csr.mbt:L244-290](file:///e:\Workplace\APP\MoonBit\mbtgraph\lib\storage\csr.mbt#L244-L290) `in_neighbors()` / `in_degree()` 扫描所有行 O(V+E)
-- [ ] **修复**: 构建时同步建立 `col_ptr` / `row_idx` 反向索引
-- [ ] 预期收益: 入边查询从 O(V+E) 降至 O(1)
-- [ ] 验收: CSR/CSC 测试全通过 + 基准提升
+- [x] **问题**: [csr.mbt:L244-290](file:///e:\Workplace\APP\MoonBit\mbtgraph\lib\storage\csr.mbt#L244-L290) `in_neighbors()` / `in_degree()` 扫描所有行 O(V+E)
+- [x] **修复**: 构建时同步建立 `in_ptr` / `in_idx` / `in_vals` 反向索引（类 CSC 列指针结构）
+- [x] 构建算法: O(n+E) 计数排序法，两次遍历边数组
+- [x] 影响范围: `in_neighbors()` / `in_degree()` / `predecessors()` 均从 O(V+E) 降至 O(deg_in)
+- [x] 验证: `moon check` 零警告 + 736 测试全通过
 
 ---
 
@@ -171,13 +172,13 @@
 | 1 | TASK-C: neighbor 权重对 | ⬜ | 🟡 P1 | 3h | Dijkstra 1.5-3x |
 | 2 | TASK-D: Louvain 数据结构 | ⬜ | 🟡 P1 | 3h | 社区检测 5-20x |
 | 2 | **TASK-E: AdjList 批量操作** | ✅ **完成** | 🟡 P1 | 2h | 建图 2-3x |
-| 2 | TASK-F: CSR 反向索引 | ⬜ | 🟡 P1 | 2h | 入边 O(V+E)→O(1) |
+| 2 | **TASK-F: CSR 反向索引** | ✅ **完成** | 🟡 P1 | 2h | 入边 O(V+E)→O(deg_in) |
 | 3 | TASK-G: Benchmark 基线 | ⬜ | 🟢 P2 | 4h | 量化度量 |
 | 4 | TASK-H: Dispatch 分析 | ⬜ | 🟢 P2 | 3h | 编译器优化 |
 | 4 | TASK-I: Brandes 并行化 | ⬜ | 🔵 P3 | 5h | 多核 2-4x |
 | 4 | TASK-J: 稀疏矩阵 | ⬜ | 🔵 P3 | 4h | 内存 -60-80% |
 | 发布 | TASK-Z: 文档+Tag | ⬜ | 🟡 P1 | 2h | 发布 |
-| **合计** | **11 tasks** | **3/11** | — | **~29.5h** | — |
+| **合计** | **11 tasks** | **4/11** | — | **~29.5h** | — |
 
 ---
 

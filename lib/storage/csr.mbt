@@ -9,6 +9,9 @@ pub(all) struct CSRGraph {
   row_ptr : Array[Int]
   col_idx : Array[@core.NodeId]
   values : Array[Double]
+  in_ptr : Array[Int]
+  in_idx : Array[@core.NodeId]
+  in_vals : Array[Double]
 }
 
 ///|
@@ -116,7 +119,45 @@ pub fn CSRBuilder::build(self : CSRBuilder) -> CSRGraph {
     rp[r] = ci.length()
     r = r + 1
   }
-  { nodes: self.nodes, row_ptr: rp, col_idx: ci, values: vals }
+  // Build reverse index (in_ptr / in_idx / in_vals) in O(n + E)
+  let in_deg = Array::make(nc, 0)
+  for e in es {
+    let ti = e.1.0
+    if ti >= 0 && ti < nc {
+      in_deg[ti] = in_deg[ti] + 1
+    }
+  }
+  let in_ptr = Array::make(nc + 1, 0)
+  let mut sum = 0
+  for i in 0..<nc {
+    in_ptr[i] = sum
+    sum = sum + in_deg[i]
+  }
+  in_ptr[nc] = sum
+  let in_idx : Array[@core.NodeId] = Array::make(sum, @core.NodeId(0))
+  let in_vals : Array[Double] = Array::make(sum, 0.0)
+  let pos = Array::make(nc, 0)
+  for i in 0..<nc {
+    pos[i] = in_ptr[i]
+  }
+  for e in es {
+    let ti = e.1.0
+    if ti >= 0 && ti < nc {
+      let p = pos[ti]
+      in_idx[p] = e.0
+      in_vals[p] = e.2
+      pos[ti] = p + 1
+    }
+  }
+  {
+    nodes: self.nodes,
+    row_ptr: rp,
+    col_idx: ci,
+    values: vals,
+    in_ptr: in_ptr,
+    in_idx: in_idx,
+    in_vals: in_vals,
+  }
 }
 
 ///|
@@ -269,17 +310,14 @@ pub impl @core.GraphDirected for CSRGraph with in_neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let idx = id.0
+  if idx < 0 || idx >= self.nodes.length() {
+    return [].iter()
+  }
+  let s = self.in_ptr[idx]
+  let e = self.in_ptr[idx + 1]
   let r : Array[@core.NodeId] = []
-  let nc = self.nodes.length()
-  for i in 0..<nc {
-    let s = self.row_ptr[i]
-    let e = self.row_ptr[i + 1]
-    for k in s..<e {
-      if self.col_idx[k] == id {
-        r.push(@core.NodeId(i))
-        break
-      }
-    }
+  for k in s..<e {
+    r.push(self.in_idx[k])
   }
   r.iter()
 }
@@ -294,23 +332,11 @@ pub impl @core.GraphDirected for CSRGraph with out_neighbors(self, id) -> Iter[
 ///|
 pub impl @core.GraphDirected for CSRGraph with in_degree(self, id) -> Int {
   let idx = id.0
-  let mut c = 0
-  let nc = self.nodes.length()
-  let mut i = 0
-  while i < nc {
-    let s = self.row_ptr[i]
-    let e = self.row_ptr[i + 1]
-    let mut k = s
-    while k < e {
-      if self.col_idx[k].0 == idx {
-        c = c + 1
-        break
-      }
-      k = k + 1
-    }
-    i = i + 1
+  if idx < 0 || idx >= self.nodes.length() {
+    0
+  } else {
+    self.in_ptr[idx + 1] - self.in_ptr[idx]
   }
-  c
 }
 
 ///|
@@ -323,17 +349,14 @@ pub impl @core.GraphDirected for CSRGraph with predecessors(self, id) -> Iter[
   (@core.NodeId, Double),
 ] {
   let idx = id.0
+  if idx < 0 || idx >= self.nodes.length() {
+    return [].iter()
+  }
+  let s = self.in_ptr[idx]
+  let e = self.in_ptr[idx + 1]
   let r : Array[(@core.NodeId, Double)] = []
-  let nc = self.nodes.length()
-  for i in 0..<nc {
-    let s = self.row_ptr[i]
-    let e = self.row_ptr[i + 1]
-    for k in s..<e {
-      if self.col_idx[k] == id {
-        r.push((@core.NodeId(i), self.values[k]))
-        break
-      }
-    }
+  for k in s..<e {
+    r.push((self.in_idx[k], self.in_vals[k]))
   }
   r.iter()
 }
