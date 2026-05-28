@@ -333,3 +333,96 @@ test "exact_chromatic_complete_graph_k4" {
   }
   assert_true(result.exact)
 }
+
+// ============================================================================
+// 边着色算法测试
+// ============================================================================
+
+///|
+test "edge_coloring_star_graph_delta_colors" {
+  let g = make_star_graph(5)
+  let result = edge_coloring(g)
+  assert_true(result.is_valid)
+  assert_true(result.num_colors <= result.max_degree + 1)
+}
+
+///|
+test "edge_coloring_cycle_graph_2_or_3" {
+  let g = make_cycle_graph(6)
+  let result = edge_coloring(g)
+  assert_true(result.is_valid)
+  assert_true(result.num_colors <= 3)
+}
+
+///|
+test "edge_coloring_complete_graph_k4" {
+  let g = make_complete_graph(4)
+  let result = edge_coloring(g)
+  assert_true(result.is_valid)
+  assert_true(result.num_colors <= result.max_degree + 1)
+}
+
+///|
+test "edge_coloring_bipartite_graph_delta" {
+  let g = make_bipartite_graph(3, 3)
+  let result = edge_coloring(g)
+  assert_true(result.is_valid)
+  assert_true(result.num_colors <= result.max_degree + 1)
+}
+
+///|
+test "edge_coloring_empty_graph" {
+  let g = @storage.new_undirected()
+  let result = edge_coloring(g)
+  assert_true(result.is_valid)
+  assert_eq(result.num_colors, 0)
+}
+
+///|
+test "edge_coloring_single_edge" {
+  let g = @storage.new_undirected()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @storage.UndirectedAdjList::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  let result = edge_coloring(g)
+  assert_true(result.is_valid)
+  assert_eq(result.num_colors, 1)
+}
+
+///|
+test "edge_coloring_odd_cycle" {
+  let g = make_odd_cycle(5)
+  let result = edge_coloring(g)
+  assert_true(result.is_valid)
+  assert_true(result.num_colors <= 3)
+}
+
+///|
+test "edge_coloring_no_adjacent_same" {
+  let g = make_cycle_graph(8)
+  let result = edge_coloring(g)
+  assert_true(result.is_valid)
+  let n = @core.GraphReadable::node_count(g)
+  let mut u = 0
+  while u < n {
+    let neighbors = @core.GraphReadable::neighbors(g, @core.NodeId(u))
+    for neighbor in neighbors {
+      let vi = neighbor.0
+      let c1 = result.edge_color(@core.NodeId(u), @core.NodeId(vi))
+      let mut conflict = false
+      let neighbors2 = @core.GraphReadable::neighbors(g, @core.NodeId(u))
+      for neighbor2 in neighbors2 {
+        let vi2 = neighbor2.0
+        if vi2 != vi {
+          let c2 = result.edge_color(@core.NodeId(u), @core.NodeId(vi2))
+          if c1 == c2 && c1 >= 0 {
+            conflict = true
+          }
+        }
+      }
+      assert_true(!conflict)
+    }
+    u = u + 1
+  }
+}
