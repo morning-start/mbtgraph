@@ -101,6 +101,42 @@ pub fn ShortestPathResult::path_to(
 }
 
 // ============================================================================
+// K 最短路径结果类型（Yen's 算法）
+// ============================================================================
+
+///|
+/// K 最短路径结果
+pub(all) struct KShortestPathsResult {
+  paths : Array[Array[@core.NodeId]]
+  distances : Array[Double]
+  k : Int
+}
+
+///|
+/// 获取第 i 条路径
+pub fn KShortestPathsResult::path(
+  self : KShortestPathsResult,
+  index : Int,
+) -> Array[@core.NodeId] {
+  if index < 0 || index >= self.paths.length() {
+    return []
+  }
+  self.paths[index]
+}
+
+///|
+/// 获取第 i 条距离
+pub fn KShortestPathsResult::distance(
+  self : KShortestPathsResult,
+  index : Int,
+) -> Double {
+  if index < 0 || index >= self.distances.length() {
+    return -1.0
+  }
+  self.distances[index]
+}
+
+// ============================================================================
 // Floyd-Warshall 全源结果类型
 // ============================================================================
 
