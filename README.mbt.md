@@ -76,12 +76,12 @@ match @traversal.topo_sort_kahn(g) {
 
 ## ✨ 特性
 
-- **6 层 Trait 分层** — GraphReadable → Writable → Directed → Full + BatchRead + EdgeIterable，接口隔离设计
+- **5 层 Trait 分层** — GraphReadable → Writable → Directed → Full + BatchRead，接口隔离设计
 - **8 种存储结构** — 有向/无向邻接表、邻接矩阵、边集数组、CSR/CSC，覆盖稀疏/稠密/动态/静态全场景
-- **35+ 图算法** — 覆盖遍历、最短路径、MST、连通性、网络流、匹配、欧拉路径、着色、团检测、TSP、PageRank、中心性、社区检测等
+- **49+ 图算法** — 覆盖遍历、最短路径、MST、连通性、网络流、匹配、欧拉路径、着色、团检测、TSP、PageRank、中心性、社区检测等
 - **I/O 序列化** — DOT 格式读写、JSON 序列化、图统计工具
 - **纯函数语义** — 深拷贝隔离副作用，保证算法不可变性
-- **701 测试用例** — Blackbox + Whitebox 双轨测试，跨存储一致性验证
+- **736 测试用例** — Blackbox + Whitebox 双轨测试，跨存储一致性验证
 
 ---
 
@@ -90,14 +90,14 @@ match @traversal.topo_sort_kahn(g) {
 | 分类 | 算法 | 模块路径 |
 |------|------|---------|
 | **图遍历** | BFS · DFS · 环检测 · 拓扑排序 · 双向BFS | `algo/traversal` |
-| **最短路径** | Dijkstra · Bellman-Ford · Floyd-Warshall · A* | `algo/shortest_path` |
+| **最短路径** | Dijkstra · Bellman-Ford · Floyd-Warshall · A* · Johnson · SPFA · 双向Dijkstra · Yen's K短路 | `algo/shortest_path` |
 | **最小生成树** | Kruskal (+UnionFind) · Prim | `algo/mst` |
-| **连通性** | 连通分量 · Tarjan SCC · Kosaraju SCC | `algo/connectivity` |
+| **连通性** | 连通分量 · Tarjan SCC · Kosaraju SCC · 双连通分量 BCC | `algo/connectivity` |
 | **网络流** | Edmonds-Karp · Dinic · 最小费用最大流 | `algo/flow` |
 | **图匹配** | Hungarian · Hopcroft-Karp · Edmonds Blossom | `algo/matching` |
 | **欧拉路径** | Hierholzer (有向/无向) | `algo/euler` |
 | **割点与桥** | Tarjan | `algo/cutpoints` |
-| **图着色** | Greedy · Welsh-Powell · DSATUR · Exact | `algo/coloring` |
+| **图着色** | Greedy · Welsh-Powell · DSATUR · Exact · 边着色 | `algo/coloring` |
 | **最大团** | Bron-Kerbosch | `algo/clique` |
 | **哈密顿/TSP** | 回溯 · Nearest Neighbor · Held-Karp | `algo/hamiltonian` |
 | **PageRank** | 幂法迭代 (dangling/damping/个性化) | `algo/pagerank` |
@@ -142,9 +142,9 @@ match @traversal.topo_sort_kahn(g) {
 | 场景 | 推荐存储 | Trait | 说明 |
 |------|---------|:-----:|------|
 | 通用稀疏图（有向） | `DirectedAdjList` ⭐ | Full | 默认推荐，邻居查询 O(k) |
-| 通用无向图 | `UndirectedAdjList` ⭐ | Writable+EdgeIter | 半存储优化，节省 ~50% |
+| 通用无向图 | `UndirectedAdjList` ⭐ | Writable | 半存储优化，节省 ~50% |
 | 小规模稠密图 (<1K 节点) | `DirectedMatrix` | Full | O(1) 边查询，O(V²) 空间 |
-| MST / Kruskal | `UndirectedEdgeListGraph` | Writable+EdgeIter | 边排序友好 |
+| MST / Kruskal | `UndirectedEdgeListGraph` | Writable | 边排序友好（内部排序） |
 | 大规模静态图 (>10K 节点) | `CSRGraph` | Read+BatchRead | 缓存友好，通过 `to_csr()` 转换 |
 | 入边密集查询 | `CSCGraph` | Read+BatchRead | in_degree O(1) |
 
@@ -169,10 +169,10 @@ match @traversal.topo_sort_kahn(g) {
 | 维度 | mgraph | graphviz | **mbtgraph** |
 |------|:------:|:--------:|:------------:|
 | 定位 | 轻量遍历库 | Graphviz 重写 | **完整算法库** |
-| 算法数 | 2 | 0 | **35+** |
+| 算法数 | 2 | 0 | **49+** |
 | 存储数 | 0 | 1 | **8** |
-| Trait 层 | 1 | 0 | **6** |
-| 测试数 | ~10 | fixture parity | **701** |
+| Trait 层 | 1 | 0 | **5** |
+| 测试数 | ~10 | fixture parity | **736** |
 
 ### 技术特性
 
@@ -188,7 +188,7 @@ match @traversal.topo_sort_kahn(g) {
 ## 🧪 测试
 
 ```bash
-moon test                          # 全量测试 (701 tests)
+moon test                          # 全量测试 (736 tests)
 moon test lib/algo/flow            # 单模块测试
 moon test lib/io                   # I/O 模块测试
 moon check lib/algo/shortest_path  # 单模块编译检查
@@ -208,7 +208,8 @@ moon check lib/algo/shortest_path  # 单模块编译检查
 | v0.9.0 | 文档体系成熟 | ✅ 完成 |
 | v0.10.0 | 社交网络分析套件 (PageRank / 中心性 / 社区检测) | ✅ 完成 |
 | v0.11.0 | I/O 数据交换模块 (DOT / JSON / 图统计) | ✅ 完成 |
-| v0.12.0 | 经典算法增强 (A* / 双向BFS / HK / 费用流 / Edmonds) | ✅ **当前版本** |
+| v0.12.0 | 经典算法增强 (A* / 双向BFS / HK / 费用流 / Edmonds) | ✅ 完成 |
+| v0.13.0 | 接口重构 + P0/P1 算法补齐 (Johnson/SPFA/BCC/双向Dij/Yen's) | ✅ **当前版本** |
 
 完整变更记录: [CHANGELOG.md](CHANGELOG.md)
 

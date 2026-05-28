@@ -5,31 +5,32 @@
 - **模块**: `morning-start/mbtgraph`
 - **语言**: MoonBit
 - **协议**: MIT ✅ (2026-05-23 从 MIT 更改)
-- **版本**: v0.12.0 (🚀 经典算法增强已发布)
+- **版本**: v0.13.0 (🛠️ 接口重构 + P0/P1 算法补齐已发布)
 - **架构**: MoonBit 包按目录组织，每个目录含 `moon.pkg` 声明依赖
-- **总测试数**: **701 tests** (全通过 ✅)
-- **算法模块**: **15 子模块** (P0-P5 + 社交网络分析) + **~43 算法** + **I/O 模块** (DOT/JSON/统计)
-- **Git Tags**: v0.5.0 → v0.6.0 → v0.7.0 → v0.8.0 → v0.9.0 → v0.10.0
+- **总测试数**: **736 tests** (全通过 ✅)
+- **算法模块**: **15 子模块** (P0-P5 + 社交网络分析) + **~49 算法** + **I/O 模块** (DOT/JSON/统计)
+- **Git Tags**: v0.5.0 → v0.6.0 → v0.7.0 → v0.8.0 → v0.9.0 → v0.10.0 → v0.11.0 → v0.12.0 → v0.13.0
 
 ## 图存储架构
 
-### Trait 分层体系（6 层）
+### Trait 分层体系（5 层）
 
-采用 6 层 trait 架构，遵循 SOLID 原则（特别是 LSP 和 ISP）：
+采用 5 层 trait 架构，遵循 SOLID 原则（特别是 LSP 和 ISP）：
 
 ```
 GraphReadable          ← 基础只读（12 方法，所有存储都实现）
 ├── GraphWritable      ← 可写（+5 方法，仅动态存储；CSR 故意不实现 LSP）
 ├── GraphDirected      ← 有向图入边查询（+6 方法）
 │   └── GraphFull     ← 完整别名（= Writable + Directed）
-├── GraphBatchReadable ← 批量优化（+2 方法，CSR/CSC 专用）
-└── GraphEdgeIterable  ← 边排序（+1 方法，Kruskal 友好）
+└── GraphBatchReadable ← 批量优化（+2 方法，CSR/CSC 专用）
 ```
 
 **核心决策**:
 - CSR/CSC 等只读存储**不实现** `GraphWritable`，避免违反里氏替换原则
 - 算法使用 trait 约束 `[G : @core.GraphReadable]` 而非具体类型
 - 无向图采用**半存储优化**：邻接表用左上角三角存储，矩阵用上三角存储
+- **v0.13.0 移除 GraphEdgeIterable**（仅 3 种存储实现，零算法使用；Kruskal 内部自行排序边）
+- **v0.13.0 参数命名统一**：全部 `pub fn` 图参数统一为 `graph`
 
 ### 存储层完整清单
 
@@ -38,47 +39,47 @@ lib/storage/
 ├── 有向图 (3)
 │   ├── directed_adj_list.mbt     ⭐ 默认推荐 | Readable + Writable + Directed
 │   ├── directed_matrix.mbt       小规模稠密图 | Readable + Writable + Directed
-│   └── edge_list.mbt            Kruskal 友好 | Readable + Writable + EdgeIterable
+│   └── edge_list.mbt            Kruskal 友好 | Readable + Writable
 │
 ├── 无向图 (3)
-│   ├── undirected_adj_list.mbt   ⭐ 半存储优化 | Readable + Writable + EdgeIterable
+│   ├── undirected_adj_list.mbt   ⭐ 半存储优化 | Readable + Writable
 │   ├── undirected_matrix.mbt     上三角优化    | Readable + Writable
-│   └── undirected_edge_list.mbt  无向边集       | Readable + Writable + EdgeIterable
+│   └── undirected_edge_list.mbt  无向边集       | Readable + Writable
 │
 ├── 只读高性能 (2)
 │   ├── csr.mbt                  亿级节点       | Readable + BatchReadable
 │   └── csc.mbt                  入边密集       | Readable + BatchReadable
 │
 └── 工具 (3)
-    ├── converter.mbt            8 个泛型转换函数
-    ├── shared_helpers.mbt       4 个公共辅助函数
-    └── README.md                包文档
+     ├── converter.mbt            8 个泛型转换函数
+     ├── shared_helpers.mbt       6 个公共辅助函数 (find_max_node_id/int_max 等)
+     └── README.md                包文档
 ```
 
 ### 包结构
 
 ```
 lib/
-├── core/          # 基础类型(3) + trait定义(6) + 错误类型(1) + 测试(68)
-├── storage/       # 存储实现(8结构体) + 转换器(8) + 工具(4) + 测试(~107) + 文档
-├── algo/          # 图算法模块 ⭐ v0.10.0 全部完成 (15 子模块, 588 tests)
-│   ├── traversal/      # 遍历 (BFS/DFS/环检测/拓扑) — ~47 tests ✅
+├── core/          # 基础类型(3) + trait定义(5) + 错误类型(1) + 测试(64)
+├── storage/       # 存储实现(8结构体) + 转换器(8) + 工具(6) + 测试(~103) + 文档
+├── algo/          # 图算法模块 ⭐ v0.13.0 全部完成 (15 子模块, 736 tests)
+│   ├── traversal/      # 遍历 (BFS/DFS/环检测/拓扑/双向BFS) — ~58 tests ✅
 │   ├── generators/     # 图生成器 (P0) — 16 函数, 56 tests ✅
-│   ├── shortest_path/  # 最短路径 (P1) — Dijkstra/BF/FW, 32 tests ✅
+│   ├── shortest_path/  # 最短路径 — Dijkstra/BF/FW/A*/Johnson/SPFA/双向Dij/Yen's, 76 tests ✅
 │   ├── mst/            # 最小生成树 (P2) — Kruskal/Prim, 16 tests ✅
-│   ├── connectivity/   # 连通性 (P2) — CC/Tarjan/Kosaraju, 21 tests ✅
-│   ├── flow/           # 网络流 (P3) — Edmonds-Karp + Dinic, 33 tests ✅
-│   ├── matching/       # 图匹配 (P4) — Hungarian, 21 tests ✅
+│   ├── connectivity/   # 连通性 — CC/Tarjan/Kosaraju/BCC, 26 tests ✅
+│   ├── flow/           # 网络流 (P3) — Edmonds-Karp + Dinic + 费用流, 33 tests ✅
+│   ├── matching/       # 图匹配 (P4) — Hungarian/HK/Edmonds, 21 tests ✅
 │   ├── euler/          # 欧拉路径 (P5-A) — Hierholzer 有向/无向, 22 tests ✅
 │   ├── cutpoints/      # 割点与桥 (P5-B) — Tarjan DFN/Low, 15 tests ✅
-│   ├── coloring/       # 图着色 (P5-C) — Greedy/WP/DSATUR/Exact, 21 tests ✅
+│   ├── coloring/       # 图着色 — Greedy/WP/DSATUR/Exact/边着色, 29 tests ✅
 │   ├── clique/         # 团/独立集/顶点覆盖 (P5-D) — Bron-Kerbosch, 14 tests ✅
 │   ├── hamiltonian/    # 哈密顿/TSP (P5-E) — Backtrack+NN+Held-Karp, 20 tests ✅
-│   ├── pagerank/       # 🆕 PageRank 幂法迭代, 15 tests ✅
-│   ├── centrality/     # 🆕 中心性分析 (度/介数/接近/特征向量), 45 tests ✅
-│   ├── community/      # 🆕 社区检测 (Louvain/标签传播), 35 tests ✅
-│   └── integration/    # 🆕 跨模块集成测试, 10 tests ✅
-└── io/            # 🆕 I/O 模块 v0.11.0 (DOT + JSON + 图统计, 42 tests)
+│   ├── pagerank/       # PageRank 幂法迭代, 15 tests ✅
+│   ├── centrality/     # 中心性分析 (度/介数/接近/特征向量), 45 tests ✅
+│   ├── community/      # 社区检测 (Louvain/标签传播), 35 tests ✅
+│   └── integration/    # 跨模块集成测试, 10 tests ✅
+└── io/            # I/O 模块 v0.11.0 (DOT + JSON + 图统计, 42 tests)
     ├── dot.mbt               # DOT 格式读写
     ├── json_serializer.mbt   # JSON 格式读写
     ├── graph_stats.mbt       # 图统计工具
@@ -133,26 +134,26 @@ lib/
 
 ## 测试状态
 
-### 当前覆盖率 (v0.12.0 - 🚀 经典算法增强)
+### 当前覆盖率 (v0.13.0 - 🛠️ 接口重构 + P0/P1 补齐)
 
-**总计**: **701 tests** (全通过 ✅) | **15 算法模块** | **~43 算法实现** | **I/O 模块**
+**总计**: **736 tests** (全通过 ✅) | **15 算法模块** | **~49 算法实现** | **I/O 模块**
 
 | 包 | 黑盒 | 白盒 | 总计 | 状态 |
 |----|:----:|:----:|:----:|:----:|
-| core | 49 | 19 | **68** | ✅ 全通过 |
-| storage | 92 | 15 | **~107** | ✅ 全通过 |
-| algo (P0-P4) | **290** | **0** | **290** | ✅ 全通过 (+64 v0.12.0) |
-| ├─ traversal (+双向BFS) | ~58 | - | ~58 | ✅ +11 |
+| core | 45 | 19 | **64** | ✅ 全通过 (-4 EdgeIterable 测试移除) |
+| storage | 88 | 15 | **~103** | ✅ 全通过 (-4 EdgeIterable 测试移除) |
+| algo (P0-P4) | **325** | **0** | **325** | ✅ 全通过 (+35 v0.13.0) |
+| ├─ traversal (+双向BFS) | ~58 | - | ~58 | ✅ |
 | ├─ generators | 56 | - | 56 | ✅ |
-| ├─ shortest_path (+A*) | ~46 | - | ~46 | ✅ +14 |
+| ├─ shortest_path (+Johnson/SPFA/双向Dij/Yen's) | ~76 | - | ~76 | ✅ +36 |
 | ├─ mst | 16 | - | 16 | ✅ |
-| ├─ connectivity | 21 | - | 21 | ✅ |
-| ├─ flow (+费用流) | ~49 | - | ~49 | ✅ +16 |
-| └─ matching (+HK+Edmonds) | ~51 | - | ~51 | ✅ +30 |
+| ├─ connectivity (+BCC) | ~26 | - | ~26 | ✅ +5 |
+| ├─ flow (+费用流) | ~49 | - | ~49 | ✅ |
+| └─ matching (+HK+Edmonds) | ~51 | - | ~51 | ✅ |
 | algo (P5) | **150** | **0** | **150** | ✅ 全通过 |
 | ├─ euler (P5-A) | 22 | - | 22 | ✅ Hierholzer |
 | ├─ cutpoints (P5-B) | 15 | - | 15 | ✅ Tarjan |
-| ├─ coloring (P5-C) | 21 | - | 21 | ✅ 4种算法 |
+| ├─ coloring (P5-C + 边着色) | ~29 | - | ~29 | ✅ +8 |
 | ├─ clique (P5-D) | 14 | - | 14 | ✅ Bron-Kerbosch |
 | └─ hamiltonian (P5-E) | 20 | - | 20 | ✅ TSP+回溯 |
 | algo (v0.10.0) | **95** | **10** | **105** | ✅ 全通过 |
@@ -165,7 +166,7 @@ lib/
 | ├─ json | 12 | - | 12 | ✅ 序列化+解析+往返 |
 | └─ graph_stats | 10 | - | 10 | ✅ 基本+度分布+连通性 |
 | root | 0 | 0 | 0 | — |
-| **合计** | **727** | **44** | **771** | **✅ 701 passed** |
+| **合计** | **762** | **44** | **806** | **✅ 736 passed** |
 
 ### P5 模块完成总结（2026-05-22）
 
@@ -184,16 +185,16 @@ lib/
 |------|------|:----:|------|
 | types_test.mbt | Blackbox | 24 | NodeId构造/Eq + Node构造/字段 + Edge构造/字段 + 组合 |
 | error_test.mbt | Blackbox | 25 | 3变体×构造匹配 + Eq(11) + Result集成(7) |
-| traits_wbtest.mbt | Whitebox | 19 | MockGraph 实现 6 Trait 共 26 方法 |
+| traits_wbtest.mbt | Whitebox | 19 | MockGraph 实现 5 Trait 共 25 方法 |
 
 ### Storage 测试详情
 
 | 文件 | 类型 | 数量 | 覆盖 |
 |------|------|:----:|------|
-| directed_adj_list_test.mbt | Blackbox | 19 | CRUD + GraphDirected (in/out degree/neighbors) |
-| undirected_adj_list_test.mbt | Blackbox | 15 | 双向语义 + 半存储优化 + edges_sorted |
+| directed_adj_list_test.mbt | Blackbox | 18 | CRUD + GraphDirected (in/out degree/neighbors) |
+| undirected_adj_list_test.mbt | Blackbox | 14 | 双向语义 + 半存储优化 |
 | matrix_test.mbt | Blackbox | 15 | DirectedMatrix + UndirectedMatrix O(1)查询 |
-| edge_list_test.mbt | Blackbox | 15 | EdgeListGraph + UndirectedEdgeListGraph |
+| edge_list_test.mbt | Blackbox | 13 | EdgeListGraph + UndirectedEdgeListGraph |
 | csr_csc_test.mbt | Blackbox | 15 | CSRGraph/CSCGraph Builder模式 + batch操作 |
 | converter_test.mbt | Blackbox | **16** | 有向转换(8) + 无向转换(5) + 语义转换(3) |
 | helpers_wbtest.mbt | Whitebox | 13 | has_node/find_slot/remove_from_list/bubble_sort |
@@ -211,13 +212,13 @@ lib/
 - 使用 `node_cnt` 字段独立追踪节点计数（不依赖 nodes.length()）
 - 支持 directed 标志位切换有向/无向模式
 - remove_node() 级联删除关联边并递减 node_cnt
-- bubble_sort_by_weight 用于 edges_sorted 的冒泡排序实现
+- bubble_sort_by_weight 用于内部排序实现
 
 ## 工具链
 
 ```bash
 moon check               # 类型检查（零错误零警告）
-moon test                # 运行全部测试 (630 tests)
+moon test                # 运行全部测试 (736 tests)
 moon fmt && moon info     # 格式化 + 更新 .mbti 接口文件
 moon build --target <tgt> # 构建（wasm/js/native）
 moon coverage analyze    # 覆盖率分析
@@ -229,29 +230,24 @@ moon coverage analyze    # 覆盖率分析
 
 | 日期 | 决策 | 原因 | 影响 |
 |------|------|------|------|
-| **2026-05-27** | **v0.13.0 接口重构分析完成** 📋 | 完成 API 审计、Trait 体系评估、代码冗余分析 | 发现 6 个关键问题：connectivity 命名不一致、GraphEdgeIterable 冗余、GraphBatchReadable 未使用、存储层~55% 重复代码、参数顺序不统一 |
-| **2026-05-27** | **推荐分步重构方案 C** ✅ | 轻量修复→算法补齐→全面重构→P1 补齐，每步可交付 | 预计 v0.13.0 于 2026-06-08 发布，比原计划早 39 天 |
-| **2026-05-26** | **v0.11.0 数据交换与可视化发布** 🎉 | DOT 格式解析/生成 + JSON 序列化/反序列化 + 图统计工具 | 新增 I/O 模块, 588->630 tests |
+| **2026-05-28** | **v0.13.0 接口重构 + P0/P1 发布** 🚀 | 4阶段完成：快速修复→P0算法→全面重构→P1补齐 | 新增 6 个算法(Johnson/SPFA/边着色/BCC/双向Dij/Yen's)，Trait 6→5层，参数统一，736 tests |
+| **2026-05-28** | **移除 GraphEdgeIterable trait** ✅ | 仅 3 种存储实现，零算法使用，Kruskal 内部排序 | 减少维护负担，5层更清晰 |
+| **2026-05-28** | **参数命名 g→graph 统一** ✅ | API 一致性审计发现约一半用 g 一半用 graph | 27+ pub fn 统一，提升可读性 |
+| **2026-05-27** | **v0.13.0 接口重构分析完成** 📋 | 完成 API 审计、Trait 体系评估、代码冗余分析 | 发现 6 个关键问题：connectivity 命名不一致、GraphEdgeIterable 冗余、参数顺序不统一 |
+| **2026-05-27** | **推荐分步重构方案 C** ✅ | 轻量修复→算法补齐→全面重构→P1 补齐，每步可交付 | 预计提前交付 |
 | **2026-05-26** | **v0.12.0 经典算法增强发布** 🚀 | A* 启发式搜索 + 双向 BFS + Hopcroft-Karp + 最小费用最大流 + Edmonds 一般图匹配 | 5 个新算法, 630->701 tests |
 | **2026-05-23** | **协议从 MIT 更改为 MIT** ✅ | 更宽松的开源协议，便于社区采纳和二次开发 | moon.mod.json + 全部文档同步 |
-| **2026-05-26** | **v0.10.0 社交网络分析套件完成发布** 🎉 | PageRank + 中心性分析(度/介数/接近/特征向量) + 社区检测(Louvain/标签传播) | 14->15 算法模块, 551->588 tests |
-| **2026-05-26** | **v0.11.0 数据交换与可视化发布** 🎉 | DOT 格式解析/生成 + JSON 序列化/反序列化 + 图统计工具 | 新增 I/O 模块, 588->630 tests |
-| **2026-05-26** | **v0.12.0 经典算法增强发布** 🚀 | A* 启发式搜索 + 双向 BFS + Hopcroft-Karp + 最小费用最大流 + Edmonds 一般图匹配 | 5 个新算法, 630->701 tests |
 | **2026-05-23** | **Sprint任务体系重构** 🆕 | TODO.md 重写为 Sprint 格式（4个Sprint），聚焦 v1.0.0 生产就绪 | 提升项目管理效率 |
 | **2026-05-23** | **Git Tags 版本管理建立** 🆕 | 为每个 P5 模块创建独立 minor 版本标签 | 清晰追踪模块完成节点 |
 | **2026-05-23** | **文档更新规范体系建立** 🆕 | UPDATE_GUIDE.md 定义触发条件矩阵和一致性检查脚本 | Agent 自动化文档管理 |
 | **2026-05-22** | **P5 图论核心算法扩展全部完成** 🎉 | Euler/Cutpoints/Coloring/Clique/Hamiltonian 共 5 模块, 92 tests | 算法库覆盖 NP-C/NP-Hard 场景 |
-| **2026-05-22** | **Hierholzer 欧拉算法实现** | O(E) 时间复杂度，支持有向/无向图路径和回路检测 | euler 模块, 22 tests |
-| **2026-05-22** | **Tarjan 割点与桥检测算法** | O(V+E) 单次 DFS，基于 DFN/Low 时间戳 | cutpoints 模块, 15 tests |
-| **2026-05-22** | **图着色算法集（4种）实现** | 贪心/Welsh-Powell/DSATUR启发式 + 回溯精确解，覆盖多项式和NP-C | coloring 模块, 21 tests |
-| **2026-05-22** | **Bron-Kerbosch 最大团算法实现** | O(3^{V/3}) 带枢轴优化，派生独立集和顶点覆盖 | clique 模块, 14 tests |
-| **2026-05-22** | **哈密顿路径/TSP 算法集实现** | 回溯精确 + 最近邻启发式 + Held-Karp DP，覆盖 NP-Hard 场景 | hamiltonian 模块, 20 tests |
 
 ### 🔧 架构与设计决策
 
 | 日期 | 决策 | 原因 |
 |------|------|------|
 | 2026-05-08 | 4 层 trait 分层 → 6 层 | 新增 BatchReadable + EdgeIterable |
+| **2026-05-28** | **6 层 trait → 5 层** | **移除 GraphEdgeIterable（零算法使用），简化架构** |
 | 2026-05-08 | CSR 不实现 Writable | 里氏替换原则 (LSP) |
 | 2026-05-17 | 无向图半存储优化 | 节省 ~50% 内存 |
 | 2026-05-17 | 新增 CSC 格式 | 补齐调研文档，支持入边密集场景 |
@@ -259,13 +255,12 @@ moon coverage analyze    # 覆盖率分析
 | 2026-05-17 | storage struct 改 pub(all) + impl 改 pub | blackbox test 跨包可见性要求 (E4018/E4063) |
 | 2026-05-17 | Matrix 构造改逐行初始化 | Array::make 二维数组共享 bug 修复 |
 | 2026-05-17 | 转换器三层架构重构 | 有向(GraphDirected) + 无向(assert) + 语义(as_*) 分离 |
+| **2026-05-28** | **共享辅助函数提取 find_max_node_id/int_max** | **消除全项目 ~16 个重复的 find_max_id 副本** |
+| **2026-05-28** | **返回类型统一加 Result 后缀** | **ConnectedComponents→Result, SCC→Result，API 命名一致** |
 | **2026-05-19** | **FlowNetwork 独立类型设计** | **流网络语义特殊（容量/流量矩阵），不强制适配 Graph trait** |
 | **2026-05-19** | **Edmonds-Karp 算法选择** | **实现简洁（~40% code less），足够实用，为 Dinic 扩展预留接口** |
 | **2026-05-19** | **深拷贝纯函数语义** | **算法修改输入数据时必须 deep_copy，保证原网络不被修改** |
 | **2026-05-19** | **AGENTS.md v2.1.0 固化经验** | **Top10陷阱/算法开发流程/Git规范/错误速查扩展（避免重复踩坑）** |
-| **2026-05-19** | **Roadmap P0-P3 全部完成** | **图生成器+最短路径+MST+连通性+网络流，包文档覆盖率 8/8 (100%)** |
-| **2026-05-19** | **Dinic 最大流算法实现** | **比 EK 快一个数量级 O(E√V)，双算法并存可交叉验证** |
-| **2026-05-19** | **Hungarian 匈牙利算法实现** | **二分图最大匹配 O(VE)，提供纯数据版本和 Trait 版本** |
 
 ## 算法复杂度速查表
 
@@ -278,10 +273,16 @@ moon coverage analyze    # 覆盖率分析
 | | Bellman-Ford | O(VE) | O(V) | shortest_path |
 | | Floyd-Warshall | O(V³) | O(V²) | shortest_path |
 | | A* 启发式搜索 | O(b^d) | O(b^d) | shortest_path |
+| | Johnson 全源 | O(V²logV+VE) | O(V²) | shortest_path |
+| | SPFA | O(kE) 平均 | O(V) | shortest_path |
+| | 双向 Dijkstra | O((V+E)logV) | O(V) | shortest_path |
+| | Yen's K短路 | O(K·V·(E+V·logV)) | O(K·V) | shortest_path |
 | **MST** | Kruskal | O(E log E) | O(E) | mst |
 | | Prim | O(V²) | O(V) | mst |
-| **连通性** | Tarjan SCC | O(V+E) | O(V) | connectivity |
+| **连通性** | 连通分量 | O(V+E) | O(V) | connectivity |
+| | Tarjan SCC | O(V+E) | O(V) | connectivity |
 | | Kosaraju SCC | O(V+E) | O(V) | connectivity |
+| | BCC 双连通分量 | O(V+E) | O(V) | connectivity |
 | **网络流** | Edmonds-Karp | O(VE²) | O(E) | flow |
 | | Dinic | O(E√V) | O(V²) | flow |
 | | 最小费用最大流 (SSP) | O(V·E·C) | O(V²) | flow |
@@ -293,10 +294,11 @@ moon coverage analyze    # 覆盖率分析
 | **着色** | Greedy/WP | O(V²) | O(V) | coloring |
 | | DSATUR | O(V²+kV) | O(V) | coloring |
 | | Backtracking Exact | O(k^V) | O(V) | coloring |
+| | 边着色 (贪心) | O(VE) | O(V²) | coloring |
 | **团** | Bron-Kerbosch | O(3^{V/3}) | O(V²) | clique |
 | **哈密顿** | 回溯 | O(V!) | O(V) | hamiltonian |
-| **TSP** | 最近邻 | O(V²) | O(V) | hamiltonian |
-| | Held-Karp | O(2^V·V²) V≤12 | O(2^V·V) | hamiltonian |
+| | TSP 最近邻 | O(V²) | O(V) | hamiltonian |
+| | TSP Held-Karp | O(2^V·V²) V≤12 | O(2^V·V) | hamiltonian |
 | **PageRank** | 幂法迭代 | O(kE) | O(N+E) | pagerank |
 | **中心性** | 度 | O(V+E) | O(V) | centrality |
 | | 介数 (Brandes) | O(VE) | O(V+E) | centrality |
@@ -361,17 +363,18 @@ moon coverage analyze    # 覆盖率分析
 
 ---
 
-## 📊 项目统计总览（v0.12.0）
+## 📊 项目统计总览（v0.13.0）
 
 | 维度 | 数值 | 说明 |
 |------|:----:|------|
-| **版本** | **v0.12.0** | 🚀 经典算法增强已发布 |
+| **版本** | **v0.13.0** | 🛠️ 接口重构 + P0/P1 算法补齐 |
+| **Trait 层数** | **5** | 移除 GraphEdgeIterable |
 | **算法模块** | **15** | P0(1) + P1(1) + P2(2) + P3(1) + P4(1) + P5(5) + 社交网络分析(3) + 集成(1) |
 | **I/O 模块** | **1** | DOT + JSON + 图统计 (42 tests) |
-| **算法总数** | **~43** | 覆盖社交网络分析 + 多项式/NP-C/NP-Hard + A*/双向BFS/匹配/费用流 |
-| **测试用例** | **701** | 跨模块全部通过 ✅ |
-| **代码行数** | **~10000+** | 含测试和文档 |
-| **Git Tags** | **7+** | v0.5.0 → v0.12.0 |
+| **算法总数** | **~49** | 含 Johnson/SPFA/边着色/BCC/双向Dij/Yen's |
+| **测试用例** | **736** | 跨模块全部通过 ✅ |
+| **代码行数** | **~11000+** | 含测试和文档 |
+| **Git Tags** | **9+** | v0.5.0 → v0.13.0 |
 | **文档覆盖率** | **100%** | 15/15 模块有 README, 设计文档完整 |
 | **协议** | **MIT** | 2026-05-23 确认 |
 | **状态** | **🎉 Beta 质量** | 可用于生产环境测试 |

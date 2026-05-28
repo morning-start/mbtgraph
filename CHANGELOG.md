@@ -5,6 +5,32 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 本项目遵循 [语义化版本](https://semver.org/spec/v2.0.0.html)规范。
 
+## [v0.13.0] - 2026-05-28
+
+### 新增
+- 🚀 **P0 核心算法补齐** (3 个新算法, 28 测试用例):
+  - **Johnson 全源最短路径** (`shortest_path/johnson.mbt`): Bellman-Ford + Dijkstra 组合，稀疏图 O(V²logV+VE)，支持负权边检测，返回 FloydWarshallResult 兼容接口 (10 tests)
+  - **SPFA 最短路径** (`shortest_path/spfa.mbt`): Bellman-Ford 队列优化版，平均 O(kE)，入队次数 > V+1 自动判定负环 (10 tests)
+  - **边着色算法** (`coloring/edge_coloring.mbt`): 贪心策略，保证相邻边不同色，使用 ≤ 2Δ-1 色，EdgeColoringResult 类型含合法性验证 (8 tests)
+
+### 新增
+- 🎯 **P1 高级算法补齐** (3 个新算法, 21 测试用例):
+  - **双连通分量 BCC** (`connectivity/bcc.mbt`): Tarjan DFS 无向图算法，O(V+E)，同时检测割点和双连通分量，BiconnectedComponentsResult 类型 (5 tests)
+  - **双向 Dijkstra** (`shortest_path/bidirectional_dijkstra.mbt`): 源/目标双向搜索，平均快 ~2x，O((V+E)logV)，正权图专用 (6 tests)
+  - **Yen's K 最短路径** (`shortest_path/yen_k_shortest.mbt`): 偏离路径 + 候选堆策略，KShortestPathsResult 类型，支持查询第 i 条路径和距离 (10 tests)
+
+### 改进
+- 🔧 **API 命名统一**: `ConnectedComponents` → `ConnectedComponentsResult`, `StronglyConnectedComponents` → `StronglyConnectedComponentsResult`
+- 🔧 **Trait 精简**: 移除 `GraphEdgeIterable` trait（6 层 → 5 层），删除冗余定义 + 3 个存储实现 + 4 个测试
+- 🔧 **参数命名统一**: 全部 `pub fn` 图参数从 `g` 统一为 `graph`（27+ 函数，覆盖 traversal/shortest_path/mst/connectivity/coloring/cutpoints/euler/clique/flow/matching/hamiltonian 全部模块）
+- 🔧 **共享辅助函数提取**: `find_max_node_id` + `int_max` 提取至 `shared_helpers.mbt`，消除 ~16 个重复副本
+- 📦 **新类型**: `EdgeColoringResult`（边着色）、`BiconnectedComponentsResult`（双连通分量）、`KShortestPathsResult`（K最短路径）
+
+### 统计数据
+- 全量测试从 701 增长至 **736** (+35)，无回归
+- Trait 层数从 6 精简至 **5**
+- 新增 6 个算法文件，净减少约 174 行冗余代码
+
 ## [v0.12.0] - 2026-05-26
 
 ### 新增
