@@ -1,0 +1,15 @@
+import {
+  "moonbitlang/core/bench",
+  "morning-start/mbtgraph/lib/core" @core,
+  "morning-start/mbtgraph/lib/storage" @storage,
+  "morning-start/mbtgraph/lib/algo/traversal" @traversal,
+  "morning-start/mbtgraph/lib/algo/shortest_path" @sp,
+  "morning-start/mbtgraph/lib/algo/flow" @flow,
+  "morning-start/mbtgraph/lib/algo/community" @community,
+}
+
+warnings = "-unused_value-unused_package"
+
+options(
+  "is-main": false,
+)
