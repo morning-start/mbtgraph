@@ -432,3 +432,88 @@ test "both_consistent_types" {
   assert_true(rl.levels >= 1)
   assert_true(rp.levels >= 1)
 }
+
+// ============================================================================
+// Leiden 算法测试
+// ============================================================================
+
+///|
+test "leiden_two_clusters" {
+  let g = make_two_clusters()
+  let result = leiden(g, 1.0)
+  assert_eq(result.labels.length(), 6)
+  assert_true(result.num_communities >= 1)
+  assert_eq(result.levels, 1)
+}
+
+///|
+test "leiden_path_5" {
+  let g = make_path_5()
+  let result = leiden(g, 1.0)
+  assert_eq(result.labels.length(), 5)
+}
+
+///|
+test "leiden_ring_4" {
+  let g = make_ring_4()
+  let result = leiden(g, 1.0)
+  assert_eq(result.labels.length(), 4)
+}
+
+///|
+test "leiden_dense_cluster" {
+  let g = make_dense_cluster_6()
+  let result = leiden(g, 1.0)
+  assert_eq(result.labels.length(), 6)
+  assert_true(result.num_communities >= 1)
+}
+
+///|
+test "leiden_empty_graph" {
+  let g = @storage.new_directed()
+  let result = leiden(g, 1.0)
+  assert_eq(result.labels.length(), 0)
+  assert_eq(result.num_communities, 0)
+}
+
+///|
+test "leiden_single_node" {
+  let g = @storage.new_directed()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  let result = leiden(g, 1.0)
+  assert_eq(result.labels.length(), 1)
+  assert_eq(result.num_communities, 1)
+}
+
+///|
+test "leiden_resolution_effect" {
+  let g = make_two_clusters()
+  let r1 = leiden(g, 0.5)
+  let r2 = leiden(g, 2.0)
+  assert_eq(r1.labels.length(), 6)
+  assert_eq(r2.labels.length(), 6)
+}
+
+///|
+test "leiden_modularity_non_negative" {
+  let g = make_dense_cluster_6()
+  let result = leiden(g, 1.0)
+  assert_true(result.modularity >= 0.0)
+}
+
+///|
+test "leiden_returns_community_result" {
+  let g = make_two_clusters()
+  let result = leiden(g, 1.0)
+  assert_true(result.labels.length() > 0)
+  assert_true(result.num_communities > 0)
+
+  let n0_label = result.get_label(@core.NodeId(0))
+  match n0_label {
+    Some(l) => assert_true(l >= 0)
+    None => assert_true(false)
+  }
+
+  let nodes_comm0 = result.nodes_in_community(0)
+  assert_true(nodes_comm0.length() > 0)
+}
