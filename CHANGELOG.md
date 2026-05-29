@@ -5,6 +5,35 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 本项目遵循 [语义化版本](https://semver.org/spec/v2.0.0.html)规范。
 
+## [v0.15.0] - 2026-05-29
+
+### 新增
+- 🧩 **经典算法大规模扩充** (4 波, 11 模块, **182 新测试**):
+  - **第 1 波 — 社区检测+链接预测+稠密子图**:
+    - Leiden 算法 (`community/leiden.mbt`): Louvain 改进版，保证连通性 (10 tests)
+    - 谱聚类 (`community/spectral.mbt`): 拉普拉斯特征向量 + K-Means (10 tests)
+    - 链接预测套件 (`link_prediction/`): 共同邻居、Jaccard、Adamic-Adar、优先连接、资源分配 (19 tests)
+    - 稠密子图 (`dense_subgraph/`): K-Core 分解、K-Truss、三角计数、聚类系数 (20 tests)
+  - **第 2 波 — 中心性+图统计**:
+    - 中心性补齐 (`centrality/`): Katz、Harmonic、Communication、Group Betweenness (27 tests)
+    - 图统计扩展 (`io/`): 直径、半径、Wiener 指数、网络效率、三元组计数 (13 tests)
+  - **第 3 波 — 匹配+流扩展**:
+    - Kuhn-Munkres 最大权完美匹配 (`matching/kuhn_munkres.mbt`): O(n³) (5 tests)
+    - Push-Relabel 最大流 (`flow/push_relabel.mbt`): 重标记至前端启发式 (9 tests)
+    - Stoer-Wagner 全局最小割 (`flow/stoer_wagner.mbt`): 最大邻接搜索 (7 tests)
+  - **第 4 波 — 图算子+特殊图识别**:
+    - 图算子 (`operators/`): 补图、反转、并交差、笛卡尔积、张量积、字典序积、线图、收缩、幂图 (28 tests)
+    - 特殊图识别 (`recognition/`): 二分图、完全图、正则图、树、森林、弦图(MCS+PEO)、Havel-Hakimi (38 tests)
+
+### 统计数据
+- 全量测试从 **740** 增长至 **922** (+182)，无回归
+- 新算法模块: 7 个 (`link_prediction`, `dense_subgraph`, `operators`, `recognition`, 扩展 `flow`/`matching`/`centrality`/`community`/`io`)
+- 新增算法/函数: **~41**
+- 净增代码: ~3,500 行
+- 📋 Sprint 任务体系重构: TODO.md 采用多波次格式
+- 📝 文档更新规范体系完善: UPDATE_GUIDE.md 全面应用
+- 🔧 AGENTS.md 升级至 v2.4.0+
+
 ## [v0.14.0] - 2026-05-29
 
 ### 改进
@@ -97,21 +126,6 @@
 - 算法模块数从 12 扩展至 **15**，算法总数从 30+ 扩展至 **~38**
 - 全量测试从 551 增长至 **588**，无回归
 - AGENTS.md 升级至 v3.1.0，MEMORY.md/README.mbt.md 同步更新
-
-## [未发布]
-
-### 新增
-- 📋 Sprint任务体系重构：TODO.md采用4-Sprint格式，聚焦v1.0.0生产就绪目标
-- 📝 文档更新规范体系成熟：UPDATE_GUIDE.md + 自动化检查脚本全面应用
-- 🔧 AGENTS.md升级至v2.4.0（Sprint系统+文档规范化）
-- 📊 MEMORY.md新增3条关键决策记录
-
-### 改进
-- ROADMAP.md聚焦v1.0.0里程碑，明确生产就绪标准
-- TODO.md从线性列表升级为Sprint任务体系
-- 项目文档版本号统一至基准
-
----
 
 ## [0.9.0] - 2026-05-22
 
@@ -501,7 +515,13 @@
 
 ---
 
-[Unreleased]: https://github.com/morning-start/mbtgraph/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/morning-start/mbtgraph/compare/v0.15.0...HEAD
+[v0.15.0]: https://github.com/morning-start/mbtgraph/releases/tag/v0.15.0
+[v0.14.0]: https://github.com/morning-start/mbtgraph/releases/tag/v0.14.0
+[v0.13.0]: https://github.com/morning-start/mbtgraph/releases/tag/v0.13.0
+[v0.12.0]: https://github.com/morning-start/mbtgraph/releases/tag/v0.12.0
+[v0.11.0]: https://github.com/morning-start/mbtgraph/releases/tag/v0.11.0
+[v0.10.0]: https://github.com/morning-start/mbtgraph/releases/tag/v0.10.0
 [0.9.0]: https://github.com/morning-start/mbtgraph/releases/tag/v0.9.0
 [0.8.0]: https://github.com/morning-start/mbtgraph/releases/tag/v0.8.0
 [0.7.0]: https://github.com/morning-start/mbtgraph/releases/tag/v0.7.0
