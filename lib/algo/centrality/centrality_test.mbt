@@ -616,3 +616,277 @@ test "integration_consistent_lengths" {
   assert_eq(cc.scores.length(), n)
   assert_eq(ec.scores.length(), n)
 }
+
+// ============================================================
+// Katz 中心性 (8 tests)
+// ============================================================
+
+///|
+test "katz_star_center_highest" {
+  let g = make_central_star()
+  let result = katz_centrality(g, 0.1, 1.0, 100, 1.0e-6)
+  match result.max_node() {
+    Some((id, _)) => assert_eq(id.0, 0)
+    None => assert_true(false)
+  }
+}
+
+///|
+test "katz_complete_uniform" {
+  let g = make_complete_4()
+  let result = katz_centrality(g, 0.1, 1.0, 100, 1.0e-6)
+  let first = result.scores[0]
+  for s in result.scores {
+    assert_true(approx_eq(s, first, 0.01))
+  }
+}
+
+///|
+test "katz_empty_graph" {
+  let g = @storage.new_directed()
+  let result = katz_centrality(g, 0.1, 1.0, 100, 1.0e-6)
+  assert_true(result.scores.length() == 0)
+}
+
+///|
+test "katz_single_node" {
+  let g = @storage.new_directed()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  let result = katz_centrality(g, 0.1, 1.0, 100, 1.0e-6)
+  assert_true(result.scores.length() == 1)
+  match result.get_score(@core.NodeId(0)) {
+    Some(s) => assert_true(s > 0.0)
+    None => assert_true(false)
+  }
+}
+
+///|
+test "katz_path_all_non_negative" {
+  let g = make_path_graph_4()
+  let result = katz_centrality(g, 0.2, 1.0, 100, 1.0e-6)
+  assert_eq(result.scores.length(), 4)
+  for s in result.scores {
+    assert_true(s >= 0.0)
+  }
+}
+
+///|
+test "katz_alpha_zero_equals_beta" {
+  let g = make_path_graph_4()
+  let result = katz_centrality(g, 0.0, 2.0, 10, 1.0e-6)
+  for s in result.scores {
+    assert_true(approx_eq(s, 2.0, 0.01))
+  }
+}
+
+///|
+test "katz_immutability" {
+  let g = make_path_graph_4()
+  let nc_before = @core.GraphReadable::node_count(g)
+  let _r = katz_centrality(g, 0.1, 1.0, 10, 1.0e-6)
+  let nc_after = @core.GraphReadable::node_count(g)
+  assert_eq(nc_before, nc_after)
+}
+
+///|
+test "katz_non_negative" {
+  let g = make_bridge_graph()
+  let result = katz_centrality(g, 0.1, 1.0, 100, 1.0e-6)
+  for s in result.scores {
+    assert_true(s >= 0.0)
+  }
+}
+
+// ============================================================
+// Harmonic 中心性 (8 tests)
+// ============================================================
+
+///|
+test "harmonic_center_highest" {
+  let g = make_path_graph_4()
+  let result = harmonic_centrality(g, true)
+  match result.get_score(@core.NodeId(1)) {
+    Some(s) => assert_true(s > 0.0)
+    None => assert_true(false)
+  }
+}
+
+///|
+test "harmonic_path_nodes_non_negative" {
+  let g = make_path_graph_4()
+  let result = harmonic_centrality(g, true)
+  for s in result.scores {
+    assert_true(s >= 0.0)
+  }
+}
+
+///|
+test "harmonic_complete_uniform" {
+  let g = make_complete_4()
+  let result = harmonic_centrality(g, true)
+  let first = result.scores[0]
+  for s in result.scores {
+    assert_true(approx_eq(s, first, 0.01))
+  }
+}
+
+///|
+test "harmonic_disconnected_nonzero" {
+  let g = @storage.new_directed()
+  let mut i = 0
+  while i < 4 {
+    @core.GraphWritable::add_node(g, 0.0) |> ignore
+    i = i + 1
+  }
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
+  |> ignore
+  let result = harmonic_centrality(g, true)
+  let s0 = result.get_score(@core.NodeId(0))
+  let s2 = result.get_score(@core.NodeId(2))
+  match (s0, s2) {
+    (Some(a), Some(b)) => {
+      assert_true(a > 0.0)
+      assert_true(b > 0.0)
+    }
+    _ => assert_true(false)
+  }
+}
+
+///|
+test "harmonic_empty_graph" {
+  let g = @storage.new_directed()
+  let result = harmonic_centrality(g, true)
+  assert_true(result.scores.length() == 0)
+}
+
+///|
+test "harmonic_single_node" {
+  let g = @storage.new_directed()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  let result = harmonic_centrality(g, true)
+  assert_true(result.scores.length() == 1)
+}
+
+///|
+test "harmonic_immutability" {
+  let g = make_path_graph_4()
+  let nc_before = @core.GraphReadable::node_count(g)
+  let _r = harmonic_centrality(g, true)
+  let nc_after = @core.GraphReadable::node_count(g)
+  assert_eq(nc_before, nc_after)
+}
+
+///|
+test "harmonic_normalized_range" {
+  let g = make_complete_4()
+  let result = harmonic_centrality(g, true)
+  for s in result.scores {
+    assert_true(s >= 0.0)
+    assert_true(s <= 1.01)
+  }
+}
+
+// ============================================================
+// 通信能力中心性 (6 tests)
+// ============================================================
+
+///|
+test "communication_path_non_negative" {
+  let g = make_path_graph_4()
+  let result = communication_centrality(g)
+  assert_eq(result.scores.length(), 4)
+  for s in result.scores {
+    assert_true(s >= 0.0)
+  }
+}
+
+///|
+test "communication_empty_graph" {
+  let g = @storage.new_directed()
+  let result = communication_centrality(g)
+  assert_true(result.scores.length() == 0)
+}
+
+///|
+test "communication_single_node" {
+  let g = @storage.new_directed()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  let result = communication_centrality(g)
+  assert_true(result.scores.length() == 1)
+}
+
+///|
+test "communication_two_nodes" {
+  let g = @storage.new_directed()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  let result = communication_centrality(g)
+  assert_eq(result.scores.length(), 2)
+}
+
+///|
+test "communication_bridge_non_negative" {
+  let g = make_bridge_graph()
+  let result = communication_centrality(g)
+  for s in result.scores {
+    assert_true(s >= 0.0)
+  }
+}
+
+///|
+test "communication_immutability" {
+  let g = make_path_graph_4()
+  let nc_before = @core.GraphReadable::node_count(g)
+  let _r = communication_centrality(g)
+  let nc_after = @core.GraphReadable::node_count(g)
+  assert_eq(nc_before, nc_after)
+}
+
+// ============================================================
+// 集团中心性 (5 tests)
+// ============================================================
+
+///|
+test "group_betweenness_center_highest" {
+  let g = make_bridge_graph()
+  let group = [@core.NodeId(2)]
+  let score = group_betweenness_centrality(g, group)
+  assert_true(score > 0.0)
+}
+
+///|
+test "group_betweenness_empty_group" {
+  let g = make_bridge_graph()
+  let score = group_betweenness_centrality(g, [])
+  assert_true(approx_eq(score, 0.0, 1.0e-10))
+}
+
+///|
+test "group_betweenness_complete_any_group" {
+  let g = make_complete_4()
+  let group = [@core.NodeId(0)]
+  let score = group_betweenness_centrality(g, group)
+  // 完全图中无中介路径
+  assert_true(approx_eq(score, 0.0, 1.0e-6))
+}
+
+///|
+test "group_betweenness_bridge_group" {
+  let g = make_bridge_graph()
+  let group = [@core.NodeId(2), @core.NodeId(3)]
+  let score = group_betweenness_centrality(g, group)
+  assert_true(score > 0.0)
+}
+
+///|
+test "group_betweenness_immutability" {
+  let g = make_path_graph_4()
+  let nc_before = @core.GraphReadable::node_count(g)
+  let _r = group_betweenness_centrality(g, [@core.NodeId(1)])
+  let nc_after = @core.GraphReadable::node_count(g)
+  assert_eq(nc_before, nc_after)
+}
