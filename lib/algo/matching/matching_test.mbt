@@ -1035,3 +1035,46 @@ test "hopcroft_karp_cross_storage_edgelist" {
   let result = hopcroft_karp(g, left, right)
   assert_true(result.cardinality == 4)
 }
+// ============================================================
+// Kuhn-Munkres 测试 (5 tests)
+// ============================================================
+
+///|
+test "km_2x2_identity" {
+  let w : Array[Array[Double]] = [[1.0, 0.0], [0.0, 1.0]]
+  let r = kuhn_munkres(w)
+  assert_eq(r.matching.length(), 2)
+  assert_true(r.total_weight > 1.99)
+}
+
+///|
+test "km_2x2_cross" {
+  let w : Array[Array[Double]] = [[0.0, 2.0], [3.0, 0.0]]
+  let r = kuhn_munkres(w)
+  assert_eq(r.matching.length(), 2)
+  assert_true(r.total_weight > 4.99)
+}
+
+///|
+test "km_3x3_uniform" {
+  let w : Array[Array[Double]] = [[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]
+  let r = kuhn_munkres(w)
+  assert_eq(r.matching.length(), 3)
+  assert_true(r.total_weight > 2.99)
+}
+
+///|
+test "km_3x3_diag_prefer" {
+  let w : Array[Array[Double]] = [[5.0, 1.0, 1.0], [1.0, 5.0, 1.0], [1.0, 1.0, 5.0]]
+  let r = kuhn_munkres(w)
+  assert_eq(r.matching.length(), 3)
+  assert_true(r.total_weight > 14.99)
+}
+
+///|
+test "km_empty" {
+  let w : Array[Array[Double]] = []
+  let r = kuhn_munkres(w)
+  assert_eq(r.matching.length(), 0)
+  assert_true(r.total_weight < 1.0e-9)
+}
