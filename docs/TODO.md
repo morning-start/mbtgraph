@@ -3,7 +3,7 @@
 > **最后更新**: 2026-05-29 | **当前版本**: v0.14.0 ⚡ 性能优化 (进行中...)
 > **下次评审**: 2026-06-04（每周日）
 > **下个版本**: v0.14.0 ⚡ 性能优化
-> **当前进度**: 7/10 优化完成
+> **当前进度**: 8/10 优化完成
 
 ---
 
@@ -17,7 +17,7 @@
 ✅ v0.11.0  📊 数据交换与可视化 (630 tests)
 ✅ v0.12.0  🚀 经典算法增强 (701 tests)
 ✅ v0.13.0  🛠️ 接口重构 + P0/P1 算法补齐 (736 tests)
-🔶 v0.14.0  ⚡ 性能优化 (7/10 ✅ 进行中...)
+🔶 v0.14.0  ⚡ 性能优化 (8/10 ✅ 进行中...)
 ⬜ v0.15.0  🔧 API 冻结候选 (=v1.0.0-rc.1)
 ⬜ v1.0.0   🎉 正式发布
 ```
@@ -127,12 +127,17 @@
 
 ### 🟣 第 4 波: 高级分析
 
-#### TASK-H: Dynamic Dispatch / 内联分析
+#### TASK-H: Dynamic Dispatch / 内联分析 ✅
 
-- [ ] 统计 trait 方法调用频率（neighbors/node_count 等）
-- [ ] 标记内联候选函数
-- [ ] 编写分析报告: `docs/design/dispatch_analysis.md`
-- 预期: ~3h
+- [x] 统计 trait 方法调用频率（neighbors/node_count 等）
+- [x] 标记内联候选函数
+- [x] 编写分析报告: `docs/design/dispatch_analysis.md`
+- 实际: ~0.5h（静态分析，无需运行时工具）
+- **关键发现**:
+  - `node_count` 是最热方法（82 次，占 GraphReadable 的 37.8%），内联收益最高
+  - 前 6 个方法（node_count/neighbors/node_ids/contains_node/degree/neighbors_with_weight）占总调用的 95.6%
+  - GraphWritable 的 681 次调用全部来自测试代码，不影响运行时性能
+  - 8 个方法从未被使用（get_node/is_empty/remove_node/remove_edge/clear/out_neighbors/batch_neighbors/batch_edges）
 
 ---
 
@@ -177,11 +182,11 @@
 | 2 | **TASK-E: AdjList 批量操作** | ✅ **完成** | 🟡 P1 | 2h | 建图 2-3x |
 | 2 | **TASK-F: CSR 反向索引** | ✅ **完成** | 🟡 P1 | 2h | 入边 O(V+E)→O(deg_in) |
 | 3 | **TASK-G: Benchmark 基线** | ✅ **完成** | 🟢 P2 | 2h | 量化度量 |
-| 4 | TASK-H: Dispatch 分析 | ⬜ | 🟢 P2 | 3h | 编译器优化 |
+| 4 | TASK-H: Dispatch 分析 | ✅ **完成** | 🟢 P2 | 3h | 编译器优化 |
 | 4 | TASK-I: Brandes 并行化 | ⬜ | 🔵 P3 | 5h | 多核 2-4x |
 | 4 | TASK-J: 稀疏矩阵 | ⬜ | 🔵 P3 | 4h | 内存 -60-80% |
 | 发布 | TASK-Z: 文档+Tag | ⬜ | 🟡 P1 | 2h | 发布 |
-| **合计** | **11 tasks** | **7/11** | — | **~27.5h** | — |
+| **合计** | **11 tasks** | **8/11** | — | **~27.5h** | — |
 
 ---
 
