@@ -624,3 +624,139 @@ test "stats_connectivity_two_components" {
   assert_eq(c.component_count, 2)
   assert_eq(c.largest_component_size, 2)
 }
+
+// ============================================================
+// 图度量测试 (13 tests)
+// ============================================================
+
+///|
+fn make_undirected_path_4() -> @storage.UndirectedAdjList {
+  let g = @storage.new_undirected()
+  let mut i = 0
+  while i < 4 {
+    @core.GraphWritable::add_node(g, 0.0) |> ignore
+    i = i + 1
+  }
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
+  |> ignore
+  g
+}
+
+///|
+fn make_undirected_triangle() -> @storage.UndirectedAdjList {
+  let g = @storage.new_undirected()
+  let mut i = 0
+  while i < 4 {
+    @core.GraphWritable::add_node(g, 0.0) |> ignore
+    i = i + 1
+  }
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(0), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(3), 1.0)
+  |> ignore
+  g
+}
+
+///|
+test "metrics_distance_path_4" {
+  let g = make_undirected_path_4()
+  let m = distance_metrics(g)
+  assert_eq(m.diameter, 3)
+  assert_eq(m.radius, 2)
+  assert_eq(m.wiener_index, 10)  // 1+2+3 + 1+2 + 1 = 10
+}
+
+///|
+test "metrics_distance_empty" {
+  let g = @storage.new_undirected()
+  let m = distance_metrics(g)
+  assert_eq(m.diameter, 0)
+  assert_eq(m.radius, 0)
+}
+
+///|
+test "metrics_distance_single" {
+  let g = @storage.new_undirected()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  let m = distance_metrics(g)
+  assert_eq(m.diameter, 0)
+}
+
+///|
+test "metrics_efficiency_path_4" {
+  let g = make_undirected_path_4()
+  let e = network_efficiency(g)
+  assert_true(e.global_efficiency > 0.0)
+  assert_true(e.global_efficiency <= 1.0)
+}
+
+///|
+test "metrics_efficiency_empty" {
+  let g = @storage.new_undirected()
+  let e = network_efficiency(g)
+  assert_true(e.global_efficiency >= 0.0)
+}
+
+///|
+test "metrics_efficiency_single" {
+  let g = @storage.new_undirected()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  let e = network_efficiency(g)
+  assert_true(e.global_efficiency >= 0.0)
+}
+
+///|
+test "metrics_triad_triangle" {
+  let g = make_undirected_triangle()
+  let t = triad_counting(g)
+  assert_true(t.closed_triads >= 1)
+  assert_true(t.global_clustering > 0.0)
+}
+
+///|
+test "metrics_triad_path_4" {
+  let g = make_undirected_path_4()
+  let t = triad_counting(g)
+  // path has no triangles
+  assert_true(t.open_triads >= 0)
+  assert_true(t.global_clustering >= 0.0)
+}
+
+///|
+test "metrics_triad_empty" {
+  let g = @storage.new_undirected()
+  let t = triad_counting(g)
+  assert_eq(t.open_triads, 0)
+  assert_eq(t.closed_triads, 0)
+}
+
+///|
+test "metrics_triad_k4" {
+  let g = @storage.new_undirected()
+  let mut i = 0
+  while i < 4 {
+    @core.GraphWritable::add_node(g, 0.0) |> ignore
+    i = i + 1
+  }
+  let mut a = 0
+  while a < 4 {
+    let mut b = a + 1
+    while b < 4 {
+      @core.GraphWritable::add_edge(g, @core.NodeId(a), @core.NodeId(b), 1.0)
+      |> ignore
+      b = b + 1
+    }
+    a = a + 1
+  }
+  let t = triad_counting(g)
+  assert_true(t.closed_triads >= 1)
+  assert_true(t.global_clustering > 0.0)
+}
