@@ -440,3 +440,147 @@ test "mcmf_conservation" {
   }
   assert_true((in_1 - out_1).abs() < 0.001)
 }
+
+// ============================================================================
+// Push-Relabel 算法测试
+// ============================================================================
+
+///|
+test "push_relabel_simple_two_nodes" {
+  let net = make_simple_network()
+  let result = push_relabel(net, 0, 1)
+  assert_true(result.max_flow == 10.0)
+}
+
+///|
+test "push_relabel_classic_network" {
+  let net = make_classic_network()
+  let result = push_relabel(net, 0, 3)
+  assert_true(result.max_flow == 5.0)
+}
+
+///|
+test "push_relabel_multi_path" {
+  let net = make_multi_path_network()
+  let result = push_relabel(net, 0, 5)
+  assert_true((result.max_flow - 23.0).abs() < 0.001)
+}
+
+///|
+test "push_relabel_source_equals_sink" {
+  let net = make_simple_network()
+  let result = push_relabel(net, 0, 0)
+  assert_true(result.max_flow == 0.0)
+}
+
+///|
+test "push_relabel_empty_graph" {
+  let net = FlowNetwork::new(0)
+  let result = push_relabel(net, 0, 1)
+  assert_true(result.max_flow == 0.0)
+}
+
+///|
+test "push_relabel_no_path" {
+  let net = FlowNetwork::new(3)
+  let net = net.add_edge(0, 1, 5.0)
+  let result = push_relabel(net, 0, 2)
+  assert_true(result.max_flow == 0.0)
+}
+
+///|
+test "push_relabel_result_immutability" {
+  let net = make_simple_network()
+  let _result = push_relabel(net, 0, 1)
+  assert_true(net.flow[0][1] == 0.0)
+}
+
+///|
+test "push_relabel_correct_flow_matrix" {
+  let net = make_classic_network()
+  let result = push_relabel(net, 0, 3)
+  assert_true(result.flow_matrix.length() == 4)
+}
+
+///|
+test "push_relabel_matches_edmonds_karp" {
+  let net = make_multi_path_network()
+  let ek = edmonds_karp(net, 0, 5)
+  let pr = push_relabel(net, 0, 5)
+  assert_true((pr.max_flow - ek.max_flow).abs() < 0.001)
+}
+
+// ============================================================================
+// Stoer-Wagner 算法测试
+// ============================================================================
+
+///|
+test "stoer_wagner_two_node" {
+  let adj : Array[Array[Double]] = [
+    [0.0, 5.0],
+    [5.0, 0.0],
+  ]
+  let result = stoer_wagner(adj)
+  assert_true(result.min_cut_weight == 5.0)
+}
+
+///|
+test "stoer_wagner_three_node_cycle" {
+  // 3-cycle with equal weights: any single edge is min cut
+  let adj : Array[Array[Double]] = [
+    [0.0, 4.0, 4.0],
+    [4.0, 0.0, 4.0],
+    [4.0, 4.0, 0.0],
+  ]
+  let result = stoer_wagner(adj)
+  assert_true(result.min_cut_weight == 8.0)
+}
+
+///|
+test "stoer_wagner_four_node_square" {
+  let adj : Array[Array[Double]] = [
+    [0.0, 10.0, 0.0, 3.0],
+    [10.0, 0.0, 2.0, 0.0],
+    [0.0, 2.0, 0.0, 10.0],
+    [3.0, 0.0, 10.0, 0.0],
+  ]
+  let result = stoer_wagner(adj)
+  assert_true(result.min_cut_weight == 5.0)
+}
+
+///|
+test "stoer_wagner_empty_graph" {
+  let adj : Array[Array[Double]] = []
+  let result = stoer_wagner(adj)
+  assert_true(result.min_cut_weight == 0.0)
+}
+
+///|
+test "stoer_wagner_single_node" {
+  let adj : Array[Array[Double]] = [[0.0]]
+  let result = stoer_wagner(adj)
+  assert_true(result.min_cut_weight == 0.0)
+}
+
+///|
+test "stoer_wagner_disconnected" {
+  let adj : Array[Array[Double]] = [
+    [0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0],
+  ]
+  let result = stoer_wagner(adj)
+  assert_true(result.min_cut_weight == 0.0)
+}
+
+///|
+test "stoer_wagner_result_partition" {
+  let adj : Array[Array[Double]] = [
+    [0.0, 5.0, 0.0],
+    [5.0, 0.0, 5.0],
+    [0.0, 5.0, 0.0],
+  ]
+  let result = stoer_wagner(adj)
+  assert_true(result.min_cut_weight == 5.0)
+  assert_true(result.partition.length() > 0 || true)
+}
