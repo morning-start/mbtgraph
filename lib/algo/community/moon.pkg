@@ -1,6 +1,8 @@
 import {
   "morning-start/mbtgraph/lib/core" @core,
   "morning-start/mbtgraph/lib/storage" @storage,
+  "Luna-Flow/linear-algebra/mutable" @la,
+  "Luna-Flow/luna-generic" @lg,
 }
 
 warnings = "-unused_value-unused_package"

@@ -517,3 +517,108 @@ test "leiden_returns_community_result" {
   let nodes_comm0 = result.nodes_in_community(0)
   assert_true(nodes_comm0.length() > 0)
 }
+
+// ============================================================
+// 谱聚类测试 (10 tests)
+// ============================================================
+
+///|
+test "spectral_two_clusters_k2" {
+  let g = make_two_clusters()
+  let result = spectral_clustering(g, 2)
+  assert_eq(result.labels.length(), 6)
+  assert_true(result.num_communities >= 2)
+  let lbl0 = result.get_label(@core.NodeId(0))
+  let lbl3 = result.get_label(@core.NodeId(3))
+  match (lbl0, lbl3) {
+    (Some(a), Some(b)) => assert_true(a != b)
+    _ => assert_true(false)
+  }
+}
+
+///|
+test "spectral_two_clusters_k3" {
+  let g = make_two_clusters()
+  let result = spectral_clustering(g, 3)
+  assert_eq(result.labels.length(), 6)
+  assert_true(result.num_communities >= 2)
+  let lbl0 = result.get_label(@core.NodeId(0))
+  let lbl3 = result.get_label(@core.NodeId(3))
+  match (lbl0, lbl3) {
+    (Some(a), Some(b)) => assert_true(a != b)
+    _ => assert_true(false)
+  }
+}
+
+///|
+test "spectral_dense_cluster_one_comm" {
+  let g = make_dense_cluster_6()
+  let result = spectral_clustering(g, 1)
+  assert_eq(result.labels.length(), 6)
+  assert_eq(result.num_communities, 1)
+}
+
+///|
+test "spectral_empty_graph" {
+  let g = @storage.new_directed()
+  let result = spectral_clustering(g, 2)
+  assert_eq(result.labels.length(), 0)
+  assert_eq(result.num_communities, 0)
+}
+
+///|
+test "spectral_single_node" {
+  let g = @storage.new_directed()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  let result = spectral_clustering(g, 2)
+  assert_eq(result.labels.length(), 1)
+  assert_eq(result.num_communities, 1)
+}
+
+///|
+test "spectral_k_greater_than_n" {
+  let g = make_path_5()
+  let result = spectral_clustering(g, 10)
+  assert_eq(result.labels.length(), 5)
+  assert_true(result.num_communities >= 1)
+}
+
+///|
+test "spectral_k_equals_1" {
+  let g = make_two_clusters()
+  let result = spectral_clustering(g, 1)
+  assert_eq(result.labels.length(), 6)
+  assert_eq(result.num_communities, 1)
+  for lbl in result.labels {
+    assert_eq(lbl, 0)
+  }
+}
+
+///|
+test "spectral_ring_4_k2" {
+  let g = make_ring_4()
+  let result = spectral_clustering(g, 2)
+  assert_eq(result.labels.length(), 4)
+  assert_true(result.num_communities >= 1)
+  assert_true(result.num_communities <= 4)
+}
+
+///|
+test "spectral_immutability" {
+  let original_g = make_path_5()
+  let nc_before = @core.GraphReadable::node_count(original_g)
+  let _r = spectral_clustering(original_g, 2)
+  let nc_after = @core.GraphReadable::node_count(original_g)
+  assert_eq(nc_before, nc_after)
+}
+
+///|
+test "spectral_labels_in_range" {
+  let g = make_two_clusters()
+  let result = spectral_clustering(g, 2)
+  assert_true(result.num_communities > 0)
+  for lbl in result.labels {
+    assert_true(lbl >= 0)
+    assert_true(lbl < result.num_communities)
+  }
+}
