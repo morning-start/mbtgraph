@@ -65,11 +65,11 @@ pub fn[G : @core.GraphReadable] prim(graph : G, root : @core.NodeId) -> MstResul
       None => ()
     }
     let unode = @core.NodeId(u)
-    for v in @core.GraphReadable::neighbors(graph, unode) {
-      let vid = v.0
-      if vid >= 0 && vid < size && !in_mst[vid] {
-        match @core.GraphReadable::get_edge(graph, unode, v) {
-          Some(w) => {
+    for vw in @core.GraphReadable::neighbors_with_weight(graph, unode) {
+      match vw {
+        (v, w) => {
+          let vid = v.0
+          if vid >= 0 && vid < size && !in_mst[vid] {
             let should_update = match key[vid] {
               None => true
               Some(k) => w < k
@@ -79,7 +79,6 @@ pub fn[G : @core.GraphReadable] prim(graph : G, root : @core.NodeId) -> MstResul
               parent[vid] = Some(unode)
             }
           }
-          None => ()
         }
       }
     }

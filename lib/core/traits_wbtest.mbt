@@ -78,6 +78,19 @@ impl GraphReadable for MockGraph with neighbors(self, id) -> Iter[NodeId] {
   r.iter()
 }
 
+///
+impl GraphReadable for MockGraph with neighbors_with_weight(self, id) -> Iter[
+  (NodeId, Double),
+] {
+  let r : Array[(NodeId, Double)] = []
+  for e in self.edges {
+    match e {
+      (f, t, w) => if f == id { r.push((t, w)) }
+    }
+  }
+  r.iter()
+}
+
 ///|
 impl GraphReadable for MockGraph with degree(self, id) -> Int {
   let mut c = 0

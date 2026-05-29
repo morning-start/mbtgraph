@@ -86,6 +86,25 @@ pub impl @core.GraphReadable for DirectedMatrix with neighbors(self, id) -> Iter
   r.iter()
 }
 
+///
+pub impl @core.GraphReadable for DirectedMatrix with neighbors_with_weight(
+  self,
+  id,
+) -> Iter[(@core.NodeId, Double)] {
+  let idx = id.0
+  if idx < 0 || idx >= self.capacity {
+    return [].iter()
+  }
+  let r : Array[(@core.NodeId, Double)] = []
+  for j in 0..<self.capacity {
+    match self.matrix[idx][j] {
+      Some(w) => r.push((@core.NodeId(j), w))
+      None => ()
+    }
+  }
+  r.iter()
+}
+
 ///|
 fn dm_count_row(matrix : Array[Array[Double?]], cap : Int, row : Int) -> Int {
   let mut c = 0

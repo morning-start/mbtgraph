@@ -32,10 +32,9 @@ pub fn[G : @core.GraphReadable] bellman_ford(
   }
   let edge_list : Array[(@core.NodeId, @core.NodeId, Double)] = []
   for u in node_list {
-    for v in @core.GraphReadable::neighbors(graph, u) {
-      match @core.GraphReadable::get_edge(graph, u, v) {
-        Some(w) => edge_list.push((u, v, w))
-        None => ()
+    for vw in @core.GraphReadable::neighbors_with_weight(graph, u) {
+      match vw {
+        (v, w) => edge_list.push((u, v, w))
       }
     }
   }

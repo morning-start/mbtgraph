@@ -87,13 +87,13 @@ pub fn[G : @core.GraphReadable] bidirectional_dijkstra(
             continue
           }
 
-          for v in @core.GraphReadable::neighbors(graph, u) {
-            let vid = v.0
-            if vid < 0 || vid >= size || forward_visited[vid] {
-              continue
-            }
-            match @core.GraphReadable::get_edge(graph, u, v) {
-              Some(weight) => {
+          for vw in @core.GraphReadable::neighbors_with_weight(graph, u) {
+            match vw {
+              (v, weight) => {
+                let vid = v.0
+                if vid < 0 || vid >= size || forward_visited[vid] {
+                  continue
+                }
                 let new_dist = d_u + weight
                 let should_update = match forward_dist[vid] {
                   None => true
@@ -105,7 +105,6 @@ pub fn[G : @core.GraphReadable] bidirectional_dijkstra(
                   fwd_pq = heap_push(fwd_pq, new_dist, v)
                 }
               }
-              None => ()
             }
           }
         }

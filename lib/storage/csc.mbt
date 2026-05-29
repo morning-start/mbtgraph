@@ -184,6 +184,37 @@ pub impl @core.GraphReadable for CSCGraph with neighbors(self, id) -> Iter[
   r.iter()
 }
 
+///
+pub impl @core.GraphReadable for CSCGraph with neighbors_with_weight(
+  self,
+  id,
+) -> Iter[(@core.NodeId, Double)] {
+  let idx = id.0
+  if idx < 0 || idx >= self.col_ptr.length() - 1 {
+    return [].iter()
+  }
+  let r : Array[(@core.NodeId, Double)] = []
+  for i in 0..<self.nodes.length() {
+    if i == idx {
+      continue
+    }
+    let s = self.col_ptr[idx]
+    let e = self.col_ptr[idx + 1]
+    for k in s..<e {
+      if self.row_idx[k] == i {
+        r.push((@core.NodeId(i), self.values[k]))
+        break
+      }
+    }
+  }
+  let s2 = self.col_ptr[idx]
+  let e2 = self.col_ptr[idx + 1]
+  for k in s2..<e2 {
+    r.push((self.row_idx[k], self.values[k]))
+  }
+  r.iter()
+}
+
 ///|
 pub impl @core.GraphReadable for CSCGraph with degree(self, id) -> Int {
   let idx = id.0

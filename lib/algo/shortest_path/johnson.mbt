@@ -35,22 +35,22 @@ pub fn[G : @core.GraphReadable] johnson(
   for _ in 0..<nc {
     let mut updated = false
     for u in node_list {
-      for v in @core.GraphReadable::neighbors(graph, u) {
-        let uid = u.0
-        let vid = v.0
-        if uid < 0 || uid >= size || vid < 0 || vid >= size {
-          continue
-        }
-        let uh_opt = h[uid]
-        let uh = match uh_opt {
-          None => continue
-          Some(x) => x
-        }
-        if uh >= inf {
-          continue
-        }
-        match @core.GraphReadable::get_edge(graph, u, v) {
-          Some(w) => {
+      for vw in @core.GraphReadable::neighbors_with_weight(graph, u) {
+        match vw {
+          (v, w) => {
+            let uid = u.0
+            let vid = v.0
+            if uid < 0 || uid >= size || vid < 0 || vid >= size {
+              continue
+            }
+            let uh_opt = h[uid]
+            let uh = match uh_opt {
+              None => continue
+              Some(x) => x
+            }
+            if uh >= inf {
+              continue
+            }
             let new_h = uh + w
             let hv_opt = h[vid]
             let should_update = match hv_opt {
@@ -62,7 +62,6 @@ pub fn[G : @core.GraphReadable] johnson(
               updated = true
             }
           }
-          None => ()
         }
       }
     }
@@ -71,30 +70,29 @@ pub fn[G : @core.GraphReadable] johnson(
     }
   }
   for u in node_list {
-    for v in @core.GraphReadable::neighbors(graph, u) {
-      let uid = u.0
-      let vid = v.0
-      if uid < 0 || uid >= size || vid < 0 || vid >= size {
-        continue
-      }
-      let uh_opt = h[uid]
-      match uh_opt {
-        None => continue
-        Some(uh) =>
-          if uh >= inf {
+    for vw in @core.GraphReadable::neighbors_with_weight(graph, u) {
+      match vw {
+        (v, w) => {
+          let uid = u.0
+          let vid = v.0
+          if uid < 0 || uid >= size || vid < 0 || vid >= size {
             continue
-          } else {
-            match @core.GraphReadable::get_edge(graph, u, v) {
-              Some(w) => {
+          }
+          let uh_opt = h[uid]
+          match uh_opt {
+            None => continue
+            Some(uh) =>
+              if uh >= inf {
+                continue
+              } else {
                 let vh_opt = h[vid]
                 match vh_opt {
                   Some(vh) => if uh + w < vh { return Err("negative cycle detected") }
                   None => ()
                 }
               }
-              None => ()
-            }
           }
+        }
       }
     }
   }
@@ -128,20 +126,20 @@ pub fn[G : @core.GraphReadable] johnson(
             continue
           }
           visited[uid] = true
-          for v in @core.GraphReadable::neighbors(graph, u) {
-            let vid = v.0
-            if vid < 0 || vid >= size || visited[vid] {
-              continue
-            }
-            match @core.GraphReadable::get_edge(graph, u, v) {
-              Some(weight) => {
+          for vw in @core.GraphReadable::neighbors_with_weight(graph, u) {
+            match vw {
+              (v, weight) => {
+                let vid = v.0
+                if vid < 0 || vid >= size || visited[vid] {
+                  continue
+                }
                 let uw_opt = h[uid]
                 let uw = match uw_opt {
                   None => continue
                   Some(x) => x
                 }
                 let vw_opt = h[vid]
-                let vw = match vw_opt {
+                let vw2 = match vw_opt {
                   None => continue
                   Some(y) => y
                 }
@@ -150,7 +148,7 @@ pub fn[G : @core.GraphReadable] johnson(
                   None => continue
                   Some(d) => d
                 }
-                let rew = weight + uw - vw
+                let rew = weight + uw - vw2
                 let new_dist = ud + rew
                 let vd_opt = local_d[vid]
                 let should_update = match vd_opt {
@@ -163,7 +161,6 @@ pub fn[G : @core.GraphReadable] johnson(
                   pq = heap_push(pq, new_dist, v)
                 }
               }
-              None => ()
             }
           }
         }

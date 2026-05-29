@@ -208,16 +208,16 @@ fn[G : @core.GraphReadable] dijkstra_with_forbidden(
         if u == target {
           found_target = true
         }
-        for v in @core.GraphReadable::neighbors(graph, u) {
-          let vid = v.0
-          if vid < 0 || vid >= size || visited[vid] {
-            continue
-          }
-          if forbidden_contains(forbidden, u, v) {
-            continue
-          }
-          match @core.GraphReadable::get_edge(graph, u, v) {
-            Some(weight) => {
+        for vw in @core.GraphReadable::neighbors_with_weight(graph, u) {
+          match vw {
+            (v, weight) => {
+              let vid = v.0
+              if vid < 0 || vid >= size || visited[vid] {
+                continue
+              }
+              if forbidden_contains(forbidden, u, v) {
+                continue
+              }
               let ud = match distances[uid] {
                 None => continue
                 Some(d) => d
@@ -233,7 +233,6 @@ fn[G : @core.GraphReadable] dijkstra_with_forbidden(
                 pq = heap_push(pq, new_dist, v)
               }
             }
-            None => ()
           }
         }
       }

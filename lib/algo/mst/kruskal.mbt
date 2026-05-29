@@ -61,10 +61,9 @@ pub fn[G : @core.GraphReadable] kruskal(graph : G) -> MstResult {
   let uf = uf_new(size)
   let raw_edges : Array[(@core.NodeId, @core.NodeId, Double)] = []
   for u in @core.GraphReadable::node_ids(graph) {
-    for v in @core.GraphReadable::neighbors(graph, u) {
-      match @core.GraphReadable::get_edge(graph, u, v) {
-        Some(w) => if u.0 < v.0 { raw_edges.push((u, v, w)) }
-        None => ()
+    for vw in @core.GraphReadable::neighbors_with_weight(graph, u) {
+      match vw {
+        (v, w) => if u.0 < v.0 { raw_edges.push((u, v, w)) }
       }
     }
   }

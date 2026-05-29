@@ -94,6 +94,29 @@ pub impl @core.GraphReadable for UndirectedMatrix with neighbors(self, id) -> It
   r.iter()
 }
 
+///
+pub impl @core.GraphReadable for UndirectedMatrix with neighbors_with_weight(
+  self,
+  id,
+) -> Iter[(@core.NodeId, Double)] {
+  let idx = id.0
+  if idx < 0 || idx >= self.capacity {
+    return [].iter()
+  }
+  let r : Array[(@core.NodeId, Double)] = []
+  for j in 0..<self.capacity {
+    if j == idx {
+      continue
+    }
+    let (lo, hi) = if idx < j { (idx, j) } else { (j, idx) }
+    match self.matrix[lo][hi] {
+      Some(w) => r.push((@core.NodeId(j), w))
+      None => ()
+    }
+  }
+  r.iter()
+}
+
 ///|
 pub impl @core.GraphReadable for UndirectedMatrix with degree(self, id) -> Int {
   let idx = id.0

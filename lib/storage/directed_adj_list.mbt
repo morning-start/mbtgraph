@@ -154,6 +154,22 @@ pub impl @core.GraphReadable for DirectedAdjList with neighbors(self, id) -> Ite
   r.iter()
 }
 
+///
+pub impl @core.GraphReadable for DirectedAdjList with neighbors_with_weight(
+  self,
+  id,
+) -> Iter[(@core.NodeId, Double)] {
+  let idx = id.0
+  if idx < 0 || idx >= self.adj.length() {
+    return [].iter()
+  }
+  let r : Array[(@core.NodeId, Double)] = []
+  for entry in self.adj[idx] {
+    r.push(entry)
+  }
+  r.iter()
+}
+
 ///|
 pub impl @core.GraphReadable for DirectedAdjList with degree(self, id) -> Int {
   let idx = id.0

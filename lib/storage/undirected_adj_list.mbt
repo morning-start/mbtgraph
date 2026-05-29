@@ -165,6 +165,31 @@ pub impl @core.GraphReadable for UndirectedAdjList with neighbors(self, id) -> I
   r.iter()
 }
 
+///
+pub impl @core.GraphReadable for UndirectedAdjList with neighbors_with_weight(
+  self,
+  id,
+) -> Iter[(@core.NodeId, Double)] {
+  let idx = id.0
+  if idx < 0 || idx >= self.adj.length() {
+    return [].iter()
+  }
+  let r : Array[(@core.NodeId, Double)] = []
+  for entry in self.adj[idx] {
+    r.push(entry)
+  }
+  let mut i = 0
+  while i < idx {
+    for entry in self.adj[i] {
+      match entry {
+        (nid, w) => if nid == id { r.push((@core.NodeId(i), w)) }
+      }
+    }
+    i = i + 1
+  }
+  r.iter()
+}
+
 ///|
 pub impl @core.GraphReadable for UndirectedAdjList with degree(self, id) -> Int {
   let idx = id.0

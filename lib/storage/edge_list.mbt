@@ -79,6 +79,20 @@ pub impl @core.GraphReadable for EdgeListGraph with neighbors(self, id) -> Iter[
   r.iter()
 }
 
+///
+pub impl @core.GraphReadable for EdgeListGraph with neighbors_with_weight(
+  self,
+  id,
+) -> Iter[(@core.NodeId, Double)] {
+  let r : Array[(@core.NodeId, Double)] = []
+  for e in self.edges {
+    if e.from == id {
+      r.push((e.to, e.data))
+    }
+  }
+  r.iter()
+}
+
 ///|
 pub impl @core.GraphReadable for EdgeListGraph with degree(self, id) -> Int {
   let mut c = 0

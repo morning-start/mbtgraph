@@ -235,6 +235,24 @@ pub impl @core.GraphReadable for CSRGraph with neighbors(self, id) -> Iter[
   r.iter()
 }
 
+///
+pub impl @core.GraphReadable for CSRGraph with neighbors_with_weight(
+  self,
+  id,
+) -> Iter[(@core.NodeId, Double)] {
+  let idx = id.0
+  if idx < 0 || idx >= self.row_ptr.length() - 1 {
+    return [].iter()
+  }
+  let s = self.row_ptr[idx]
+  let e = self.row_ptr[idx + 1]
+  let r : Array[(@core.NodeId, Double)] = []
+  for k in s..<e {
+    r.push((self.col_idx[k], self.values[k]))
+  }
+  r.iter()
+}
+
 ///|
 pub impl @core.GraphReadable for CSRGraph with degree(self, id) -> Int {
   let idx = id.0

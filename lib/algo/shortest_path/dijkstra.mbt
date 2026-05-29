@@ -56,13 +56,13 @@ pub fn[G : @core.GraphReadable] dijkstra(
           continue
         }
         visited[uid] = true
-        for v in @core.GraphReadable::neighbors(graph, u) {
-          let vid = v.0
-          if vid < 0 || vid >= size || visited[vid] {
-            continue
-          }
-          match @core.GraphReadable::get_edge(graph, u, v) {
-            Some(weight) => {
+        for vw in @core.GraphReadable::neighbors_with_weight(graph, u) {
+          match vw {
+            (v, weight) => {
+              let vid = v.0
+              if vid < 0 || vid >= size || visited[vid] {
+                continue
+              }
               let ud = match distances[uid] {
                 None => continue
                 Some(d) => d
@@ -78,7 +78,6 @@ pub fn[G : @core.GraphReadable] dijkstra(
                 pq = heap_push(pq, new_dist, v)
               }
             }
-            None => ()
           }
         }
       }

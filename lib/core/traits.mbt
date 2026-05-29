@@ -30,6 +30,9 @@ pub(open) trait GraphReadable {
   /// 获取邻居节点（出边目标）
   neighbors(Self, NodeId) -> Iter[NodeId]
 
+  /// 获取邻居节点及边权重（优化用，避免 get_edge 二次查找）
+  neighbors_with_weight(Self, NodeId) -> Iter[(NodeId, Double)]
+
   /// 节点度（无向图）或出度（有向图）
   degree(Self, NodeId) -> Int
 
