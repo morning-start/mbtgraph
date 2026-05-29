@@ -5,6 +5,31 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 本项目遵循 [语义化版本](https://semver.org/spec/v2.0.0.html)规范。
 
+## [v0.14.0] - 2026-05-29
+
+### 改进
+- ⚡ **P0 性能缺陷修复** (2 项):
+  - **Heap pop O(n) 修复** (`tools/heap.mbt`): `array_pop_last` 每次 O(n) 拷贝 → `Array::pop()` O(1)，Dijkstra 整体加速 2-5x
+  - **CSR Builder 快速排序** (`storage/csr.mbt`): 冒泡排序 O(n²) → Lomuto 快排 O(n log n)，大图转换提速 10-100x
+
+### 改进
+- ⚡ **P1 核心算法优化** (2 项):
+  - **`neighbors_with_weight` 消除冗余 `get_edge`**: 新增 trait 方法，8 种存储实现，改造 10 个算法循环，最短路径提速 1.5-3x
+  - **Louvain 数据结构重构**: 邻接表预建消除全边扫描，修正模块度增益公式符号错误，10K 节点提速 5-20x
+
+### 改进
+- ⚡ **P1 存储优化** (2 项):
+  - **AdjList 批量操作**: 新增 `add_edge_unchecked()` + `add_edges_batch()`，建图速度 2-3x
+  - **CSR 反向索引**: `in_ptr`/`in_idx`/`in_vals` 结构，入边查询 O(V+E) → O(deg_in)
+
+### 新增
+- 📊 **Benchmark 框架** (`benchmarks/`): 基于 `@moonbitlang.core.bench` 的 19 行基线数据，覆盖 4 种规模 × 5 算法
+- 📋 **Dispatch 内联分析** (`docs/design/dispatch_analysis.md`): 25 个 trait 方法全量统计，标记 P0 内联候选 3 个
+
+### 统计数据
+- 全量测试保持 **736+**，无功能回归
+- 8/11 项优化任务完成，3 项 P3 延后
+
 ## [v0.13.0] - 2026-05-28
 
 ### 新增
