@@ -3,7 +3,7 @@
 > **最后更新**: 2026-05-29 | **当前版本**: v0.14.0 ⚡ 性能优化 (进行中...)
 > **下次评审**: 2026-06-04（每周日）
 > **下个版本**: v0.14.0 ⚡ 性能优化
-> **当前进度**: 5/10 优化完成
+> **当前进度**: 7/10 优化完成
 
 ---
 
@@ -17,7 +17,7 @@
 ✅ v0.11.0  📊 数据交换与可视化 (630 tests)
 ✅ v0.12.0  🚀 经典算法增强 (701 tests)
 ✅ v0.13.0  🛠️ 接口重构 + P0/P1 算法补齐 (736 tests)
-🔶 v0.14.0  ⚡ 性能优化 (5/10 ✅ 进行中...)
+🔶 v0.14.0  ⚡ 性能优化 (7/10 ✅ 进行中...)
 ⬜ v0.15.0  🔧 API 冻结候选 (=v1.0.0-rc.1)
 ⬜ v1.0.0   🎉 正式发布
 ```
@@ -57,13 +57,16 @@
 
 ---
 
-#### TASK-C: `neighbors()` 返回权重对，消除内部 `get_edge()`
+#### TASK-C: `neighbors()` 返回权重对，消除内部 `get_edge()` ✅
 
-- [ ] **问题**: [dijkstra.mbt:L59-65](file:///e:\Workplace\APP\MoonBit\mbtgraph\lib\algo\shortest_path\dijkstra.mbt#L59-L65) 邻居循环内调用 `get_edge()` 导致 O(deg) 冗余查找
-- [ ] **修复方案 A** (推荐): 新增 trait 方法 `neighbors_with_weight()` 返回 `Iter[(NodeId, Double)]`
-- [ ] **修复方案 B**: 修改 `neighbors()` 签名（Breaking Change，需评估）
-- [ ] 变更现有算法: Dijkstra / Bellman-Ford / A* 等使用 `neighbors`+`get_edge` 模式的算法
-- [ ] 预期收益: 消除 O(deg) 冗余查找，Dijkstra 再提速 **1.5-3x**
+- [x] **问题**: [dijkstra.mbt:L59-65](file:///e:\Workplace\APP\MoonBit\mbtgraph\lib\algo\shortest_path\dijkstra.mbt#L59-L65) 邻居循环内调用 `get_edge()` 导致 O(deg) 冗余查找
+- [x] **方案**: 新增 trait 方法 `neighbors_with_weight()` 返回 `Iter[(NodeId, Double)]`
+- [x] **变更**:
+  - `GraphReadable` trait 新增 `neighbors_with_weight`
+  - 8 种存储 + MockTest 全部实现
+  - 改造 10 个 neighbors+get_edge 循环（8 个算法文件）
+- [x] 验证: `moon check` 零警告 + 736 测试全通过
+- [x] 预期收益: Dijkstra/Bellman-Ford/A*/Prim/SPFA/Johnson/Yen 等提速 **1.5-3x**
 
 ---
 
@@ -105,20 +108,20 @@
 
 #### TASK-G: Benchmark 框架 + 基线数据采集
 
-- [ ] 创建 `benchmarks/` 目录结构 + `moon.pkg`
-- [ ] 设计 `BenchResult` 类型和计时工具
-- [ ] 采集关键算法基线（100/1000/10000 节点随机图）
+- [x] 创建 `benchmarks/` 目录结构 + `moon.pkg`
+- [x] 设计 `BenchResult` 类型和计时工具（使用 `@moonbitlang.core.bench`）
+- [x] 采集关键算法基线（100/1000/5000/10000 节点链式/路径图）
 
 | 算法 | 图规模 | 关键指标 |
 |------|--------|---------|
-| Dijkstra | 10K 节点/50K 边 | 单源最短路时间 |
-| BFS/DFS | 10K 节点 | 遍历时间 |
-| CSR 转换 | 10K 节点 | AdjList→CSR 时间 |
-| Dinic | 1K 节点 | 最大流时间 |
-| Louvain | 10K 节点 | 社区检测时间 |
+| Dijkstra | 10K 节点/10K 边 | 76.89 μs |
+| BFS/DFS | 10K 节点 | ~50 μs |
+| CSR 转换 | 10K 节点 | 318.67 ms |
+| Dinic | 1K 节点 | 13.89 ms |
+| Louvain | 100 节点 | 257.97 μs |
 
-- [ ] 生成 `benchmarks/baseline_v0.14.0.csv`
-- 预期: ~4h
+- [x] 生成 `benchmarks/baseline_v0.14.0.csv`（19 行基线数据）
+- 实际: ~2h（含 WASM GC 栈溢出调试，路径图优化）
 
 ---
 
@@ -169,16 +172,16 @@
 |:----:|------|:----:|:------:|:------:|---------|
 | **1** | **TASK-A: heap pop O(n) 修复** | ✅ **完成** | 🔴 P0 | 0.5h | 最短路径 2-5x |
 | **1** | **TASK-B: CSR 冒泡排序修复** | ✅ **完成** | 🔴 P0 | 1h | CSR 构建 10-100x |
-| 1 | TASK-C: neighbor 权重对 | ⬜ | 🟡 P1 | 3h | Dijkstra 1.5-3x |
+| 1 | **TASK-C: neighbor 权重对** | ✅ **完成** | 🟡 P1 | 3h | 最短路径 1.5-3x |
 | 2 | **TASK-D: Louvain 数据结构** | ✅ **完成** | 🟡 P1 | 3h | 社区检测 5-20x |
 | 2 | **TASK-E: AdjList 批量操作** | ✅ **完成** | 🟡 P1 | 2h | 建图 2-3x |
 | 2 | **TASK-F: CSR 反向索引** | ✅ **完成** | 🟡 P1 | 2h | 入边 O(V+E)→O(deg_in) |
-| 3 | TASK-G: Benchmark 基线 | ⬜ | 🟢 P2 | 4h | 量化度量 |
+| 3 | **TASK-G: Benchmark 基线** | ✅ **完成** | 🟢 P2 | 2h | 量化度量 |
 | 4 | TASK-H: Dispatch 分析 | ⬜ | 🟢 P2 | 3h | 编译器优化 |
 | 4 | TASK-I: Brandes 并行化 | ⬜ | 🔵 P3 | 5h | 多核 2-4x |
 | 4 | TASK-J: 稀疏矩阵 | ⬜ | 🔵 P3 | 4h | 内存 -60-80% |
 | 发布 | TASK-Z: 文档+Tag | ⬜ | 🟡 P1 | 2h | 发布 |
-| **合计** | **11 tasks** | **5/11** | — | **~29.5h** | — |
+| **合计** | **11 tasks** | **7/11** | — | **~27.5h** | — |
 
 ---
 
