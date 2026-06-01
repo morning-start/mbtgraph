@@ -5,9 +5,28 @@
 ///|
 /// 局部聚类系数
 ///
-/// 对于节点 u: 实际三角形数 / 可能三角形数
-/// 可能三角形数 = C(deg(u), 2) = deg(u) * (deg(u) - 1) / 2
-/// 当 deg(u) < 2 时，聚类系数为 0.0
+/// 计算单个节点的局部聚类系数，衡量其邻居之间的连接紧密程度。
+///
+/// # 数学公式
+///
+/// C(u) = (2 × T(u)) / (deg(u) × (deg(u) - 1))
+///
+/// 其中 T(u) 是节点 u 参与的三角形数，deg(u) 是节点度数。
+/// 当 deg(u) < 2 时，聚类系数为 0.0（无法形成三角形）。
+///
+/// # 参数
+///
+/// - `graph`: 输入无向图（需实现 GraphReadable trait）
+/// - `node`: 目标节点 ID
+///
+/// # 返回
+///
+/// 节点的局部聚类系数（[0.0, 1.0] 范围）
+///
+/// # 复杂度
+///
+/// - 时间: O(deg(u)²)
+/// - 空间: O(deg(u)) 用于存储排序后的邻居列表
 pub fn[G : @core.GraphReadable] local_clustering_coefficient(
   graph : G,
   node : @core.NodeId,
@@ -50,7 +69,21 @@ pub fn[G : @core.GraphReadable] local_clustering_coefficient(
 ///|
 /// 全局平均聚类系数
 ///
-/// 所有节点局部聚类系数的平均值
+/// 计算所有节点局部聚类系数的算术平均值，
+/// 用于衡量整个图的聚集程度。
+///
+/// # 参数
+///
+/// - `graph`: 输入无向图（需实现 GraphReadable trait）
+///
+/// # 返回
+///
+/// 全局平均聚类系数（[0.0, 1.0] 范围）
+///
+/// # 复杂度
+///
+/// - 时间: O(V × d²)，其中 d 为平均度数
+/// - 空间: O(1)
 pub fn[G : @core.GraphReadable] average_clustering_coefficient(graph : G) -> Double {
   let n = @core.GraphReadable::node_count(graph)
   if n == 0 {
@@ -66,7 +99,25 @@ pub fn[G : @core.GraphReadable] average_clustering_coefficient(graph : G) -> Dou
 }
 
 ///|
-/// 计算所有节点的局部聚类系数和全局平均聚类系数
+/// 批量计算聚类系数
+///
+/// 一次性计算所有节点的局部聚类系数和全局平均聚类系数，
+/// 避免重复遍历图，提高效率。
+///
+/// # 参数
+///
+/// - `graph`: 输入无向图（需实现 GraphReadable trait）
+///
+/// # 返回
+///
+/// `ClusteringCoefficientResult` 包含：
+/// - `locals`: 每个节点的局部聚类系数数组
+/// - `global`: 全局平均聚类系数
+///
+/// # 复杂度
+///
+/// - 时间: O(V × d²)，其中 d 为平均度数
+/// - 空间: O(V) 用于存储结果数组
 pub fn[G : @core.GraphReadable] clustering_coefficients(graph : G) -> ClusteringCoefficientResult {
   let n = @core.GraphReadable::node_count(graph)
   let locals : Array[Double] = []

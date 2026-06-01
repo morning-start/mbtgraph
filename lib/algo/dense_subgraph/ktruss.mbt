@@ -6,9 +6,30 @@
 ///|
 /// K-Truss 分解
 ///
-/// 计算每条边参与的三角形数作为 support，
-/// truss_number = support + 2。
-/// 结果以边权形式存储在无向图中。
+/// 计算每条边参与的三角形数量作为 support 值，
+/// truss_number = support + 2。k-truss 表示每条边至少参与 (k-2) 个三角形。
+///
+/// 结果以无向图形式存储，边权重即为 truss number。
+/// 高 truss number 的边表示更紧密的连接模式。
+///
+/// # 参数
+///
+/// - `graph`: 输入无向图（需实现 GraphReadable trait）
+///
+/// # 返回
+///
+/// `KTrussResult` 包含结果图（边权 = truss number）
+///
+/// # 复杂度
+///
+/// - 时间: O(V + E × d²)，其中 d 为平均度数
+/// - 空间: O(V + E) 用于存储邻居集合和边 support
+///
+/// # 注意事项
+///
+/// - 仅适用于无向图
+/// - 孤立节点不参与任何 truss
+/// - 时间复杂度取决于图的稠密程度
 pub fn[G : @core.GraphReadable] k_truss_decomposition(graph : G) -> KTrussResult {
   let n = @core.GraphReadable::node_count(graph)
   let result_graph = @storage.new_undirected()

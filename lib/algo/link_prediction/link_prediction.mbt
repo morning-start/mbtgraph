@@ -74,7 +74,42 @@ fn union_size(a : Array[Int], b : Array[Int]) -> Int {
 ///|
 /// 公共邻居 (Common Neighbors)
 ///
-/// 计算两个节点共享的邻居数量: |N(u) ∩ N(v)|
+/// 计算两个节点共享的邻居数量，是最基础的链接预测指标。
+/// 值越大表示两个节点越可能建立连接。
+///
+/// # 数学公式
+///
+/// |N(u) ∩ N(v)|
+///
+/// 其中 N(u) 和 N(v) 分别是节点 u 和 v 的邻居集合。
+///
+/// # 参数
+///
+/// - `graph`: 输入图（需实现 GraphReadable trait）
+/// - `u`: 第一个节点 ID
+/// - `v`: 第二个节点 ID
+///
+/// # 返回
+///
+/// 共享邻居数量（非负整数）
+///
+/// # 复杂度
+///
+/// - 时间: O(deg(u) + deg(v))，其中 deg 为节点度数
+/// - 空间: O(deg(u) + deg(v)) 用于存储邻居集合
+///
+/// # 示例
+///
+/// ```moonbit
+/// let graph = new_directed()
+/// let graph = GraphWritable::add_node(graph, 0.0) |> ignore
+/// let graph = GraphWritable::add_node(graph, 1.0) |> ignore
+/// let graph = GraphWritable::add_node(graph, 2.0) |> ignore
+/// let graph = GraphWritable::add_edge(graph, NodeId(0), NodeId(2), 1.0) |> ignore
+/// let graph = GraphWritable::add_edge(graph, NodeId(1), NodeId(2), 1.0) |> ignore
+/// let cn = common_neighbors(graph, NodeId(0), NodeId(1))
+/// // cn == 1 (节点 2 是公共邻居)
+/// ```
 pub fn[G : @core.GraphReadable] common_neighbors(
   graph : G,
   u : @core.NodeId,
@@ -88,7 +123,28 @@ pub fn[G : @core.GraphReadable] common_neighbors(
 ///|
 /// Jaccard 系数
 ///
-/// 共享邻居与总邻居的比率: |N(u) ∩ N(v)| / |N(u) ∪ N(v)|
+/// 计算共享邻居与总邻居的比率，归一化到 [0, 1] 区间。
+/// 相比公共邻居指标，Jaccard 系数考虑了节点度数的影响，
+/// 对高度节点的偏好较低。
+///
+/// # 数学公式
+///
+/// |N(u) ∩ N(v)| / |N(u) ∪ N(v)|
+///
+/// # 参数
+///
+/// - `graph`: 输入图（需实现 GraphReadable trait）
+/// - `u`: 第一个节点 ID
+/// - `v`: 第二个节点 ID
+///
+/// # 返回
+///
+/// Jaccard 相似系数（[0.0, 1.0] 范围的浮点数）
+///
+/// # 复杂度
+///
+/// - 时间: O(deg(u) + deg(v))
+/// - 空间: O(deg(u) + deg(v))
 pub fn[G : @core.GraphReadable] jaccard_coefficient(
   graph : G,
   u : @core.NodeId,
@@ -109,7 +165,28 @@ pub fn[G : @core.GraphReadable] jaccard_coefficient(
 ///|
 /// Adamic-Adar 指数
 ///
-/// 对每个共享邻居按其度数的对数倒数加权: Σ 1/log(|N(w)|)
+/// 对每个共享邻居按其度数的对数倒数加权。
+/// 该指标给予稀有连接（低度数邻居）更高的权重，
+/// 在实际应用中通常表现优于简单计数方法。
+///
+/// # 数学公式
+///
+/// Σ_{w ∈ N(u)∩N(v)} 1/log(|N(w)|)
+///
+/// # 参数
+///
+/// - `graph`: 输入图（需实现 GraphReadable trait）
+/// - `u`: 第一个节点 ID
+/// - `v`: 第二个节点 ID
+///
+/// # 返回
+///
+/// Adamic-Adar 相似度得分（非负浮点数）
+///
+/// # 复杂度
+///
+/// - 时间: O(deg(u) + deg(v) + |common| * log(deg))
+/// - 空间: O(deg(u) + deg(v))
 pub fn[G : @core.GraphReadable] adamic_adar_index(
   graph : G,
   u : @core.NodeId,
@@ -132,7 +209,28 @@ pub fn[G : @core.GraphReadable] adamic_adar_index(
 ///|
 /// 优先连接 (Preferential Attachment)
 ///
-/// 两个节点度数乘积: deg(u) × deg(v)
+/// 基于无标度网络理论，计算两个节点度数的乘积。
+/// 高度节点更可能建立新连接（富者愈富效应）。
+/// 计算简单但预测精度一般，适合作为基线方法。
+///
+/// # 数学公式
+///
+/// deg(u) × deg(v)
+///
+/// # 参数
+///
+/// - `graph`: 输入图（需实现 GraphReadable trait）
+/// - `u`: 第一个节点 ID
+/// - `v`: 第二个节点 ID
+///
+/// # 返回
+///
+/// 优先连接得分（非负浮点数）
+///
+/// # 复杂度
+///
+/// - 时间: O(1)
+/// - 空间: O(1)
 pub fn[G : @core.GraphReadable] preferential_attachment(
   graph : G,
   u : @core.NodeId,
@@ -146,7 +244,28 @@ pub fn[G : @core.GraphReadable] preferential_attachment(
 ///|
 /// 资源分配 (Resource Allocation)
 ///
-/// 对每个共享邻居按其度数倒数加权: Σ 1/|N(w)|
+/// 对每个共享邻居按其度数倒数加权（无需对数）。
+/// 与 Adamic-Adar 类似但对高度邻居惩罚更强，
+/// 适用于资源有限场景的链接预测。
+///
+/// # 数学公式
+///
+/// Σ_{w ∈ N(u)∩N(v)} 1/|N(w)|
+///
+/// # 参数
+///
+/// - `graph`: 输入图（需实现 GraphReadable trait）
+/// - `u`: 第一个节点 ID
+/// - `v`: 第二个节点 ID
+///
+/// # 返回
+///
+/// 资源分配指数（非负浮点数）
+///
+/// # 复杂度
+///
+/// - 时间: O(deg(u) + deg(v))
+/// - 空间: O(deg(u) + deg(v))
 pub fn[G : @core.GraphReadable] resource_allocation(
   graph : G,
   u : @core.NodeId,
@@ -167,7 +286,40 @@ pub fn[G : @core.GraphReadable] resource_allocation(
 }
 
 ///|
-/// 计算两个节点的所有链接预测指标
+/// 综合链接预测评分
+///
+/// 一次性计算两个节点的所有链接预测指标（5 种），
+/// 返回包含所有得分的结构体，便于批量分析和比较。
+///
+/// # 包含指标
+///
+/// - `common_neighbors`: 公共邻居数量
+/// - `jaccard`: Jaccard 相似系数 [0, 1]
+/// - `adamic_adar`: Adamic-Adar 指数
+/// - `preferential_attachment`: 优先连接得分
+/// - `resource_allocation`: 资源分配指数
+///
+/// # 参数
+///
+/// - `graph`: 输入图（需实现 GraphReadable trait）
+/// - `u`: 第一个节点 ID
+/// - `v`: 第二个节点 ID
+///
+/// # 返回
+///
+/// `LinkPredictionResult` 包含所有指标的完整结果
+///
+/// # 复杂度
+///
+/// - 时间: O(5 × (deg(u) + deg(v))) = O(deg(u) + deg(v))
+/// - 空间: O(deg(u) + deg(v))
+///
+/// # 示例
+///
+/// ```moonbit
+/// let result = link_prediction_score(graph, node_a, node_b)
+/// // 可通过 result.common_neighbors, result.jaccard 等访问各指标
+/// ```
 pub fn[G : @core.GraphReadable] link_prediction_score(
   graph : G,
   u : @core.NodeId,

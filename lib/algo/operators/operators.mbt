@@ -57,10 +57,18 @@ fn[G : @core.GraphReadable] collect_edges_bidi(g : G) -> Array[(@core.NodeId, @c
 // 一元算子
 // ============================================================================
 
-///|
 /// 补图：顶点集不变，边集取补
 ///
-/// 复杂度: O(V²)
+/// 对无向图 G = (V, E) 构造其补图 Ḡ = (V, Ē)，
+/// 其中 Ē 包含所有不在 E 中出现的顶点对（不含自环）。
+/// 常用于团检测、图同构等场景的辅助变换。
+///
+/// **参数**
+/// - `graph`: 输入图，需实现 `GraphReadable` trait
+///
+/// **返回值** 新建的 `UndirectedAdjList`，包含所有原图节点和补边集
+///
+/// **复杂度** O(V²)
 pub fn[G : @core.GraphReadable] complement(graph : G) -> @storage.UndirectedAdjList {
   let r = @storage.new_undirected()
   copy_nodes(graph, r)
@@ -82,10 +90,18 @@ pub fn[G : @core.GraphReadable] complement(graph : G) -> @storage.UndirectedAdjL
   r
 }
 
-///|
 /// 反转图：有向边的方向全部反转
 ///
-/// 复杂度: O(V + E)
+/// 对有向图 G = (V, E) 构造其反转图 G^R = (V, E^R)，
+/// 其中每条边 (u, v) ∈ E 变为 (v, u) ∈ E^R。
+/// 常用于强连通分量（Kosaraju 算法）、可达性分析等场景。
+///
+/// **参数**
+/// - `graph`: 输入有向图，需实现 `GraphReadable` trait
+///
+/// **返回值** 新建的 `DirectedAdjList`，节点不变，所有边方向取反
+///
+/// **复杂度** O(V + E)
 pub fn[G : @core.GraphReadable] reverse(graph : G) -> @storage.DirectedAdjList {
   let r = @storage.new_directed()
   copy_nodes_directed(graph, r)
@@ -101,10 +117,18 @@ pub fn[G : @core.GraphReadable] reverse(graph : G) -> @storage.DirectedAdjList {
 // 二元算子
 // ============================================================================
 
-///|
 /// 并图：顶点集取并，边集取并
 ///
-/// 复杂度: O(V₁ + V₂ + E₁ + E₂)
+/// 对两幅无向图 G₁ = (V₁, E₁) 和 G₂ = (V₂, E₂) 构造并图 G₁ ∪ G₂ = (V₁∪V₂, E₁∪E₂)。
+/// 重复边仅保留一条（取先出现的权重）。节点数据以 a 为准，b 中新增节点保留原数据。
+///
+/// **参数**
+/// - `a`: 第一幅输入图（主图）
+/// - `b`: 第二幅输入图
+///
+/// **返回值** 新建的 `UndirectedAdjList`，包含并集节点和并集边
+///
+/// **复杂度** O(V₁ + V₂ + E₁ + E₂)
 pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] graph_union(
   a : G1,
   b : G2,
@@ -140,10 +164,19 @@ pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] graph_union(
   r
 }
 
-///|
 /// 交图：边集取交（仅保留两图中同时存在的边）
 ///
-/// 复杂度: O(V₁ + V₂ + E₁)
+/// 对两幅无向图 G₁ 和 G₂ 构造交图 G₁ ∩ G₂，
+/// 节点集取自 a，仅保留同时在两幅图中出现的边。
+/// 若同一条边在两图中权重不同，优先采用 b 的权重。
+///
+/// **参数**
+/// - `a`: 第一幅输入图（决定节点集）
+/// - `b`: 第二幅输入图（用于边存在性判定和权重选取）
+///
+/// **返回值** 新建的 `UndirectedAdjList`，包含 a 的节点和交集边
+///
+/// **复杂度** O(V₁ + V₂ + E₁)
 pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] graph_intersection(
   a : G1,
   b : G2,
@@ -170,10 +203,19 @@ pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] graph_intersection(
   r
 }
 
-///|
 /// 差图：保留在 a 中但不在 b 中的边
 ///
-/// 复杂度: O(V₁ + E₁)
+/// 对两幅无向图 G₁ 和 G₂ 构造差图 G₁ \ G₂，
+/// 节点集取自 a，仅保留存在于 a 但不存在于 b 的边。
+/// 边权重沿用 a 中的原始值。
+///
+/// **参数**
+/// - `a`: 被减图（决定节点集和候选边集）
+/// - `b`: 减数图（用于边排除判定）
+///
+/// **返回值** 新建的 `UndirectedAdjList`，包含 a 的节点和差集边
+///
+/// **复杂度** O(V₁ + E₁)
 pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] graph_difference(
   a : G1,
   b : G2,
@@ -200,12 +242,20 @@ pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] graph_difference(
 // 图积
 // ============================================================================
 
-///|
-/// 笛卡尔积 G₁ □ G₂
+/// 笛卡尔积 G₁ □ G₂（又称直积、盒积）
 ///
-/// 顶点集 V₁ × V₂，节点 (i,j) 的 ID = i.0 * n2 + j.0。
-/// 边: (u₁,v₁)-(u₂,v₂) 当且仅当
-/// (u₁=u₂ 且 (v₁,v₂)∈E₂) 或 (v₁=v₂ 且 (u₁,u₂)∈E₁)
+/// 顶点集为 V₁ × V₂，节点 (i, j) 的 ID 编码为 `i.0 * n2 + j.0`。
+/// 边的构造规则：(u₁, v₁) 与 (u₂, v₂) 相邻当且仅当
+/// - u₁ = u₂ 且 (v₁, v₂) ∈ E₂，或
+/// - v₁ = v₂ 且 (u₁, u₂) ∈ E₁
+///
+/// **参数**
+/// - `a`: 第一幅图 G₁
+/// - `b`: 第二幅图 G₂
+///
+/// **返回值** 新建的 `UndirectedAdjList`，包含 n1×n2 个节点和积边
+///
+/// **复杂度** O(|V₁|·|E₂| + |V₂|·|E₁|)
 pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] cartesian_product(
   a : G1,
   b : G2,
@@ -238,11 +288,20 @@ pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] cartesian_product(
   r
 }
 
-///|
-/// 张量积 G₁ × G₂ (Kronecker 积)
+/// 张量积 G₁ × G₂（又称 Kronecker 积、直接积）
 ///
-/// 顶点集 V₁ × V₂。
-/// 边: (u₁,v₁)-(u₂,v₂) 当且仅当 (u₁,u₂)∈E₁ 且 (v₁,v₂)∈E₂。
+/// 顶点集为 V₁ × V₂。
+/// 边的构造规则：(u₁, v₁) 与 (u₂, v₂) 相邻当且仅当
+/// (u₁, u₂) ∈ E₁ **且** (v₁, v₂) ∈ E₂。
+/// 边权重取两图对应边权重之和。
+///
+/// **参数**
+/// - `a`: 第一幅图 G₁
+/// - `b`: 第二幅图 G₂
+///
+/// **返回值** 新建的 `UndirectedAdjList`，包含 n1×n2 个节点和积边
+///
+/// **复杂度** O(|E₁| · |E₂|)
 pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] tensor_product(
   a : G1,
   b : G2,
@@ -268,12 +327,22 @@ pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] tensor_product(
   r
 }
 
-///|
-/// 字典序积 G₁[G₂]
+/// 字典序积 G₁[G₂]（又称复合图）
 ///
-/// 顶点集 V₁ × V₂。
-/// 边: (u₁,v₁)-(u₂,v₂) 当且仅当
-/// (u₁,u₂)∈E₁ 或 (u₁=u₂ 且 (v₁,v₂)∈E₂)。
+/// 顶点集为 V₁ × V₂。
+/// 边的构造规则：(u₁, v₁) 与 (u₂, v₂) 相邻当且仅当
+/// - (u₁, u₂) ∈ E₁，或
+/// - u₁ = u₂ **且** (v₁, v₂) ∈ E₂
+///
+/// 可视为将 G₂ 的副本替换 G₁ 的每个节点，再按 G₁ 的边连接各副本。
+///
+/// **参数**
+/// - `a`: 第一幅图 G₁（外层/骨架图）
+/// - `b`: 第二幅图 G₂（内层/替换图）
+///
+/// **返回值** 新建的 `UndirectedAdjList`，包含 n1×n2 个节点和积边
+///
+/// **复杂度** O(|V₁|² · |V₂| + |V₁| · |E₂| + |E₁| · |V₂|²)
 pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] lexicographic_product(
   a : G1,
   b : G2,
@@ -314,12 +383,18 @@ pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] lexicographic_product
 // 线图与收缩
 // ============================================================================
 
-///|
-/// 线图 L(G)
+/// 线图 L(G)（Line Graph）
 ///
-/// 顶点 = G 的边，两条边在 L(G) 中相邻当且仅当它们在 G 中共享一个端点。
+/// 构造原图 G 的线图：L(G) 的每个顶点对应 G 的一条边，
+/// L(G) 中两顶点相邻当且仅当它们对应的边在 G 中共享一个端点。
+/// 线图的顶点数等于 |E(G)|，可用于边着色、欧拉路径等问题的转化。
 ///
-/// 复杂度: O(E²)
+/// **参数**
+/// - `graph`: 输入无向图，需实现 `GraphReadable` trait
+///
+/// **返回值** 新建的 `UndirectedAdjList`，顶点对应原图的边
+///
+/// **复杂度** O(E²)
 pub fn[G : @core.GraphReadable] line_graph(graph : G) -> @storage.UndirectedAdjList {
   let r = @storage.new_undirected()
   let edge_list : Array[(@core.NodeId, @core.NodeId, Double)] = []
@@ -351,13 +426,20 @@ pub fn[G : @core.GraphReadable] line_graph(graph : G) -> @storage.UndirectedAdjL
   r
 }
 
-///|
 /// 边收缩：将节点 u 合并到节点 v 中
 ///
-/// 移去节点 u，所有与 u 关联的边重新连接到 v。
-/// 如果产生自环则删除该边。
+/// 移去节点 u，将所有与 u 关联的边重新连接到 v。
+/// 若收缩操作产生自环（u-v 之间的边或重连后 f=v）则自动删除该边。
+/// 节点 v 保留，u 被移除。常用于最小割、Stoer-Wagner 算法等场景。
 ///
-/// 复杂度: O(V + E)
+/// **参数**
+/// - `graph`: 输入无向图
+/// - `u`: 被收缩的源节点（将被移除）
+/// - `v`: 收缩目标节点（保留，接收 u 的邻接关系）
+///
+/// **返回值** 新建的 `UndirectedAdjList`，不含节点 u
+///
+/// **复杂度** O(V + E)
 pub fn[G : @core.GraphReadable] contract(
   graph : G,
   u : @core.NodeId,
@@ -395,13 +477,19 @@ pub fn[G : @core.GraphReadable] contract(
 // 幂图
 // ============================================================================
 
-///|
-/// 幂图 G^k
+/// 幂图 G^k（k-th Power Graph）
 ///
-/// 顶点集不变，边: 距离 ≤ k 的节点对之间有边。
-/// 使用 BFS 计算距离。
+/// 顶点集与原图相同，在所有最短路径距离 ≤ k 的节点对之间添加边。
+/// 特别地，G¹ 即为原图的闭包（连通分量变为团）。
+/// 内部使用 BFS 从每个节点出发计算距离，边权重统一为 1.0。
 ///
-/// 复杂度: O(V·(V+E))
+/// **参数**
+/// - `graph`: 输入无向图
+/// - `k`: 幂次参数，距离阈值（k ≥ 1）
+///
+/// **返回值** 新建的 `UndirectedAdjList`，节点不变，边集为距离 ≤ k 的节点对
+///
+/// **复杂度** O(V · (V + E))
 pub fn[G : @core.GraphReadable] power_graph(
   graph : G,
   k : Int,

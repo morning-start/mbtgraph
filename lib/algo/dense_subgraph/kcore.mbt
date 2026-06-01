@@ -16,8 +16,31 @@ fn[G : @core.GraphReadable] collect_neighbors(graph : G, node : @core.NodeId) ->
 ///|
 /// K-Core 分解
 ///
-/// 返回每个节点的 core number。
-/// 对于无向图，core number k 表示该节点属于 k-core 但不属于 (k+1)-core。
+/// 计算无向图中每个节点的核心数（core number）。
+/// 核心数 k 表示该节点属于 k-core 但不属于 (k+1)-core，
+/// 即该节点在移除所有度数 < k 的节点后仍然存在。
+///
+/// 基于 Batagelj & Zaversnik (2002) 的 O(V+E) 算法实现，
+/// 使用 bin 排序优化，线性时间复杂度。
+///
+/// # 参数
+///
+/// - `graph`: 输入无向图（需实现 GraphReadable trait）
+///
+/// # 返回
+///
+/// `KCoreResult` 包含每个节点的 core number 数组
+///
+/// # 复杂度
+///
+/// - 时间: O(V + E)
+/// - 空间: O(V + E) 用于存储邻居列表和辅助数组
+///
+/// # 应用场景
+///
+/// - 社交网络中识别核心用户群
+/// - 生物网络中发现关键蛋白质
+/// - 网络鲁棒性分析
 pub fn[G : @core.GraphReadable] k_core_decomposition(graph : G) -> KCoreResult {
   let n = @core.GraphReadable::node_count(graph)
   if n == 0 {

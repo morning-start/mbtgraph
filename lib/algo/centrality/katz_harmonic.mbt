@@ -23,8 +23,42 @@ pub fn CommunicationResult::get_score(
 ///|
 /// Katz 中心性 (Katz Centrality)
 ///
-/// 通过衰减路径计数衡量节点影响力。
-/// x = α · Aᵀ · x + β, 使用幂迭代法求解。
+/// 通过衰减路径计数衡量节点影响力，综合考虑直接连接和间接路径。
+/// 相比度中心性，Katz 中心性能够识别通过长路径影响他人的重要节点。
+///
+/// # 数学公式
+///
+/// x = α · Aᵀ · x + β
+///
+/// 其中：
+/// - α: 衰减因子（控制长路径的影响权重），必须 < 1/λ_max(A)
+/// - β: 偏置项（通常为 1.0）
+/// - A: 邻接矩阵的转置
+///
+/// 使用幂迭代法求解线性方程组。
+///
+/// # 参数
+///
+/// - `graph`: 输入图（需实现 GraphReadable trait）
+/// - `alpha`: 衰减因子，推荐范围 (0, 0.1)，典型值 0.01-0.05
+/// - `beta`: 偏置项，通常为 1.0
+/// - `max_iterations`: 最大迭代次数，推荐 100-500
+/// - `tolerance`: 收敛阈值，推荐 1e-6
+///
+/// # 返回
+///
+/// `CentralityResult` 包含每个节点的 Katz 中心性得分
+///
+/// # 复杂度
+///
+/// - 时间: O(k × E)，k 为实际迭代次数
+/// - 空间: O(V + E) 用于存储反向邻接表
+///
+/// # 注意事项
+///
+/// - alpha 过大可能导致不收敛或数值溢出
+/// - 对于有向图，考虑入边和出边的差异
+/// - 结果未归一化（normalized = false）
 pub fn[G : @core.GraphReadable] katz_centrality(
   graph : G,
   alpha : Double,
@@ -102,8 +136,34 @@ fn katz_iterate(
 ///|
 /// Harmonic 中心性 (Harmonic Centrality)
 ///
-/// 接近中心性的变体，对不连通图友好。
+/// 接近中心性的变体，对不连通图友好。使用距离的调和平均，
+/// 不可达节点贡献为 0 而非无穷大。
+///
+/// # 数学公式
+///
 /// H(v) = Σ_{u ≠ v} 1 / dist(v, u)
+///
+/// 归一化版本：H_norm(v) = H(v) / (n - 1)
+///
+/// # 参数
+///
+/// - `graph`: 输入图（需实现 GraphReadable trait）
+/// - `normalized`: 是否归一化到 [0, 1] 区间
+///
+/// # 返回
+///
+/// `CentralityResult` 包含每个节点的 Harmonic 中心性得分
+///
+/// # 复杂度
+///
+/// - 时间: O(V × (V + E))，需对每个节点运行 BFS
+/// - 空间: O(V) 用于存储距离数组
+///
+/// # 应用场景
+///
+/// - 社交网络影响力分析
+/// - 不连通图的中心性比较
+/// - 信息传播效率评估
 pub fn[G : @core.GraphReadable] harmonic_centrality(
   graph : G,
   normalized : Bool,
@@ -170,8 +230,34 @@ fn[G : @core.GraphReadable] harmonic_bfs(
 ///|
 /// 通信能力中心性 (Communication Centrality)
 ///
-/// 衡量节点移除后对网络效率的影响。
-/// C(v) = 1 - E(G\{v}) / E(G), 其中 E 是网络效率。
+/// 衡量节点移除后对网络整体效率的影响程度。
+/// 得分越高表示该节点对网络连通性越关键。
+///
+/// # 数学公式
+///
+/// C(v) = [E(G) - E(G \ {v})] / E(G)
+///
+/// 其中 E(G) 是网络的全局效率（Global Efficiency）：
+/// E(G) = (1 / n(n-1)) × Σ_{i≠j} 1/dist(i,j)
+///
+/// # 参数
+///
+/// - `graph`: 输入图（需实现 GraphReadable trait）
+///
+/// # 返回
+///
+/// `CommunicationResult` 包含每个节点的通信能力得分（[0, 1] 范围）
+///
+/// # 复杂度
+///
+/// - 时间: O(V² × (V + E))，需计算 V 次全源最短路径
+/// - 空间: O(V) 用于存储距离数组
+///
+/// # 应用场景
+///
+/// - 网络关键节点识别
+/// - 基础设施脆弱性分析
+/// - 故障影响范围评估
 pub fn[G : @core.GraphReadable] communication_centrality(
   graph : G,
 ) -> CommunicationResult {
@@ -255,11 +341,35 @@ fn[G : @core.GraphReadable] all_pairs_bfs_comm(
 }
 
 ///|
-/// 集团中心性 (Group Centrality)
+/// 集团中心性 (Group Betweenness Centrality)
 ///
-/// 衡量一个节点集合的连通重要性，
+/// 衡量一个节点集合（group）的整体连通重要性，
 /// 定义为经过该集合的最短路径比例。
-/// 使用标准定义：比较移除 group 前后最短路径距离的变化。
+///
+/// 通过比较移除 group 前后所有节点对之间最短路径的变化来计算：
+/// 如果某对节点 (s, t) 的最短路径在移除 group 后变长或不可达，
+/// 则认为该路径经过 group。
+///
+/// # 参数
+///
+/// - `graph`: 输入图（需实现 GraphReadable trait）
+/// - `group`: 目标节点集合（Array[NodeId]）
+///
+/// # 返回
+///
+/// 集团中心性得分（[0, 1] 范围的浮点数）
+/// 表示经过该 group 的最短路径占总可达路径的比例
+///
+/// # 复杂度
+///
+/// - 时间: O(|V_group| × V × (V + E))
+/// - 空间: O(V) 用于 BFS 标记数组
+///
+/// # 应用场景
+///
+/// - 团队/部门重要性评估
+/// - 关键基础设施群组分析
+/// - 组织结构优化
 pub fn[G : @core.GraphReadable] group_betweenness_centrality(
   graph : G,
   group : Array[@core.NodeId],

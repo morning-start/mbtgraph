@@ -8,11 +8,20 @@
 // ============================================================================
 
 ///|
-/// 二分图判定
+/// 二分图（Bipartite Graph）判定
 ///
-/// 使用 BFS 进行 2-染色。若图中存在奇环则返回 false。
+/// 使用 BFS 对图进行 2-染色：从每个未访问节点出发，交替标记 0/1。
+/// 若发现相邻节点颜色相同，则存在奇环，返回 false。
+/// 空图、单节点图、无环图均为二分图。
 ///
-/// 复杂度: O(V + E)
+/// **参数**
+/// - `graph`: 实现 GraphReadable trait 的任意图结构
+///
+/// **返回值**
+/// - `true`: 图是二分图（可 2-染色）
+/// - `false`: 图不是二分图（含奇环）
+///
+/// **时间复杂度**: O(V + E)
 pub fn[G : @core.GraphReadable] is_bipartite(graph : G) -> Bool {
   let n = @core.GraphReadable::node_count(graph)
   if n <= 1 {
@@ -51,11 +60,19 @@ pub fn[G : @core.GraphReadable] is_bipartite(graph : G) -> Bool {
 // ============================================================================
 
 ///|
-/// 完全图判定
+/// 完全图（Complete Graph）判定
 ///
-/// 检查是否所有不同节点对之间都有边。
+/// 检查图中是否每对不同的节点之间都存在边（无向情形含双向边）。
+/// n 个节点的完全图记为 K_n，边数为 n(n-1)/2（无向）或 n(n-1)（有向）。
 ///
-/// 复杂度: O(V²)
+/// **参数**
+/// - `graph`: 实现 GraphReadable trait 的任意图结构
+///
+/// **返回值**
+/// - `true`: 图是完全图
+/// - `false`: 图不是完全图（存在至少一对无直接连边的节点）
+///
+/// **时间复杂度**: O(V²)
 pub fn[G : @core.GraphReadable] is_complete(graph : G) -> Bool {
   let n = @core.GraphReadable::node_count(graph)
   if n <= 1 {
@@ -84,11 +101,19 @@ pub fn[G : @core.GraphReadable] is_complete(graph : G) -> Bool {
 // ============================================================================
 
 ///|
-/// 正则图判定
+/// 正则图（Regular Graph）判定
 ///
-/// 检查所有节点的度数是否相同。
+/// 检查图中所有节点的度数是否全部相同。
+/// k-正则图中每个节点的度数均为 k。完全图 K_n 是 (n-1)-正则图。
 ///
-/// 复杂度: O(V)
+/// **参数**
+/// - `graph`: 实现 GraphReadable trait 的任意图结构
+///
+/// **返回值**
+/// - `true`: 图是正则图（所有节点度数相等）
+/// - `false`: 图不是正则图（存在度数不同的节点）
+///
+/// **时间复杂度**: O(V)
 pub fn[G : @core.GraphReadable] is_regular(graph : G) -> Bool {
   let mut deg : Int? = None
   for nid in @core.GraphReadable::node_ids(graph) {
@@ -106,11 +131,20 @@ pub fn[G : @core.GraphReadable] is_regular(graph : G) -> Bool {
 // ============================================================================
 
 ///|
-/// 树判定
+/// 树（Tree）判定
 ///
-/// 无边图不是树。树是无环连通图，满足 |E| = |V| - 1。
+/// 判定图是否为树：无环连通图，满足 |E| = |V| - 1。
+/// 先检查边数条件（快速剪枝），再用 BFS 验证连通性。
+/// 空图不是树；单节点无边图为树。
 ///
-/// 复杂度: O(V + E)
+/// **参数**
+/// - `graph`: 实现 GraphReadable trait 的任意图结构
+///
+/// **返回值**
+/// - `true`: 图是树（无环且连通）
+/// - `false`: 图不是树（含环或不连通或为空）
+///
+/// **时间复杂度**: O(V + E)
 pub fn[G : @core.GraphReadable] is_tree(graph : G) -> Bool {
   let n = @core.GraphReadable::node_count(graph)
   if n <= 0 {
@@ -154,11 +188,20 @@ pub fn[G : @core.GraphReadable] is_tree(graph : G) -> Bool {
 }
 
 ///|
-/// 森林判定
+/// 森林（Forest）判定
 ///
-/// 森林是无环图。检查每个连通分量是否满足 |E| < |V|。
+/// 判定图是否为森林：无环图（每个连通分量都是树）。
+/// 对每个连通分量分别 BFS 统计节点数 V_i 和边数 E_i，
+/// 检查是否均满足 E_i < V_i（即不含环）。空图为森林。
 ///
-/// 复杂度: O(V + E)
+/// **参数**
+/// - `graph`: 实现 GraphReadable trait 的任意图结构
+///
+/// **返回值**
+/// - `true`: 图是森林（无环，可能不连通）
+/// - `false`: 图不是森林（至少含一个环）
+///
+/// **时间复杂度**: O(V + E)
 pub fn[G : @core.GraphReadable] is_forest(graph : G) -> Bool {
   let n = @core.GraphReadable::node_count(graph)
   if n <= 0 {
@@ -205,12 +248,21 @@ pub fn[G : @core.GraphReadable] is_forest(graph : G) -> Bool {
 // ============================================================================
 
 ///|
-/// 弦图判定
+/// 弦图（Chordal Graph）判定
 ///
-/// 使用 Maximum Cardinality Search (MCS) 生成排序，
-/// 然后验证是否为完美消除序 (PEO)。
+/// 使用 Maximum Cardinality Search (MCS) 算法生成节点消除序，
+/// 再验证该序是否为完美消除序（Perfect Elimination Ordering, PEO）。
+/// 弦图等价于：任意长度 ≥ 4 的环都至少有一条弦（连接环上非相邻节点）。
+/// 树、区间图、分裂图均为弦图的子类。
 ///
-/// 复杂度: O(V + E)
+/// **参数**
+/// - `graph`: 实现 GraphReadable trait 的任意图结构
+///
+/// **返回值**
+/// - `true`: 图是弦图（存在完美消除序）
+/// - `false`: 图不是弦图（含无弦环）
+///
+/// **时间复杂度**: O(V + E)
 pub fn[G : @core.GraphReadable] is_chordal(graph : G) -> Bool {
   let n = @core.GraphReadable::node_count(graph)
   if n <= 2 {
@@ -310,11 +362,25 @@ fn[G : @core.GraphReadable] check_peo(
 // ============================================================================
 
 ///|
-/// Havel-Hakimi 算法：判断非增序列是否为可图化序列
+/// Havel-Hakimi 定理：判断度数序列是否可图化（Graphic Sequence）
 ///
-/// 即是否存在一个简单图，其度数序列等于给定序列。
+/// 给定一个非负整数序列，判定是否存在一个简单无向图（无自环、无重边），
+/// 使得各节点的度数恰好等于该序列。
 ///
-/// 复杂度: O(V²)
+/// 算法流程：反复取最大度数 d，将其后 d 个元素各减 1，再重新排序，
+/// 直到全零（可图化）或出现矛盾（不可图化）。
+///
+/// **参数**
+/// - `seq`: 度数序列（整数数组），无需预先排序
+///
+/// **返回值**
+/// - `true`: 序列是可图化的（存在对应简单图）
+/// - `false`: 序列不可图化
+///
+/// **示例**: [3, 3, 2, 2, 1, 1] → true（对应某简单图）
+///          [5, 3, 0, 1] → false（度数和为奇数，必不可图化）
+///
+/// **时间复杂度**: O(V²)（每轮排序 O(V log V)，共 O(V) 轮）
 pub fn is_graphic_sequence(seq : Array[Int]) -> Bool {
   let degs : Array[Int] = []
   for d in seq {

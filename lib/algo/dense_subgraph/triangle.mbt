@@ -37,7 +37,32 @@ fn intersection_result(a : Array[Int], b : Array[Int]) -> Array[Int] {
 /// 全局三角形计数
 ///
 /// 统计图中所有三角形的数量以及每个节点参与的三角形数。
-/// 适用于无向图。
+/// 三角形是图中最小的环结构（3 个节点两两相连），
+/// 在社交网络分析、聚类系数计算等领域有重要应用。
+///
+/// 使用枚举法：对每条边 (u, v)，统计共同邻居 w > v 形成的三角形。
+/// 避免重复计数，保证每个三角形只被统计一次。
+///
+/// # 参数
+///
+/// - `graph`: 输入无向图（需实现 GraphReadable trait）
+///
+/// # 返回
+///
+/// `TriangleCountResult` 包含：
+/// - `total_triangles`: 图中三角形总数
+/// - `node_triangles`: 每个节点参与的三角形数
+///
+/// # 复杂度
+///
+/// - 时间: O(Σ_{v} deg(v)²)，稀疏图近似 O(V × d²)
+/// - 空间: O(V + E) 用于存储排序后的邻接表
+///
+/// # 应用场景
+///
+/// - 社交网络紧密社群检测
+/// - 聚类系数计算的基础
+/// - 网络传递性分析
 pub fn[G : @core.GraphReadable] count_triangles(graph : G) -> TriangleCountResult {
   let n = @core.GraphReadable::node_count(graph)
   let per_node : Array[Int] = []
