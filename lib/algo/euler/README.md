@@ -139,6 +139,48 @@ moon test lib/algo/euler
 - 信息保留: Edge 包含 from/to/weight/id
 - 一致性: 与 MST、最短路径等模块风格统一
 
+### 📝 命名模式说明 (v0.16.0)
+
+欧拉路径/回路函数使用 `_undirected` / `_directed` 后缀区分图类型：
+
+**当前 API 设计**：
+```moonbit
+// 无向图版本（8 个函数）
+has_euler_path_undirected(graph) -> Bool
+find_euler_path_undirected(graph) -> EulerPathResult
+has_euler_circuit_undirected(graph) -> Bool
+find_euler_circuit_undirected(graph) -> EulerCircuitResult
+
+// 有向图版本（8 个函数）
+has_euler_path_directed(graph) -> Bool
+find_euler_path_directed(graph) -> EulerPathResult
+has_euler_circuit_directed(graph) -> Bool
+find_euler_circuit_directed(graph) -> EulerCircuitResult
+```
+
+**为什么使用这种命名？**
+1. **类型安全**：MoonBit 不支持函数重载，无法通过参数类型区分
+2. **显式意图**：调用者一眼就能看出处理的图类型
+3. **IDE 友好**：输入 `euler_` 后自动补全可看到所有变体
+
+**v1.1.0 改进计划**：
+考虑通过 Trait 约束区分（如果 MoonBit 语言支持特化）：
+```moonbit
+// 未来可能的简化方案（需语言支持）
+pub fn[G : GraphReadable] find_euler_path(graph : G) -> EulerPathResult  // 自动适配
+pub fn[G : GraphDirected] find_euler_path(graph : G) -> EulerPathResult   // 有向版本
+```
+
+**当前使用建议**：
+```moonbit
+// 根据图的 is_directed() 结果选择
+if GraphReadable::is_directed(graph) {
+  let result = find_euler_circuit_directed(graph)
+} else {
+  let result = find_euler_circuit_undirected(graph)
+}
+```
+
 详见设计文档: [docs/superpowers/specs/2026-05-22-euler-design.md](../../../docs/superpowers/specs/2026-05-22-euler-design.md)
 
 ## 配合使用的模块
@@ -151,6 +193,7 @@ moon test lib/algo/euler
 
 | 版本 | 日期 | 变更 |
 |------|------|------|
+| v0.16.0 | 2026-06-01 | 文档更新：补充 `_undirected`/`_directed` 命名模式说明 |
 | v1.0.0 | 2026-05-22 | 初始版本：支持有向/无向图，Hierholzer 算法，8 个 API 函数 |
 
 ## 许可证

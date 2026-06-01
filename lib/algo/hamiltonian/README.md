@@ -1,6 +1,6 @@
 # 哈密顿路径与旅行商问题 (`hamiltonian`)
 
-> **版本**: v0.1.0 | **状态**: 稳定 | **测试**: 17 通过 | **复杂度**: NP-hard
+> **版本**: v0.2.0 | **状态**: 稳定 | **测试**: 17 通过 | **复杂度**: NP-hard
 
 提供两类经典 NP-hard 组合优化问题的求解能力：
 - **哈密顿路径/回路** — 回溯法精确搜索 O(n!) + 必要条件快速剪枝 O(V)
@@ -29,7 +29,7 @@ lib/algo/hamiltonian/
 ├── tsp.mbt                     # TSP 算法
 │   ├── tsp_nearest_neighbor()                   # O(n²) 启发式近似
 │   ├── tsp_exact_held_karp()                   # O(n²·2^n) 精确解 (V≤12)
-│   └── build_weight_matrix()                   # 图→权重矩阵转换
+│   └── build_weight_matrix()                   # [私有] 图→权重矩阵转换
 └── hamiltonian_test.mbt         # 测试套件 (17 tests)
 ```
 
@@ -87,9 +87,31 @@ pub(all) struct TSPResult {
 |------|------|--------|:--------:|------|
 | `tsp_nearest_neighbor(weights)` | **最近邻贪心**启发式 | **O(n²)** | 无限制 | `TSPResult` |
 | `tsp_exact_held_karp(weights)` | **Held-Karp 排列枚举**精确解 | **O(n²·2^n)** | **V≤12** | `TSPResult` |
-| `build_weight_matrix(graph)` | 从 GraphReadable 构建权重矩阵 | **O(V²)** | 无限制 | `Array[Array[Double]]` |
 
 > 💡 **自动降级策略**: 当 `tsp_exact_held_karp()` 的输入规模 V > 12 时，会**自动降级**为最近邻启发式并标记 `is_optimal = false`。
+
+### ⚠️ v0.16.0 API 变更通知
+
+| 函数 | 变更类型 | 原因 |
+|------|:-------:|------|
+| `build_weight_matrix()` | 🔒 **已移除出公共 API** | 内部实现细节，不应暴露 |
+
+**影响范围**：此函数原用于从 Graph trait 构建权重矩阵供 TSP 算法使用。
+
+**替代方案**：如需权重矩阵，可自行实现：
+```moonbit
+// 手动构建权重矩阵示例
+fn build_matrix[G : @core.GraphReadable](graph : G) -> Array[Array[Double]] {
+  let n = @core.GraphReadable::node_count(graph)
+  // ... 实现逻辑
+}
+```
+
+或直接使用矩阵参数调用 TSP 函数：
+```moonbit
+let result = tsp_nearest_neighbor(weight_matrix)
+let result = tsp_exact_held_karp(weight_matrix)
+```
 
 **算法对比**:
 
@@ -189,10 +211,24 @@ circuit_r.exists              // => true
 circuit_r.is_circuit          // => true（环图本身就是哈密顿回路）
 ```
 
-### 从图构建 TSP 权重矩阵
+### 从图构建 TSP 权重矩阵（用户自行实现）
+
+> ⚠️ **v0.16.0 变更**: `build_weight_matrix()` 已移出公共 API。如需从 Graph trait 构建权重矩阵，请参考以下示例自行实现：
 
 ```moonbit
 // 将任意 GraphReadable 存储转换为 TSP 所需的权重矩阵
+fn build_weight_matrix[G : @core.GraphReadable](graph : G) -> Array[Array[Double]] {
+  let n = @core.GraphReadable::node_count(graph)
+  let mut matrix = Array::make(n, Array::make(n, -1.0))  // -1.0 表示无边
+  for i in range(0, n) {
+    matrix[i][i] = 0.0  // 自环距离为 0
+  }
+  // 遍历所有边填充权重
+  // ... 具体实现根据需求调整
+  matrix
+}
+
+// 使用示例
 let g = @storage.new_undirected()
 @core.GraphWritable::add_node(g, 0.0) |> ignore
 @core.GraphWritable::add_node(g, 0.0) |> ignore
@@ -400,9 +436,16 @@ fn solve_tsp(weights : Array[Array[Double]]) -> TSPResult {
 
 ### 为什么哈密顿算法基于 GraphReadable trait 而 TSP 使用原始矩阵？
 
+**性能考虑**：TSP 算法需要频繁随机访问任意节点对的权重（O(V²) 次），
+使用矩阵可避免 trait 方法调用的虚分派开销。
+
+**典型规模**：TSP 是 NP-hard 问题，实际应用通常 V ≤ 20，
+此时矩阵的空间开销（O(V²)）完全可以接受。
+
 1. **哈密顿问题本质是图论问题** — 只需知道邻接关系，不需要权重信息，天然适配 trait 体系
 2. **TSP 本质是优化问题** — 需要完整的距离/权重矩阵，trait 的边查询接口效率不足（逐条查询 vs 矩阵随机访问）
-3. **桥接函数** `build_weight_matrix()` 提供 graph → matrix 的转换能力，两者可以配合使用
+3. **v0.16.0 更新**：移除了 `build_weight_matrix()` 公共 API，
+   进一步封装了内部实现细节，强调 TSP 模块的独立性
 
 ### 为什么 quick_check 只检查 degree ≥ 2？
 
@@ -430,8 +473,8 @@ if hc_quick {
   }
 }
 
-// 3. 如果需要 TSP，转换为权重矩阵
-let weights = build_weight_matrix(g)
+// 3. 如果需要 TSP，需自行构建权重矩阵（v0.16.0 后 build_weight_matrix 已私有化）
+// let weights = build_weight_matrix(g)  // 用户自行实现此函数
 
 // 4. 根据规模选择算法
 let tsp_result = match weights.length() {
@@ -460,7 +503,8 @@ if cc_result.component_count > 1 && @core.GraphReadable::node_count(g) > 1 {
 
 | 版本 | 日期 | 变更 |
 |:----:|:----:|------|
-| **v0.1.0** | **2026-05-20** | **初始版本：哈密顿路径/回路回溯算法 + TSP NN/Held-Karp + 17 tests + README** |
+| **v0.2.0** | **2026-06-01** | **API 清理：build_weight_matrix 移出公共 API + 文档增强** |
+| v0.1.0 | 2026-05-20 | 初始版本：哈密顿路径/回路回溯算法 + TSP NN/Held-Karp + 17 tests + README |
 
 ---
 

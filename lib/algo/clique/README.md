@@ -395,6 +395,30 @@ moon test lib/algo/clique  # 14 tests
 2. **可读性**: 排序后的结果更易于人工检查
 3. **一致性**: 三个算法的输出格式统一，方便下游使用
 
+### 📝 命名说明与未来规划 (v0.16.0)
+
+当前函数名称包含精度信息后缀，这是为了明确区分精确算法和近似算法：
+
+| 当前函数名 | 语义 | 复杂度 | v1.1.0 计划重命名为 |
+|-----------|------|:------:|:-------------------:|
+| `find_minimum_vertex_cover_exact()` | 精确解（指数时间）| O(1.4422^V) | `find_minimum_vertex_cover()` |
+| `find_minimum_vertex_cover_approx()` | 近似解（多项式时间）| O(V+E) | `find_minimum_vertex_cover_greedy()` |
+
+**为什么现在不改？**
+- 向后兼容性考虑（v1.0.0 冻结期不引入 Breaking Changes）
+- 给用户迁移时间
+
+**如何使用？**
+```moonbit
+// 当前用法（v0.16.0 - v1.0.x）
+let exact_result = find_minimum_vertex_cover_exact(graph)
+let approx_result = find_minimum_vertex_cover_approx(graph)
+
+// 未来用法（v1.1.0+，向后兼容别名会保留至 v2.0.0）
+// let exact_result = find_minimum_vertex_cover(graph)
+// let approx_result = find_minimum_vertex_cover_greedy(graph)
+```
+
 ## 与其他模块配合
 
 ```moonbit
@@ -454,6 +478,7 @@ let clique_result = find_maximum_clique(undirected_g)
 
 | 版本 | 日期 | 变更 |
 |:----:|:----:|------|
+| v0.16.0 | 2026-06-01 | 文档更新：补充命名说明与 v1.1.0 重命名规划 |
 | v0.1.0 | 2026-06-01 | 初始版本：Bron-Kerbosch + 最大独立集 + 最小顶点覆盖（精确+近似）+ 14 tests |
 
 ---

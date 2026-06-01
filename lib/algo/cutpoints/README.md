@@ -238,10 +238,37 @@ moon test lib/algo/cutpoints --update
 - 这样可以识别结构上的薄弱环节，无论方向如何
 - 符合大多数实际应用场景的需求
 
+### 📝 命名模式说明 (v0.16.0)
+
+割点与桥检测函数同样使用 `_undirected` / `_directed` 后缀：
+
+| 函数 | 适用图类型 | Trait 约束 |
+|------|-----------|------------|
+| `find_articulation_points_undirected()` | 无向图 | GraphReadable |
+| `find_articulation_points_directed()` | 有向图 | GraphDirected |
+| `find_bridges_undirected()` | 无向图 | GraphReadable |
+| `find_bridges_directed()` | 有向图 | GraphDirected |
+
+**语义差异**：
+- **无向图版本**：基于 DFS 树的标准 Tarjan 算法
+- **有向图版本**：考虑入边/出边的强连通分量变体
+
+**快捷选择**：
+```moonbit
+fn find_cutpoints[G](graph : G) -> CutPointResult {
+  if GraphReadable::is_directed(graph) {
+    find_articulation_points_directed(graph)
+  } else {
+    find_articulation_points_undirected(graph)
+  }
+}
+```
+
 ## 版本历史
 
 | 版本 | 日期 | 变更 |
 |------|------|------|
+| v0.16.0 | 2026-06-01 | 文档更新：补充 `_undirected`/`_directed` 命名模式说明 |
 | **v1.0.0** | 2026-05-22 | 初始版本：Tarjan 割点和桥算法，~15 个测试用例 |
 
 ## 相关模块

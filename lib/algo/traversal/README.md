@@ -1,4 +1,4 @@
-# traversal — 图遍历算法
+# traversal — 图遍历算法 (v0.2.0)
 
 > **定位**: mbtgraph 的**首批算法实现**，基于 `@core.GraphReadable` trait 泛型约束，支持所有 8 种存储结构。
 >
@@ -147,6 +147,16 @@ let all = bfs_all(graph)
 - `parents[]` 记录前驱，支持 O(k) 路径重建（k = 路径长度）
 
 **适用场景**: 无权图最短路径、层级遍历、社交网络 N 度好友。
+
+> ⚠️ **重要限制 (v0.16.0 更新)**
+>
+> `bfs_shortest_path()` 仅适用于**无权图**（所有边权重相同）。
+> 对于**有权图**，请使用：
+> - [`dijkstra()`](../shortest_path/) — O((V+E)logV)
+> - [`dijkstra_targeted()`](../shortest_path/) — 单目标优化
+> - [`bellman_ford()`](../shortest_path/) — 支持负权边
+>
+> **推荐场景**：社交网络"六度分隔"、网页链接距离、无权图快速查询
 
 ### 2. DFS — 深度优先搜索
 
@@ -314,6 +324,23 @@ match topo_sort_dfs(dag) {
 
 ---
 
+## 💡 使用提示
+
+### bfs_all vs dfs_all 的区别
+
+| 函数 | 行为 | 返回结果 |
+|------|------|---------|
+| `bfs(graph, start)` | 从 start 开始的单源 BFS | 仅遍历 start 所在连通分量 |
+| `bfs_all(graph)` | 对每个未访问节点分别启动 BFS | 遍历全图所有连通分量 |
+| `dfs(graph, start)` | 从 start 开始的单源 DFS | 仅遍历 start 所在连通分量 |
+| `dfs_all(graph)` | 对每个未访问节点分别启动 DFS | 遍历全图所有连通分量 |
+
+**选择建议**：
+- 已知起点 → 使用单源版本
+- 需要全图遍历/统计连通分量 → 使用 `_all` 版本
+
+---
+
 ## 测试覆盖
 
 | 文件                   | 类型     | 测试数 | 覆盖重点                                       |
@@ -423,6 +450,16 @@ if escape_path.length() > 0 {
 | **SCC (Tarjan)**   |    DfsResult 时间戳     | 强连通分量                           |
 | **双连通分量**     | DfsResult + bridge 检测 | 桥 / 割点                            |
 | **A\***            |     BFS + 启发函数      | 启发式最短路径                       |
+
+---
+
+## API 变更历史
+
+| 版本 | 日期 | 变更类型 | 说明 |
+|:----:|:----:|:-------:|------|
+| v0.2.0 | 2026-06-01 | 📝 文档增强 | `bfs_shortest_path()` 添加无权图限制警告和使用场景说明 |
+| v0.2.0 | 2026-06-01 | 🔒 可见性调整 | `topo_validates()` 从公共 API 移除（现为测试内部函数）|
+| v0.1.0 | 初始版本 | ✨ 初始发布 | 12 个遍历算法函数 |
 
 ---
 
