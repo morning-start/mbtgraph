@@ -1,40 +1,166 @@
 ---
-title: Welcome to Starlight
-description: Get started building your docs site with Starlight.
-template: splash # Remove or comment out this line to display the site sidebar on this page.
+title: mbtgraph - MoonBit 图算法库
+description: 生产级图算法库：8种存储 · 49个算法 · 6层Trait · 纯函数语义
+template: splash
 hero:
-  tagline: Congrats on setting up a new Starlight project!
+  tagline: MoonBit 生态首个生产级图算法库
   image:
     file: ../../assets/houston.webp
   actions:
-    - text: Example Guide
-      link: /guides/example/
+    - text: 快速开始
+      link: /getting-started/installation/
       icon: right-arrow
-    - text: Read the Starlight docs
-      link: https://starlight.astro.build
+    - text: 查看文档
+      link: /core-concepts/index/
+      icon: open-book
+    - text: GitHub
+      link: https://github.com/moonbit/mbtgraph
       icon: external
       variant: minimal
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Card, CardGrid, Steps } from '@astrojs/starlight/components';
+import Table from '../../components/Table.astro';
 
-## Next steps
+## 为什么选择 mbtgraph？
 
 <CardGrid stagger>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
+	<Card title="8 种存储结构" icon="library">
+		邻接表、矩阵、边集、CSR/CSC 等 8 种实现，覆盖所有使用场景
 	</Card>
-	<Card title="Change page layout" icon="document">
-		Delete `template: splash` in `src/content/docs/index.mdx` to display a
-		sidebar on this page.
+	<Card title="6 层 Trait 分层" icon="layers">
+		GraphReadable → Writable → Directed → Full → BatchReadable → EdgeIterable，渐进式复杂度
 	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
+	<Card title="~49 个算法" icon="code">
+		遍历、最短路径、MST、连通性、网络流、匹配、着色、社区检测等全覆盖
 	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
+	<Card title="纯函数语义" icon="shield">
+		深拷贝保证无副作用，便于推理和测试，符合函数式编程最佳实践
 	</Card>
-	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
+	<Card title="三后端支持" icon="rocket">
+		原生支持 native / wasm / js 三种编译目标，跨平台运行
+	</Card>
+	<Card title="双轨测试体系" icon="check">
+		Blackbox 功能测试 + Whitebox 内部逻辑验证，质量有保障
 	</Card>
 </CardGrid>
+
+## 核心架构
+
+mbtgraph 采用**三层架构设计**，通过 Trait 机制实现算法与存储的完全解耦：
+
+```
+┌─────────────────────────────────────────────┐
+│              算法层 (algo/)                   │
+│   泛型函数 + 独立类型双轨制                    │
+├─────────────────────────────────────────────┤
+│              存储层 (storage/)               │
+│   8 种实现 × Trait 接口                       │
+├─────────────────────────────────────────────┤
+│              核心层 (core/)                   │
+│   类型定义 + 6 层 Trait + 错误处理            │
+└─────────────────────────────────────────────┘
+```
+
+## 快速上手
+
+<Steps>
+1. [安装 mbtgraph](/getting-started/installation/)
+2. [创建第一个图程序](/getting-started/first-graph/)
+3. [学习核心概念](/core-concepts/index/)
+4. [探索算法教程](/algorithms/index/)
+</Steps>
+
+## 技术特色
+
+### 算法与存储解耦
+
+通过 **Trait 泛型机制**，同一算法可适配不同存储结构：
+
+```moonbit
+// 模式 A: Trait 兼容型（大多数算法）
+pub fn[G : @core.GraphReadable] bfs(graph : G, start : NodeId) -> BfsResult { ... }
+
+// 可用于任何实现了 GraphReadable 的存储：AdjList、Matrix、CSR...
+let result = bfs(my_adj_list_graph, start_node)
+```
+
+### 渐进式复杂度
+
+从简单只读到完全可写，用户按需选择：
+
+<Table
+  headers={['Trait 层级', '方法数', '适用场景']}
+  align={['left', 'center', 'left']}
+  rows={[
+    ['<code>GraphReadable</code>', '12', '所有存储，只读操作'],
+    ['<code>GraphWritable</code>', '+5', '动态存储，增删节点'],
+    ['<code>GraphDirected</code>', '+6', '有向图，入边查询'],
+    ['<code>GraphFull</code>', '=W+D', '便捷别名'],
+    ['<code>GraphBatchReadable</code>', '+2', 'CSR/CSC 批量操作'],
+    ['<code>GraphEdgeIterable</code>', '+1', '边排序需求'],
+  ]}
+/>
+
+### 纯函数语义
+
+所有操作返回新实例，保证无副作用：
+
+```moonbit
+// 链式赋值，每次返回新的图实例
+let g = @storage.DirectedAdjList::new()
+let g = @core.GraphWritable::add_node(g, "A")
+let g = @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
+
+// 算法内部自动深拷贝，不会修改原图
+let result = dijkstra(g, source)  // g 保持不变
+```
+
+## 应用场景
+
+- **社交网络分析**：关注关系图、关键人物识别、社群发现
+- **推荐系统**：用户-物品二分图、协同过滤、图嵌入
+- **知识图谱**：实体关系抽取、图谱查询、可视化展示
+- **路径规划**：地图导航、游戏寻路、物流优化
+- **网络流问题**：最大流、最小费用流、资源分配
+- **生物信息学**：蛋白质交互网络、基因调控网络
+
+## 开始探索
+
+<div class="callout" data-color="note">
+  <div class="callout-header">
+    <span class="callout-icon">💡</span>
+    <p class="callout-title">新手推荐路线</p>
+  </div>
+  <div class="callout-content">
+    <p>如果你是第一次接触图算法或 MoonBit 语言，建议按以下顺序学习：</p>
+    <ol>
+      <li><strong>入门指南</strong>：安装环境并运行第一个示例程序</li>
+      <li><strong>基础教程</strong>：理解 Trait 系统、存储选型和数据类型</li>
+      <li><strong>BFS/DFS 教程</strong>：掌握图遍历的基础和进阶技巧</li>
+      <li><strong>Dijkstra 教程</strong>：学习最短路径算法的经典实现</li>
+      <li><strong>实战案例</strong>：将所学应用到真实场景中</li>
+    </ol>
+  </div>
+</div>
+
+## 项目状态
+
+<Table
+  headers={['维度', '数据', '说明']}
+  align={['left', 'center', 'left']}
+  rows={[
+    ['<strong>Trait 分层</strong>', '6 层', 'GraphReadable → Writable → Directed → Full → BatchReadable → EdgeIterable'],
+    ['<strong>存储实现</strong>', '8 种', '邻接表/矩阵/边集/CSR/CSC（各有有向/无向变体）'],
+    ['<strong>算法覆盖</strong>', '~49 个', '遍历/最短路径/MST/连通性/流网络/匹配/着色/社区检测等'],
+    ['<strong>测试体系</strong>', '双轨制', 'Blackbox（功能测试）+ Whitebox（内部逻辑验证）'],
+    ['<strong>后端支持</strong>', '3 种', 'native / wasm / js'],
+  ]}
+/>
+
+---
+
+<div style="text-align: center; margin-top: 2rem;">
+  <p><strong>准备好开始了吗？</strong></p>
+  <a href="/getting-started/installation/" class="button">立即开始 →</a>
+</div>
