@@ -1,0 +1,219 @@
+---
+/**
+ * CodeBlock.astro - 增强代码块组件
+ *
+ * 提供增强的代码展示功能，包括：
+ * - 文件路径显示
+ * - 语言标识
+ * - 一键复制按钮
+ * - 行号显示（可选）
+ * - 高亮特定行（可选）
+ */
+
+interface Props {
+  /** 代码内容 */
+  code: string;
+  /** 编程语言 (moonbit, python, javascript, etc.) */
+  language?: string;
+  /** 文件路径（可选，用于显示来源） */
+  filename?: string;
+  /** 是否显示行号 */
+  showLineNumbers?: boolean;
+  /** 要高亮的行号数组 */
+  highlightLines?: number[];
+  /** 标题（可选） */
+  title?: string;
+}
+
+const {
+  code,
+  language = 'moonbit',
+  filename,
+  showLineNumbers = true,
+  highlightLines = [],
+  title,
+} = Astro.props;
+
+const lines = code.split('\n');
+---
+
+<div class={`code-block ${language}`}>
+  {(title || filename) && (
+    <div class="code-header">
+      <div class="code-title">
+        {filename && (
+          <span class="filename">
+            📁 {filename}
+          </span>
+        )}
+        {title && !filename && (
+          <span class="title">{title}</span>
+        )}
+      </div>
+      <button
+        class="copy-button"
+        data-code={code}
+        onclick={(e) => {
+          const target = e.target as HTMLElement;
+          const codeToCopy = target.getAttribute('data-code');
+          navigator.clipboard.writeText(codeToCopy || '');
+          target.textContent = '已复制！';
+          setTimeout(() => {
+            target.textContent = '复制';
+          }, 2000);
+        }}
+      >
+        复制
+      </button>
+    </div>
+  )}
+
+  <pre class={`language-${language}`}>
+    <code>
+      {lines.map((line, index) => {
+        const lineNumber = index + 1;
+        const isHighlighted = highlightLines.includes(lineNumber);
+
+        return (
+          <div
+            class={`code-line ${isHighlighted ? 'highlighted' : ''}`}
+            data-line-number={lineNumber}
+          >
+            {showLineNumbers && (
+              <span class="line-number" aria-hidden="true">
+                {String(lineNumber).padStart(3, ' ')}
+              </span>
+            )}
+            <span class="line-content">{line || ' '}</span>
+          </div>
+        );
+      })}
+    </code>
+  </pre>
+
+  {language && (
+    <div class="code-footer">
+      <span class="language-tag">{language}</span>
+    </div>
+  )}
+</div>
+
+<style>
+  .code-block {
+    background: #1e1e1e;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 1.5rem 0;
+    font-family: 'Fira Code', 'Cascadia Code', Consolas, Monaco, monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: #2d2d2d;
+    border-bottom: 1px solid #404040;
+  }
+
+  .code-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .filename {
+    color: #9ca3af;
+    font-size: 0.85rem;
+  }
+
+  .title {
+    color: #e5e7eb;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  .copy-button {
+    padding: 0.35rem 0.85rem;
+    background: #374151;
+    color: #d1d5db;
+    border: 1px solid #4b5563;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+  }
+
+  .copy-button:hover {
+    background: #4b5563;
+    color: white;
+  }
+
+  pre {
+    margin: 0;
+    padding: 1rem;
+    overflow-x: auto;
+    background: transparent;
+  }
+
+  code {
+    font-family: inherit;
+  }
+
+  .code-line {
+    display: flex;
+    min-height: 1.6em;
+    transition: background-color 0.15s;
+  }
+
+  .code-line:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .code-line.highlighted {
+    background-color: rgba(59, 130, 246, 0.15);
+    border-left: 3px solid #3b82f6;
+  }
+
+  .line-number {
+    display: inline-block;
+    width: 3.5rem;
+    text-align: right;
+    padding-right: 1.5rem;
+    user-select: none;
+    color: #6b7280;
+    flex-shrink: 0;
+  }
+
+  .line-content {
+    flex: 1;
+    color: #e5e7eb;
+    white-space: pre;
+  }
+
+  /* MoonBit 语法高亮（简化版） */
+  .moonbit .line-content {
+    /* 这里可以添加更详细的语法高亮规则 */
+  }
+
+  .code-footer {
+    padding: 0.5rem 1rem;
+    background: #2d2d2d;
+    border-top: 1px solid #404040;
+    text-align: right;
+  }
+
+  .language-tag {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    background: #374151;
+    color: #9ca3af;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+</style>

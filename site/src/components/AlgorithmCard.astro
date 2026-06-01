@@ -1,0 +1,213 @@
+---
+/**
+ * AlgorithmCard.astro - 算法卡片组件
+ *
+ * 用于在算法教程中展示算法的基本信息，包括：
+ * - 算法名称和分类
+ * - 时间/空间复杂度
+ * - 适用场景标签
+ * - 难度等级
+ * - 快速链接
+ */
+
+interface Props {
+  /** 算法名称 */
+  name: string;
+  /** 算法分类 */
+  category: string;
+  /** 时间复杂度 */
+  timeComplexity: string;
+  /** 空间复杂度 */
+  spaceComplexity: string;
+  /** 适用场景列表 */
+  useCases: string[];
+  /** 难度等级: beginner | intermediate | advanced */
+  difficulty?: 'beginner' | 'intermediate' | 'advanced';
+  /** 算法教程链接 */
+  link?: string;
+}
+
+const {
+  name,
+  category,
+  timeComplexity,
+  spaceComplexity,
+  useCases,
+  difficulty = 'intermediate',
+  link,
+} = Astro.props;
+
+// 根据难度设置颜色
+const difficultyColors = {
+  beginner: { bg: '#10b981', text: '入门' },
+  intermediate: { bg: '#f59e0b', text: '中级' },
+  advanced: { bg: '#ef4444', text: '高级' },
+};
+
+const diffColor = difficultyColors[difficulty];
+---
+
+<div class="algorithm-card">
+  <div class="card-header">
+    <h3 class="algorithm-name">{name}</h3>
+    <span
+      class="difficulty-badge"
+      style={`background-color: ${diffColor.bg}; color: white;`}
+    >
+      {diffColor.text}
+    </span>
+  </div>
+
+  <div class="card-meta">
+    <span class="category">{category}</span>
+  </div>
+
+  <div class="complexity-info">
+    <div class="complexity-item">
+      <span class="label">时间</span>
+      <span class="value">{timeComplexity}</span>
+    </div>
+    <div class="complexity-item">
+      <span class="label">空间</span>
+      <span class="value">{spaceComplexity}</span>
+    </div>
+  </div>
+
+  <div class="use-cases">
+    <h4>适用场景</h4>
+    <ul>
+      {useCases.map((useCase) => (
+        <li>{useCase}</li>
+      ))}
+    </ul>
+  </div>
+
+  {link && (
+    <a href={link} class="learn-more-link">
+      查看详细教程 →
+    </a>
+  )}
+</div>
+
+<style>
+  .algorithm-card {
+    background: var(--sl-color-bg-secondary);
+    border: 1px solid var(--sl-color-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .algorithm-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .algorithm-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--sl-color-text-accent);
+  }
+
+  .difficulty-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .card-meta {
+    margin-bottom: 1rem;
+  }
+
+  .category {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background: var(--sl-color-bg-tertiary);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: var(--sl-color-text-secondary);
+  }
+
+  .complexity-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: var(--sl-color-bg-tertiary);
+    border-radius: 6px;
+  }
+
+  .complexity-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .complexity-item .label {
+    font-size: 0.85rem;
+    color: var(--sl-color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .complexity-item .value {
+    font-size: 1.1rem;
+    font-family: monospace;
+    font-weight: 600;
+    color: var(--sl-color-text);
+  }
+
+  .use-cases h4 {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    color: var(--sl-color-text-secondary);
+  }
+
+  .use-cases ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .use-cases li {
+    padding: 0.25rem 0;
+    font-size: 0.9rem;
+    position: relative;
+    padding-left: 1.25rem;
+  }
+
+  .use-cases li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #10b981;
+    font-weight: bold;
+  }
+
+  .learn-more-link {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: var(--sl-color-accent);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: opacity 0.2s;
+  }
+
+  .learn-more-link:hover {
+    opacity: 0.9;
+  }
+</style>

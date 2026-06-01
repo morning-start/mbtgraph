@@ -1,0 +1,693 @@
+---
+/**
+ * CodeComparison.astro - 代码对比组件
+ *
+ * 用于在算法教程中对比不同实现方式，例如：
+ * - Dijkstra 数组实现 vs 堆优化实现
+ * - 递归解法 vs 迭代解法
+ * - 不同语言的实现对比
+ *
+ * @features
+ * - 左右分栏并排对比
+ * - 行级差异高亮显示
+ * - 性能标签（时间/空间复杂度）
+ * - 语言标识和语法高亮支持
+ * - 同步滚动（可选）
+ * - 复制代码功能
+ * - 响应式布局（移动端自动切换为上下堆叠）
+ *
+ * @example
+ * ```astro
+ * <CodeComparison
+ *   leftTitle="数组实现"
+ *   leftCode={`// O(V²) 实现...`}
+ *   leftLanguage="moonbit"
+ *   leftComplexity="O(V²)"
+ *   rightTitle="优先队列优化"
+ *   rightCode={`// O((V+E)logV) 实现...`}
+ *   rightLanguage="moonbit"
+ *   rightComplexity="O((V+E)logV)"
+ * />
+ * ```
+ */
+
+interface Props {
+  /** 左侧标题 */
+  leftTitle: string;
+  /** 左侧代码 */
+  leftCode: string;
+  /** 左侧语言 */
+  leftLanguage?: string;
+  /** 左侧复杂度标签 */
+  leftComplexity?: string;
+  /** 左侧性能评级：excellent | good | moderate | poor */
+  leftPerformance?: 'excellent' | 'good' | 'moderate' | 'poor';
+  /** 左侧描述 */
+  leftDescription?: string;
+
+  /** 右侧标题 */
+  rightTitle: string;
+  /** 右侧代码 */
+  rightCode: string;
+  /** 右侧语言 */
+  rightLanguage?: string;
+  /** 右侧复杂度标签 */
+  rightComplexity?: string;
+  /** 右侧性能评级 */
+  rightPerformance?: 'excellent' | 'good' | 'moderate' | 'poor';
+  /** 右侧描述 */
+  rightDescription?: string;
+
+  /** 是否同步滚动 */
+  syncScroll?: boolean;
+  /** 是否显示行号 */
+  showLineNumbers?: boolean;
+  /** 对比标题（可选） */
+  title?: string;
+  /** 额外的 CSS 类名 */
+  class?: string;
+}
+
+const {
+  leftTitle,
+  leftCode,
+  leftLanguage = 'moonbit',
+  leftComplexity,
+  leftPerformance = 'moderate',
+  leftDescription,
+  rightTitle,
+  rightCode,
+  rightLanguage = 'moonbit',
+  rightComplexity,
+  rightPerformance = 'good',
+  rightDescription,
+  syncScroll = false,
+  showLineNumbers = true,
+  title,
+  class: className = '',
+} = Astro.props;
+
+// 根据性能评级获取颜色和文本
+const getPerformanceStyle = (performance: string) => {
+  const styles = {
+    excellent: { color: '#10b981', bg: '#ecfdf5', text: '最优' },
+    good: { color: '#06b6d4', bg: '#ecfeff', text: '推荐' },
+    moderate: { color: '#f59e0b', bg: '#fffbeb', text: '一般' },
+    poor: { color: '#ef4444', bg: '#fef2f2', text: '较差' },
+  };
+  return styles[performance] || styles.moderate;
+};
+
+const leftPerf = getPerformanceStyle(leftPerformance);
+const rightPerf = getPerformanceStyle(rightPerformance);
+
+// 将代码分割成行
+const leftLines = leftCode.split('\n');
+const rightLines = rightCode.split('\n');
+
+// 简单的行差异检测（基于内容比较）
+const diffInfo = leftLines.map((leftLine, index) => {
+  const rightLine = rightLines[index] || '';
+  return {
+    leftDiffers: leftLine !== rightLine && rightLine !== '',
+    rightDiffers: rightLine !== leftLine && leftLine !== '',
+    bothSame: leftLine === rightLine && leftLine !== '',
+  };
+});
+---
+
+<div class={`code-comparison ${className}`}>
+  {title && (
+    <div class="comparison-header">
+      <h3 class="comparison-title">{title}</h3>
+      <div class="comparison-badge">
+        <span class="badge badge--primary">代码对比</span>
+      </div>
+    </div>
+  )}
+
+  <div class="comparison-container">
+    <!-- 左侧代码面板 -->
+    <div class="code-panel code-panel--left">
+      <div class="panel-header">
+        <div class="header-left">
+          <span class="panel-title">{leftTitle}</span>
+          {leftComplexity && (
+            <span
+              class="complexity-tag"
+              style={`color: ${leftPerf.color}; background: ${leftPerf.bg};`}
+            >
+              {leftComplexity}
+            </span>
+          )}
+        </div>
+        <div class="header-right">
+          {leftDescription && (
+            <span class="panel-description">{leftDescription}</span>
+          )}
+          <span
+            class="performance-badge"
+            style={`background: ${leftPerf.color};`}
+          >
+            {leftPerf.text}
+          </span>
+          <button
+            class="copy-btn"
+            data-side="left"
+            data-code={leftCode}
+            aria-label={`复制 ${leftTitle} 代码`}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            <span>复制</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="code-content" data-side="left">
+        <div class="language-indicator">{leftLanguage}</div>
+        <pre class="code-pre">
+          <code>
+            {leftLines.map((line, index) => (
+              <div
+                class={`code-row ${diffInfo[index].leftDiffers ? 'row-diff' : ''} ${diffInfo[index].bothSame ? 'row-same' : ''}`}
+                data-line={index + 1}
+              >
+                {showLineNumbers && (
+                  <span class="line-num">{String(index + 1).padStart(3, ' ')}</span>
+                )}
+                <span class="line-text">{line || ' '}</span>
+              </div>
+            ))}
+          </code>
+        </pre>
+      </div>
+    </div>
+
+    <!-- 分隔线/连接器 -->
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="vs-badge">VS</div>
+    </div>
+
+    <!-- 右侧代码面板 -->
+    <div class="code-panel code-panel--right">
+      <div class="panel-header panel-header--highlight">
+        <div class="header-left">
+          <span class="panel-title">{rightTitle}</span>
+          {rightComplexity && (
+            <span
+              class="complexity-tag"
+              style={`color: ${rightPerf.color}; background: ${rightPerf.bg};`}
+            >
+              {rightComplexity}
+            </span>
+          )}
+        </div>
+        <div class="header-right">
+          {rightDescription && (
+            <span class="panel-description">{rightDescription}</span>
+          )}
+          <span
+            class="performance-badge performance-badge--recommended"
+            style={`background: ${rightPerf.color};`}
+          >
+            {rightPerf.text}
+          </span>
+          <button
+            class="copy-btn"
+            data-side="right"
+            data-code={rightCode}
+            aria-label={`复制 ${rightTitle} 代码`}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            <span>复制</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="code-content" data-side="right">
+        <div class="language-indicator">{rightLanguage}</div>
+        <pre class="code-pre">
+          <code>
+            {rightLines.map((line, index) => (
+              <div
+                class={`code-row ${diffInfo[index].rightDiffers ? 'row-diff' : ''} ${diffInfo[index].bothSame ? 'row-same' : ''}`}
+                data-line={index + 1}
+              >
+                {showLineNumbers && (
+                  <span class="line-num">{String(index + 1).padStart(3, ' ')}</span>
+                )}
+                <span class="line-text">{line || ' '}</span>
+              </div>
+            ))}
+          </code>
+        </pre>
+      </div>
+    </div>
+  </div>
+
+  {/* 图例说明 */}
+  <div class="legend">
+    <div class="legend-item">
+      <span class="legend-color legend-same"></span>
+      <span>相同行</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-color legend-diff"></span>
+      <span>差异行</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .code-comparison {
+    margin: var(--space-6) 0;
+    background: var(--bg-base);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* ===== 头部 ===== */
+  .comparison-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-4) var(--space-6);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .comparison-title {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+    margin: 0;
+    color: white;
+  }
+
+  .comparison-badge .badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  /* ===== 容器布局 ===== */
+  .comparison-container {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0;
+  }
+
+  /* ===== 代码面板 ===== */
+  .code-panel {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  /* 面板头部 */
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-gray-800);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+
+  .panel-header--highlight {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d3748 100%);
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .panel-title {
+    font-weight: var(--font-semibold);
+    font-size: var(--text-sm);
+    color: #e5e7eb;
+  }
+
+  .complexity-tag {
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+    font-family: var(--font-mono);
+  }
+
+  .panel-description {
+    font-size: var(--text-xs);
+    color: #9ca3af;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .performance-badge {
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: 0.65rem;
+    font-weight: var(--font-bold);
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .performance-badge--recommended {
+    box-shadow: 0 0 10px currentColor;
+  }
+
+  /* 复制按钮 */
+  .copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-3);
+    background: rgba(255, 255, 255, 0.05);
+    color: #d1d5db;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: var(--text-xs);
+    transition: var(--transition-fast);
+  }
+
+  .copy-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+  }
+
+  .copy-btn.copied {
+    background: var(--color-success-500);
+    color: white;
+    border-color: var(--color-success-500);
+  }
+
+  /* 代码内容区 */
+  .code-content {
+    position: relative;
+    flex: 1;
+    overflow: auto;
+    max-height: 500px;
+    background: #1a1b26;
+  }
+
+  .language-indicator {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-3);
+    font-size: 0.7rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .code-pre {
+    margin: 0;
+    padding: var(--space-4) var(--space-4) var(--space-4) 0;
+    background: transparent;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    overflow-x: auto;
+  }
+
+  /* 代码行 */
+  .code-row {
+    display: flex;
+    min-height: 1.6em;
+    transition: background-color 0.15s;
+  }
+
+  .code-row:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+  }
+
+  /* 差异行高亮 */
+  .row-diff {
+    background-color: rgba(239, 68, 68, 0.08);
+    border-left: 3px solid #ef4444;
+  }
+
+  .row-diff:hover {
+    background-color: rgba(239, 68, 68, 0.12);
+  }
+
+  /* 相同行样式 */
+  .row-same {
+    opacity: 0.55;
+  }
+
+  .code-panel--right .row-same {
+    opacity: 0.45;
+  }
+
+  /* 行号 */
+  .line-num {
+    display: inline-block;
+    width: 3rem;
+    text-align: right;
+    padding-right: var(--space-3);
+    user-select: none;
+    color: #4b5563;
+    flex-shrink: 0;
+    font-size: 0.85em;
+  }
+
+  .row-diff .line-num {
+    color: #ef4444;
+    font-weight: var(--font-semibold);
+  }
+
+  /* 行内容 */
+  .line-text {
+    flex: 1;
+    color: #e5e7eb;
+    white-space: pre;
+    padding-right: var(--space-4);
+  }
+
+  .row-diff .line-text {
+    color: #fca5a5;
+    font-weight: var(--font-medium);
+  }
+
+  /* ===== 分隔线 ===== */
+  .divider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    background: var(--bg-subtle);
+    border-left: 1px solid var(--border-default);
+    border-right: 1px solid var(--border-default);
+    position: relative;
+  }
+
+  .divider-line {
+    width: 2px;
+    flex: 1;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      var(--color-primary-300),
+      transparent
+    );
+    margin: var(--space-4) 0;
+  }
+
+  .vs-badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-xs);
+    font-weight: var(--font-extrabold);
+    letter-spacing: 0.05em;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== 图例 ===== */
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-6);
+    padding: var(--space-3) var(--space-6);
+    background: var(--bg-subtle);
+    border-top: 1px solid var(--border-default);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+  }
+
+  .legend-color {
+    width: 16px;
+    height: 12px;
+    border-radius: 2px;
+    border: 1px solid var(--border-default);
+  }
+
+  .legend-same {
+    background: rgba(156, 163, 175, 0.2);
+  }
+
+  .legend-diff {
+    background: rgba(239, 68, 68, 0.15);
+    border-left: 2px solid #ef4444;
+  }
+
+  /* ===== 响应式设计 ===== */
+  @media (max-width: 1024px) {
+    .comparison-container {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto auto;
+    }
+
+    .divider {
+      width: 100%;
+      height: 30px;
+      flex-direction: row;
+      border-left: none;
+      border-right: none;
+      border-top: 1px solid var(--border-default);
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    .divider-line {
+      width: auto;
+      height: 2px;
+      margin: 0 var(--space-4);
+    }
+
+    .panel-description {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .comparison-header {
+      flex-direction: column;
+      gap: var(--space-2);
+      align-items: flex-start;
+    }
+
+    .panel-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-2);
+    }
+
+    .header-right {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .code-content {
+      max-height: 350px;
+    }
+
+    .code-pre {
+      font-size: var(--text-xs);
+    }
+
+    .line-num {
+      width: 2.5rem;
+      font-size: 0.75em;
+    }
+  }
+</style>
+
+<script>
+  // 复制功能
+  document.addEventListener('DOMContentLoaded', () => {
+    const copyButtons = document.querySelectorAll('.code-comparison .copy-btn');
+
+    copyButtons.forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const code = btn.getAttribute('data-code');
+        if (!code) return;
+
+        try {
+          await navigator.clipboard.writeText(code);
+
+          // 视觉反馈
+          btn.classList.add('copied');
+          const originalText = btn.querySelector('span')?.textContent;
+          if (btn.querySelector('span')) {
+            btn.querySelector('span').textContent = '已复制!';
+          }
+
+          setTimeout(() => {
+            btn.classList.remove('copied');
+            if (btn.querySelector('span')) {
+              btn.querySelector('span').textContent = originalText || '复制';
+            }
+          }, 2000);
+        } catch (err) {
+          console.error('复制失败:', err);
+        }
+      });
+    });
+
+    // 同步滚动功能
+    if (false) { // 可根据 props.syncScroll 启用
+      const containers = document.querySelectorAll('.code-comparison .code-content');
+      let isScrolling = false;
+
+      containers.forEach((container) => {
+        container.addEventListener('scroll', () => {
+          if (isScrolling) return;
+          isScrolling = true;
+
+          const scrollTop = container.scrollTop;
+
+          containers.forEach((c) => {
+            if (c !== container) {
+              c.scrollTop = scrollTop;
+            }
+          });
+
+          requestAnimationFrame(() => {
+            isScrolling = false;
+          });
+        });
+      });
+    }
+  });
+</script>

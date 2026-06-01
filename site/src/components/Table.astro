@@ -1,0 +1,195 @@
+---
+/**
+ * Table.astro - 通用表格组件
+ *
+ * 解决 MDX 文件中 Markdown 表格不渲染的问题
+ * 使用方法：
+ * <Table
+ *   headers={['列1', '列2', '列3']}
+ *   rows={[
+ *     ['A1', 'A2', 'A3'],
+ *     ['B1', 'B2', 'B3'],
+ *   ]}
+ *   align={['left', 'center', 'right']}
+ * />
+ */
+
+export interface Props {
+  /** 表头数组 */
+  headers: string[];
+  /** 数据行数组，每个元素是一行的单元格数组 */
+  rows: string[][];
+  /** 每列对齐方式：left | center | right */
+  align?: ('left' | 'center' | 'right')[];
+  /** 是否斑马纹 */
+  striped?: boolean;
+  /** 是否悬停高亮 */
+  hoverable?: boolean;
+  /** 是否紧凑模式（更小间距） */
+  compact?: boolean;
+}
+
+const {
+  headers,
+  rows,
+  align = [],
+  striped = true,
+  hoverable = true,
+  compact = false,
+} = Astro.props;
+
+// 对齐方式映射
+const getAlign = (index: number): string => {
+  const a = align[index] || 'left';
+  return `text-align: ${a};`;
+};
+---
+
+<div class:list={['table-wrapper', { 'table-compact': compact }]}>
+  <table class:list={['data-table', { 'table-striped': striped, 'table-hover': hoverable }]}>
+    <colgroup>
+      {headers.map((_, i) => {
+        const a = align[i] || 'left';
+        return <col style={`width: ${a === 'center' ? 'auto' : 'auto'};`} />;
+      })}
+    </colgroup>
+    <thead>
+      <tr>
+        {headers.map((header, i) => (
+          <th style={getAlign(i)} set:html={header} />
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((row) => (
+        <tr>
+          {row.map((cell, i) => (
+            <td style={getAlign(i)} set:html={cell} />
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<style is:global>
+  /* 使用 is:global 确保覆盖 Starlight 默认样式 */
+  .table-wrapper {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    box-sizing: border-box;
+  }
+
+  .table-wrapper .data-table {
+    display: table !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    table-layout: auto;
+    margin: 0 !important;
+  }
+
+  .table-wrapper .data-table thead {
+    display: table-header-group !important;
+    background: linear-gradient(135deg, #eef2ff 0%, #ede9fe 100%);
+  }
+
+  .table-wrapper .data-table th {
+    display: table-cell !important;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    color: #312e81;
+    border-bottom: 2px solid #6366f1;
+    white-space: nowrap;
+    text-align: left;
+  }
+
+  .table-wrapper .data-table td {
+    display: table-cell !important;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    color: #1f2937;
+    vertical-align: middle;
+  }
+
+  /* 紧凑模式 */
+  .table-wrapper.table-compact .data-table th,
+  .table-wrapper.table-compact .data-table td {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  /* 斑马纹 */
+  .table-wrapper .data-table.table-striped tbody tr:nth-child(even) {
+    background-color: #f9fafb;
+  }
+
+  /* 悬停高亮 */
+  .table-wrapper .data-table.table-hover tbody tr:hover {
+    background-color: #eef2ff;
+    transition: background-color 0.2s ease;
+  }
+
+  /* 最后一行无边框 */
+  .table-wrapper .data-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* 代码样式 */
+  .table-wrapper .data-table code {
+    background: rgba(99, 102, 241, 0.1);
+    color: #4338ca;
+    padding: 0.125rem 0.375rem;
+    border-radius: 4px;
+    font-size: 0.875em;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  /* 暗色模式适配 */
+  [data-theme='dark'] .table-wrapper {
+    background: #1f2937;
+    border-color: #374151;
+  }
+
+  [data-theme='dark'] .table-wrapper .data-table thead {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  }
+
+  [data-theme='dark'] .table-wrapper .data-table th {
+    color: #c7d2fe;
+    border-bottom-color: #8b5cf6;
+  }
+
+  [data-theme='dark'] .table-wrapper .data-table td {
+    color: #e5e7eb;
+    border-bottom-color: #374151;
+  }
+
+  [data-theme='dark'] .table-wrapper .data-table.table-striped tbody tr:nth-child(even) {
+    background-color: #111827;
+  }
+
+  [data-theme='dark'] .table-wrapper .data-table.table-hover tbody tr:hover {
+    background-color: #312e81;
+  }
+
+  /* 响应式 */
+  @media (max-width: 768px) {
+    .table-wrapper .data-table {
+      font-size: 0.875rem;
+    }
+    .table-wrapper .data-table th,
+    .table-wrapper .data-table td {
+      padding: 0.5rem 0.625rem;
+    }
+  }
+</style>
+

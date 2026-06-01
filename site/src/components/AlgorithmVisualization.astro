@@ -1,0 +1,800 @@
+---
+/**
+ * AlgorithmVisualization.astro - 算法可视化容器组件
+ *
+ * 用于在算法教程中展示算法动画、交互式演示或可视化内容。
+ * 支持多种媒体类型和播放控制，提供沉浸式的算法学习体验。
+ *
+ * @features
+ * - 支持 GIF、图片、Canvas、SVG、iframe 等多种内容类型
+ * - 播放控制按钮（播放/暂停/重置）
+ * - 步骤说明面板（可折叠）
+ * - 响应式布局，适配各种屏幕尺寸
+ * - 加载状态指示器
+ * - 全屏模式支持
+ *
+ * @example
+ * ```astro
+ * <AlgorithmVisualization
+ *   title="Dijkstra 算法执行过程"
+ *   description="观察 Dijkstra 如何逐步找到最短路径"
+ *   src="/animations/dijkstra.gif"
+ *   type="gif"
+ *   steps={[
+ *     { title: "初始化", desc: "设置起点距离为 0" },
+ *     { title: "松弛操作", desc: "更新邻居节点距离" },
+ *     { title: "选择最小", desc: "从未访问中选择距离最小的节点" }
+ *   ]}
+ * />
+ * ```
+ */
+
+interface Props {
+  /** 可视化标题 */
+  title: string;
+  /** 可视化描述 */
+  description?: string;
+  /** 媒体源（URL 或内联 HTML） */
+  src?: string;
+  /** 内容类型：gif | image | canvas | svg | iframe | html | slot */
+  type?: 'gif' | 'image' | 'canvas' | 'svg' | 'iframe' | 'html' | 'slot';
+  /** 步骤说明列表 */
+  steps?: Array<{
+    title: string;
+    description: string;
+    highlight?: boolean;
+  }>;
+  /** 是否显示播放控制 */
+  showControls?: boolean;
+  /** 是否自动播放 */
+  autoplay?: boolean;
+  /** 是否循环播放 */
+  loop?: boolean;
+  /** 是否显示步骤面板 */
+  showStepsPanel?: boolean;
+  /** 容器最大高度 */
+  maxHeight?: string;
+  /** 额外的 CSS 类名 */
+  class?: string;
+}
+
+const {
+  title,
+  description,
+  src,
+  type = 'image',
+  steps = [],
+  showControls = true,
+  autoplay = false,
+  loop = true,
+  showStepsPanel = true,
+  maxHeight = '600px',
+  class: className = '',
+} = Astro.props;
+
+// 生成唯一 ID
+const visualizationId = `viz-${Math.random().toString(36).substring(2, 9)}`;
+---
+
+<div class={`algorithm-visualization ${className}`} id={visualizationId}>
+  <!-- 头部信息 -->
+  <div class="viz-header">
+    <div class="viz-title-area">
+      <h3 class="viz-title">{title}</h3>
+      {description && (
+        <p class="viz-description">{description}</p>
+      )}
+    </div>
+    <div class="viz-badge">
+      <span class="badge badge--cyan">可视化</span>
+      {type === 'gif' && <span class="badge badge--info">动画</span>}
+      {type === 'interactive' && <span class="badge badge--primary">交互式</span>}
+    </div>
+  </div>
+
+  <!-- 主内容区域 -->
+  <div class="viz-content-wrapper">
+    <!-- 可视化区域 -->
+    <div class="viz-viewport" style={`max-height: ${maxHeight};`}>
+      <div class="viz-container">
+        {type === 'slot' ? (
+          <slot name="visualization" />
+        ) : type === 'iframe' ? (
+          <iframe
+            src={src}
+            class="viz-iframe"
+            frameborder="0"
+            allowfullscreen
+            loading="lazy"
+          />
+        ) : type === 'html' && src ? (
+          <div class="viz-html" set:html={src} />
+        ) : (
+          <>
+            {/* 加载指示器 */}
+            <div class="viz-loader">
+              <div class="loader-spinner"></div>
+              <span>加载中...</span>
+            </div>
+
+            {/* 媒体内容 */}
+            {src && (
+              <div class="viz-media">
+                {(type === 'gif' || type === 'image') && (
+                  <img
+                    src={src}
+                    alt={title}
+                    class={`viz-image ${(type === 'gif' ? 'viz-gif' : '')}`}
+                    loading="lazy"
+                  />
+                )}
+                {type === 'svg' && src.endsWith('.svg') && (
+                  <object
+                    data={src}
+                    type="image/svg+xml"
+                    class="viz-svg"
+                  >
+                    <img src={src} alt={title} class="viz-image" />
+                  </object>
+                )}
+              </div>
+            )}
+
+            {/* Canvas 容器（需要 JavaScript 初始化） */}
+            {type === 'canvas' && (
+              <canvas
+                id={`${visualizationId}-canvas`}
+                class="viz-canvas"
+                width="800"
+                height="500"
+              ></canvas>
+            )}
+          </>
+        )}
+
+        {/* 覆盖层（用于交互提示） */}
+        <div class="viz-overlay">
+          <button class="play-button" aria-label="播放动画">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* 播放控制栏 */}
+      {showControls && (type === 'gif' || type === 'video') && (
+        <div class="viz-controls">
+          <div class="controls-left">
+            <button class="control-btn control-btn--play" aria-label="播放/暂停">
+              <svg class="icon-play" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+              <svg class="icon-pause hidden" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="4" width="4" height="16"/>
+                <rect x="14" y="4" width="4" height="16"/>
+              </svg>
+            </button>
+            <button class="control-btn" aria-label="重置">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="1,4 1,10 7,10"/>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="controls-center">
+            <div class="progress-bar">
+              <div class="progress-fill"></div>
+            </div>
+          </div>
+
+          <div class="controls-right">
+            <button class="control-btn" aria-label="全屏">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15,3 21,3 21,9"/>
+                <polyline points="9,21 3,21 3,15"/>
+                <line x1="21" y1="3" x2="14" y2="10"/>
+                <line x1="3" y1="21" x2="10" y2="14"/>
+              </svg>
+            </button>
+            {loop && (
+              <button class="control-btn active" aria-label="循环播放">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="17,1 21,5 17,9"/>
+                  <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                  <polyline points="7,23 3,19 7,15"/>
+                  <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+
+    <!-- 步骤说明面板 -->
+    {showStepsPanel && steps.length > 0 && (
+      <div class="viz-steps-panel">
+        <details open>
+          <summary>
+            <span class="steps-summary-title">执行步骤</span>
+            <span class="steps-count">{steps.length} 个步骤</span>
+          </summary>
+          <div class="steps-list">
+            {steps.map((step, index) => (
+              <div class={`step-item ${step.highlight ? 'step-item--highlight' : ''}`}>
+                <div class="step-number">{index + 1}</div>
+                <div class="step-content">
+                  <h4 class="step-title">{step.title}</h4>
+                  <p class="step-description">{step.description}</p>
+                </div>
+                {step.highlight && (
+                  <span class="step-badge">关键步骤</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </details>
+      </div>
+    )}
+  </div>
+
+  <!-- 底部信息栏 -->
+  <div class="viz-footer">
+    <div class="viz-meta">
+      <span class="meta-item">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12,6 12,12 16,14"/>
+        </svg>
+        交互式演示
+      </span>
+      <span class="meta-item">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <line x1="3" y1="9" x2="21" y2="9"/>
+          <line x1="9" y1="21" x2="9" y2="9"/>
+        </svg>
+        {type.toUpperCase()}
+      </span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .algorithm-visualization {
+    background: var(--bg-base);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    margin: var(--space-6) 0;
+    transition: var(--transition-normal);
+  }
+
+  .algorithm-visualization:hover {
+    box-shadow: var(--shadow-xl);
+    border-color: var(--color-primary-200);
+  }
+
+  /* ===== 头部样式 ===== */
+  .viz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: var(--space-5) var(--space-6);
+    background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--bg-subtle) 100%);
+    border-bottom: 1px solid var(--border-default);
+    gap: var(--space-4);
+  }
+
+  .viz-title-area {
+    flex: 1;
+  }
+
+  .viz-title {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0 0 var(--space-2) 0;
+    line-height: var(--leading-tight);
+  }
+
+  .viz-description {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: var(--leading-relaxed);
+  }
+
+  .viz-badge {
+    display: flex;
+    gap: var(--space-2);
+    flex-shrink: 0;
+  }
+
+  /* ===== 内容区域 ===== */
+  .viz-content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  /* ===== 视口区域 ===== */
+  .viz-viewport {
+    position: relative;
+    background: var(--color-gray-900);
+    overflow: hidden;
+  }
+
+  .viz-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+  }
+
+  /* 媒体元素 */
+  .viz-media {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .viz-image,
+  .viz-gif {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .viz-gif {
+    animation: subtle-pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes subtle-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.95; }
+  }
+
+  .viz-svg {
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+  }
+
+  .viz-canvas {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+  }
+
+  .viz-iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    border: none;
+    border-radius: 0;
+  }
+
+  .viz-html {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ===== 加载指示器 ===== */
+  .viz-loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    background: rgba(17, 24, 39, 0.9);
+    color: white;
+    z-index: 10;
+    transition: opacity var(--duration-slow);
+  }
+
+  .viz-loader.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .loader-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: var(--color-primary-400);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  /* ===== 覆盖层与播放按钮 ===== */
+  .viz-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity var(--duration-normal);
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .viz-viewport:hover .viz-overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .play-button {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(99, 102, 241, 0.9);
+    color: white;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-normal);
+    backdrop-filter: blur(10px);
+  }
+
+  .play-button:hover {
+    transform: scale(1.1);
+    background: rgba(99, 102, 241, 1);
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+  }
+
+  .play-button:active {
+    transform: scale(0.95);
+  }
+
+  /* ===== 控制栏 ===== */
+  .viz-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
+    gap: var(--space-4);
+    z-index: 6;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all var(--duration-normal);
+  }
+
+  .viz-viewport:hover .viz-controls {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .controls-left,
+  .controls-right {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .controls-center {
+    flex: 1;
+    max-width: 400px;
+    margin: 0 var(--space-4);
+  }
+
+  .control-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+  }
+
+  .control-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .control-btn.active {
+    background: var(--color-primary-500);
+    border-color: var(--color-primary-500);
+  }
+
+  .control-btn--play {
+    width: 40px;
+    height: 40px;
+    background: var(--color-primary-500);
+    border-color: var(--color-primary-500);
+  }
+
+  .control-btn--play:hover {
+    background: var(--color-primary-600);
+    border-color: var(--color-primary-600);
+    transform: scale(1.05);
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    position: relative;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-full);
+    width: 35%;
+    transition: width 0.1s linear;
+  }
+
+  /* ===== 步骤面板 ===== */
+  .viz-steps-panel {
+    border-top: 1px solid var(--border-default);
+  }
+
+  .viz-steps-panel details {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .viz-steps-panel summary {
+    padding: var(--space-4) var(--space-6);
+    background: var(--bg-subtle);
+    border-bottom: 1px solid var(--border-default);
+  }
+
+  .viz-steps-panel summary:hover {
+    background: var(--color-primary-50);
+  }
+
+  .steps-summary-title {
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+  }
+
+  .steps-count {
+    margin-left: auto;
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    background: var(--bg-muted);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+  }
+
+  .steps-list {
+    padding: var(--space-4) var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .step-item {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-subtle);
+    border-radius: var(--radius-lg);
+    border-left: 3px solid transparent;
+    transition: var(--transition-fast);
+    align-items: flex-start;
+  }
+
+  .step-item:hover {
+    background: var(--color-primary-50);
+    border-left-color: var(--color-primary-400);
+    transform: translateX(4px);
+  }
+
+  .step-item--highlight {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-left-color: var(--color-warning-500);
+  }
+
+  .step-number {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-sm);
+    font-weight: var(--font-bold);
+    flex-shrink: 0;
+  }
+
+  .step-content {
+    flex: 1;
+  }
+
+  .step-title {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin: 0 0 var(--space-1) 0;
+  }
+
+  .step-description {
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: var(--leading-relaxed);
+  }
+
+  .step-badge {
+    font-size: 0.65rem;
+    padding: 2px var(--space-2);
+    background: var(--color-warning-500);
+    color: white;
+    border-radius: var(--radius-sm);
+    font-weight: var(--font-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    align-self: center;
+  }
+
+  /* ===== 底部信息栏 ===== */
+  .viz-footer {
+    padding: var(--space-3) var(--space-6);
+    background: var(--bg-subtle);
+    border-top: 1px solid var(--border-default);
+  }
+
+  .viz-meta {
+    display: flex;
+    gap: var(--space-4);
+  }
+
+  .meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+  }
+
+  .meta-item svg {
+    opacity: 0.7;
+  }
+
+  /* ===== 响应式设计 ===== */
+  @media (max-width: 768px) {
+    .viz-header {
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .viz-badge {
+      align-self: flex-start;
+    }
+
+    .viz-container {
+      min-height: 250px;
+    }
+
+    .play-button {
+      width: 56px;
+      height: 56px;
+    }
+
+    .play-button svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .controls-center {
+      display: none;
+    }
+
+    .step-item {
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .step-number {
+      width: 24px;
+      height: 24px;
+      font-size: var(--text-xs);
+    }
+
+    .viz-meta {
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+  }
+
+  /* 隐藏类 */
+  .hidden {
+    display: none !important;
+  }
+</style>
+
+<script>
+  // 播放控制逻辑
+  document.addEventListener('DOMContentLoaded', () => {
+    const vizContainers = document.querySelectorAll('.algorithm-visualization');
+
+    vizContainers.forEach((container) => {
+      const playBtn = container.querySelector('.control-btn--play');
+      const overlayPlayBtn = container.querySelector('.play-button');
+      const iconPlay = container.querySelector('.icon-play');
+      const iconPause = container.querySelector('.icon-pause');
+      const resetBtn = container.querySelector('[aria-label="重置"]');
+      const loader = container.querySelector('.viz-loader');
+      const img = container.querySelector('.viz-image, .viz-gif');
+
+      let isPlaying = false;
+
+      // 隐藏加载指示器
+      if (loader && img) {
+        img.addEventListener('load', () => {
+          loader.classList.add('hidden');
+        });
+
+        if (img.complete) {
+          loader.classList.add('hidden');
+        }
+      }
+
+      // 播放/暂停切换
+      const togglePlay = () => {
+        isPlaying = !isPlaying;
+        iconPlay?.classList.toggle('hidden', isPlaying);
+        iconPause?.classList.toggle('hidden', !isPlaying);
+
+        if (isPlaying) {
+          overlayPlayBtn?.closest('.viz-overlay')?.style.setProperty('opacity', '0');
+          overlayPlayBtn?.closest('.viz-overlay')?.style.setProperty('pointer-events', 'none');
+        } else {
+          overlayPlayBtn?.closest('.viz-overlay')?.style.removeProperty('opacity');
+          overlayPlayBtn?.closest('.viz-overlay')?.style.removeProperty('pointer-events');
+        }
+      };
+
+      playBtn?.addEventListener('click', togglePlay);
+      overlayPlayBtn?.addEventListener('click', togglePlay);
+
+      // 重置按钮
+      resetBtn?.addEventListener('click', () => {
+        isPlaying = false;
+        iconPlay?.classList.remove('hidden');
+        iconPause?.classList.add('hidden');
+      });
+    });
+  });
+</script>
