@@ -172,11 +172,11 @@ pub fn[G : @core.GraphReadable] link_prediction_score(
   graph : G,
   u : @core.NodeId,
   v : @core.NodeId,
-) -> LinkPredictionScore {
+) -> LinkPredictionResult {
   let cn = common_neighbors(graph, u, v)
   let jc = jaccard_coefficient(graph, u, v)
   let aa = adamic_adar_index(graph, u, v)
   let pa = preferential_attachment(graph, u, v)
   let ra = resource_allocation(graph, u, v)
-  LinkPredictionScore::{ u, v, common_neighbors: cn, jaccard: jc, adamic_adar: aa, preferential_attachment: pa, resource_allocation: ra }
+  LinkPredictionResult::{ u, v, common_neighbors: cn, jaccard: jc, adamic_adar: aa, preferential_attachment: pa, resource_allocation: ra }
 }

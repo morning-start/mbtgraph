@@ -336,9 +336,9 @@ fn hierholzer_undirected_full(
 /// }
 /// ```
 pub fn[G : @core.GraphReadable] find_euler_path_undirected(
-  g : G,
+  graph : G,
 ) -> EulerPathResult {
-  if !has_euler_path_undirected(g) {
+  if !has_euler_path_undirected(graph) {
     return EulerPathResult::{
       exists: false,
       path: [],
@@ -346,7 +346,7 @@ pub fn[G : @core.GraphReadable] find_euler_path_undirected(
       end_node: None,
     }
   }
-  let (adj, edge_count, edges) = build_adjacency_with_edges(g)
+  let (adj, edge_count, edges) = build_adjacency_with_edges(graph)
   if edge_count == 0 {
     return EulerPathResult::{
       exists: true,
@@ -355,10 +355,10 @@ pub fn[G : @core.GraphReadable] find_euler_path_undirected(
       end_node: None,
     }
   }
-  let (odd_count, first_odd, second_odd) = check_degree_parity(g)
+  let (odd_count, first_odd, second_odd) = check_degree_parity(graph)
   let start_node = match first_odd {
     Some(n) => n
-    None => find_first_non_isolated(g)
+    None => find_first_non_isolated(graph)
   }
   let edge_indices = hierholzer_undirected_full(adj, edge_count, start_node)
   let path_edges : Array[@core.Edge] = []
@@ -418,16 +418,16 @@ pub fn[G : @core.GraphReadable] find_euler_path_undirected(
 /// }
 /// ```
 pub fn[G : @core.GraphReadable] find_euler_circuit_undirected(
-  g : G,
+  graph : G,
 ) -> EulerCircuitResult {
-  if !has_euler_circuit_undirected(g) {
+  if !has_euler_circuit_undirected(graph) {
     return EulerCircuitResult::{ exists: false, circuit: [], start_node: None }
   }
-  let (adj, edge_count, edges) = build_adjacency_with_edges(g)
+  let (adj, edge_count, edges) = build_adjacency_with_edges(graph)
   if edge_count == 0 {
     return EulerCircuitResult::{ exists: true, circuit: [], start_node: None }
   }
-  let start_node = find_first_non_isolated(g)
+  let start_node = find_first_non_isolated(graph)
   let edge_indices = hierholzer_undirected_full(adj, edge_count, start_node)
   let circuit_edges : Array[@core.Edge] = []
   for idx in edge_indices {

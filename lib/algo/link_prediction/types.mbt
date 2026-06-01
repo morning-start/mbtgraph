@@ -1,8 +1,8 @@
 /// 链接预测类型定义
 
 ///|
-/// 两个节点之间的链接预测得分
-pub(all) struct LinkPredictionScore {
+/// 两个节点之间的链接预测结果
+pub(all) struct LinkPredictionResult {
   u : @core.NodeId
   v : @core.NodeId
   common_neighbors : Int
@@ -13,6 +13,6 @@ pub(all) struct LinkPredictionScore {
 } derive(Debug)
 
 ///|
-pub fn LinkPredictionScore::node_pair(self : LinkPredictionScore) -> (@core.NodeId, @core.NodeId) {
+pub fn LinkPredictionResult::node_pair(self : LinkPredictionResult) -> (@core.NodeId, @core.NodeId) {
   (self.u, self.v)
 }

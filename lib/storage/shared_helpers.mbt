@@ -66,9 +66,9 @@ pub fn bubble_sort_by_weight(
 
 ///|
 /// 查找图中节点 ID 的最大值（用于分配数组大小时避免越界）
-pub fn[G : @core.GraphReadable] find_max_node_id(g : G) -> Int {
+pub fn[G : @core.GraphReadable] find_max_node_id(graph : G) -> Int {
   let mut m = -1
-  for nid in @core.GraphReadable::node_ids(g) {
+  for nid in @core.GraphReadable::node_ids(graph) {
     if nid.0 > m {
       m = nid.0
     }

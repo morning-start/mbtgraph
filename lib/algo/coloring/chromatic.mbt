@@ -348,10 +348,10 @@ fn[G : @core.GraphReadable] backtrack_search(
 /// }
 /// ```
 pub fn[G : @core.GraphReadable] exact_chromatic_number(
-  g : G,
+  graph : G,
   time_limit_ms : Int,
 ) -> ChromaticNumberResult {
-  let n = @core.GraphReadable::node_count(g)
+  let n = @core.GraphReadable::node_count(graph)
   if n == 0 {
     return ChromaticNumberResult::{
       chromatic_number: Some(0),
@@ -361,7 +361,7 @@ pub fn[G : @core.GraphReadable] exact_chromatic_number(
       exact: true,
     }
   }
-  let greedy_result = greedy_coloring(g)
+  let greedy_result = greedy_coloring(graph)
   let upper_bound = greedy_result.num_colors
   if upper_bound <= 1 {
     match greedy_result.colors.length() {
@@ -387,7 +387,7 @@ pub fn[G : @core.GraphReadable] exact_chromatic_number(
   let state = create_backtrack_state(n, time_limit_ms)
   let initial_colors : Array[Int] = Array::make(n, -1)
   let final_state = backtrack_search(
-    g, state, 0, initial_colors, 0, upper_bound, n,
+    graph, state, 0, initial_colors, 0, upper_bound, n,
   )
   if final_state.timed_out && final_state.best_count > n {
     ChromaticNumberResult::{

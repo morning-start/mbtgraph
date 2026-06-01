@@ -171,11 +171,11 @@ fn[G : @core.GraphDirected] is_base_graph_connected(g : G) -> Bool {
 ///
 /// let result = has_euler_path_directed(g) // 返回 true
 /// ```
-pub fn[G : @core.GraphDirected] has_euler_path_directed(g : G) -> Bool {
-  if !is_base_graph_connected(g) {
+pub fn[G : @core.GraphDirected] has_euler_path_directed(graph : G) -> Bool {
+  if !is_base_graph_connected(graph) {
     return false
   }
-  let (balanced, _, _) = check_degree_balance(g)
+  let (balanced, _, _) = check_degree_balance(graph)
   balanced
 }
 
@@ -204,11 +204,11 @@ pub fn[G : @core.GraphDirected] has_euler_path_directed(g : G) -> Bool {
 ///
 /// let result = has_euler_circuit_directed(g) // 返回 true
 /// ```
-pub fn[G : @core.GraphDirected] has_euler_circuit_directed(g : G) -> Bool {
-  if !is_base_graph_connected(g) {
+pub fn[G : @core.GraphDirected] has_euler_circuit_directed(graph : G) -> Bool {
+  if !is_base_graph_connected(graph) {
     return false
   }
-  let (balanced, start, end) = check_degree_balance(g)
+  let (balanced, start, end) = check_degree_balance(graph)
   balanced && start == None && end == None
 }
 
@@ -366,9 +366,9 @@ fn hierholzer_directed_core(
 /// }
 /// ```
 pub fn[G : @core.GraphDirected] find_euler_path_directed(
-  g : G,
+  graph : G,
 ) -> EulerPathResult {
-  if !has_euler_path_directed(g) {
+  if !has_euler_path_directed(graph) {
     return EulerPathResult::{
       exists: false,
       path: [],
@@ -376,7 +376,7 @@ pub fn[G : @core.GraphDirected] find_euler_path_directed(
       end_node: None,
     }
   }
-  let (adj, edge_count, edges) = build_directed_adjacency(g)
+  let (adj, edge_count, edges) = build_directed_adjacency(graph)
   if edge_count == 0 {
     return EulerPathResult::{
       exists: true,
@@ -385,10 +385,10 @@ pub fn[G : @core.GraphDirected] find_euler_path_directed(
       end_node: None,
     }
   }
-  let (_, start_candidate, _) = check_degree_balance(g)
+  let (_, start_candidate, _) = check_degree_balance(graph)
   let start_node = match start_candidate {
     Some(n) => n
-    None => find_first_non_zero_out_degree(g)
+    None => find_first_non_zero_out_degree(graph)
   }
   let edge_indices = hierholzer_directed_core(adj, edge_count, start_node)
   let path_edges : Array[@core.Edge] = []
@@ -449,16 +449,16 @@ pub fn[G : @core.GraphDirected] find_euler_path_directed(
 /// }
 /// ```
 pub fn[G : @core.GraphDirected] find_euler_circuit_directed(
-  g : G,
+  graph : G,
 ) -> EulerCircuitResult {
-  if !has_euler_circuit_directed(g) {
+  if !has_euler_circuit_directed(graph) {
     return EulerCircuitResult::{ exists: false, circuit: [], start_node: None }
   }
-  let (adj, edge_count, edges) = build_directed_adjacency(g)
+  let (adj, edge_count, edges) = build_directed_adjacency(graph)
   if edge_count == 0 {
     return EulerCircuitResult::{ exists: true, circuit: [], start_node: None }
   }
-  let start_node = find_first_non_zero_out_degree(g)
+  let start_node = find_first_non_zero_out_degree(graph)
   let edge_indices = hierholzer_directed_core(adj, edge_count, start_node)
   let circuit_edges : Array[@core.Edge] = []
   for idx in edge_indices {

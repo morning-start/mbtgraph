@@ -61,18 +61,18 @@ fn[G : @core.GraphReadable] collect_edges_bidi(g : G) -> Array[(@core.NodeId, @c
 /// 补图：顶点集不变，边集取补
 ///
 /// 复杂度: O(V²)
-pub fn[G : @core.GraphReadable] complement(g : G) -> @storage.UndirectedAdjList {
+pub fn[G : @core.GraphReadable] complement(graph : G) -> @storage.UndirectedAdjList {
   let r = @storage.new_undirected()
-  copy_nodes(g, r)
+  copy_nodes(graph, r)
   let nids : Array[@core.NodeId] = []
-  for nid in @core.GraphReadable::node_ids(g) {
+  for nid in @core.GraphReadable::node_ids(graph) {
     nids.push(nid)
   }
   let mut i = 0
   while i < nids.length() {
     let mut j = i + 1
     while j < nids.length() {
-      if !@core.GraphReadable::contains_edge(g, nids[i], nids[j]) {
+      if !@core.GraphReadable::contains_edge(graph, nids[i], nids[j]) {
         @core.GraphWritable::add_edge(r, nids[i], nids[j], 1.0) |> ignore
       }
       j = j + 1
@@ -86,10 +86,10 @@ pub fn[G : @core.GraphReadable] complement(g : G) -> @storage.UndirectedAdjList 
 /// 反转图：有向边的方向全部反转
 ///
 /// 复杂度: O(V + E)
-pub fn[G : @core.GraphReadable] reverse(g : G) -> @storage.DirectedAdjList {
+pub fn[G : @core.GraphReadable] reverse(graph : G) -> @storage.DirectedAdjList {
   let r = @storage.new_directed()
-  copy_nodes_directed(g, r)
-  for triple in @core.GraphReadable::edges(g) {
+  copy_nodes_directed(graph, r)
+  for triple in @core.GraphReadable::edges(graph) {
     match triple {
       (f, t, w) => @core.GraphWritable::add_edge(r, t, f, w) |> ignore
     }
@@ -320,10 +320,10 @@ pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] lexicographic_product
 /// 顶点 = G 的边，两条边在 L(G) 中相邻当且仅当它们在 G 中共享一个端点。
 ///
 /// 复杂度: O(E²)
-pub fn[G : @core.GraphReadable] line_graph(g : G) -> @storage.UndirectedAdjList {
+pub fn[G : @core.GraphReadable] line_graph(graph : G) -> @storage.UndirectedAdjList {
   let r = @storage.new_undirected()
   let edge_list : Array[(@core.NodeId, @core.NodeId, Double)] = []
-  for triple in @core.GraphReadable::edges(g) {
+  for triple in @core.GraphReadable::edges(graph) {
     match triple {
       (f, t, w) => edge_list.push((f, t, w))
     }
@@ -359,18 +359,18 @@ pub fn[G : @core.GraphReadable] line_graph(g : G) -> @storage.UndirectedAdjList 
 ///
 /// 复杂度: O(V + E)
 pub fn[G : @core.GraphReadable] contract(
-  g : G,
+  graph : G,
   u : @core.NodeId,
   v : @core.NodeId,
 ) -> @storage.UndirectedAdjList {
   let r = @storage.new_undirected()
-  for nid in @core.GraphReadable::node_ids(g) {
-    match @core.GraphReadable::get_node(g, nid) {
+  for nid in @core.GraphReadable::node_ids(graph) {
+    match @core.GraphReadable::get_node(graph, nid) {
       Some(data) => @core.GraphWritable::add_node(r, data) |> ignore
       None => ()
     }
   }
-  for triple in @core.GraphReadable::edges(g) {
+  for triple in @core.GraphReadable::edges(graph) {
     match triple {
       (f, t, w) =>
         if (f == u && t == v) || (f == v && t == u) {
@@ -403,16 +403,16 @@ pub fn[G : @core.GraphReadable] contract(
 ///
 /// 复杂度: O(V·(V+E))
 pub fn[G : @core.GraphReadable] power_graph(
-  g : G,
+  graph : G,
   k : Int,
 ) -> @storage.UndirectedAdjList {
   let r = @storage.new_undirected()
-  let n = @core.GraphReadable::node_count(g)
-  copy_nodes(g, r)
+  let n = @core.GraphReadable::node_count(graph)
+  copy_nodes(graph, r)
   if n <= 0 {
     return r
   }
-  for start in @core.GraphReadable::node_ids(g) {
+  for start in @core.GraphReadable::node_ids(graph) {
     let dist : Array[Int] = Array::make(n, -1)
     let queue : Array[@core.NodeId] = Array::make(n, @core.NodeId(0))
     let mut head = 0
@@ -425,7 +425,7 @@ pub fn[G : @core.GraphReadable] power_graph(
       head = head + 1
       let d = dist[cur.0]
       if d < k {
-        for nxt in @core.GraphReadable::neighbors(g, cur) {
+        for nxt in @core.GraphReadable::neighbors(graph, cur) {
           if dist[nxt.0] < 0 {
             dist[nxt.0] = d + 1
             queue[tail] = nxt
@@ -434,7 +434,7 @@ pub fn[G : @core.GraphReadable] power_graph(
         }
       }
     }
-    for target in @core.GraphReadable::node_ids(g) {
+    for target in @core.GraphReadable::node_ids(graph) {
       let d = dist[target.0]
       if d > 0 && d <= k && !@core.GraphReadable::contains_edge(r, start, target) {
         @core.GraphWritable::add_edge(r, start, target, 1.0) |> ignore

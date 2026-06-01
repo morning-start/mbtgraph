@@ -13,13 +13,13 @@
 /// 使用 BFS 进行 2-染色。若图中存在奇环则返回 false。
 ///
 /// 复杂度: O(V + E)
-pub fn[G : @core.GraphReadable] is_bipartite(g : G) -> Bool {
-  let n = @core.GraphReadable::node_count(g)
+pub fn[G : @core.GraphReadable] is_bipartite(graph : G) -> Bool {
+  let n = @core.GraphReadable::node_count(graph)
   if n <= 1 {
     return true
   }
   let color : Array[Int] = Array::make(n, -1)
-  for start in @core.GraphReadable::node_ids(g) {
+  for start in @core.GraphReadable::node_ids(graph) {
     if color[start.0] >= 0 {
       continue
     }
@@ -32,7 +32,7 @@ pub fn[G : @core.GraphReadable] is_bipartite(g : G) -> Bool {
     while head < tail {
       let cur = queue[head]
       head = head + 1
-      for nxt in @core.GraphReadable::neighbors(g, cur) {
+      for nxt in @core.GraphReadable::neighbors(graph, cur) {
         if color[nxt.0] < 0 {
           color[nxt.0] = 1 - color[cur.0]
           queue[tail] = nxt
@@ -56,20 +56,20 @@ pub fn[G : @core.GraphReadable] is_bipartite(g : G) -> Bool {
 /// 检查是否所有不同节点对之间都有边。
 ///
 /// 复杂度: O(V²)
-pub fn[G : @core.GraphReadable] is_complete(g : G) -> Bool {
-  let n = @core.GraphReadable::node_count(g)
+pub fn[G : @core.GraphReadable] is_complete(graph : G) -> Bool {
+  let n = @core.GraphReadable::node_count(graph)
   if n <= 1 {
     return true
   }
   let nodes : Array[@core.NodeId] = []
-  for nid in @core.GraphReadable::node_ids(g) {
+  for nid in @core.GraphReadable::node_ids(graph) {
     nodes.push(nid)
   }
   let mut i = 0
   while i < nodes.length() {
     let mut j = i + 1
     while j < nodes.length() {
-      if !@core.GraphReadable::contains_edge(g, nodes[i], nodes[j]) {
+      if !@core.GraphReadable::contains_edge(graph, nodes[i], nodes[j]) {
         return false
       }
       j = j + 1
@@ -89,10 +89,10 @@ pub fn[G : @core.GraphReadable] is_complete(g : G) -> Bool {
 /// 检查所有节点的度数是否相同。
 ///
 /// 复杂度: O(V)
-pub fn[G : @core.GraphReadable] is_regular(g : G) -> Bool {
+pub fn[G : @core.GraphReadable] is_regular(graph : G) -> Bool {
   let mut deg : Int? = None
-  for nid in @core.GraphReadable::node_ids(g) {
-    let d = @core.GraphReadable::degree(g, nid)
+  for nid in @core.GraphReadable::node_ids(graph) {
+    let d = @core.GraphReadable::degree(graph, nid)
     match deg {
       Some(d0) => if d != d0 { return false }
       None => deg = Some(d)
@@ -111,21 +111,21 @@ pub fn[G : @core.GraphReadable] is_regular(g : G) -> Bool {
 /// 无边图不是树。树是无环连通图，满足 |E| = |V| - 1。
 ///
 /// 复杂度: O(V + E)
-pub fn[G : @core.GraphReadable] is_tree(g : G) -> Bool {
-  let n = @core.GraphReadable::node_count(g)
+pub fn[G : @core.GraphReadable] is_tree(graph : G) -> Bool {
+  let n = @core.GraphReadable::node_count(graph)
   if n <= 0 {
     return false
   }
   if n == 1 {
-    return @core.GraphReadable::edge_count(g) == 0
+    return @core.GraphReadable::edge_count(graph) == 0
   }
-  if @core.GraphReadable::edge_count(g) != n - 1 {
+  if @core.GraphReadable::edge_count(graph) != n - 1 {
     return false
   }
   // 检查连通性
   let visited : Array[Bool] = Array::make(n, false)
   let nodes : Array[@core.NodeId] = []
-  for nid in @core.GraphReadable::node_ids(g) {
+  for nid in @core.GraphReadable::node_ids(graph) {
     nodes.push(nid)
   }
   if nodes.length() == 0 {
@@ -141,7 +141,7 @@ pub fn[G : @core.GraphReadable] is_tree(g : G) -> Bool {
   while head < tail {
     let cur = queue[head]
     head = head + 1
-    for nxt in @core.GraphReadable::neighbors(g, cur) {
+    for nxt in @core.GraphReadable::neighbors(graph, cur) {
       if !visited[nxt.0] {
         visited[nxt.0] = true
         queue[tail] = nxt
@@ -159,13 +159,13 @@ pub fn[G : @core.GraphReadable] is_tree(g : G) -> Bool {
 /// 森林是无环图。检查每个连通分量是否满足 |E| < |V|。
 ///
 /// 复杂度: O(V + E)
-pub fn[G : @core.GraphReadable] is_forest(g : G) -> Bool {
-  let n = @core.GraphReadable::node_count(g)
+pub fn[G : @core.GraphReadable] is_forest(graph : G) -> Bool {
+  let n = @core.GraphReadable::node_count(graph)
   if n <= 0 {
     return true
   }
   let visited : Array[Bool] = Array::make(n, false)
-  for start in @core.GraphReadable::node_ids(g) {
+  for start in @core.GraphReadable::node_ids(graph) {
     if visited[start.0] {
       continue
     }
@@ -181,7 +181,7 @@ pub fn[G : @core.GraphReadable] is_forest(g : G) -> Bool {
     while head < tail {
       let cur = queue[head]
       head = head + 1
-      for nxt in @core.GraphReadable::neighbors(g, cur) {
+      for nxt in @core.GraphReadable::neighbors(graph, cur) {
         edges = edges + 1
         if !visited[nxt.0] {
           visited[nxt.0] = true
@@ -211,13 +211,13 @@ pub fn[G : @core.GraphReadable] is_forest(g : G) -> Bool {
 /// 然后验证是否为完美消除序 (PEO)。
 ///
 /// 复杂度: O(V + E)
-pub fn[G : @core.GraphReadable] is_chordal(g : G) -> Bool {
-  let n = @core.GraphReadable::node_count(g)
+pub fn[G : @core.GraphReadable] is_chordal(graph : G) -> Bool {
+  let n = @core.GraphReadable::node_count(graph)
   if n <= 2 {
     return true
   }
-  let peo = mcs_ordering(g)
-  check_peo(g, peo, n)
+  let peo = mcs_ordering(graph)
+  check_peo(graph, peo, n)
 }
 
 ///|

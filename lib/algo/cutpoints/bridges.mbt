@@ -182,6 +182,6 @@ pub fn[G : @core.GraphReadable] find_bridges_undirected(graph : G) -> BridgeResu
 /// let result = find_bridges_directed(g)
 /// println("桥的数量: ${result.count}")
 /// ```
-pub fn[G : @core.GraphDirected] find_bridges_directed(g : G) -> BridgeResult {
-  find_bridges_undirected(g)
+pub fn[G : @core.GraphDirected] find_bridges_directed(graph : G) -> BridgeResult {
+  find_bridges_undirected(graph)
 }

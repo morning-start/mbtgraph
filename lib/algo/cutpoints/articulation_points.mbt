@@ -190,7 +190,7 @@ pub fn[G : @core.GraphReadable] find_articulation_points_undirected(
 /// println("割点数量: ${result.count}")
 /// ```
 pub fn[G : @core.GraphDirected] find_articulation_points_directed(
-  g : G,
+  graph : G,
 ) -> CutPointResult {
-  find_articulation_points_undirected(g)
+  find_articulation_points_undirected(graph)
 }

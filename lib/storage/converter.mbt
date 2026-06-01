@@ -12,15 +12,15 @@
 
 ///|
 /// 任意有向图 → 有向邻接表
-pub fn[G : @core.GraphDirected] to_directed_adj_list(g : G) -> DirectedAdjList {
+pub fn[G : @core.GraphDirected] to_directed_adj_list(graph : G) -> DirectedAdjList {
   let r = new_directed()
-  for nid in @core.GraphReadable::node_ids(g) {
-    match @core.GraphReadable::get_node(g, nid) {
+  for nid in @core.GraphReadable::node_ids(graph) {
+    match @core.GraphReadable::get_node(graph, nid) {
       Some(data) => @core.GraphWritable::add_node(r, data) |> ignore
       None => ()
     }
   }
-  for triple in @core.GraphReadable::edges(g) {
+  for triple in @core.GraphReadable::edges(graph) {
     match triple {
       (f, t, w) => @core.GraphWritable::add_edge(r, f, t, w) |> ignore
     }
@@ -31,17 +31,17 @@ pub fn[G : @core.GraphDirected] to_directed_adj_list(g : G) -> DirectedAdjList {
 ///|
 /// 任意有向图 → 有向邻接矩阵（需预分配容量）
 pub fn[G : @core.GraphDirected] to_directed_matrix(
-  g : G,
+  graph : G,
   cap : Int,
 ) -> DirectedMatrix {
   let r = new_directed_matrix(cap)
-  for nid in @core.GraphReadable::node_ids(g) {
-    match @core.GraphReadable::get_node(g, nid) {
+  for nid in @core.GraphReadable::node_ids(graph) {
+    match @core.GraphReadable::get_node(graph, nid) {
       Some(data) => @core.GraphWritable::add_node(r, data) |> ignore
       None => ()
     }
   }
-  for triple in @core.GraphReadable::edges(g) {
+  for triple in @core.GraphReadable::edges(graph) {
     match triple {
       (f, t, w) => @core.GraphWritable::add_edge(r, f, t, w) |> ignore
     }
@@ -51,11 +51,11 @@ pub fn[G : @core.GraphDirected] to_directed_matrix(
 
 ///|
 /// 任意有向图 → CSR（压缩稀疏行，只读）
-pub fn[G : @core.GraphDirected] to_csr(g : G) -> CSRGraph {
+pub fn[G : @core.GraphDirected] to_csr(graph : G) -> CSRGraph {
   let b = CSRBuilder::new()
   let mut b2 = b
-  for nid in @core.GraphReadable::node_ids(g) {
-    match @core.GraphReadable::get_node(g, nid) {
+  for nid in @core.GraphReadable::node_ids(graph) {
+    match @core.GraphReadable::get_node(graph, nid) {
       Some(data) => {
         b2 = b2.add_node(nid, data)
         ()
@@ -63,7 +63,7 @@ pub fn[G : @core.GraphDirected] to_csr(g : G) -> CSRGraph {
       None => ()
     }
   }
-  for triple in @core.GraphReadable::edges(g) {
+  for triple in @core.GraphReadable::edges(graph) {
     match triple {
       (f, t, w) => {
         b2 = b2.add_edge(f, t, w)
@@ -76,11 +76,11 @@ pub fn[G : @core.GraphDirected] to_csr(g : G) -> CSRGraph {
 
 ///|
 /// 任意有向图 → CSC（压缩稀疏列，只读）
-pub fn[G : @core.GraphDirected] to_csc(g : G) -> CSCGraph {
+pub fn[G : @core.GraphDirected] to_csc(graph : G) -> CSCGraph {
   let b = CSCBuilder::new()
   let mut b2 = b
-  for nid in @core.GraphReadable::node_ids(g) {
-    match @core.GraphReadable::get_node(g, nid) {
+  for nid in @core.GraphReadable::node_ids(graph) {
+    match @core.GraphReadable::get_node(graph, nid) {
       Some(data) => {
         b2 = b2.add_node(nid, data)
         ()
@@ -88,7 +88,7 @@ pub fn[G : @core.GraphDirected] to_csc(g : G) -> CSCGraph {
       None => ()
     }
   }
-  for triple in @core.GraphReadable::edges(g) {
+  for triple in @core.GraphReadable::edges(graph) {
     match triple {
       (f, t, w) => {
         b2 = b2.add_edge(f, t, w)
@@ -101,15 +101,15 @@ pub fn[G : @core.GraphDirected] to_csc(g : G) -> CSCGraph {
 
 ///|
 /// 任意有向图 → 有向边集数组
-pub fn[G : @core.GraphDirected] to_edge_list(g : G) -> EdgeListGraph {
+pub fn[G : @core.GraphDirected] to_edge_list(graph : G) -> EdgeListGraph {
   let r = new_edge_list()
-  for nid in @core.GraphReadable::node_ids(g) {
-    match @core.GraphReadable::get_node(g, nid) {
+  for nid in @core.GraphReadable::node_ids(graph) {
+    match @core.GraphReadable::get_node(graph, nid) {
       Some(data) => @core.GraphWritable::add_node(r, data) |> ignore
       None => ()
     }
   }
-  for triple in @core.GraphReadable::edges(g) {
+  for triple in @core.GraphReadable::edges(graph) {
     match triple {
       (f, t, w) => @core.GraphWritable::add_edge(r, f, t, w) |> ignore
     }
@@ -128,17 +128,17 @@ pub fn[G : @core.GraphDirected] to_edge_list(g : G) -> EdgeListGraph {
 ///
 /// 当 `g.is_directed() == true` 时 panic
 pub fn[G : @core.GraphReadable] to_undirected_adj_list(
-  g : G,
+  graph : G,
 ) -> UndirectedAdjList raise {
-  assert_true(!@core.GraphReadable::is_directed(g))
+  assert_true(!@core.GraphReadable::is_directed(graph))
   let r = new_undirected()
-  for nid in @core.GraphReadable::node_ids(g) {
-    match @core.GraphReadable::get_node(g, nid) {
+  for nid in @core.GraphReadable::node_ids(graph) {
+    match @core.GraphReadable::get_node(graph, nid) {
       Some(data) => @core.GraphWritable::add_node(r, data) |> ignore
       None => ()
     }
   }
-  for triple in @core.GraphReadable::edges(g) {
+  for triple in @core.GraphReadable::edges(graph) {
     match triple {
       (f, t, w) => @core.GraphWritable::add_edge(r, f, t, w) |> ignore
     }
@@ -153,18 +153,18 @@ pub fn[G : @core.GraphReadable] to_undirected_adj_list(
 ///
 /// 当 `g.is_directed() == true` 时 panic
 pub fn[G : @core.GraphReadable] to_undirected_matrix(
-  g : G,
+  graph : G,
   cap : Int,
 ) -> UndirectedMatrix raise {
-  assert_true(!@core.GraphReadable::is_directed(g))
+  assert_true(!@core.GraphReadable::is_directed(graph))
   let r = new_undirected_matrix(cap)
-  for nid in @core.GraphReadable::node_ids(g) {
-    match @core.GraphReadable::get_node(g, nid) {
+  for nid in @core.GraphReadable::node_ids(graph) {
+    match @core.GraphReadable::get_node(graph, nid) {
       Some(data) => @core.GraphWritable::add_node(r, data) |> ignore
       None => ()
     }
   }
-  for triple in @core.GraphReadable::edges(g) {
+  for triple in @core.GraphReadable::edges(graph) {
     match triple {
       (f, t, w) => @core.GraphWritable::add_edge(r, f, t, w) |> ignore
     }
@@ -179,17 +179,17 @@ pub fn[G : @core.GraphReadable] to_undirected_matrix(
 ///
 /// 当 `g.is_directed() == true` 时 panic
 pub fn[G : @core.GraphReadable] to_undirected_edge_list(
-  g : G,
+  graph : G,
 ) -> UndirectedEdgeListGraph raise {
-  assert_true(!@core.GraphReadable::is_directed(g))
+  assert_true(!@core.GraphReadable::is_directed(graph))
   let r = new_undirected_edge_list()
-  for nid in @core.GraphReadable::node_ids(g) {
-    match @core.GraphReadable::get_node(g, nid) {
+  for nid in @core.GraphReadable::node_ids(graph) {
+    match @core.GraphReadable::get_node(graph, nid) {
       Some(data) => @core.GraphWritable::add_node(r, data) |> ignore
       None => ()
     }
   }
-  for triple in @core.GraphReadable::edges(g) {
+  for triple in @core.GraphReadable::edges(graph) {
     match triple {
       (f, t, w) => @core.GraphWritable::add_edge(r, f, t, w) |> ignore
     }
@@ -208,16 +208,16 @@ pub fn[G : @core.GraphReadable] to_undirected_edge_list(
 /// 如果同时存在 `(a→b)` 和 `(b→a)`，第二条会因为 `EdgeAlreadyExists` 被丢弃。
 ///
 /// 典型用途：算法需要无向图输入，但数据源是有向的。
-pub fn[G : @core.GraphReadable] as_undirected(g : G) -> UndirectedAdjList raise {
-  assert_true(@core.GraphReadable::is_directed(g))
+pub fn[G : @core.GraphReadable] as_undirected(graph : G) -> UndirectedAdjList raise {
+  assert_true(@core.GraphReadable::is_directed(graph))
   let r = new_undirected()
-  for nid in @core.GraphReadable::node_ids(g) {
-    match @core.GraphReadable::get_node(g, nid) {
+  for nid in @core.GraphReadable::node_ids(graph) {
+    match @core.GraphReadable::get_node(graph, nid) {
       Some(data) => @core.GraphWritable::add_node(r, data) |> ignore
       None => ()
     }
   }
-  for triple in @core.GraphReadable::edges(g) {
+  for triple in @core.GraphReadable::edges(graph) {
     match triple {
       (f, t, w) =>
         match @core.GraphWritable::add_edge(r, f, t, w) {
@@ -236,16 +236,16 @@ pub fn[G : @core.GraphReadable] as_undirected(g : G) -> UndirectedAdjList raise 
 /// 结果图中 `degree(node) == out_degree(node)`。
 ///
 /// 典型用途：算法需要有向图输入，但数据源是无向的。
-pub fn[G : @core.GraphReadable] as_directed(g : G) -> DirectedAdjList raise {
-  assert_true(!@core.GraphReadable::is_directed(g))
+pub fn[G : @core.GraphReadable] as_directed(graph : G) -> DirectedAdjList raise {
+  assert_true(!@core.GraphReadable::is_directed(graph))
   let r = new_directed()
-  for nid in @core.GraphReadable::node_ids(g) {
-    match @core.GraphReadable::get_node(g, nid) {
+  for nid in @core.GraphReadable::node_ids(graph) {
+    match @core.GraphReadable::get_node(graph, nid) {
       Some(data) => @core.GraphWritable::add_node(r, data) |> ignore
       None => ()
     }
   }
-  for triple in @core.GraphReadable::edges(g) {
+  for triple in @core.GraphReadable::edges(graph) {
     match triple {
       (f, t, w) => @core.GraphWritable::add_edge(r, f, t, w) |> ignore
     }
