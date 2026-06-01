@@ -198,7 +198,12 @@ pub fn tsp_exact_held_karp(weights : Array[Array[Double]]) -> TSPResult {
 // ============================================================================
 
 ///|
-pub fn[G : @core.GraphReadable] build_weight_matrix(
+///|
+/// 从 Graph trait 构建权重矩阵（TSP 算法内部使用）
+///
+/// ⚠️ 此函数为 TSP 算法的实现细节，不应作为公共 API 暴露。
+/// 外部代码如需权重矩阵，请自行构建或使用 `@core.GraphReadable::get_edge()`。
+fn[G : @core.GraphReadable] build_weight_matrix(
   graph : G,
 ) -> Array[Array[Double]] {
   let n = @core.GraphReadable::node_count(graph)

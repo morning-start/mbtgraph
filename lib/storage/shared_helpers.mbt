@@ -37,7 +37,12 @@ pub fn remove_from_list(
 }
 
 ///|
-pub fn bubble_sort_by_weight(
+///|
+/// 冒泡排序（按权重升序）
+///
+/// ⚠️ 已废弃：v0.14.0 起被快速排序替代，保留仅供内部兼容性使用。
+/// 外部代码不应依赖此函数。
+fn bubble_sort_by_weight(
   edges : Array[(@core.NodeId, @core.NodeId, Double)],
 ) -> Array[(@core.NodeId, @core.NodeId, Double)] {
   let es = edges
@@ -78,6 +83,11 @@ pub fn[G : @core.GraphReadable] find_max_node_id(graph : G) -> Int {
 
 ///|
 /// 返回两个整数中的较大值
+///|
+/// 返回两个整数中的较大值
+///
+/// ⚠️ **内部工具函数**：仅供 mbtgraph 内部模块使用。
+/// 外部代码应自行实现或等待 MoonBit 标准库提供 `Int::max()` 方法。
 pub fn int_max(a : Int, b : Int) -> Int {
   if a > b {
     a

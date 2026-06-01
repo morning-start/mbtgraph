@@ -414,7 +414,8 @@ test "topo_sort on empty graph returns empty" {
 // ============================================================================
 
 ///|
-pub fn[G : @core.GraphReadable] topo_validates(
+/// 验证拓扑排序结果的正确性
+fn[G : @core.GraphReadable] topo_validates(
   g : G,
   order : Array[@core.NodeId],
 ) -> Bool {

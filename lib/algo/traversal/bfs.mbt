@@ -108,6 +108,17 @@ pub fn[G : @core.GraphReadable] bfs_all(graph : G) -> BfsResult {
 ///
 /// 返回从 start 到 target 的最短路径节点序列（含首尾）。
 /// 如果 target 不可达，返回空数组。
+///
+/// ⚠️ **重要限制**: 此函数仅适用于**无权图**（所有边权重相同）。
+/// 对于**有权图**，请使用 `dijkstra()` 或 `dijkstra_targeted()` 以获得正确结果。
+///
+/// **时间复杂度**: O(V+E)
+/// **空间复杂度**: O(V)
+///
+/// **使用场景**:
+/// - 社交网络中的"六度分隔"查询
+/// - 网页链接的最短点击距离
+/// - 无权图的最短路径快速计算
 pub fn[G : @core.GraphReadable] bfs_shortest_path(
   graph : G,
   start : @core.NodeId,
