@@ -125,7 +125,7 @@ export default defineConfig({
 					label: '基础教程',
 					badge: '重点',
 					items: [
-						{ label: '概述', link: '/core-concepts/index' },
+						{ label: '概述', link: '/core-concepts/' },
 						{
 							label: '图的数据结构',
 							items: [
@@ -158,46 +158,46 @@ export default defineConfig({
 					badge: { text: '核心', variant: 'success' },
 					collapsed: false,
 					items: [
-						{ label: '算法总览', link: '/algorithms/index' },
+						{ label: '算法总览', link: '/algorithms/' },
 						{
 							label: '图遍历算法',
 							collapsed: false,
 							items: [
 								{
 									label: '广度优先搜索 (BFS)',
-									link: '/algorithms/traversal/bfs/index',
+									link: '/algorithms/traversal/bfs/',
 								},
 								{
 									label: '深度优先搜索 (DFS)',
-									link: '/algorithms/traversal/dfs/index',
+									link: '/algorithms/traversal/dfs/',
 								},
 								{
 									label: '高级遍历技巧',
-									link: '/algorithms/traversal/advanced/index',
+									link: '/algorithms/traversal/advanced/',
 								},
 							],
 						},
 						{
 							label: '最短路径算法',
 							items: [
-								{ label: 'Dijkstra 算法', link: '/algorithms/shortest-path/dijkstra/index' },
-								{ label: 'Bellman-Ford 算法', link: '/algorithms/shortest-path/bellman-ford/index' },
-								{ label: 'Floyd-Warshall 算法', link: '/algorithms/shortest-path/floyd-warshall/index' },
-								{ label: 'A* 启发式搜索', link: '/algorithms/shortest-path/a-star/index' },
+								{ label: 'Dijkstra 算法', link: '/algorithms/shortest-path/dijkstra/' },
+								{ label: 'Bellman-Ford 算法', link: '/algorithms/shortest-path/bellman-ford/' },
+								{ label: 'Floyd-Warshall 算法', link: '/algorithms/shortest-path/floyd-warshall/' },
+								{ label: 'A* 启发式搜索', link: '/algorithms/shortest-path/a-star/' },
 							],
 						},
 						{
 					label: '最小生成树 (MST)',
 					items: [
-						{ label: 'Kruskal & Prim 对比详解', link: '/algorithms/mst/kruskal-prim/index' },
-						{ label: 'Kruskal 算法 (独立版)', link: '/algorithms/mst/kruskal/index' },
-						{ label: 'Prim 算法 (独立版)', link: '/algorithms/mst/prim/index' },
+						{ label: 'Kruskal & Prim 对比详解', link: '/algorithms/mst/kruskal-prim/' },
+						{ label: 'Kruskal 算法 (独立版)', link: '/algorithms/mst/kruskal/' },
+						{ label: 'Prim 算法 (独立版)', link: '/algorithms/mst/prim/' },
 					],
 				},
 						{
 							label: '连通性算法',
 							items: [
-								{ label: '连通分量 (CC)', link: '/algorithms/connectivity/connected-components/index' },
+								{ label: '连通分量 (CC)', link: '/algorithms/connectivity/connected-components/' },
 								{
 									label: '强连通分量 (SCC)',
 									items: [
@@ -205,13 +205,13 @@ export default defineConfig({
 										{ label: 'Kosaraju 算法', link: '/algorithms/connectivity/scc/kosaraju' },
 									],
 								},
-								{ label: '割点与桥', link: '/algorithms/connectivity/articulation-points/index' },
+								{ label: '割点与桥', link: '/algorithms/connectivity/articulation-points/' },
 							],
 						},
 						{
 							label: '网络流算法',
 							items: [
-								{ label: '流网络基础概念', link: '/algorithms/flow/basics/index' },
+								{ label: '流网络基础概念', link: '/algorithms/flow/basics/' },
 								{
 									label: '最大流问题',
 									items: [
@@ -220,7 +220,7 @@ export default defineConfig({
 										{ label: 'Dinic 优化算法', link: '/algorithms/flow/max-flow/dinic' },
 									],
 								},
-								{ label: '最小费用最大流', link: '/algorithms/flow/min-cost-max-flow/index' },
+								{ label: '最小费用最大流', link: '/algorithms/flow/min-cost-max-flow/' },
 							],
 						},
 						{
@@ -236,10 +236,10 @@ export default defineConfig({
 								{ label: '一般图匹配', link: '/algorithms/matching/general/edmonds' },
 							],
 						},
-						{ label: '图着色算法', link: '/algorithms/coloring/index' },
-						{ label: '社区检测算法', link: '/algorithms/community/index' },
-						{ label: '中心性指标', link: '/algorithms/centrality/index' },
-						{ label: '其他重要算法', link: '/algorithms/other/index' },
+						{ label: '图着色算法', link: '/algorithms/coloring/' },
+						{ label: '社区检测算法', link: '/algorithms/community/' },
+						{ label: '中心性指标', link: '/algorithms/centrality/' },
+						{ label: '其他重要算法', link: '/algorithms/other/' },
 					],
 				},
 				{
