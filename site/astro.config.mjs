@@ -20,7 +20,6 @@ export default defineConfig({
 			description: '生产级图算法库：8种存储 · 49个算法 · 6层Trait。为 MoonBit 生态系统提供专业级的图数据结构与算法解决方案。',
 			// 暂时移除 logo 图片配置（避免 favicon 路径问题）
 			// 后续可恢复: logo: { src: '/favicon.svg', replacesTitle: false },
-			title: 'mbtgraph - MoonBit 图算法库',
 			// 注意：Starlight 已内置 GFM 支持，无需额外配置 remark-gfm
 			// 如果表格不显示，可能是格式问题而非插件问题
 			// SEO 配置
