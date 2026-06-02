@@ -1,6 +1,6 @@
 ---
-title: 最小生成树 (MST): Kruskal & Prim 算法
-description: 无向连通图最小生成树详解：割性质证明、边排序动画、贪心生长过程、MoonBit 实现、网络设计应用
+title: "最小生成树 (MST): Kruskal & Prim 算法"
+description: "无向连通图最小生成树详解：割性质证明、边排序动画、贪心生长过程、MoonBit 实现、网络设计应用"
 ---
 
 # 最小生成树 (MST): Kruskal & Prim 算法
