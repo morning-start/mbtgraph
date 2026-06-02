@@ -188,12 +188,13 @@ export default defineConfig({
 							],
 						},
 						{
-							label: '最小生成树 (MST)',
-							items: [
-								{ label: 'Kruskal 算法', link: '/algorithms/mst/kruskal/index' },
-								{ label: 'Prim 算法', link: '/algorithms/mst/prim/index' },
-							],
-						},
+					label: '最小生成树 (MST)',
+					items: [
+						{ label: 'Kruskal & Prim 对比详解', link: '/algorithms/mst/kruskal-prim/index' },
+						{ label: 'Kruskal 算法 (独立版)', link: '/algorithms/mst/kruskal/index' },
+						{ label: 'Prim 算法 (独立版)', link: '/algorithms/mst/prim/index' },
+					],
+				},
 						{
 							label: '连通性算法',
 							items: [
