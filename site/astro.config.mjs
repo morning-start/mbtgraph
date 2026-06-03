@@ -1,6 +1,8 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import mdx from '@astrojs/mdx';
+import astroExpressiveCode from 'astro-expressive-code';
 
 // https://astro.build/config
 export default defineConfig({
@@ -13,8 +15,7 @@ export default defineConfig({
 		},
 	},
 	integrations: [
-		// 注意：Starlight 0.39 与 @astrojs/mdx 有 astroExpressiveCode 集成冲突
-		// 暂不启用 MDX 集成，改用 .md 文件 + Table 组件方案
+		astroExpressiveCode(), // 必须在 mdx 之前（代码高亮）
 		starlight({
 			title: 'mbtgraph - MoonBit 图算法库',
 			description: '生产级图算法库：8种存储 · 49个算法 · 6层Trait。为 MoonBit 生态系统提供专业级的图数据结构与算法解决方案。',
@@ -297,6 +298,7 @@ export default defineConfig({
 			// 自定义配置（暂时禁用 CSS 以排查问题）
 			// customCss: ['/styles/global.css'],
 		}),
+		mdx(), // 启用 MDX 支持（用于交互式组件嵌入，需在 starlight 之后）
 	],
 	// 性能优化配置
 	build: {

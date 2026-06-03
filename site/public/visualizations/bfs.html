@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BFS 可视化</title>
+  <!-- 使用 jsdelivr CDN（国内更稳定）+ unpkg 备选 -->
+  <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.30.2/dist/cytoscape.min.js" onerror="this.onerror=null;document.write('<script src=\'https://unpkg.com/cytoscape@3.30.2/dist/cytoscape.min.js\'><\/script>')"></script>
+  <!-- dagre 核心 (cytoscape-dagre 的依赖) -->
+  <script src="https://cdn.jsdelivr.net/npm/dagre@0.8.5/dist/dagre.min.js" onerror="this.onerror=null;document.write('<script src=\'https://unpkg.com/dagre@0.8.5/dist/dagre.min.js\'><\/script>')"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cytoscape-dagre@2.5.0/cytoscape-dagre.js" onerror="this.onerror=null;document.write('<script src=\'https://unpkg.com/cytoscape-dagre@2.5.0/cytoscape-dagre.js\'><\/script>')"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%; overflow: hidden;
+    }
+    body {
+      font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== 加载状态 ===== */
+    #loading-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+      background: #0f172a; transition: opacity 0.3s ease;
+    }
+    #loading-overlay.fade-out { opacity: 0; pointer-events: none; }
+    .spinner {
+      width: 40px; height: 40px; border: 3px solid #334155;
+      border-top-color: #6366f1; border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    .loading-text { margin-top: 12px; font-size: 13px; color: #94a3b8; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== 错误状态 ===== */
+    #error-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      display: none; align-items: center; justify-content: center;
+      background: #0f172a; padding: 20px; text-align: center;
+    }
+    #error-overlay.show { display: flex; }
+    .error-box {
+      background: #1e293b; border: 1px solid #ef4444; border-radius: 12px;
+      padding: 24px 32px; max-width: 400px;
+    }
+    .error-title { color: #ef4444; font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .error-msg { color: #94a3b8; font-size: 13px; line-height: 1.6; }
+
+    /* ===== 主容器: 全屏 Flex 布局 ===== */
+    .gv-wrapper {
+      width: 100%; height: 100vh;
+      display: flex; flex-direction: column;
+      position: relative;
+    }
+
+    /* ===== 头部（紧凑悬浮） ===== */
+    .gv-header {
+      position: absolute; top: 12px; left: 16px; z-index: 10;
+      display: flex; align-items: center; gap: 10px;
+      padding: 6px 14px;
+      background: rgba(15,23,42,.82); backdrop-filter: blur(12px);
+      border: 1px solid rgba(51,65,85,.7); border-radius: 10px;
+      pointer-events: auto;
+    }
+    .gv-header-left { display: flex; align-items: center; gap: 10px; }
+    .badge {
+      display: inline-flex; align-items: center; padding: 3px 10px;
+      font-size: 12px; font-weight: 700; color: #fff;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 9999px;
+    }
+    .graph-info { font-size: 11px; color: #94a3b8; }
+    .hint { font-size: 10px; color: #64748b; padding: 2px 8px; background: rgba(51,65,85,.6); border-radius: 9999px; }
+
+    /* ===== 画布区域: 撑满全部空间 ===== */
+    .gv-canvas-wrap {
+      position: relative; flex: 1 1 auto;
+      width: 100%; overflow: hidden;
+      background:
+        radial-gradient(circle at 20% 50%, rgba(99,102,241,.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(139,92,246,.03) 0%, transparent 50%),
+        #0f172a;
+    }
+    #gv-canvas {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%; display: block;
+    }
+
+    /* ===== 浮层提示 ===== */
+    .tooltip {
+      position: absolute; z-index: 20; pointer-events: none;
+      animation: fadeIn .2s ease;
+    }
+    .tooltip-inner {
+      display: inline-block; padding: 5px 10px; font-size: 12px; font-weight: 600;
+      color: #fff; background: rgba(99,102,241,.92); backdrop-filter: blur(8px);
+      border-radius: 6px; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,.3);
+      border: 1px solid rgba(165,180,252,.3);
+    }
+
+    /* ===== 底部控制面板（固定底栏） ===== */
+    .gv-bottom-bar {
+      position: absolute; bottom: 0; left: 0; right: 0; z-index: 10;
+      display: flex; flex-direction: column;
+      background: linear-gradient(to top, rgba(15,23,42,.95), rgba(15,23,42,.88));
+      backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(51,65,85,.6);
+      pointer-events: auto;
+    }
+
+    /* 控制栏行 */
+    .gv-controls {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 16px; gap: 12px;
+    }
+    .gv-controls-left, .gv-controls-right { display: flex; align-items: center; gap: 3px; }
+    .gv-controls-center { display: flex; align-items: center; gap: 12px; flex: 1; max-width: 420px; margin: 0 16px; }
+
+    /* 按钮 */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid #334155; border-radius: 6px; background: rgba(15,23,42,.6);
+      color: #cbd5e1; cursor: pointer; transition: all .15s ease; padding: 6px 8px; font-size: 13px;
+    }
+    .btn:hover:not(:disabled) { background: rgba(30,41,59,.9); border-color: #818cf8; color: #6366f1; }
+    .btn:disabled { opacity: .35; cursor: not-allowed; }
+    .btn-icon { width: 34px; height: 34px; padding: 0; font-size: 14px; }
+    .btn-primary {
+      width: 40px; height: 40px; border-radius: 50%; font-size: 18px;
+      background: linear-gradient(135deg, #6366f1, #818cf8); border-color: transparent; color: #fff;
+      box-shadow: 0 2px 8px rgba(99,102,241,.35);
+    }
+    .btn-primary:hover { transform: scale(1.08); box-shadow: 0 4px 14px rgba(99,102,241,.45); }
+    .btn-primary.replay-pulse {
+      background: linear-gradient(135deg, #10b981, #34d399);
+      box-shadow: 0 2px 8px rgba(16,185,129,.4);
+      animation: replayPulse 1.5s ease-in-out infinite;
+    }
+    @keyframes replayPulse {
+      0%, 100% { box-shadow: 0 2px 8px rgba(16,185,129,.3); }
+      50% { box-shadow: 0 4px 20px rgba(16,185,129,.6), 0 0 30px rgba(16,185,129,.15); }
+    }
+
+    /* 进度条 */
+    .progress-track {
+      position: relative; flex: 1; height: 5px; background: rgba(51,65,85,.7); border-radius: 9999px; cursor: pointer;
+    }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #a78bfa); border-radius: 9999px; width: 0%; transition: width .12s ease; }
+    .progress-thumb {
+      position: absolute; top: 50%; left: 0%; width: 14px; height: 14px;
+      background: #fff; border: 2px solid #6366f1; border-radius: 50%;
+      transform: translate(-50%,-50%); box-shadow: 0 1px 4px rgba(0,0,0,.2); opacity: 0; transition: left .12s ease;
+    }
+    .progress-track:hover .progress-thumb { opacity: 1; }
+    .step-counter { font-size: 12px; font-weight: 700; color: #94a3b8; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+    /* 速度控制 */
+    .speed-control { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #94a3b8; }
+    .speed-control label { white-space: nowrap; }
+    .speed-slider { width: 70px; height: 4px; accent-color: #6366f1; cursor: pointer; }
+    .speed-value { font-weight: 700; color: #6366f1; min-width: 22px; text-align: right; font-variant-numeric: tabular-nums; }
+
+    /* 状态栏（紧凑单行） */
+    .status-panel {
+      display: flex; gap: 8px; padding: 6px 16px 8px;
+      overflow-x: auto;
+    }
+    .status-panel::-webkit-scrollbar { height: 0; }
+    .status-item {
+      display: flex; align-items: center; gap: 6px;
+      padding: 4px 10px; background: rgba(30,41,59,.7);
+      border-radius: 6px; border: 1px solid rgba(51,65,85,.5);
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .status-label { font-size: 10px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: .04em; }
+    .status-value { font-size: 12px; font-weight: 600; color: #f1f5f9; }
+    .status-mono { font-family: 'JetBrains Mono','Fira Code',ui-monospace,monospace; font-size: 11px; letter-spacing: -.01em; color: #a78bfa; }
+
+    /* 图例（紧凑内联） */
+    .legend {
+      display: flex; justify-content: center; flex-wrap: wrap; gap: 12px;
+      padding: 5px 16px 7px;
+      font-size: 10px; color: #64748b;
+      border-top: 1px solid rgba(51,65,85,.35);
+    }
+    .legend-item { display: inline-flex; align-items: center; gap: 4px; }
+    .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.25); flex-shrink: 0; }
+    .dot-default { background: #374151; } .dot-active { background: #F97316; } .dot-visited { background: #22C55E; }
+    .line { display: inline-block; width: 18px; height: 2.5px; border-radius: 2px; flex-shrink: 0; }
+    .line-tree { background: #EF4444; } .line-cross { background: #94A3B8; opacity: .45; }
+    .hidden { display: none !important; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 640px) {
+      .gv-header { top: 8px; left: 8px; padding: 4px 10px; gap: 6px; }
+      .gv-header .hint { display: none; }
+      .gv-controls { flex-wrap: wrap; padding: 6px 10px; gap: 6px; }
+      .gv-controls-center { width: 100%; max-width: none; order: -1; margin: 0 0 6px 0; }
+      .gv-controls-left, .gv-controls-right { width: 100%; justify-content: center; }
+      .status-panel { flex-wrap: wrap; padding: 4px 10px 6px; }
+      .legend { gap: 8px; padding: 4px 10px 6px; }
+      .gv-canvas-wrap { min-height: 200px; }
+    }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 加载遮罩 -->
+<div id="loading-overlay">
+  <div style="display:flex;flex-direction:column;align-items:center;">
+    <div class="spinner"></div>
+    <div class="loading-text">正在加载可视化引擎...</div>
+  </div>
+</div>
+
+<!-- 错误遮罩 -->
+<div id="error-overlay">
+  <div class="error-box">
+    <div class="error-title">加载失败</div>
+    <div class="error-msg" id="error-msg">无法加载图渲染引擎。请检查网络连接后刷新页面。</div>
+  </div>
+</div>
+
+<div class="gv-wrapper" tabindex="0" id="gv-root">
+  <!-- 头部 -->
+  <div class="gv-header">
+    <div class="gv-header-left">
+      <span class="badge">BFS 广度优先搜索</span>
+      <span class="graph-info">6 节点 · 7 边 · 无向图</span>
+    </div>
+    <div class="gv-header-right">
+      <span class="hint">可拖拽 / 滚轮缩放 / Space 播放</span>
+    </div>
+  </div>
+
+  <!-- 图画布 -->
+  <div class="gv-canvas-wrap" id="canvas-wrap">
+    <div id="gv-canvas"></div>
+    <div class="tooltip hidden" id="gv-tooltip"><div class="tooltip-inner" id="tt-text"></div></div>
+  </div>
+
+  <!-- 底部控制面板（固定） -->
+  <div class="gv-bottom-bar">
+    <!-- 控制栏 -->
+    <div class="gv-controls" id="gv-controls">
+      <div class="gv-controls-left">
+        <button class="btn btn-icon" data-action="skip-to-start" title="跳到开始 (Home)">&#x23EA;</button>
+        <button class="btn btn-icon" data-action="step-back" title="上一步 (&larr;)">&#x25C0;</button>
+        <button class="btn btn-primary" data-action="toggle-play" title="播放/暂停 (Space)">
+          <span id="icon-play">&#x25B6;</span>
+          <span id="icon-pause" class="hidden">&#x23F8;</span>
+        </button>
+        <button class="btn btn-icon" data-action="step-forward" title="下一步 (&rarr;)">&#x25B8;</button>
+        <button class="btn btn-icon" data-action="skip-to-end" title="跳到末尾 (End)">&#x23E9;</button>
+      </div>
+      <div class="gv-controls-center">
+        <div class="progress-track" id="progress-track"><div class="progress-fill" id="progress-fill"></div><div class="progress-thumb" id="progress-thumb"></div></div>
+        <span class="step-counter" id="step-counter">0 / 0</span>
+      </div>
+      <div class="gv-controls-right">
+        <div class="speed-control">
+          <label for="speed">速度:</label>
+          <input type="range" id="speed" min="1" max="10" value="5" step="1" class="speed-slider" />
+          <span class="speed-value" id="speed-val">5x</span>
+        </div>
+        <button class="btn btn-icon" data-action="reset" title="重置 (R)">&#x21BA;</button>
+      </div>
+    </div>
+
+    <!-- 状态栏 -->
+    <div class="status-panel">
+      <div class="status-item">
+        <span class="status-label">当前步骤</span>
+        <span class="status-value" id="msg">准备就绪 — 点击 ▶ 开始</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">访问顺序</span>
+        <span class="status-value status-mono" id="order">[ ]</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">队列</span>
+        <span class="status-value status-mono" id="queue">[ ]</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">层级</span>
+        <span class="status-value" id="levels">-</span>
+      </div>
+    </div>
+
+    <!-- 图例 -->
+    <div class="legend">
+      <span class="legend-item"><i class="dot dot-default"></i> 未访问</span>
+      <span class="legend-item"><i class="dot dot-active"></i> 处理中</span>
+      <span class="legend-item"><i class="dot dot-visited"></i> 已完成</span>
+      <span class="legend-item"><i class="line line-tree"></i> 树边</span>
+      <span class="legend-item"><i class="line line-cross"></i> 已跳过</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ============================================================
+  // 依赖检测
+  // ============================================================
+  var loadingEl = document.getElementById('loading-overlay');
+  var errorEl = document.getElementById('error-overlay');
+  var errorMsgEl = document.getElementById('error-msg');
+
+  function showError(msg) {
+    if (loadingEl) loadingEl.classList.add('fade-out');
+    if (errorMsgEl) errorMsgEl.textContent = msg || '无法加载图渲染引擎。请刷新页面重试。';
+    if (errorEl) errorEl.classList.add('show');
+  }
+
+  function hideLoading() {
+    if (loadingEl) {
+      loadingEl.classList.add('fade-out');
+      setTimeout(function() { loadingEl.style.display = 'none'; }, 320);
+    }
+  }
+
+  // 等待依赖加载完成 (cytoscape + dagre + cytoscape-dagre)
+  function waitForDeps(callback, timeoutMs) {
+    timeoutMs = timeoutMs || 15000;
+    var start = Date.now();
+    function check() {
+      if (typeof cytoscape !== 'undefined' && typeof dagre !== 'undefined' && typeof cytoscapeDagre !== 'undefined') {
+        callback();
+      } else if (Date.now() - start > timeoutMs) {
+        var missing = [];
+        if (typeof cytoscape === 'undefined') missing.push('cytoscape');
+        if (typeof dagre === 'undefined') missing.push('dagre');
+        if (typeof cytoscapeDagre === 'undefined') missing.push('cytoscape-dagre');
+        showError('\u4F9D\u8D56\u52A0\u8F7D\u8D85\u65F6: ' + missing.join(', ') + '\u3002\u8BF7\u68C0\u67E5\u7F51\u7EDC\u8FDE\u63A5\u540E\u5237\u65B0\u9875\u9762\u3002');
+      } else {
+        setTimeout(check, 100);
+      }
+    }
+    check();
+  }
+
+  // ============================================================
+  // 图数据
+  // ============================================================
+  var nodes = [
+    { data: { id: '0', label: '0' } }, { data: { id: '1', label: '1' } },
+    { data: { id: '2', label: '2' } }, { data: { id: '3', label: '3' } },
+    { data: { id: '4', label: '4' } }, { data: { id: '5', label: '5' } }
+  ];
+  var edges = [
+    { data: { id: 'e01', source: '0', target: '1' } }, { data: { id: 'e04', source: '0', target: '4' } },
+    { data: { id: 'e02', source: '0', target: '2' } }, { data: { id: 'e12', source: '1', target: '2' } },
+    { data: { id: 'e24', source: '2', target: '4' } }, { data: { id: 'e25', source: '2', target: '5' } },
+    { data: { id: 'e35', source: '3', target: '5' } }
+  ];
+
+  // 构建邻接表
+  var adjList = {};
+  nodes.forEach(function(n) { adjList[n.data.id] = []; });
+  edges.forEach(function(e) {
+    adjList[e.data.source].push(e.data.target);
+    adjList[e.data.target].push(e.data.source);
+  });
+
+  // ============================================================
+  // BFS 步骤生成器
+  // ============================================================
+  function generateSteps(startId) {
+    var steps = [];
+    var visited = {};
+    var queue = [startId];
+    var order = [];
+    var levels = {};
+    levels[startId] = 0;
+
+    steps.push({
+      type: 'init', targets: [startId],
+      message: '\u521D\u59CB\u5316: \u8D77\u70B9 ' + startId + ' \u5165\u961F',
+      order: [], queue: [startId], levels: JSON.parse(JSON.stringify(levels))
+    });
+
+    var head = 0;
+    while (head < queue.length) {
+      var current = queue[head];
+      head++;
+      if (!visited[current]) {
+        visited[current] = true;
+        order.push(current);
+
+        steps.push({
+          type: 'dequeue', targets: [current],
+          message: '\u51FA\u961F: \u8282\u70B9 ' + current,
+          order: order.slice(), queue: queue.slice(head).slice(),
+          levels: JSON.parse(JSON.stringify(levels))
+        });
+
+        var neighbors = adjList[current] || [];
+        for (var ni = 0; ni < neighbors.length; ni++) {
+          var nbr = neighbors[ni];
+          if (!visited[nbr]) {
+            queue.push(nbr);
+            levels[nbr] = (levels[current] || 0) + 1;
+            steps.push({
+              type: 'visit_edge', targets: [current, nbr],
+              message: '\u53D1\u73B0\u65B0\u8282\u70B9 ' + nbr + '! \u5165\u961F (Level ' + levels[nbr] + ')',
+              order: order.slice(), queue: queue.slice(head).slice(),
+              levels: JSON.parse(JSON.stringify(levels))
+            });
+          } else {
+            steps.push({
+              type: 'skip_edge', targets: [current, nbr],
+              message: nbr + ' \u5DF2\u8BBF\u95EE, \u8DF3\u8FC7',
+              order: order.slice(), queue: queue.slice(head).slice(),
+              levels: JSON.parse(JSON.stringify(levels))
+            });
+          }
+        }
+        steps.push({
+          type: 'visit_node', targets: [current],
+          message: current + ' \u5904\u7406\u5B8C\u6BD5 \u2713',
+          order: order.slice(), queue: queue.slice(head).slice(),
+          levels: JSON.parse(JSON.stringify(levels))
+        });
+      } else {
+        steps.push({
+          type: 'skip_edge', targets: [current],
+          message: current + ' \u5DF2\u5728\u961F\u5217\u4E2D, \u8DF3\u8FC7',
+          order: order.slice(), queue: queue.slice(head).slice(),
+          levels: JSON.parse(JSON.stringify(levels))
+        });
+      }
+    }
+    steps.push({
+      type: 'finish', targets: [],
+      message: '\u2705 BFS \u5B8C\u6210! \u8BBF\u95EE\u987A\u5E8F: [' + order.join(', ') + ']',
+      order: order, queue: [], levels: levels
+    });
+    return steps;
+  }
+
+  var allSteps = generateSteps('0');
+
+  // ============================================================
+  // 初始化 Cytoscape
+  // ============================================================
+  function initGraph() {
+    try {
+      // 注册 dagre 布局
+      cytoscape.use(cytoscapeDagre);
+
+      var container = document.getElementById('gv-canvas');
+      if (!container) { showError('\u753B\u5E03\u5BB9\u5668\u627E\u4E0D\u5230'); return; }
+
+      var cy = cytoscape({
+        container: container,
+        elements: nodes.concat(edges),
+
+        layout: {
+          name: 'dagre',
+          rankDir: 'LR',       // 从左到右
+          nodeSep: 80,         // 节点间距
+          rankSep: 90,         // 层级间距
+          animate: false,
+          fit: true,
+          padding: 40
+        },
+
+        style: [
+          {
+            selector: 'node',
+            style: {
+              'label': 'data(label)',
+              'text-valign': 'center',
+              'text-halign': 'center',
+              'background-color': '#374151',
+              'border-color': '#4B5563',
+              'border-width': 2,
+              'color': '#F9FAFB',
+              'font-size': 15,
+              'font-weight': 'bold',
+              'width': 46,
+              'height': 46,
+              'shape': 'ellipse',
+              'transition-property': 'background-color,border-color,border-width,width,height,color,text-background-color',
+              'transition-duration': '0.3s'
+            }
+          },
+          {
+            selector: 'edge',
+            style: {
+              'width': 2.5,
+              'line-color': '#6B7280',
+              'target-arrow-color': '#6B7280',
+              'source-arrow-color': '#6B7280',
+              'arrow-scale': 0.85,
+              'curve-style': 'bezier',
+              'opacity': 1,
+              'transition-property': 'line-color,target-arrow-color,source-arrow-color,width,opacity,line-style',
+              'transition-duration': '0.3s'
+            }
+          },
+          // 注: Cytoscape v3 不支持 :hover 伪选择器，hover 效果通过 CSS 实现
+          {
+            selector: '.highlighted',
+            style: {
+              'background-color': '#FEF08A',
+              'border-color': '#EAB308',
+              'border-width': 3,
+              'z-index': 10
+            }
+          }
+        ],
+
+        userZoomEnabled: true,
+        userPanningEnabled: true,
+        boxSelectionEnabled: false,
+        minZoom: 0.3,
+        maxZoom: 3,
+        wheelSensitivity: 0.35
+      });
+
+      // 延迟隐藏加载状态，确保渲染完成
+      setTimeout(hideLoading, 400);
+
+      // 启动动画引擎
+      initEngine(cy);
+
+    } catch (err) {
+      console.error('Cytoscape init error:', err);
+      showError('\u56FE\u6E32\u67D3\u521D\u59CB\u5316\u5931\u8D25: ' + (err.message || err));
+    }
+  }
+
+  // ============================================================
+  // 动画引擎
+  // ============================================================
+  function initEngine(cy) {
+    var currentIdx = -1;
+    var isPlaying = false;
+    var speed = 500;
+    var timerId = null;
+
+    // DOM 引用缓存
+    var playBtn = document.querySelector('[data-action="toggle-play"]');
+    var iconPlay = document.getElementById('icon-play');
+    var iconPause = document.getElementById('icon-pause');
+    var progressFill = document.getElementById('progress-fill');
+    var progressThumb = document.getElementById('progress-thumb');
+    var stepCounter = document.getElementById('step-counter');
+    var msgEl = document.getElementById('msg');
+    var orderEl = document.getElementById('order');
+    var queueEl = document.getElementById('queue');
+    var levelsEl = document.getElementById('levels');
+    var tooltipEl = document.getElementById('gv-tooltip');
+    var ttText = document.getElementById('tt-text');
+    var speedSlider = document.getElementById('speed');
+    var speedVal = document.getElementById('speed-val');
+    var controlsEl = document.getElementById('gv-controls');
+    var progressTrack = document.getElementById('progress-track');
+
+    // ---- 执行单步（带/不带动画）----
+    function executeStep(step, animate) {
+      var dur = animate ? Math.max(200, speed * 0.6) : 0;
+      switch (step.type) {
+        case 'init':
+          cy.getElementById(step.targets[0]).animate({
+            style: { 'background-color': '#B45309', 'border-color': '#92400E', 'border-width': 4, 'width': 52, 'height': 52 }
+          }, { duration: dur });
+          showTooltip(step.targets[0], '\u8D77\u70B9\n' + step.message);
+          break;
+
+        case 'dequeue':
+          cy.getElementById(step.targets[0]).animate({
+            style: { 'background-color': '#F97316', 'border-color': '#EA580C', 'border-width': 3, 'width': 49, 'height': 49 }
+          }, { duration: dur });
+          break;
+
+        case 'visit_node':
+          cy.getElementById(step.targets[0]).animate({
+            style: { 'background-color': '#22C55E', 'border-color': '#16A34A', 'border-width': 2, 'width': 46, 'height': 46 }
+          }, { duration: dur });
+          hideTooltip();
+          break;
+
+        case 'visit_edge':
+          var src = step.targets[0], tgt = step.targets[1];
+          cy.edges('[source="' + src + '"][target="' + tgt + '"], [source="' + tgt + '"][source="' + src + '"]')
+            .animate({ style: { 'line-color': '#EF4444', 'target-arrow-color': '#EF4444', 'source-arrow-color': '#EF4444', 'width': 4 } }, { duration: dur });
+          cy.getElementById(tgt).animate(
+            { style: { 'background-color': '#FBBF24', 'border-color': '#F59E0B', 'border-width': 3 } },
+            { duration: Math.max(100, dur * 0.5) }
+          );
+          break;
+
+        case 'skip_edge':
+          var s2 = step.targets[0], t2 = step.targets[1];
+          cy.edges('[source="' + s2 + '"][target="' + t2 + '"], [source="' + t2 + '"][target="' + s2 + '"]')
+            .animate({ style: { 'line-color': '#94A3B8', 'target-arrow-color': '#94A3B8', 'source-arrow-color': '#94A3B8', 'width': 1.5, 'line-style': 'dashed', 'opacity': 0.45 } }, { duration: Math.max(80, dur * 0.4) });
+          break;
+
+        case 'finish':
+          cy.nodes().style({ 'background-color': function(ele) { return ele.data('id') === '0' ? '#B45309' : '#22C55E'; } });
+          hideTooltip();
+          break;
+      }
+    }
+
+    // ---- 快速重建到指定步骤（无动画）----
+    function rebuildTo(idx) {
+      // 先全部重置
+      cy.nodes().style({ 'background-color': '#374151', 'border-color': '#4B5563', 'border-width': 2, 'width': 46, 'height': 46 });
+      cy.edges().style({ 'line-color': '#6B7280', 'target-arrow-color': '#6B7280', 'source-arrow-color': '#6B7280', 'width': 2.5, 'opacity': 1, 'line-style': 'solid' });
+
+      // 逐步重建
+      for (var i = 0; i <= idx; i++) {
+        var step = allSteps[i]; if (!step) continue;
+        switch (step.type) {
+          case 'init':
+            cy.getElementById(step.targets[0]).style({ 'background-color': '#B45309', 'border-color': '#92400E', 'border-width': 4, 'width': 52, 'height': 52 }); break;
+          case 'dequeue':
+            cy.getElementById(step.targets[0]).style({ 'background-color': '#F97316', 'border-color': '#EA580C', 'border-width': 3 }); break;
+          case 'visit_node':
+            cy.getElementById(step.targets[0]).style({ 'background-color': '#22C55E', 'border-color': '#16A34A', 'border-width': 2 }); break;
+          case 'visit_edge':
+            cy.edges('[source="' + step.targets[0] + '"][target="' + step.targets[1] + '"], [source="' + step.targets[1] + '"][target="' + step.targets[0] + '"]')
+              .style({ 'line-color': '#EF4444', 'target-arrow-color': '#EF4444', 'source-arrow-color': '#EF4444', 'width': 4 });
+            cy.getElementById(step.targets[1]).style({ 'background-color': '#FBBF24', 'border-color': '#F59E0B' }); break;
+          case 'skip_edge':
+            cy.edges('[source="' + step.targets[0] + '"][target="' + step.targets[1] + '"], [source="' + step.targets[1] + '"][target="' + step.targets[0] + '"]')
+              .style({ 'line-color': '#94A3B8', 'target-arrow-color': '#94A3B8', 'source-arrow-color': '#94A3B8', 'width': 1.5, 'line-style': 'dashed', 'opacity': 0.45 }); break;
+        }
+      }
+    }
+
+    function resetVisuals() {
+      // 1. 停止所有进行中的/残留的动画
+      cy.elements().stop(true, false);
+      // 2. 无过渡地重置节点样式
+      cy.nodes().style({
+        'background-color': '#374151',
+        'border-color': '#4B5563',
+        'border-width': 2,
+        'color': '#F9FAFB',
+        'width': 46,
+        'height': 46,
+        'transition-duration': '0s'
+      });
+      // 3. 无过渡地重置边样式
+      cy.edges().style({
+        'line-color': '#6B7280',
+        'target-arrow-color': '#6B7280',
+        'source-arrow-color': '#6B7280',
+        'width': 2.5,
+        'opacity': 1,
+        'line-style': 'solid',
+        'transition-duration': '0s'
+      });
+      hideTooltip();
+    }
+
+    // ---- UI 更新 ----
+    function updateUI() {
+      var total = allSteps.length;
+      var pct = total > 1 ? (currentIdx / (total - 1)) * 100 : 0;
+      progressFill.style.width = pct + '%';
+      progressThumb.style.left = pct + '%';
+      stepCounter.textContent = Math.max(0, currentIdx) + ' / ' + (total - 1);
+
+      var step = currentIdx >= 0 ? allSteps[currentIdx] : null;
+
+      if (isFinished) {
+        // ===== 完成态：展示最终结果 =====
+        var lastStep = allSteps[allSteps.length - 1];
+        if (msgEl) msgEl.textContent = lastStep.message || '\u2705 BFS \u5B8C\u6210!';
+        if (orderEl) orderEl.textContent = lastStep.order ? '[' + lastStep.order.join(', ') + ']' : '[ ]';
+        if (queueEl) queueEl.textContent = '[ ]';
+        if (levelsEl && lastStep.levels) {
+          var lvls = lastStep.levels, groups = {};
+          for (var k in lvls) { if (!groups[lvls[k]]) groups[lvls[k]] = []; groups[lvls[k]].push(k); }
+          var parts = Object.keys(groups).sort(function(a, b) { return Number(a) - Number(b); }).map(function(l) { return 'L' + l + ':[' + groups[l].join(',') + ']'; });
+          levelsEl.textContent = parts.join(' ') || '-';
+        }
+      } else if (currentIdx < 0) {
+        // ===== 重置态：全部归零 =====
+        if (msgEl) msgEl.textContent = '\u51C6\u5907\u5C31\u7EEA \u2014 \u70B9\u51FB \u25B6 \u5F00\u59CB';
+        if (orderEl) orderEl.textContent = '[ ]';
+        if (queueEl) queueEl.textContent = '[ ]';
+        if (levelsEl) levelsEl.textContent = '-';
+      } else {
+        // ===== 播放中/暂停态：当前步骤信息 =====
+        if (msgEl) msgEl.textContent = step.message || '';
+        if (orderEl) orderEl.textContent = step.order ? '[' + step.order.join(', ') + ']' : '[ ]';
+        if (queueEl) queueEl.textContent = step.queue ? '[' + step.queue.join(',') + ']' : '[ ]';
+
+        if (levelsEl && step.levels) {
+          var lvls2 = step.levels, groups2 = {};
+          for (var k2 in lvls2) { if (!groups2[lvls2[k2]]) groups2[lvls2[k2]] = []; groups2[lvls2[k2]].push(k2); }
+          var parts2 = Object.keys(groups2).sort(function(a, b) { return Number(a) - Number(b); }).map(function(l) { return 'L' + l + ':[' + groups2[l].join(',') + ']'; });
+          levelsEl.textContent = parts2.join(' ') || '-';
+        }
+      }
+
+      iconPlay.classList.toggle('hidden', isPlaying);
+      iconPause.classList.toggle('hidden', !isPlaying);
+
+      // 完成状态：显示重播图标
+      var btnPrimary = document.querySelector('.btn-primary');
+      if (isFinished) {
+        iconPlay.textContent = '\u21BB';  // ↻ 重播图标
+        iconPlay.classList.remove('hidden');
+        iconPause.classList.add('hidden');
+        if (btnPrimary) { btnPrimary.classList.add('replay-pulse'); }
+      } else {
+        iconPlay.textContent = '\u25B6';   // ▶ 播放图标
+        if (btnPrimary) { btnPrimary.classList.remove('replay-pulse'); }
+      }
+    }
+
+    function showTooltip(nodeId, text) {
+      var node = cy.getElementById(nodeId); if (!node) return;
+      var pos = node.position(); var pan = cy.pan(); var zoom = cy.zoom();
+      var rect = cy.container().getBoundingClientRect();
+      var x = pos.x * zoom + pan.x + rect.width / 2;
+      var y = pos.y * zoom + pan.y + rect.height / 2;
+      ttText.textContent = text;
+      tooltipEl.classList.remove('hidden');
+      tooltipEl.style.left = Math.min(x, rect.width - 130) + 'px';
+      tooltipEl.style.top = Math.max(y - 65, 8) + 'px';
+    }
+    function hideTooltip() { tooltipEl.classList.add('hidden'); }
+
+    // ---- 控制函数 ----
+    var isFinished = false;  // 是否已播放完毕
+
+    function togglePlay() {
+      if (isFinished) { doReset(); play(); }
+      else { isPlaying ? pause() : play(); }
+    }
+    function play() {
+      if (currentIdx >= allSteps.length - 1) jumpTo(0);
+      isFinished = false;
+      isPlaying = true; updateUI(); tick();
+    }
+    function pause() {
+      isPlaying = false;
+      if (timerId) { clearTimeout(timerId); timerId = null; }
+      updateUI();
+    }
+    function tick() {
+      if (!isPlaying) return;
+      if (currentIdx < allSteps.length - 1) { stepForward(); timerId = setTimeout(tick, speed); }
+      else {
+        // 播放完毕：标记完成状态
+        pause();
+        isFinished = true;
+        updateUI();
+      }
+    }
+    function stepForward() { if (currentIdx < allSteps.length - 1) { isFinished = false; currentIdx++; executeStep(allSteps[currentIdx], true); updateUI(); } }
+    function stepBack() { if (currentIdx > 0) { isFinished = false; currentIdx--; rebuildTo(currentIdx); updateUI(); } }
+    function skipToStart() { pause(); isFinished = false; jumpTo(0); }
+    function skipToEnd() { pause(); isFinished = true; jumpTo(allSteps.length - 1); }
+    function jumpTo(idx) { idx = Math.max(0, Math.min(idx, allSteps.length - 1)); currentIdx = idx; rebuildTo(idx); updateUI(); }
+    function doReset() { pause(); isFinished = false; currentIdx = -1; resetVisuals(); updateUI(); }
+
+    // ---- 事件绑定 ----
+    playBtn.addEventListener('click', togglePlay);
+    controlsEl.querySelector('[data-action="step-forward"]').addEventListener('click', stepForward);
+    controlsEl.querySelector('[data-action="step-back"]').addEventListener('click', stepBack);
+    controlsEl.querySelector('[data-action="skip-to-start"]').addEventListener('click', skipToStart);
+    controlsEl.querySelector('[data-action="skip-to-end"]').addEventListener('click', skipToEnd);
+    controlsEl.querySelector('[data-action="reset"]').addEventListener('click', doReset);
+
+    speedSlider.addEventListener('input', function(e) {
+      var v = parseInt(e.target.value, 10);
+      speed = Math.max(60, 1100 - v * 100);
+      speedVal.textContent = v + 'x';
+    });
+
+    progressTrack.addEventListener('click', function(e) {
+      var r = this.getBoundingClientRect();
+      var pct = (e.clientX - r.left) / r.width;
+      jumpTo(Math.round(pct * (allSteps.length - 1)));
+    });
+
+    // 键盘快捷键
+    document.getElementById('gv-root').addEventListener('keydown', function(e) {
+      switch (e.key) {
+        case ' ': e.preventDefault(); togglePlay(); break;
+        case 'ArrowRight': e.preventDefault(); stepForward(); break;
+        case 'ArrowLeft': e.preventDefault(); stepBack(); break;
+        case 'Home': e.preventDefault(); skipToStart(); break;
+        case 'End': e.preventDefault(); skipToEnd(); break;
+        case 'r': case 'R': if (!e.ctrlKey && !e.metaKey) { e.preventDefault(); doReset(); } break;
+      }
+    });
+
+    // 自动聚焦
+    setTimeout(function() { document.getElementById('gv-root').focus(); }, 500);
+  }
+
+  // ============================================================
+  // 启动
+  // ============================================================
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { waitForDeps(initGraph); });
+  } else {
+    waitForDeps(initGraph);
+  }
+})();
+</script>
+</body>
+</html>
