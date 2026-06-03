@@ -1,0 +1,201 @@
+/**
+ * viz-common.css — 图算法可视化共享样式
+ * 
+ * 从 bfs.html 提取并整理
+ * 包含所有可视化页面共享的样式
+ */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  height: 100%; overflow: hidden;
+}
+body {
+  font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, system-ui, -apple-system, sans-serif;
+  background: #0f172a;
+  color: #e2e8f0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== 加载状态 ===== */
+#loading-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  background: #0f172a; transition: opacity 0.3s ease;
+}
+#loading-overlay.fade-out { opacity: 0; pointer-events: none; }
+.spinner {
+  width: 40px; height: 40px; border: 3px solid #334155;
+  border-top-color: #6366f1; border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.loading-text { margin-top: 12px; font-size: 13px; color: #94a3b8; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== 错误状态 ===== */
+#error-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  display: none; align-items: center; justify-content: center;
+  background: #0f172a; padding: 20px; text-align: center;
+}
+#error-overlay.show { display: flex; }
+.error-box {
+  background: #1e293b; border: 1px solid #ef4444; border-radius: 12px;
+  padding: 24px 32px; max-width: 400px;
+}
+.error-title { color: #ef4444; font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.error-msg { color: #94a3b8; font-size: 13px; line-height: 1.6; }
+
+/* ===== 主容器: 全屏 Flex 布局 ===== */
+.gv-wrapper {
+  width: 100%; height: 100vh;
+  display: flex; flex-direction: column;
+  position: relative;
+}
+
+/* ===== 头部（紧凑悬浮） ===== */
+.gv-header {
+  position: absolute; top: 12px; left: 16px; z-index: 10;
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 14px;
+  background: rgba(15,23,42,.82); backdrop-filter: blur(12px);
+  border: 1px solid rgba(51,65,85,.7); border-radius: 10px;
+  pointer-events: auto;
+}
+.gv-header-left { display: flex; align-items: center; gap: 10px; }
+.badge {
+  display: inline-flex; align-items: center; padding: 3px 10px;
+  font-size: 12px; font-weight: 700; color: #fff;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 9999px;
+}
+.graph-info { font-size: 11px; color: #94a3b8; }
+.hint { font-size: 10px; color: #64748b; padding: 2px 8px; background: rgba(51,65,85,.6); border-radius: 9999px; }
+
+/* ===== 画布区域: 撑满全部空间 ===== */
+.gv-canvas-wrap {
+  position: relative; flex: 1 1 auto;
+  width: 100%; overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 50%, rgba(99,102,241,.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 50%, rgba(139,92,246,.03) 0%, transparent 50%),
+    #0f172a;
+}
+#gv-canvas {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%; display: block;
+}
+
+/* ===== 浮层提示 ===== */
+.tooltip {
+  position: absolute; z-index: 20; pointer-events: none;
+  animation: fadeIn .2s ease;
+}
+.tooltip-inner {
+  display: inline-block; padding: 5px 10px; font-size: 12px; font-weight: 600;
+  color: #fff; background: rgba(99,102,241,.92); backdrop-filter: blur(8px);
+  border-radius: 6px; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,.3);
+  border: 1px solid rgba(165,180,252,.3);
+}
+
+/* ===== 底部控制面板（固定底栏） ===== */
+.gv-bottom-bar {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 10;
+  display: flex; flex-direction: column;
+  background: linear-gradient(to top, rgba(15,23,42,.95), rgba(15,23,42,.88));
+  backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(51,65,85,.6);
+  pointer-events: auto;
+}
+
+/* 控制栏行 */
+.gv-controls {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 16px; gap: 12px;
+}
+.gv-controls-left, .gv-controls-right { display: flex; align-items: center; gap: 3px; }
+.gv-controls-center { display: flex; align-items: center; gap: 12px; flex: 1; max-width: 420px; margin: 0 16px; }
+
+/* 按钮 */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid #334155; border-radius: 6px; background: rgba(15,23,42,.6);
+  color: #cbd5e1; cursor: pointer; transition: all .15s ease; padding: 6px 8px; font-size: 13px;
+}
+.btn:hover:not(:disabled) { background: rgba(30,41,59,.9); border-color: #818cf8; color: #6366f1; }
+.btn:disabled { opacity: .35; cursor: not-allowed; }
+.btn-icon { width: 34px; height: 34px; padding: 0; font-size: 14px; }
+.btn-primary {
+  width: 40px; height: 40px; border-radius: 50%; font-size: 18px;
+  background: linear-gradient(135deg, #6366f1, #818cf8); border-color: transparent; color: #fff;
+  box-shadow: 0 2px 8px rgba(99,102,241,.35);
+}
+.btn-primary:hover { transform: scale(1.08); box-shadow: 0 4px 14px rgba(99,102,241,.45); }
+.btn-primary.replay-pulse {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  box-shadow: 0 2px 8px rgba(16,185,129,.4);
+  animation: replayPulse 1.5s ease-in-out infinite;
+}
+@keyframes replayPulse {
+  0%, 100% { box-shadow: 0 2px 8px rgba(16,185,129,.3); }
+  50% { box-shadow: 0 4px 20px rgba(16,185,129,.6), 0 0 30px rgba(16,185,129,.15); }
+}
+
+/* 进度条 */
+.progress-track {
+  position: relative; flex: 1; height: 5px; background: rgba(51,65,85,.7); border-radius: 9999px; cursor: pointer;
+}
+.progress-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #a78bfa); border-radius: 9999px; width: 0%; transition: width .12s ease; }
+.progress-thumb {
+  position: absolute; top: 50%; left: 0%; width: 14px; height: 14px;
+  background: #fff; border: 2px solid #6366f1; border-radius: 50%;
+  transform: translate(-50%,-50%); box-shadow: 0 1px 4px rgba(0,0,0,.2); opacity: 0; transition: left .12s ease;
+}
+.progress-track:hover .progress-thumb { opacity: 1; }
+.step-counter { font-size: 12px; font-weight: 700; color: #94a3b8; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* 速度控制 */
+.speed-control { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #94a3b8; }
+.speed-control label { white-space: nowrap; }
+.speed-slider { width: 70px; height: 4px; accent-color: #6366f1; cursor: pointer; }
+.speed-value { font-weight: 700; color: #6366f1; min-width: 22px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* 状态栏（紧凑单行） */
+.status-panel {
+  display: flex; gap: 8px; padding: 6px 16px 8px;
+  overflow-x: auto;
+}
+.status-panel::-webkit-scrollbar { height: 0; }
+.status-item {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 10px; background: rgba(30,41,59,.7);
+  border-radius: 6px; border: 1px solid rgba(51,65,85,.5);
+  white-space: nowrap; flex-shrink: 0;
+}
+.status-label { font-size: 10px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: .04em; }
+.status-value { font-size: 12px; font-weight: 600; color: #f1f5f9; }
+.status-mono { font-family: 'JetBrains Mono','Fira Code',ui-monospace,monospace; font-size: 11px; letter-spacing: -.01em; color: #a78bfa; }
+
+/* 图例（紧凑内联） */
+.legend {
+  display: flex; justify-content: center; flex-wrap: wrap; gap: 12px;
+  padding: 5px 16px 7px;
+  font-size: 10px; color: #64748b;
+  border-top: 1px solid rgba(51,65,85,.35);
+}
+.legend-item { display: inline-flex; align-items: center; gap: 4px; }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.25); flex-shrink: 0; }
+.dot-default { background: #374151; } .dot-active { background: #F97316; } .dot-visited { background: #22C55E; }
+.line { display: inline-block; width: 18px; height: 2.5px; border-radius: 2px; flex-shrink: 0; }
+.line-tree { background: #EF4444; } .line-cross { background: #94A3B8; opacity: .45; }
+.hidden { display: none !important; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 640px) {
+  .gv-header { top: 8px; left: 8px; padding: 4px 10px; gap: 6px; }
+  .gv-header .hint { display: none; }
+  .gv-controls { flex-wrap: wrap; padding: 6px 10px; gap: 6px; }
+  .gv-controls-center { width: 100%; max-width: none; order: -1; margin: 0 0 6px 0; }
+  .gv-controls-left, .gv-controls-right { width: 100%; justify-content: center; }
+  .status-panel { flex-wrap: wrap; padding: 4px 10px 6px; }
+  .legend { gap: 8px; padding: 4px 10px 6px; }
+  .gv-canvas-wrap { min-height: 200px; }
+}
