@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dijkstra 最短路径</title>
+  <link rel="stylesheet" href="/visualizations/css/viz-common.css">
+</head>
+<body>
+  <!-- 加载状态 -->
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text">正在加载图可视化...</div>
+  </div>
+  
+  <!-- 错误状态 -->
+  <div id="error-overlay">
+    <div class="error-box">
+      <div class="error-title">加载失败</div>
+      <div class="error-msg" id="error-msg"></div>
+    </div>
+  </div>
+
+  <div class="viz-wrapper">
+    <div class="viz-header">
+      <div class="viz-header-left">
+        <span class="badge">Dijkstra</span>
+        <span class="graph-info">6 节点 · 9 边 · 带权有向图</span>
+      </div>
+      <span class="hint">方向键/空格</span>
+    </div>
+
+    <div class="viz-canvas-wrap">
+      <div id="viz-canvas"></div>
+      <div class="viz-tooltip" id="viz-tooltip">
+        <span class="viz-tooltip-inner" id="tooltip-text"></span>
+      </div>
+    </div>
+
+    <div class="viz-bottom-bar">
+      <div class="viz-controls">
+        <div class="viz-controls-left">
+          <button class="btn btn-icon" data-action="reset" title="重置">↺</button>
+          <button class="btn btn-icon" data-action="step-back" title="上一步">◀</button>
+        </div>
+        <div class="viz-controls-center">
+          <div class="progress-track" id="progress-track">
+            <div class="progress-fill" id="progress-fill"></div>
+            <div class="progress-thumb" id="progress-thumb"></div>
+          </div>
+        </div>
+        <div class="viz-controls-right">
+          <button class="btn btn-icon" data-action="step-forward" title="下一步">▶</button>
+          <button class="btn btn-primary" data-action="toggle-play" id="play-btn">▶</button>
+        </div>
+      </div>
+
+      <div class="viz-status-bar">
+        <div class="viz-status-item">
+          <span class="viz-status-label">步骤</span>
+          <span class="viz-status-value" id="step-counter">0/0</span>
+        </div>
+        <div class="viz-status-item">
+          <span class="viz-status-label">当前</span>
+          <span class="viz-status-value" id="current">—</span>
+        </div>
+        <div class="viz-status-item">
+          <span class="viz-status-label">距离</span>
+          <span class="viz-status-value" id="dist">{}</span>
+        </div>
+        <div class="viz-status-item">
+          <span class="viz-status-label">已访问</span>
+          <span class="viz-status-value" id="visited">[]</span>
+        </div>
+        <div class="viz-message" id="message">准备就绪</div>
+      </div>
+
+      <div class="viz-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#B45309"></div><span class="legend-label">起点</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#374151"></div><span class="legend-label">未访问</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#F97316"></div><span class="legend-label">处理中</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#22C55E"></div><span class="legend-label">已访问</span></div>
+        <div class="legend-item"><div class="legend-line" style="background:#EF4444"></div><span class="legend-label">当前边</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/visualizations/js/cytoscape-loader.js"></script>
+  <script src="/visualizations/js/viz-engine.js"></script>
+  <script src="/visualizations/algs/dijkstra.js"></script>
+  <script>
+    CytoscapeLoader.load(function() {
+      VizApp.init({
+        title: "Dijkstra 最短路径",
+        subtitle: "6 节点 · 9 边 · 带权有向图",
+        directed: true,
+        nodes: [
+          { data: { id: '0', label: '0' } },
+          { data: { id: '1', label: '1' } },
+          { data: { id: '2', label: '2' } },
+          { data: { id: '3', label: '3' } },
+          { data: { id: '4', label: '4' } },
+          { data: { id: '5', label: '5' } }
+        ],
+        edges: [
+          { data: { id: 'e01', source: '0', target: '1', weight: '4' } },
+          { data: { id: 'e02', source: '0', target: '2', weight: '2' } },
+          { data: { id: 'e13', source: '1', target: '3', weight: '5' } },
+          { data: { id: 'e14', source: '1', target: '4', weight: '1' } },
+          { data: { id: 'e21', source: '2', target: '1', weight: '1' } },
+          { data: { id: 'e23', source: '2', target: '3', weight: '8' } },
+          { data: { id: 'e34', source: '3', target: '4', weight: '2' } },
+          { data: { id: 'e35', source: '3', target: '5', weight: '6' } },
+          { data: { id: 'e45', source: '4', target: '5', weight: '3' } }
+        ],
+        startNode: '0',
+        generateSteps: Dijkstra.generateSteps,
+        executeStep: Dijkstra.executeStep,
+        rebuildTo: Dijkstra.rebuildTo,
+        updateUI: Dijkstra.updateUI
+      });
+    }, function(err) {
+      document.getElementById('error-msg').textContent = err;
+      document.getElementById('error-overlay').classList.add('show');
+    });
+  </script>
+</body>
+</html>
