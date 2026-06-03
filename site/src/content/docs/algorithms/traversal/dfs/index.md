@@ -79,7 +79,23 @@ order[] 记录节点的"完成顺序" (post-order):
 
 ---
 
-## 🎬 动画演示：DFS 分步执行过程
+## 🎬 交互式动画：DFS 分步执行过程
+
+让我们通过一个具体例子来理解 DFS 的执行流程。**点击 ▶ 播放按钮或使用方向键控制动画！**
+
+### 示例图: 无向简单图
+
+考虑以下无向图（6 节点，7 条边）：
+
+<div class="viz-preview-card">
+  <iframe src="/visualizations/dfs.html" width="100%" height="340" frameborder="0"></iframe>
+  <a href="/visualizations/dfs.html" target="_blank" class="viz-fullscreen-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+    全屏演示
+  </a>
+</div>
+
+---
 
 让我们通过一个具体例子来理解 DFS 的执行流程，特别关注**栈的变化**和**时间戳的更新**。
 
