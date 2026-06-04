@@ -309,7 +309,7 @@ var VizApp = {
     // 更新图标状态
     var iconPlay = document.getElementById('icon-play');
     var iconPause = document.getElementById('icon-pause');
-    var btnPrimary = document.querySelector('.btn-primary');
+    var btnPrimary = document.querySelector('.play-hero');
 
     if (iconPlay) {
       iconPlay.classList.toggle('hidden', state.isPlaying);
@@ -511,6 +511,11 @@ var VizApp = {
     this._pause();
     state.isFinished = false;
     state.currentIdx = -1;
+    // 重置进度条到初始状态
+    var progressFill = document.getElementById('progress-fill');
+    var progressThumb = document.getElementById('progress-thumb');
+    if (progressFill) progressFill.style.width = '0%';
+    if (progressThumb) progressThumb.style.left = '0%';
     this._resetVisuals();
     this._updateUI();
   },

@@ -35,7 +35,6 @@
     <!-- 画布 -->
     <div class="viz-canvas-wrap" id="canvas-wrap">
       <div id="viz-canvas"></div>
-      <div class="tooltip hidden" id="viz-tooltip"><div class="tooltip-inner" id="tooltip-text"></div></div>
     </div>
 
     <!-- 底部栏 -->
@@ -113,9 +112,6 @@
         { data: { id: 'e24', source: '2', target: '4' } }, { data: { id: 'e25', source: '2', target: '5' } },
         { data: { id: 'e35', source: '3', target: '5' } }
       ];
-
-      // 设置 DFS 模块的 tooltip 元素
-      DFS.setTooltipEl(document.getElementById('viz-tooltip'));
 
       VizApp.init({
         algoInstance: DFS,

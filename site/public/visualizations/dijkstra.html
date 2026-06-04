@@ -27,7 +27,6 @@
         <span class="badge">Dijkstra</span>
         <span class="graph-info">最短路径</span>
       </div>
-      <span class="hint">方向键/空格</span>
     </div>
 
     <!-- 右上角状态面板 -->
@@ -44,46 +43,56 @@
         <span class="viz-status-label">已访问</span>
         <span class="viz-status-mono" id="visited-nodes">[]</span>
       </div>
-      <div class="viz-status-item viz-status-msg">
-        <span id="message">准备就绪</span>
-      </div>
     </div>
 
     <div class="viz-canvas-wrap">
       <div id="viz-canvas"></div>
-      <div class="viz-tooltip" id="viz-tooltip">
-        <span class="viz-tooltip-inner" id="tooltip-text"></span>
-      </div>
-    </div>
-
-    <div class="viz-bottom-bar">
-      <div class="viz-controls">
-        <div class="viz-controls-left">
-          <button class="btn btn-icon" data-action="reset" title="重置">↺</button>
-          <button class="btn btn-icon" data-action="step-back" title="上一步">◀</button>
-          <span class="step-counter" id="step-counter">0/0</span>
+      <div class="viz-bottom-bar">
+        <!-- Timeline / Progress Row -->
+        <div class="viz-timeline">
+          <div class="timeline-track" id="progress-track">
+            <div class="timeline-fill" id="progress-fill"></div>
+            <div class="timeline-glow"></div>
+            <div class="timeline-thumb" id="progress-thumb"></div>
+            <!-- step markers rendered by JS -->
+          </div>
+          <span class="timeline-counter" id="step-counter">0 / 14</span>
         </div>
-        <div class="viz-controls-center">
-          <div class="progress-track" id="progress-track">
-            <div class="progress-fill" id="progress-fill"></div>
-            <div class="progress-thumb" id="progress-thumb"></div>
+
+        <!-- Transport Controls -->
+        <div class="viz-transport">
+          <div class="transport-group">
+            <button class="ctrl-btn ctrl-btn--subtle" data-action="reset" title="重置">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            </button>
+            <button class="ctrl-btn ctrl-btn--subtle" data-action="step-back" title="上一步">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 4l-10 8 10 8V4z"/><rect x="2" y="4" width="3" height="16" rx=".5"/></svg>
+            </button>
+          </div>
+
+          <!-- Hero Play Button -->
+          <button class="play-hero" data-action="toggle-play" id="play-btn" title="播放/暂停">
+            <div class="play-hero__ring">
+              <svg class="play-icon play-icon--play" id="icon-play" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              <svg class="play-icon play-icon--pause hidden" id="icon-pause" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="3" width="5" height="18" rx="1"/><rect x="15" y="3" width="5" height="18" rx="1"/></svg>
+            </div>
+          </button>
+
+          <div class="transport-group">
+            <button class="ctrl-btn ctrl-btn--subtle" data-action="step-forward" title="下一步">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l10 8-10 8V4z"/><rect x="19" y="4" width="3" height="16" rx=".5"/></svg>
+            </button>
           </div>
         </div>
-        <div class="viz-controls-right">
-          <button class="btn btn-icon" data-action="step-forward" title="下一步">▶</button>
-          <button class="btn btn-primary" data-action="toggle-play" id="play-btn" title="播放/暂停">
-            <span id="icon-play">▶</span>
-            <span id="icon-pause" class="hidden">⏸</span>
-          </button>
-        </div>
-      </div>
 
-      <div class="viz-legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#B45309"></div><span class="legend-label">起点</span></div>
-        <div class="legend-item"><div class="legend-dot" style="background:#374151"></div><span class="legend-label">未访问</span></div>
-        <div class="legend-item"><div class="legend-dot" style="background:#F97316"></div><span class="legend-label">处理中</span></div>
-        <div class="legend-item"><div class="legend-dot" style="background:#22C55E"></div><span class="legend-label">已访问</span></div>
-        <div class="legend-item"><div class="legend-line" style="background:#EF4444"></div><span class="legend-label">当前边</span></div>
+        <!-- Legend Strip -->
+        <div class="viz-legend">
+          <div class="legend-chip"><i class="legend-dot" style="background:#B45309"></i>起点</div>
+          <div class="legend-chip"><i class="legend-dot" style="background:#374151"></i>未访问</div>
+          <div class="legend-chip"><i class="legend-dot" style="background:#F97316"></i>处理中</div>
+          <div class="legend-chip"><i class="legend-dot" style="background:#22C55E"></i>已访问</div>
+          <div class="legend-chip"><i class="legend-bar" style="background:#EF4444"></i>当前边</div>
+        </div>
       </div>
     </div>
   </div>

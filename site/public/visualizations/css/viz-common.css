@@ -154,77 +154,69 @@ body {
    Header — Compact Floating Pill
    ═══════════════════════════════════════════ */
 .viz-header {
-  position: absolute; top: 12px; left: 14px; z-index: 10;
-  display: flex; align-items: center; gap: 10px;
-  padding: 5px 13px 5px 11px;
+  position: absolute; top: 10px; left: 12px; z-index: 10;
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 18px;
   background: var(--bg-surface);
   backdrop-filter: blur(24px) saturate(1.5);
   -webkit-backdrop-filter: blur(24px) saturate(1.5);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-lg);
   pointer-events: auto;
-  box-shadow: var(--shadow-md), 0 0 16px rgba(6, 182, 212, 0.03);
+  box-shadow: var(--shadow-lg);
   transition: border-color .2s ease, box-shadow .2s ease;
 }
 .viz-header:hover {
   border-color: var(--border-strong);
-  box-shadow: var(--shadow-md), 0 0 24px rgba(6, 182, 212, 0.07);
+  box-shadow: var(--shadow-lg), 0 0 20px rgba(6, 182, 212, 0.06);
 }
-.viz-header-left { display: flex; align-items: center; gap: 8px; }
+.viz-header-left { display: flex; align-items: center; gap: 10px; }
 
 .badge {
-  display: inline-flex; align-items: center; padding: 2.5px 10px;
-  font-size: 10.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+  display: inline-flex; align-items: center; padding: 4px 14px;
+  font-size: 12px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
   color: #fff;
   background: linear-gradient(135deg, var(--accent), #0891b2);
   border-radius: var(--radius-full);
-  box-shadow: 0 2px 8px var(--accent-glow);
+  box-shadow: 0 3px 12px var(--accent-glow);
 }
 .graph-info {
-  font-size: 10.5px; font-weight: 500; color: var(--text-muted);
-  letter-spacing: .005em;
-}
-.hint {
-  font-size: 9px; font-weight: 600; color: var(--text-muted);
-  padding: 2.5px 7px; background: var(--accent-soft);
-  border-radius: var(--radius-full);
-  letter-spacing: .03em;
-  border: 1px solid rgba(6, 182, 212, 0.1);
+  font-size: 11.5px; font-weight: 500; color: var(--text-secondary);
+  letter-spacing: .01em;
 }
 
 /* ═══════════════════════════════════════════
    Status Panel — Floating Top-Right
    ═══════════════════════════════════════════ */
 .viz-status-panel {
-  position: absolute; top: 12px; right: 14px; z-index: 10;
+  position: absolute; top: 10px; right: 12px; z-index: 10;
   display: flex; flex-direction: column;
-  gap: 4px;
-  padding: 8px 12px;
-  min-width: 130px;
+  gap: 8px;
+  padding: 14px 18px;
+  min-width: 200px;
   background: var(--bg-surface);
   backdrop-filter: blur(24px) saturate(1.5);
   -webkit-backdrop-filter: blur(24px) saturate(1.5);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   pointer-events: auto;
-  box-shadow: var(--shadow-md), 0 0 16px rgba(6, 182, 212, 0.03);
-  transition: border-color .2s ease, box-shadow .2s ease;
+  box-shadow: var(--shadow-lg);
+  transition: border-color .2s ease;
 }
 .viz-status-panel:hover {
   border-color: var(--border-strong);
-  box-shadow: var(--shadow-md), 0 0 24px rgba(6, 182, 212, 0.06);
 }
 
-/* Status items inside the floating panel — compact vertical */
+/* Status items inside the floating panel — row layout */
 .viz-status-panel .viz-status-item {
   display: flex; flex-direction: row; align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding: 3px 4px;
+  gap: 16px;
+  padding: 6px 8px;
   min-width: unset;
   background: transparent;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   white-space: nowrap;
   flex-shrink: 0;
   transition: background .15s ease;
@@ -234,52 +226,33 @@ body {
   display: none;
 }
 .viz-status-panel .viz-status-item:hover {
-  background: rgba(255, 255, 255, .04);
+  background: rgba(255, 255, 255, .05);
 }
 
 .viz-status-panel .viz-status-label {
-  font-size: 9.5px; font-weight: 600;
-  color: var(--text-muted);
+  font-size: 11px; font-weight: 600;
+  color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: .05em;
+  letter-spacing: .07em;
   line-height: 1;
   flex-shrink: 0;
 }
 
 .viz-status-panel .viz-status-value {
-  font-size: 12px; font-weight: 700;
-  color: var(--text-primary);
+  font-size: 15px; font-weight: 700;
+  color: #fff;
   font-variant-numeric: tabular-nums;
-  line-height: 1.2;
+  line-height: 1.3;
   text-align: right;
 }
 
 .viz-status-panel .viz-status-mono {
   font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
-  font-size: 9.5px; letter-spacing: -.01em;
-  color: var(--accent);
-  line-height: 1.2;
+  font-size: 11.5px; letter-spacing: -.01em;
+  color: #67e8f9;
+  line-height: 1.4;
   text-align: right;
   word-break: break-all;
-}
-
-/* Message item in status panel */
-.viz-status-panel .viz-status-msg {
-  margin-top: 2px;
-  padding-top: 4px;
-  border-top: 1px solid var(--border-subtle);
-  justify-content: center;
-}
-.viz-status-panel .viz-status-msg span {
-  font-size: 9.5px; font-weight: 600;
-  color: var(--accent);
-  display: flex; align-items: center; gap: 5px;
-}
-.viz-status-panel .viz-status-msg span::before {
-  content: '●';
-  font-size: 6px;
-  animation: pulseDot 2s ease-in-out infinite;
-}
 }
 
 /* ═══════════════════════════════════════════
@@ -334,379 +307,218 @@ body {
 }
 
 /* ═══════════════════════════════════════════
-   Bottom Control Bar — Compact (Controls + Legend Only)
+   Bottom Bar — Cinematic Transport Deck
    ═══════════════════════════════════════════ */
 .viz-bottom-bar {
   position: absolute; bottom: 0; left: 0; right: 0; z-index: 10;
   display: flex; flex-direction: column;
   background:
     linear-gradient(to top,
-      rgba(5, 8, 16, .96) 0%,
-      rgba(8, 13, 24, .92) 50%,
-      rgba(10, 15, 26, .80) 100%
+      rgba(3, 5, 12, .98) 0%,
+      rgba(6, 10, 20, .95) 40%,
+      rgba(8, 14, 28, .85) 100%
     );
-  backdrop-filter: blur(24px) saturate(1.4);
-  -webkit-backdrop-filter: blur(24px) saturate(1.4);
-  border-top: 1px solid var(--border-default);
+  backdrop-filter: blur(32px) saturate(1.6);
+  -webkit-backdrop-filter: blur(32px) saturate(1.6);
+  border-top: 1px solid rgba(148, 163, 184, .08);
   pointer-events: auto;
-  box-shadow:
-    0 -1px 0 var(--border-subtle),
-    0 -6px 24px rgba(0, 0, 0, .12);
 }
 
-/* ─── Controls Row ─── */
-.viz-controls {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 9px 20px 7px; gap: 12px;
+/* ── Row 1: Timeline / Progress ── */
+.viz-timeline {
+  display: flex; align-items: center;
+  padding: 14px 32px 4px; gap: 16px;
 }
-.viz-controls-left,
-.viz-controls-right {
-  display: flex; align-items: center; gap: 4px;
-}
-.viz-controls-center {
-  display: flex; align-items: center; gap: 14px;
-  flex: 1; max-width: 520px; margin: 0 24px;
-}
-
-/* ─── Buttons ─── */
-.btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  border: 1px solid var(--border-default); border-radius: var(--radius-sm);
-  background: var(--bg-glass);
-  color: var(--text-secondary);
+.timeline-track {
+  position: relative; flex: 1; height: 4px;
+  background: rgba(255, 255, 255, .06);
+  border-radius: 2px;
   cursor: pointer;
-  transition: all .18s var(--ease-out);
-  padding: 7px 10px; font-size: 13px;
-  font-family: inherit; outline: none;
+  transition: height .2s ease;
 }
-.btn:hover:not(:disabled) {
-  background: var(--bg-elevated);
-  border-color: var(--accent);
-  color: var(--accent-hover);
-  box-shadow: 0 0 14px var(--accent-soft);
-  transform: translateY(-1px);
-}
-.btn:active:not(:disabled) {
-  transform: translateY(0) scale(.97);
-}
-.btn:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-.btn:disabled { opacity: .28; cursor: not-allowed; transform: none; }
-
-.btn-icon {
-  width: 36px; height: 36px; padding: 0;
-  font-size: 14px;
-  border-radius: var(--radius-sm);
-}
-
-/* Primary play button */
-.btn-primary {
-  width: 42px; height: 42px;
-  border-radius: 50%;
-  font-size: 16px;
-  background: linear-gradient(135deg, var(--accent), #0891b2);
-  border: none;
-  color: #fff;
-  box-shadow:
-    0 2px 14px var(--accent-glow),
-    0 0 0 1px rgba(255, 255, 255, .08) inset;
-  transition: all .22s var(--ease-spring);
-}
-.btn-primary:hover {
-  transform: scale(1.08);
-  box-shadow:
-    0 4px 26px var(--accent-glow),
-    0 0 44px rgba(6, 182, 212, .14);
-  background: linear-gradient(135deg, var(--accent-hover), var(--accent));
-}
-.btn-primary:active {
-  transform: scale(1.02);
-}
-.btn-primary.replay-pulse {
-  background: linear-gradient(135deg, var(--success), #059669);
-  box-shadow: 0 2px 14px rgba(16, 185, 129, .32);
-  animation: replayPulse 2s var(--ease-out) infinite;
-}
-@keyframes replayPulse {
-  0%, 100% { box-shadow: 0 2px 14px rgba(16, 185, 129, .28); }
-  50%      { box-shadow: 0 4px 30px rgba(16, 185, 129, .52), 0 0 44px rgba(16, 185, 129, .1); }
-}
-
-/* ─── Progress Bar ─── */
-.progress-track {
-  position: relative; flex: 1; height: 5px;
-  background: var(--bg-elevated);
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  border: 1px solid var(--border-subtle);
-  transition: height .15s ease, border-color .15s ease;
-}
-.progress-track:hover {
-  height: 7px;
-  border-color: var(--border-default);
-}
-.progress-fill {
+.timeline-track:hover { height: 7px; }
+.timeline-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent), #67e8f9, #a5f3fc);
-  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, #06b6d4, #22d3ee, #a5f3fc);
+  border-radius: 2px;
   width: 0%;
-  transition: width .12s var(--ease-out);
+  transition: width .1s ease-out;
   position: relative;
-  box-shadow: 0 0 10px var(--accent-glow);
 }
-.progress-fill::after {
-  content: '';
-  position: absolute; right: 0; top: 50%; transform: translateY(-50%);
-  width: 9px; height: 9px;
-  background: #fff; border-radius: 50%;
-  box-shadow: 0 0 8px var(--accent-glow);
+.timeline-glow {
+  position: absolute; top: 50%; right: 0;
+  width: 60px; height: 16px;
+  transform: translateY(-50%);
+  background: radial-gradient(ellipse at center, rgba(6, 182, 212, .35), transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .25s ease;
 }
-.progress-thumb {
-  position: absolute; top: 50%; left: 0%;
+.timeline-track:hover .timeline-glow { opacity: 1; }
+.timeline-thumb {
+  position: absolute; top: 50%; left: 0;
   width: 16px; height: 16px;
-  background: var(--accent-hover);
-  border: 2px solid #fff;
+  background: #22d3ee;
+  border: 2.5px solid #0f172a;
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(0);
-  box-shadow: 0 2px 10px var(--accent-glow);
+  box-shadow: 0 0 18px rgba(34, 211, 238, .5), 0 2px 8px rgba(0,0,0,.4);
   opacity: 0;
-  transition: left .12s var(--ease-out), opacity .15s ease, transform .15s var(--ease-spring);
+  transition: left .1s ease-out, opacity .2s ease, transform .2s var(--ease-spring);
 }
-.progress-track:hover .progress-thumb {
+.timeline-track:hover .timeline-thumb {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
 }
-.step-counter {
-  font-size: 11.5px; font-weight: 700;
-  color: var(--text-muted);
-  font-variant-numeric: tabular-nums;
-  min-width: 40px; text-align: right;
-  letter-spacing: .01em;
-}
-
-/* ─── Speed Control ─── */
-.speed-control {
-  display: flex; align-items: center; gap: 5px;
-  font-size: 10.5px; color: var(--text-muted); font-weight: 500;
-}
-.speed-control label { white-space: nowrap; letter-spacing: .02em; }
-.speed-slider {
-  width: 60px; height: 4px;
-  appearance: none; -webkit-appearance: none;
-  background: var(--bg-elevated);
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  border: 1px solid var(--border-subtle);
-}
-.speed-slider::-webkit-slider-thumb {
-  appearance: none; -webkit-appearance: none;
-  width: 13px; height: 13px;
-  background: var(--accent);
-  border: 2px solid var(--bg-base);
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 1px 6px var(--accent-glow);
-  transition: transform .15s var(--ease-spring);
-}
-.speed-slider::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-}
-.speed-value {
-  font-weight: 700; color: var(--accent);
-  min-width: 22px; text-align: right;
-  font-variant-numeric: tabular-nums;
-  font-size: 11.5px;
-}
-
-/* ═══════════════════════════════════════════
-   Zone 2: Status Bar — Vertical Info Cards
-   ═══════════════════════════════════════════ */
-
-/* BFS/DFS use .status-panel */
-.status-panel {
-  display: flex; gap: 7px; padding: 8px 22px 7px;
-  overflow-x: auto;
-}
-.status-panel::-webkit-scrollbar { height: 0; }
-
-/* Dijkstra/Cycle/Topo use .viz-status-bar */
-.viz-status-bar {
-  display: flex; gap: 7px; padding: 8px 22px 7px;
-  overflow-x: auto; flex-wrap: wrap;
-  align-items: stretch;
-}
-.viz-status-bar::-webkit-scrollbar { height: 0; }
-
-/* ── Status Card (vertical layout) ── */
-.status-item,
-.viz-status-item {
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center;
-  gap: 2px;
-  padding: 6px 14px 5px;
-  min-width: 64px;
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
-  white-space: nowrap; flex-shrink: 0;
-  transition: all .18s ease;
-  position: relative;
-  overflow: hidden;
-}
-.status-item::before,
-.viz-status-item::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  opacity: 0;
-  transition: opacity .2s ease;
-}
-.status-item:hover,
-.viz-status-item:hover {
-  border-color: var(--border-default);
-  background: var(--bg-elevated);
-}
-.status-item:hover::before,
-.viz-status-item:hover::before {
-  opacity: 1;
-}
-
-/* Step counter card gets accent highlight */
-.status-item:first-child,
-.viz-status-item:first-child {
-  border-color: rgba(6, 182, 212, 0.15);
-}
-.status-item:first-child::before,
-.viz-status-item:first-child {
-  background: linear-gradient(90deg, var(--accent), transparent);
-  opacity: .5 !important;
-}
-
-.status-label,
-.viz-status-label {
-  font-size: 9px; font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  line-height: 1;
-}
-
-.status-value,
-.viz-status-value {
-  font-size: 13px; font-weight: 700;
-  color: var(--text-primary);
-  font-variant-numeric: tabular-nums;
-  line-height: 1.3;
-}
-
-.status-mono {
+.timeline-counter {
   font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
-  font-size: 10.5px; letter-spacing: -.01em;
-  color: var(--accent);
-  line-height: 1.3;
-}
-
-/* ── Message Card (integrated into status bar) ── */
-.viz-message,
-#message {
-  display: flex; align-items: center; justify-content: center;
-  gap: 5px;
-  font-size: 11.5px; font-weight: 600;
-  color: var(--accent);
-  padding: 6px 16px 5px;
-  margin-left: auto; /* push to right */
-  background: var(--accent-soft);
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(6, 182, 212, 0.12);
+  font-size: 11px; font-weight: 600;
+  color: rgba(148, 163, 184, .6);
+  letter-spacing: .03em;
   white-space: nowrap;
-  flex-shrink: 0;
-  line-height: 1.3;
+  min-width: 52px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Row 2: Transport Controls ── */
+.viz-transport {
+  display: flex; align-items: center; justify-content: center;
+  gap: 24px;
+  padding: 8px 32px 14px;
+}
+.transport-group {
+  display: flex; align-items: center; gap: 6px;
+}
+
+/* Subtle control buttons (reset / step) */
+.ctrl-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: rgba(148, 163, 184, .45);
+  cursor: pointer;
+  transition: all .2s var(--ease-out);
+  outline: none;
+}
+.ctrl-btn:hover {
+  background: rgba(255, 255, 255, .06);
+  border-color: rgba(148, 163, 184, .12);
+  color: rgba(203, 213, 225, .85);
+  transform: scale(1.06);
+}
+.ctrl-btn:active { transform: scale(.95); }
+.ctrl-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ── Hero Play Button ── */
+.play-hero {
   position: relative;
+  width: 56px; height: 56px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #0891b2, #06b6d4, #22d3ee);
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+  transition: all .3s var(--ease-spring);
+  box-shadow:
+    0 4px 24px rgba(6, 182, 212, .35),
+    0 0 0 1px rgba(255, 255, 255, .08) inset,
+    0 0 80px rgba(6, 182, 212, .1);
 }
-.viz-message::before,
-#message::before {
-  content: '●';
-  font-size: 6px;
-  color: var(--accent);
-  animation: pulseDot 2s ease-in-out infinite;
+.play-hero::before {
+  content: '';
+  position: absolute; inset: -3px;
+  border-radius: 50%;
+  background: conic-gradient(from 180deg, transparent 70%, rgba(34, 211, 238, .15), transparent 90%);
+  animation: heroSpin 6s linear infinite;
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), black calc(100% - 3px));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), black calc(100% - 3px));
+  opacity: 0;
+  transition: opacity .4s ease;
 }
-@keyframes pulseDot {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: .3; }
+.play-hero:hover::before { opacity: 1; }
+@keyframes heroSpin { to { transform: rotate(360deg); } }
+
+.play-hero:hover {
+  transform: scale(1.1);
+  box-shadow:
+    0 6px 36px rgba(6, 182, 212, .5),
+    0 0 0 1px rgba(255, 255, 255, .12) inset,
+    0 0 120px rgba(6, 182, 212, .15);
+}
+.play-hero:active { transform: scale(1.03); }
+.play-hero:focus-visible {
+  outline: 2px solid #67e8f9;
+  outline-offset: 4px;
 }
 
-/* ═══════════════════════════════════════════
-   Zone 3: Legend — Polished Card Strip
-   ═══════════════════════════════════════════ */
+/* Play button inner ring */
+.play-hero__ring {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  color: #fff;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,.2));
+}
+.play-icon--play { margin-left: 2px; }
+.play-icon--pause { opacity: .95; }
 
-/* BFS/DFS use .legend */
-.legend {
-  display: flex; justify-content: center; flex-wrap: wrap; gap: 8px;
-  padding: 6px 22px 10px;
-  font-size: 11px; color: var(--text-muted);
-  border-top: 1px solid var(--border-subtle);
+/* Replay state */
+.play-hero.replay-pulse {
+  background: linear-gradient(145deg, #059669, #10b981, #34d399);
+  box-shadow:
+    0 4px 24px rgba(16, 185, 129, .35),
+    0 0 0 1px rgba(255, 255, 255, .08) inset;
+  animation: replayGlow 2.5s ease-in-out infinite;
+}
+@keyframes replayGlow {
+  0%, 100% { box-shadow: 0 4px 24px rgba(16, 185, 129, .3); }
+  50%      { box-shadow: 0 6px 36px rgba(16, 185, 129, .55), 0 0 80px rgba(16, 185, 129, .12); }
 }
 
-/* Dijkstra/Cycle/Topo use .viz-legend */
+/* ── Row 3: Legend Strip ── */
 .viz-legend {
-  display: flex; justify-content: center; flex-wrap: wrap; gap: 8px;
-  padding: 6px 22px 10px;
-  border-top: 1px solid var(--border-subtle);
+  display: flex; justify-content: center; flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 32px 14px;
+  border-top: 1px solid rgba(148, 163, 184, .05);
 }
 
-/* ── Legend Item Card ── */
-.legend-item {
+.legend-chip {
   display: inline-flex; align-items: center; gap: 6px;
-  font-size: 10.5px; font-weight: 500; color: var(--text-secondary);
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, .02);
-  border: 1px solid var(--border-subtle);
-  transition: all .18s ease;
-  line-height: 1;
+  font-size: 10.5px; font-weight: 500;
+  color: rgba(148, 163, 184, .55);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, .03);
+  border: 1px solid rgba(148, 163, 184, .07);
+  transition: all .22s var(--ease-out);
+  line-height: 1.2;
+  letter-spacing: .02em;
 }
-.legend-item:hover {
-  background: var(--bg-card);
-  border-color: var(--border-default);
-  color: var(--text-primary);
+.legend-chip:hover {
+  color: rgba(241, 245, 249, .9);
+  background: rgba(255, 255, 255, .07);
+  border-color: rgba(148, 163, 184, .15);
   transform: translateY(-1px);
 }
 
-/* Dot indicators (BFS/DFS style) — larger */
-.dot {
-  display: inline-block; width: 10px; height: 10px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, .15);
-  flex-shrink: 0;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, .25);
+/* Legend indicators inside chips */
+.legend-chip .legend-dot {
+  display: inline-block; width: 8px; height: 8px;
+  border-radius: 50%; flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,.15);
+  box-shadow: 0 1px 4px rgba(0,0,0,.35);
 }
-.dot-default  { background: #374151; }
-.dot-active   { background: var(--warm); box-shadow: 0 0 6px rgba(245, 158, 11, .3); }
-.dot-visited  { background: var(--success); box-shadow: 0 0 6px rgba(16, 185, 129, .25); }
-
-/* Line indicators (BFS/DFS style) */
-.line {
-  display: inline-block; width: 20px; height: 2.5px;
+.legend-chip .legend-bar {
+  display: inline-block; width: 16px; height: 3px;
   border-radius: 2px; flex-shrink: 0;
-}
-.line-tree  { background: var(--danger); box-shadow: 0 0 4px rgba(239, 68, 68, .25); }
-.line-cross { background: var(--text-muted); opacity: .35; }
-
-/* Dijkstra/Cycle/Topo legend indicators — larger */
-.legend-dot {
-  width: 10px; height: 10px; border-radius: 50%;
-  flex-shrink: 0;
-  border: 1.5px solid rgba(255, 255, 255, .12);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, .25);
-}
-.legend-line {
-  width: 20px; height: 2.5px; border-radius: 2px; flex-shrink: 0;
-}
-.legend-label {
-  font-size: 10.5px; font-weight: 500; color: var(--text-secondary);
 }
 
 /* ═══════════════════════════════════════════
