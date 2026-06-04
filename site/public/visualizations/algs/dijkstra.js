@@ -370,8 +370,8 @@ var Dijkstra = {
     var zoom = cy.zoom();
     var rect = cy.container().getBoundingClientRect();
     
-    var tooltipEl = document.getElementById('gv-tooltip');
-    var ttText = document.getElementById('tt-text');
+    var tooltipEl = document.getElementById('viz-tooltip');
+    var ttText = document.getElementById('tooltip-text');
     
     if (!tooltipEl || !ttText) return;
     
@@ -388,7 +388,7 @@ var Dijkstra = {
    * 隐藏提示框
    */
   _hideTooltip: function(cy) {
-    var tooltipEl = document.getElementById('gv-tooltip');
+    var tooltipEl = document.getElementById('viz-tooltip');
     if (tooltipEl) tooltipEl.classList.add('hidden');
   }
 };

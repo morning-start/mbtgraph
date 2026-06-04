@@ -48,7 +48,7 @@ var Topo = {
       type: 'init',
       targets: [],
       message: '计算入度完成',
-      inDegree: this._cloneInDegree(currentInDegree),
+      inDegree: Topo._cloneInDegree(currentInDegree),
       queue: [],
       result: [],
       ready: zeroInDegree.slice()
@@ -63,7 +63,7 @@ var Topo = {
       type: 'enqueue_ready',
       targets: queue.slice(),
       message: '入度为0的节点入队: [' + queue.join(', ') + ']',
-      inDegree: this._cloneInDegree(currentInDegree),
+      inDegree: Topo._cloneInDegree(currentInDegree),
       queue: queue.slice(),
       result: result.slice(),
       ready: []
@@ -79,7 +79,7 @@ var Topo = {
         type: 'dequeue',
         targets: [node],
         message: '出队: 节点 ' + node + ' 加入拓扑序',
-        inDegree: this._cloneInDegree(currentInDegree),
+        inDegree: Topo._cloneInDegree(currentInDegree),
         queue: queue.slice(),
         result: result.slice(),
         ready: []
@@ -99,7 +99,7 @@ var Topo = {
           type: 'decrement',
           targets: [node, nbr],
           message: '边 ' + node + '\u2192' + nbr + ': 入度(' + nbr + ') ' + oldDegree + '\u2192' + currentInDegree[nbr],
-          inDegree: this._cloneInDegree(currentInDegree),
+          inDegree: Topo._cloneInDegree(currentInDegree),
           queue: queue.slice(),
           result: result.slice(),
           ready: []
@@ -112,7 +112,7 @@ var Topo = {
             type: 'ready',
             targets: [nbr],
             message: '节点 ' + nbr + ' 入度变为0，入队!',
-            inDegree: this._cloneInDegree(currentInDegree),
+            inDegree: Topo._cloneInDegree(currentInDegree),
             queue: queue.slice(),
             result: result.slice(),
             ready: []
@@ -130,7 +130,7 @@ var Topo = {
       message: hasCycle 
         ? '有环! 无法完成拓扑排序 (处理了 ' + visitedCount + '/' + nodes.length + ' 个节点)'
         : '拓扑排序完成: [' + result.join(' \u2192 ') + ']',
-      inDegree: this._cloneInDegree(currentInDegree),
+      inDegree: Topo._cloneInDegree(currentInDegree),
       queue: [],
       result: result.slice(),
       ready: []

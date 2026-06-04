@@ -309,7 +309,7 @@ var DFS = {
       var rect = cy.container().getBoundingClientRect();
       var x = pos.x * zoom + pan.x + rect.width / 2;
       var y = pos.y * zoom + pan.y + rect.height / 2;
-      var ttText = document.getElementById('tt-text');
+      var ttText = document.getElementById('tooltip-text');
       if (ttText) ttText.textContent = text;
       this._tooltipEl.classList.remove('hidden');
       this._tooltipEl.style.left = Math.min(x, rect.width - 130) + 'px';

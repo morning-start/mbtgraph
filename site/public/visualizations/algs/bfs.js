@@ -366,8 +366,8 @@ var BFS = {
     var node = cy.getElementById(nodeId);
     if (!node) return;
 
-    var tooltipEl = document.getElementById('gv-tooltip');
-    var ttText = document.getElementById('tt-text');
+    var tooltipEl = document.getElementById('viz-tooltip');
+    var ttText = document.getElementById('tooltip-text');
     if (!tooltipEl || !ttText) return;
 
     var pos = node.position();
@@ -389,7 +389,7 @@ var BFS = {
    * @param {Object} cy - Cytoscape 实例
    */
   _hideTooltip: function(cy) {
-    var tooltipEl = document.getElementById('gv-tooltip');
+    var tooltipEl = document.getElementById('viz-tooltip');
     if (tooltipEl) tooltipEl.classList.add('hidden');
   }
 };
