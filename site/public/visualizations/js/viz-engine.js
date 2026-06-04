@@ -40,6 +40,8 @@ var VizApp = {
 
     // 保存配置
     state.config = config;
+    // 保存算法实例引用（用于 executeStep/rebuildTo/updateUI 的 this 绑定）
+    state.algoInstance = config.algoInstance || null;
     state.currentIdx = -1;
     state.isPlaying = false;
     state.isFinished = false;
@@ -95,7 +97,7 @@ var VizApp = {
     }
 
     // 初始化 Cytoscape
-    var container = document.getElementById('gv-canvas');
+    var container = document.getElementById('viz-canvas');
     if (!container) {
       console.error('Canvas container not found');
       return;
@@ -122,47 +124,54 @@ var VizApp = {
             'label': 'data(label)',
             'text-valign': 'center',
             'text-halign': 'center',
-            'background-color': '#374151',
-            'border-color': '#4B5563',
-            'border-width': 2,
-            'color': '#F9FAFB',
-            'font-size': 15,
-            'font-weight': 'bold',
-            'width': 46,
-            'height': 46,
+            'background-color': '#1e293b',
+            'background-blacken': 0.15,
+            'border-color': '#334155',
+            'border-width': 2.5,
+            'color': '#e2e8f0',
+            'font-family': '"DM Sans", -apple-system, system-ui, sans-serif',
+            'font-size': 14,
+            'font-weight': 700,
+            'width': 48,
+            'height': 48,
             'shape': 'ellipse',
-            'transition-property': 'background-color,border-color,border-width,width,height,color,text-background-color',
-            'transition-duration': '0.3s'
+            'text-outline-width': 2,
+            'text-outline-color': '#1e293b',
+            'transition-property': 'background-color,border-color,border-width,width,height,color,text-background-color,text-outline-color',
+            'transition-duration': '0.35s'
           }
         },
         {
           selector: 'edge',
           style: {
-            'width': 2.5,
-            'line-color': '#6B7280',
-            'target-arrow-color': '#6B7280',
-            'source-arrow-color': '#6B7280',
-            'arrow-scale': 0.85,
+            'width': 2,
+            'line-color': '#475569',
+            'target-arrow-color': '#475569',
+            'source-arrow-color': '#475569',
+            'arrow-scale': 0.8,
             'curve-style': 'bezier',
-            'opacity': 1,
+            'opacity': 0.85,
             'label': 'data(weight)',
-            'text-background-color': '#1e293b',
-            'text-background-opacity': 1,
-            'text-background-shape': 'roundrect',
-            'text-background-padding': '3px',
-            'font-size': 11,
-            'font-weight': 'bold',
+            'text-background-color': '#0f172a',
+            'text-background-opacity': 0.95,
+            'text-background-padding': '4px 6px',
+            'text-border-width': 1,
+            'text-border-color': 'rgba(71,85,105,0.4)',
+            'text-border-style': 'solid',
+            'font-size': 10.5,
+            'font-weight': 600,
             'color': '#94a3b8',
+            'font-family': '"JetBrains Mono", ui-monospace, monospace',
             'transition-property': 'line-color,target-arrow-color,source-arrow-color,width,opacity,line-style',
-            'transition-duration': '0.3s'
+            'transition-duration': '0.35s'
           }
         },
         {
           selector: '.highlighted',
           style: {
-            'background-color': '#FEF08A',
-            'border-color': '#EAB308',
-            'border-width': 3,
+            'background-color': '#fef3c7',
+            'border-color': '#f59e0b',
+            'border-width': 3.5,
             'z-index': 10
           }
         }
@@ -203,7 +212,7 @@ var VizApp = {
 
     // 自动聚焦
     setTimeout(function() {
-      var root = document.getElementById('gv-root');
+      var root = document.querySelector('.viz-wrapper');
       if (root) root.focus();
     }, 500);
   },
@@ -218,14 +227,12 @@ var VizApp = {
     var config = state.config;
     if (config.executeStep) {
       var dur = animate ? Math.max(200, state.speed * 0.6) : 0;
-      // 使用 apply 确保 this 上下文正确（如 Dijkstra.executeStep 中的 this._showTooltip）
-      // 检测算法签名：4 参数 = (cy, step, animate, duration)，5+ 参数 = (cy, step, animate, speed, ...)
+      // 使用算法实例作为 this 上下文，确保内部方法（如 _showTooltip）可访问
+      var ctx = state.algoInstance;
       if (config.executeStep.length === 4) {
-        // 期望 duration
-        config.executeStep.call(null, state.cy, step, animate, dur);
+        config.executeStep.call(ctx, state.cy, step, animate, dur);
       } else {
-        // 期望原始 speed 倍数
-        config.executeStep.call(null, state.cy, step, animate, state.speed);
+        config.executeStep.call(ctx, state.cy, step, animate, state.speed);
       }
     }
   },
@@ -237,8 +244,8 @@ var VizApp = {
     var state = this._state;
     var config = state.config;
     if (config.rebuildTo) {
-      // 使用 apply 确保 this 上下文正确
-      config.rebuildTo.call(null, state.cy, state.steps, idx);
+      // 使用算法实例作为 this 上下文
+      config.rebuildTo.call(state.algoInstance, state.cy, state.steps, idx);
     }
   },
 
@@ -304,8 +311,12 @@ var VizApp = {
     var iconPause = document.getElementById('icon-pause');
     var btnPrimary = document.querySelector('.btn-primary');
 
-    if (iconPlay) iconPlay.classList.toggle('hidden', state.isPlaying);
-    if (iconPause) iconPause.classList.toggle('hidden', !state.isPlaying);
+    if (iconPlay) {
+      iconPlay.classList.toggle('hidden', state.isPlaying);
+    }
+    if (iconPause) {
+      iconPause.classList.toggle('hidden', !state.isPlaying);
+    }
 
     // 完成状态：显示重播图标
     if (state.isFinished) {
@@ -315,14 +326,20 @@ var VizApp = {
       }
       if (iconPause) iconPause.classList.add('hidden');
       if (btnPrimary) btnPrimary.classList.add('replay-pulse');
+      // fallback: 无 icon 子元素时直接改按钮文本
+      if (!iconPlay && btnPrimary) btnPrimary.textContent = '\u21BB';
     } else {
       if (iconPlay) {
         iconPlay.textContent = '\u25B6'; // ▶
-        if (btnPrimary) btnPrimary.classList.remove('replay-pulse');
+      }
+      if (btnPrimary) btnPrimary.classList.remove('replay-pulse');
+      // fallback: 无 icon 子元素时直接切换按钮文本
+      if (!iconPlay && btnPrimary) {
+        btnPrimary.textContent = state.isPlaying ? '\u23F8' : '\u25B6'; // ⏸ / ▶
       }
     }
 
-    // 调用配置的自定义 UI 更新
+    // 调用配置的自定义 UI 更新（绑定算法实例 this 上下文）
     if (config.updateUI) {
       var step = currentIdx >= 0 ? steps[currentIdx] : null;
       var uiState = {
@@ -332,7 +349,7 @@ var VizApp = {
         isPlaying: state.isPlaying,
         maxDepth: state.maxDepth
       };
-      config.updateUI(step, uiState);
+      config.updateUI.call(state.algoInstance, step, uiState);
     }
   },
 
@@ -350,8 +367,8 @@ var VizApp = {
     var zoom = cy.zoom();
     var rect = cy.container().getBoundingClientRect();
 
-    var tooltipEl = document.getElementById('gv-tooltip');
-    var ttText = document.getElementById('tt-text');
+    var tooltipEl = document.getElementById('viz-tooltip');
+    var ttText = document.getElementById('tooltip-text');
 
     if (!tooltipEl || !ttText) return;
 
@@ -368,7 +385,7 @@ var VizApp = {
    * 隐藏提示框
    */
   _hideTooltip: function() {
-    var tooltipEl = document.getElementById('gv-tooltip');
+    var tooltipEl = document.getElementById('viz-tooltip');
     if (tooltipEl) tooltipEl.classList.add('hidden');
   },
 
@@ -376,8 +393,8 @@ var VizApp = {
    * 更新头部信息
    */
   _updateHeader: function(title, subtitle) {
-    var badge = document.querySelector('.gv-header .badge');
-    var info = document.querySelector('.gv-header .graph-info');
+    var badge = document.querySelector('.viz-header .badge');
+    var info = document.querySelector('.viz-header .graph-info');
 
     if (badge && title) badge.textContent = title;
     if (info && subtitle) info.textContent = subtitle;
@@ -389,7 +406,7 @@ var VizApp = {
   _updateLegends: function(legends) {
     if (!legends || !legends.length) return;
 
-    var legendEl = document.querySelector('.legend');
+    var legendEl = document.querySelector('.viz-legend');
     if (!legendEl) return;
 
     // 清空现有内容（保留第一个占位符或创建新容器）
@@ -530,7 +547,7 @@ var VizApp = {
 
   _bindKeyboard: function() {
     var self = this;
-    var root = document.getElementById('gv-root');
+    var root = document.querySelector('.viz-wrapper');
     if (!root) return;
 
     root.addEventListener('keydown', function(e) {
