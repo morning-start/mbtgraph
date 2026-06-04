@@ -25,9 +25,28 @@
     <div class="viz-header">
       <div class="viz-header-left">
         <span class="badge">Dijkstra</span>
-        <span class="graph-info">6 节点 · 9 边 · 带权有向图</span>
+        <span class="graph-info">最短路径</span>
       </div>
       <span class="hint">方向键/空格</span>
+    </div>
+
+    <!-- 右上角状态面板 -->
+    <div class="viz-status-panel" id="status-panel">
+      <div class="viz-status-item">
+        <span class="viz-status-label">当前</span>
+        <span class="viz-status-value" id="current-node">—</span>
+      </div>
+      <div class="viz-status-item">
+        <span class="viz-status-label">距离</span>
+        <span class="viz-status-mono" id="dist-table">{}</span>
+      </div>
+      <div class="viz-status-item">
+        <span class="viz-status-label">已访问</span>
+        <span class="viz-status-mono" id="visited-nodes">[]</span>
+      </div>
+      <div class="viz-status-item viz-status-msg">
+        <span id="message">准备就绪</span>
+      </div>
     </div>
 
     <div class="viz-canvas-wrap">
@@ -42,6 +61,7 @@
         <div class="viz-controls-left">
           <button class="btn btn-icon" data-action="reset" title="重置">↺</button>
           <button class="btn btn-icon" data-action="step-back" title="上一步">◀</button>
+          <span class="step-counter" id="step-counter">0/0</span>
         </div>
         <div class="viz-controls-center">
           <div class="progress-track" id="progress-track">
@@ -51,28 +71,11 @@
         </div>
         <div class="viz-controls-right">
           <button class="btn btn-icon" data-action="step-forward" title="下一步">▶</button>
-          <button class="btn btn-primary" data-action="toggle-play" id="play-btn">▶</button>
+          <button class="btn btn-primary" data-action="toggle-play" id="play-btn" title="播放/暂停">
+            <span id="icon-play">▶</span>
+            <span id="icon-pause" class="hidden">⏸</span>
+          </button>
         </div>
-      </div>
-
-      <div class="viz-status-bar">
-        <div class="viz-status-item">
-          <span class="viz-status-label">步骤</span>
-          <span class="viz-status-value" id="step-counter">0/0</span>
-        </div>
-        <div class="viz-status-item">
-          <span class="viz-status-label">当前</span>
-          <span class="viz-status-value" id="current">—</span>
-        </div>
-        <div class="viz-status-item">
-          <span class="viz-status-label">距离</span>
-          <span class="viz-status-value" id="dist">{}</span>
-        </div>
-        <div class="viz-status-item">
-          <span class="viz-status-label">已访问</span>
-          <span class="viz-status-value" id="visited">[]</span>
-        </div>
-        <div class="viz-message" id="message">准备就绪</div>
       </div>
 
       <div class="viz-legend">
@@ -91,6 +94,7 @@
   <script>
     CytoscapeLoader.load(function() {
       VizApp.init({
+        algoInstance: Dijkstra,
         title: "Dijkstra 最短路径",
         subtitle: "6 节点 · 9 边 · 带权有向图",
         directed: true,

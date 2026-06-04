@@ -51,7 +51,10 @@
         </div>
         <div class="viz-controls-right">
           <button class="btn btn-icon" data-action="step-forward" title="下一步">▶</button>
-          <button class="btn btn-primary" data-action="toggle-play" id="play-btn">▶</button>
+          <button class="btn btn-primary" data-action="toggle-play" id="play-btn" title="播放/暂停">
+            <span id="icon-play">▶</span>
+            <span id="icon-pause" class="hidden">⏸</span>
+          </button>
         </div>
       </div>
 
@@ -90,6 +93,7 @@
   <script>
     CytoscapeLoader.load(function() {
       VizApp.init({
+        algoInstance: Topo,
         title: "拓扑排序 (Kahn 算法)",
         subtitle: "6 节点 · 7 边 · DAG",
         nodes: [

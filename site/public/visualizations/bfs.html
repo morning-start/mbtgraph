@@ -23,10 +23,10 @@
   </div>
 
   <!-- 主容器 -->
-  <div class="gv-wrapper" tabindex="0" id="gv-root">
+  <div class="viz-wrapper" tabindex="0" id="viz-root">
     <!-- 头部 -->
-    <div class="gv-header">
-      <div class="gv-header-left">
+    <div class="viz-header">
+      <div class="viz-header-left">
         <span class="badge">BFS</span>
         <span class="graph-info">6 节点 · 7 边 · 无向图</span>
       </div>
@@ -34,16 +34,16 @@
     </div>
 
     <!-- 画布 -->
-    <div class="gv-canvas-wrap">
-      <div id="gv-canvas"></div>
-      <div class="tooltip" id="gv-tooltip"><div class="tooltip-inner" id="tt-text"></div></div>
+    <div class="viz-canvas-wrap">
+      <div id="viz-canvas"></div>
+      <div class="tooltip" id="viz-tooltip"><div class="tooltip-inner" id="tooltip-text"></div></div>
     </div>
 
     <!-- 底部栏 -->
-    <div class="gv-bottom-bar">
+    <div class="viz-bottom-bar">
       <!-- 控制栏 -->
-      <div class="gv-controls" id="gv-controls">
-        <div class="gv-controls-left">
+      <div class="viz-controls" id="viz-controls">
+        <div class="viz-controls-left">
           <button class="btn btn-icon" data-action="skip-to-start" title="跳到开始">⏮</button>
           <button class="btn btn-icon" data-action="step-back" title="上一步">◀</button>
           <button class="btn btn-primary" data-action="toggle-play" id="play-btn" title="播放/暂停">
@@ -53,14 +53,14 @@
           <button class="btn btn-icon" data-action="step-forward" title="下一步">▶</button>
           <button class="btn btn-icon" data-action="skip-to-end" title="跳到末尾">⏭</button>
         </div>
-        <div class="gv-controls-center">
+        <div class="viz-controls-center">
           <div class="progress-track" id="progress-track">
             <div class="progress-fill" id="progress-fill"></div>
             <div class="progress-thumb" id="progress-thumb"></div>
           </div>
           <span class="step-counter" id="step-counter">0 / 0</span>
         </div>
-        <div class="gv-controls-right">
+        <div class="viz-controls-right">
           <div class="speed-control">
             <label for="speed">速度:</label>
             <input type="range" id="speed" min="1" max="10" value="5" step="1" class="speed-slider">
@@ -108,6 +108,7 @@
   <script>
     CytoscapeLoader.load(function() {
       VizApp.init({
+        algoInstance: BFS,
         title: "BFS 广度优先搜索",
         subtitle: "6 节点 · 7 边 · 无向图",
         nodes: [

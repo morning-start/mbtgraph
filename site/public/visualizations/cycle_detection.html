@@ -55,7 +55,10 @@
         </div>
         <div class="viz-controls-right">
           <button class="btn btn-icon" data-action="step-forward" title="下一步">▶</button>
-          <button class="btn btn-primary" data-action="toggle-play" id="play-btn">▶</button>
+          <button class="btn btn-primary" data-action="toggle-play" id="play-btn" title="播放/暂停">
+            <span id="icon-play">▶</span>
+            <span id="icon-pause" class="hidden">⏸</span>
+          </button>
         </div>
       </div>
 
@@ -90,6 +93,7 @@
   <script>
     CytoscapeLoader.load(function() {
       VizApp.init({
+        algoInstance: Cycle,
         title: "DFS 环检测",
         subtitle: "7 节点 · 8 边 · 有向图",
         directed: true,
