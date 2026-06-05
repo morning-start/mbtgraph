@@ -1,14 +1,6 @@
-/**
- * topo.ts — Kahn 拓扑排序算法可视化（ES Module）
- */
-
-import VizRenderer from '../viz-renderer';
-import type { RenderMode } from '../viz-renderer';
-import type { ColorMap, LegendSelector } from '../color-registry';
-import { darken } from '../color-registry';
-import type { UIState } from '../viz-engine';
-
-// ── 图例声明 ──
+import { createAlgo, darken, type LegendSelector } from '../alg-base';
+import type { UIState } from '../alg-base';
+import type { VizRenderer, RenderMode, ColorMap } from '../alg-base';
 
 export const legendKeys: LegendSelector[] = [
   { domain: 'node', key: 'default' },
@@ -17,8 +9,6 @@ export const legendKeys: LegendSelector[] = [
   { domain: 'node', key: 'sorted' },
   { domain: 'edge', key: 'active' },
 ];
-
-// ── 类型定义 ──
 
 export interface TopoStep {
   type: 'init' | 'enqueue_ready' | 'dequeue' | 'decrement' | 'ready' | 'finish';
@@ -30,7 +20,7 @@ export interface TopoStep {
   ready: string[];
 }
 
-function _clone(o: Record<string, number>): Record<string, number> {
+function clone(o: Record<string, number>): Record<string, number> {
   const c: Record<string, number> = {};
   for (const k in o) c[k] = o[k];
   return c;
@@ -44,9 +34,7 @@ function formatInDeg(d: Record<string, number>): string {
   return p.join(', ');
 }
 
-// ── 算法实现 ──
-
-const Topo = {
+const Topo = createAlgo<TopoStep>({
   legendKeys,
   generateSteps(
     nodes: Array<{ data: { id: string; label: string } }>,
@@ -75,7 +63,7 @@ const Topo = {
 
     steps.push({
       type: 'init', targets: [], message: '计算入度完成',
-      inDegree: _clone(currentInDegree), queue: [], result: [], ready: zeroInDegree.slice(),
+      inDegree: clone(currentInDegree), queue: [], result: [], ready: zeroInDegree.slice(),
     });
 
     for (let qi = 0; qi < zeroInDegree.length; qi++) queue.push(zeroInDegree[qi]);
@@ -83,7 +71,7 @@ const Topo = {
     steps.push({
       type: 'enqueue_ready', targets: queue.slice(),
       message: `入度为0的节点入队: [${queue.join(', ')}]`,
-      inDegree: _clone(currentInDegree), queue: queue.slice(), result: result.slice(), ready: [],
+      inDegree: clone(currentInDegree), queue: queue.slice(), result: result.slice(), ready: [],
     });
 
     while (queue.length > 0) {
@@ -93,7 +81,7 @@ const Topo = {
       steps.push({
         type: 'dequeue', targets: [node],
         message: `出队: 节点 ${node} 加入拓扑序`,
-        inDegree: _clone(currentInDegree), queue: queue.slice(), result: result.slice(), ready: [],
+        inDegree: clone(currentInDegree), queue: queue.slice(), result: result.slice(), ready: [],
       });
 
       const neighbors = adjList[node] || [];
@@ -105,7 +93,7 @@ const Topo = {
         steps.push({
           type: 'decrement', targets: [node, nbr],
           message: `边 ${node}→${nbr}: 入度(${nbr}) ${oldDegree}→${currentInDegree[nbr]}`,
-          inDegree: _clone(currentInDegree), queue: queue.slice(), result: result.slice(), ready: [],
+          inDegree: clone(currentInDegree), queue: queue.slice(), result: result.slice(), ready: [],
         });
 
         if (currentInDegree[nbr] === 0) {
@@ -114,7 +102,7 @@ const Topo = {
           steps.push({
             type: 'ready', targets: [nbr],
             message: `节点 ${nbr} 入度变为0，入队!`,
-            inDegree: _clone(currentInDegree), queue: queue.slice(), result: result.slice(), ready: [],
+            inDegree: clone(currentInDegree), queue: queue.slice(), result: result.slice(), ready: [],
           });
         }
       }
@@ -125,7 +113,7 @@ const Topo = {
     steps.push({
       type: 'finish', targets: [],
       message: hasCycle ? `有环! 无法完成拓扑排序 (${visitedCount}/${nodes.length})` : `拓扑排序完成: [${result.join(' → ')}]`,
-      inDegree: _clone(currentInDegree), queue: [], result: result.slice(), ready: [],
+      inDegree: clone(currentInDegree), queue: [], result: result.slice(), ready: [],
     });
 
     return steps;
@@ -206,6 +194,6 @@ const Topo = {
       'in-degree': step ? formatInDeg(step.inDegree) : '-',
     };
   },
-};
+});
 
 export default Topo;

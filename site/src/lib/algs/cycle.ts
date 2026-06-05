@@ -1,16 +1,6 @@
-/**
- * cycle.ts — 环检测算法可视化（ES Module）
- *
- * 基于 DFS 的有向图环检测
- */
-
-import VizRenderer from '../viz-renderer';
-import type { RenderMode } from '../viz-renderer';
-import type { ColorMap, LegendSelector } from '../color-registry';
-import { darken } from '../color-registry';
-import type { UIState } from '../viz-engine';
-
-// ── 图例声明 ──
+import { createAlgo, snapshot, darken, type LegendSelector } from '../alg-base';
+import type { UIState } from '../alg-base';
+import type { VizRenderer, RenderMode, ColorMap } from '../alg-base';
 
 export const legendKeys: LegendSelector[] = [
   { domain: 'node', key: 'default' },
@@ -19,8 +9,6 @@ export const legendKeys: LegendSelector[] = [
   { domain: 'node', key: 'cycle' },
   { domain: 'edge', key: 'active' },
 ];
-
-// ── 类型定义 ──
 
 export interface CycleStep {
   type: 'init' | 'visit_start' | 'explore_edge' | 'cycle_found' | 'backtrack' | 'finish';
@@ -32,7 +20,7 @@ export interface CycleStep {
   cycle: string[] | null;
 }
 
-const Cycle = {
+const Cycle = createAlgo<CycleStep>({
   legendKeys,
   generateSteps(
     nodes: Array<{ data: { id: string; label: string } }>,
@@ -51,7 +39,7 @@ const Cycle = {
 
     steps.push({
       type: 'init', targets: [], message: '开始环检测 (DFS-based)',
-      status: JSON.parse(JSON.stringify(status)), stack: [], order: [], cycle: null,
+      status: snapshot(status), stack: [], order: [], cycle: null,
     });
 
     function dfs(nodeId: string): void {
@@ -65,7 +53,7 @@ const Cycle = {
       steps.push({
         type: 'visit_start', targets: [nodeId],
         message: `进入节点 ${nodeId}`,
-        status: JSON.parse(JSON.stringify(status)), stack: stack.slice(), order: order.slice(), cycle: null,
+        status: snapshot(status), stack: stack.slice(), order: order.slice(), cycle: null,
       });
 
       const neighbors = adjList[nodeId] || [];
@@ -77,7 +65,7 @@ const Cycle = {
           steps.push({
             type: 'explore_edge', targets: [nodeId, nbr],
             message: `探索边 ${nodeId} → ${nbr}`,
-            status: JSON.parse(JSON.stringify(status)), stack: stack.slice(), order: order.slice(), cycle: null,
+            status: snapshot(status), stack: stack.slice(), order: order.slice(), cycle: null,
           });
           dfs(nbr);
           if (cycleFound) return;
@@ -88,7 +76,7 @@ const Cycle = {
           steps.push({
             type: 'cycle_found', targets: [nodeId, nbr],
             message: `发现环! ${cycleFound.join(' → ')} → ${nbr}`,
-            status: JSON.parse(JSON.stringify(status)), stack: stack.slice(), order: order.slice(), cycle: cycleFound,
+            status: snapshot(status), stack: stack.slice(), order: order.slice(), cycle: cycleFound,
           });
           return;
         }
@@ -101,7 +89,7 @@ const Cycle = {
       steps.push({
         type: 'backtrack', targets: [nodeId],
         message: `回溯节点 ${nodeId}`,
-        status: JSON.parse(JSON.stringify(status)), stack: stack.slice(), order: order.slice(), cycle: null,
+        status: snapshot(status), stack: stack.slice(), order: order.slice(), cycle: null,
       });
     }
 
@@ -116,7 +104,7 @@ const Cycle = {
     if (!cycleFound) {
       steps.push({
         type: 'finish', targets: [], message: '无环！图是 DAG',
-        status: JSON.parse(JSON.stringify(status)), stack: [], order: order, cycle: null,
+        status: snapshot(status), stack: [], order: order, cycle: null,
       });
     }
 
@@ -187,6 +175,6 @@ const Cycle = {
         : (state.isFinished ? '无环' : '-'),
     };
   },
-};
+});
 
 export default Cycle;

@@ -1,14 +1,6 @@
-/**
- * dfs.ts — DFS 深度优先搜索可视化（ES Module）
- */
-
-import VizRenderer from '../viz-renderer';
-import type { RenderMode } from '../viz-renderer';
-import type { ColorMap, LegendSelector } from '../color-registry';
-import { darken } from '../color-registry';
-import type { UIState } from '../viz-engine';
-
-// ── 图例声明 ──
+import { createAlgo, darken, type LegendSelector } from '../alg-base';
+import type { UIState } from '../alg-base';
+import type { VizRenderer, RenderMode, ColorMap } from '../alg-base';
 
 export const legendKeys: LegendSelector[] = [
   { domain: 'node', key: 'start' },
@@ -19,8 +11,6 @@ export const legendKeys: LegendSelector[] = [
   { domain: 'edge', key: 'back' },
 ];
 
-// ── 类型定义 ──
-
 export interface DFSStep {
   type: 'init' | 'push' | 'pop' | 'visit_edge' | 'skip_edge' | 'finish';
   targets: string[];
@@ -30,7 +20,7 @@ export interface DFSStep {
   order: string[];
 }
 
-const DFS = {
+const DFS = createAlgo<DFSStep>({
   legendKeys,
   generateSteps(
     nodes: Array<{ data: { id: string; label: string } }>,
@@ -169,6 +159,6 @@ const DFS = {
       'depth': step && step.depth != null ? String(step.depth) : '-',
     };
   },
-};
+});
 
 export default DFS;

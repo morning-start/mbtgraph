@@ -9,7 +9,7 @@
  * 新增算法只需在此添加一条记录
  */
 
-import type { AlgoModule } from './viz-engine';
+import type { AlgoModule } from './alg-base';
 import type { LegendSelector } from './color-registry';
 
 // ── 导入算法模块 ──

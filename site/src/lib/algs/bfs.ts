@@ -1,20 +1,6 @@
-/**
- * bfs.ts — BFS 广度优先搜索可视化（ES Module）
- *
- * 重构后:
- *   - legendKeys: 从全局颜色注册表选取
- *   - generateSteps: 纯算法逻辑
- *   - renderStep: 通过 VizRenderer 渲染
- *   - getUIData: 返回状态数据
- */
-
-import VizRenderer from '../viz-renderer';
-import type { RenderMode } from '../viz-renderer';
-import type { ColorMap, LegendSelector } from '../color-registry';
-import { darken } from '../color-registry';
-import type { UIState } from '../viz-engine';
-
-// ── 图例声明 ──
+import { createAlgo, snapshot, darken, type LegendSelector } from '../alg-base';
+import type { UIState } from '../alg-base';
+import type { VizRenderer, RenderMode, ColorMap } from '../alg-base';
 
 export const legendKeys: LegendSelector[] = [
   { domain: 'node', key: 'start' },
@@ -23,8 +9,6 @@ export const legendKeys: LegendSelector[] = [
   { domain: 'node', key: 'visited' },
   { domain: 'edge', key: 'tree' },
 ];
-
-// ── 类型定义 ──
 
 export interface BFSStep {
   type: 'init' | 'dequeue' | 'visit_edge' | 'skip_edge' | 'visit_node' | 'finish';
@@ -35,9 +19,7 @@ export interface BFSStep {
   levels: Record<string, number>;
 }
 
-// ── 算法实现 ──
-
-const BFS = {
+const BFS = createAlgo<BFSStep>({
   legendKeys,
   generateSteps(
     nodes: Array<{ data: { id: string; label: string } }>,
@@ -56,7 +38,7 @@ const BFS = {
     steps.push({
       type: 'init', targets: [startId],
       message: `初始化: 起点 ${startId} 入队`,
-      order: [], queue: [startId], levels: JSON.parse(JSON.stringify(levels)),
+      order: [], queue: [startId], levels: snapshot(levels),
     });
 
     let head = 0;
@@ -72,7 +54,7 @@ const BFS = {
           type: 'dequeue', targets: [current],
           message: `出队: 节点 ${current}`,
           order: order.slice(), queue: queue.slice(head),
-          levels: JSON.parse(JSON.stringify(levels)),
+          levels: snapshot(levels),
         });
 
         const neighbors = adjList[current] || [];
@@ -85,14 +67,14 @@ const BFS = {
               type: 'visit_edge', targets: [current, nbr],
               message: `发现新节点 ${nbr}! 入队 (Level ${levels[nbr]})`,
               order: order.slice(), queue: queue.slice(head),
-              levels: JSON.parse(JSON.stringify(levels)),
+              levels: snapshot(levels),
             });
           } else {
             steps.push({
               type: 'skip_edge', targets: [current, nbr],
               message: `${nbr} 已访问, 跳过`,
               order: order.slice(), queue: queue.slice(head),
-              levels: JSON.parse(JSON.stringify(levels)),
+              levels: snapshot(levels),
             });
           }
         }
@@ -101,14 +83,14 @@ const BFS = {
           type: 'visit_node', targets: [current],
           message: `${current} 处理完成 ✓`,
           order: order.slice(), queue: queue.slice(head),
-          levels: JSON.parse(JSON.stringify(levels)),
+          levels: snapshot(levels),
         });
       } else {
         steps.push({
           type: 'skip_edge', targets: [current],
           message: `${current} 已在队列中, 跳过`,
           order: order.slice(), queue: queue.slice(head),
-          levels: JSON.parse(JSON.stringify(levels)),
+          levels: snapshot(levels),
         });
       }
     }
@@ -154,8 +136,8 @@ const BFS = {
           width: 4,
         }, mode, false, speed);
         renderer.setNode(tgt, {
-          backgroundColor: '#FBBF24',
-          borderColor: '#F59E0B',
+          backgroundColor: colors.ready.value,
+          borderColor: darken(colors.ready.value),
           borderWidth: 3,
         }, mode, Math.max(100, speed * 0.5));
         break;
@@ -188,7 +170,7 @@ const BFS = {
       'levels': step && step.levels ? _formatLevels(step.levels) : '-',
     };
   },
-};
+});
 
 function _formatLevels(levels: Record<string, number>): string {
   if (!levels) return '-';

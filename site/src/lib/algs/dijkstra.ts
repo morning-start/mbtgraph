@@ -1,20 +1,6 @@
-/**
- * dijkstra.ts — Dijkstra 最短路径算法可视化（ES Module）
- *
- * 重构后:
- *   - legendKeys: 从全局颜色注册表选取本算法需要的颜色
- *   - generateSteps: 纯算法逻辑，产出 Step[]
- *   - renderStep: 通过 VizRenderer + ColorMap 渲染（合并 executeStep+rebuildTo）
- *   - getUIData: 返回状态数据（不操作 DOM）
- */
-
-import VizRenderer from '../viz-renderer';
-import type { RenderMode } from '../viz-renderer';
-import type { ColorMap, LegendSelector } from '../color-registry';
-import { darken } from '../color-registry';
-import type { UIState } from '../viz-engine';
-
-// ── 图例声明 ──
+import { createAlgo, snapshot, darken, type LegendSelector } from '../alg-base';
+import type { UIState } from '../alg-base';
+import type { VizRenderer, RenderMode, ColorMap } from '../alg-base';
 
 export const legendKeys: LegendSelector[] = [
   { domain: 'node', key: 'start' },
@@ -24,8 +10,6 @@ export const legendKeys: LegendSelector[] = [
   { domain: 'node', key: 'relaxed' },
   { domain: 'edge', key: 'active' },
 ];
-
-// ── 类型定义 ──
 
 export interface DijkstraStep {
   type: 'init' | 'select' | 'relax' | 'finish';
@@ -39,13 +23,8 @@ export interface DijkstraStep {
   relaxed?: boolean;
 }
 
-// ── 算法实现 ──
-
-const Dijkstra = {
+const Dijkstra = createAlgo<DijkstraStep>({
   legendKeys,
-  /**
-   * 生成 Dijkstra 算法执行步骤（纯逻辑，无渲染）
-   */
   generateSteps(
     nodes: Array<{ data: { id: string; label: string } }>,
     adjList: Record<string, string[]>,
@@ -67,9 +46,9 @@ const Dijkstra = {
       type: 'init',
       targets: [startId],
       message: `初始化: dist[${startId}]=0, 其他=∞`,
-      dist: JSON.parse(JSON.stringify(dist)),
-      parent: JSON.parse(JSON.stringify(parent)),
-      visited: JSON.parse(JSON.stringify(visited)),
+      dist: snapshot(dist),
+      parent: snapshot(parent),
+      visited: snapshot(visited),
       current: startId,
     });
 
@@ -91,9 +70,9 @@ const Dijkstra = {
         type: 'select',
         targets: [u],
         message: `选择最小距离节点: ${u} (dist=${dist[u] === Infinity ? '∞' : dist[u]})`,
-        dist: JSON.parse(JSON.stringify(dist)),
-        parent: JSON.parse(JSON.stringify(parent)),
-        visited: JSON.parse(JSON.stringify(visited)),
+        dist: snapshot(dist),
+        parent: snapshot(parent),
+        visited: snapshot(visited),
         current: u,
       });
 
@@ -112,9 +91,9 @@ const Dijkstra = {
           type: 'relax',
           targets: [u, v],
           message: `检查边 ${u}→${v} (w=${w}): dist[${v}]=${dist[v] === Infinity ? '∞' : dist[v]} → ${newDist === Infinity ? '∞' : newDist}${isRelaxed ? ' ✓ 更新!' : ' 保持'}`,
-          dist: JSON.parse(JSON.stringify(dist)),
-          parent: JSON.parse(JSON.stringify(parent)),
-          visited: JSON.parse(JSON.stringify(visited)),
+          dist: snapshot(dist),
+          parent: snapshot(parent),
+          visited: snapshot(visited),
           current: u,
           edge: [u, v],
           relaxed: isRelaxed,
@@ -132,24 +111,15 @@ const Dijkstra = {
       type: 'finish',
       targets: [],
       message: `✅ Dijkstra 完成! 可达节点: ${reachable.length}/${nodes.length}`,
-      dist: JSON.parse(JSON.stringify(dist)),
-      parent: JSON.parse(JSON.stringify(parent)),
-      visited: JSON.parse(JSON.stringify(visited)),
+      dist: snapshot(dist),
+      parent: snapshot(parent),
+      visited: snapshot(visited),
       current: null,
     });
 
     return steps;
   },
 
-  /**
-   * 渲染单步（合并原 executeStep + rebuildTo）
-   *
-   * @param renderer   VizRenderer 实例
-   * @param step       当前步骤数据
-   * @param mode       animate(播放时) / instant(跳转/回退时)
-   * @param speed      动画速度(ms)
-   * @param colors     从注册表解析的颜色映射
-   */
   renderStep(renderer: VizRenderer, step: DijkstraStep, mode: RenderMode, speed: number, colors: ColorMap): void {
     switch (step.type) {
       case 'init':
@@ -207,35 +177,32 @@ const Dijkstra = {
     }
   },
 
-  /**
-   * 返回 UI 状态数据（不操作 DOM，由引擎统一写入）
-   */
   getUIData(step: DijkstraStep | null, state: UIState): Record<string, string> {
     return {
       'current-node': (!step || state.isFinished || state.currentIdx < 0)
         ? ((step && step.current !== null) ? String(step.current) : '—')
         : (step?.current !== null ? String(step.current) : '—'),
-      'dist-table': step ? this._formatDistTable(step.dist) : '-',
-      'visited-nodes': step ? this._formatVisited(step.visited) : '-',
+      'dist-table': step ? formatDistTable(step.dist) : '-',
+      'visited-nodes': step ? formatVisited(step.visited) : '-',
     };
   },
+});
 
-  _formatDistTable(dist: Record<string, number>): string {
-    const parts: string[] = [];
-    for (const nid in dist) {
-      const d = dist[nid];
-      parts.push(`${nid}:${d === Infinity ? '∞' : d}`);
-    }
-    return '[' + parts.join(', ') + ']';
-  },
+function formatDistTable(dist: Record<string, number>): string {
+  const parts: string[] = [];
+  for (const nid in dist) {
+    const d = dist[nid];
+    parts.push(`${nid}:${d === Infinity ? '∞' : d}`);
+  }
+  return '[' + parts.join(', ') + ']';
+}
 
-  _formatVisited(visited: Record<string, boolean>): string {
-    const list: string[] = [];
-    for (const nid in visited) {
-      if (visited[nid]) list.push(nid);
-    }
-    return list.length > 0 ? '[' + list.join(',') + ']' : '[ ]';
-  },
-};
+function formatVisited(visited: Record<string, boolean>): string {
+  const list: string[] = [];
+  for (const nid in visited) {
+    if (visited[nid]) list.push(nid);
+  }
+  return list.length > 0 ? '[' + list.join(',') + ']' : '[ ]';
+}
 
 export default Dijkstra;
