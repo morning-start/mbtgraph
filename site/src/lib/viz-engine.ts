@@ -1,32 +1,13 @@
-/**
- * viz-engine.ts — 图算法可视化核心引擎（协调层）
- *
- * 职责:
- *   - 初始化 Cytoscape + VizRenderer
- *   - 生成步骤数组（调用算法的 generateSteps）
- *   - 协调 PlayerController、EventManager、VizRenderer
- *   - UI 更新协调（从算法 getUIData 获取数据，写入 DOM）
- *
- * 不负责:
- *   - 直接操作 Cytoscape API → 委托给 VizRenderer
- *   - 颜色管理 → 委托给 ColorRegistry
- *   - 播放控制 → 委托给 PlayerController
- *   - 事件绑定 → 委托给 EventManager
- */
-
 import cytoscape, { type Core } from 'cytoscape';
 import cytoscapeDagre from 'cytoscape-dagre';
 import VizRenderer from './viz-renderer';
 import { resolveColors, type LegendSelector, type ColorMap } from './color-registry';
 import type { RenderMode } from './viz-renderer';
+import type { AlgoModule, UIState } from './alg-base';
 import { EventManager } from './event-manager';
 import { PlayerController, type PlayerState } from './player-controller';
 
-// ── 注册 dagre 布局扩展 ──
-
 cytoscape.use(cytoscapeDagre);
-
-// ── 布局与交互常量 ──
 
 const LAYOUT = {
   nodeSep: 80,
@@ -48,9 +29,6 @@ const ANIMATION = {
 const SPEED_RANGE = { min: 60, max: 1100 } as const;
 export { SPEED_RANGE };
 
-// ── Cytoscape 默认样式常量 ──
-
-/** eslint-disable @typescript-eslint/no-explicit-any -- Cytoscape CSS 类型过于严格，使用 any 绕过 */
 const CYTOSCAPE_NODE_STYLE = {
   'label': 'data(label)',
   'text-valign': 'center',
@@ -95,23 +73,6 @@ const CYTOSCAPE_EDGE_STYLE = {
   'transition-duration': 0.35,
 } as const;
 
-// ── 类型定义 ──
-
-/**
- * 算法模块接口 — 所有算法必须实现
- */
-export interface AlgoModule<TStep = unknown> {
-  legendKeys: LegendSelector[];
-  generateSteps(
-    nodes: Array<{ data: { id: string; label: string } }>,
-    adjList: Record<string, string[]>,
-    edgeWeights?: Record<string, number>,
-    startNode?: string,
-  ): TStep[];
-  renderStep(renderer: VizRenderer, step: TStep, mode: RenderMode, speed: number, colors: ColorMap): void;
-  getUIData(step: TStep | null, state: UIState): Record<string, string>;
-}
-
 interface VizConfig {
   title: string;
   subtitle?: string;
@@ -122,14 +83,6 @@ interface VizConfig {
   algoInstance: AlgoModule<unknown>;
 }
 
-export interface UIState {
-  isFinished: boolean;
-  currentIdx: number;
-  total: number;
-  isPlaying: boolean;
-}
-
-/** DOM 元素引用缓存 */
 interface DOMRefs {
   progressFill: HTMLElement | null;
   progressThumb: HTMLElement | null;
@@ -155,8 +108,6 @@ interface EngineState {
   eventManager: EventManager | null;
   player: PlayerController | null;
 }
-
-// ── 引擎实现 ──
 
 class VizEngine {
   private _state: EngineState = {
@@ -211,89 +162,19 @@ class VizEngine {
       state.config = config;
       state.dom = this._cacheDOMRefs();
       state.colors = resolveColors(config.algoInstance.legendKeys);
+      state.steps = this._generateSteps(config);
 
-      const { adjList, edgeWeights } = this._buildGraphData(config);
-      const algo = config.algoInstance;
-      const hasWeights = Object.keys(edgeWeights).length > 0;
-      state.steps = algo.generateSteps(
-        config.nodes, adjList,
-        hasWeights ? edgeWeights : undefined,
-        config.startNode,
-      );
+      state.cy = this._initCytoscape(config);
+      state.renderer = new VizRenderer(state.cy);
 
-      const container = document.getElementById('viz-canvas');
-      if (!container) {
-        console.error('[VizEngine] Canvas container #viz-canvas not found');
-        return;
-      }
-
-      const cy = cytoscape({
-        container,
-        elements: [...config.nodes, ...config.edges],
-        layout: {
-          name: 'dagre',
-          rankDir: 'LR',
-          nodeSep: LAYOUT.nodeSep,
-          rankSep: LAYOUT.rankSep,
-          animate: false,
-          fit: true,
-          padding: LAYOUT.padding,
-        } as cytoscape.LayoutOptions,
-        style: [
-          { selector: 'node', style: CYTOSCAPE_NODE_STYLE },
-          { selector: 'edge', style: CYTOSCAPE_EDGE_STYLE },
-        ],
-        userZoomingEnabled: true,
-        userPanningEnabled: true,
-        boxSelectionEnabled: false,
-        minZoom: LAYOUT.minZoom,
-        maxZoom: LAYOUT.maxZoom,
-        wheelSensitivity: LAYOUT.wheelSensitivity,
-      }) as Core;
-
-      state.cy = cy;
-      state.renderer = new VizRenderer(cy);
-
-      state.player = new PlayerController({
-        onStateChange: (playerState: PlayerState) => {
-          this._updateUIFromPlayerState(playerState);
-        },
-        onExecuteStep: (idx: number, animate: boolean) => {
-          this._executeStep(state.steps[idx], animate);
-        },
-        onRebuildTo: (idx: number) => {
-          this._rebuildTo(idx);
-        },
-        onResetVisuals: () => {
-          if (state.renderer) state.renderer.resetAll();
-        },
-      });
-      state.player.init(state.steps.length);
-
-      const loadingEl = document.getElementById('loading-overlay');
-      if (loadingEl) {
-        loadingEl.classList.add('fade-out');
-        setTimeout(() => { loadingEl.style.display = 'none'; }, ANIMATION.fadeOutDelay);
-      }
-
+      this._initPlayer();
+      this._initEventManager();
+      this._hideLoading();
       this._updateHeader(config.title, config.subtitle);
-
-      state.eventManager = new EventManager({
-        'toggle-play': () => state.player?.togglePlay(),
-        'step-forward': () => state.player?.stepForward(),
-        'step-back': () => state.player?.stepBack(),
-        'skip-to-start': () => state.player?.skipToStart(),
-        'skip-to-end': () => state.player?.skipToEnd(),
-        'reset': () => state.player?.reset(),
-        'jump-to': (idx: number) => state.player?.jumpTo(idx),
-        'set-speed': (speed: number) => { state.player?.setSpeed(speed); },
-      });
-      state.eventManager.bindAll(state.dom, () => state.steps.length);
 
       setTimeout(() => {
         if (state.dom.wrapper) state.dom.wrapper.focus();
       }, ANIMATION.focusDelay);
-
     } catch (err) {
       console.error('[VizEngine] Initialization failed:', err);
       this.destroy();
@@ -325,6 +206,17 @@ class VizEngine {
     state.dom = this._createEmptyDOMRefs();
   }
 
+  private _generateSteps(config: VizConfig): unknown[] {
+    const { adjList, edgeWeights } = this._buildGraphData(config);
+    const algo = config.algoInstance;
+    const hasWeights = Object.keys(edgeWeights).length > 0;
+    return algo.generateSteps(
+      config.nodes, adjList,
+      hasWeights ? edgeWeights : undefined,
+      config.startNode,
+    );
+  }
+
   private _buildGraphData(config: VizConfig): { adjList: Record<string, string[]>; edgeWeights: Record<string, number> } {
     const adjList: Record<string, string[]> = {};
     const edgeWeights: Record<string, number> = {};
@@ -344,6 +236,81 @@ class VizEngine {
     });
 
     return { adjList, edgeWeights };
+  }
+
+  private _initCytoscape(config: VizConfig): Core {
+    const container = document.getElementById('viz-canvas');
+    if (!container) {
+      throw new Error('[VizEngine] Canvas container #viz-canvas not found');
+    }
+
+    const cy = cytoscape({
+      container,
+      elements: [...config.nodes, ...config.edges],
+      layout: {
+        name: 'dagre',
+        rankDir: 'LR',
+        nodeSep: LAYOUT.nodeSep,
+        rankSep: LAYOUT.rankSep,
+        animate: false,
+        fit: true,
+        padding: LAYOUT.padding,
+      } as cytoscape.LayoutOptions,
+      style: [
+        { selector: 'node', style: CYTOSCAPE_NODE_STYLE },
+        { selector: 'edge', style: CYTOSCAPE_EDGE_STYLE },
+      ],
+      userZoomingEnabled: true,
+      userPanningEnabled: true,
+      boxSelectionEnabled: false,
+      minZoom: LAYOUT.minZoom,
+      maxZoom: LAYOUT.maxZoom,
+      wheelSensitivity: LAYOUT.wheelSensitivity,
+    }) as Core;
+
+    return cy;
+  }
+
+  private _initPlayer(): void {
+    const state = this._state;
+    state.player = new PlayerController({
+      onStateChange: (playerState: PlayerState) => {
+        this._updateUIFromPlayerState(playerState);
+      },
+      onExecuteStep: (idx: number, animate: boolean) => {
+        this._executeStep(state.steps[idx], animate);
+      },
+      onRebuildTo: (idx: number) => {
+        this._rebuildTo(idx);
+      },
+      onResetVisuals: () => {
+        if (state.renderer) state.renderer.resetAll();
+      },
+    });
+    state.player.init(state.steps.length);
+  }
+
+  private _initEventManager(): void {
+    const state = this._state;
+    state.eventManager = new EventManager({
+      'toggle-play': () => state.player?.togglePlay(),
+      'step-forward': () => state.player?.stepForward(),
+      'step-back': () => state.player?.stepBack(),
+      'skip-to-start': () => state.player?.skipToStart(),
+      'skip-to-end': () => state.player?.skipToEnd(),
+      'reset': () => state.player?.reset(),
+      'jump-to': (idx: number) => state.player?.jumpTo(idx),
+      'set-speed': (speed: number) => { state.player?.setSpeed(speed); },
+    });
+    state.eventManager.bindAll(state.dom, () => state.steps.length);
+  }
+
+  private _hideLoading(): void {
+    const loadingEl = document.getElementById('loading-overlay');
+    if (loadingEl) {
+      loadingEl.classList.add('fade-out');
+      setTimeout(() => { loadingEl.style.display = 'none'; }, ANIMATION.fadeOutDelay);
+    }
   }
 
   private _executeStep(step: unknown, animate: boolean): void {
