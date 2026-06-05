@@ -8,7 +8,8 @@
  *   - getUIData: 返回状态数据
  */
 
-import type { VizRenderer, RenderMode } from '../viz-renderer';
+import VizRenderer from '../viz-renderer';
+import type { RenderMode } from '../viz-renderer';
 import type { ColorMap, LegendSelector } from '../color-registry';
 import { darken } from '../color-registry';
 
@@ -40,6 +41,7 @@ export interface UIData {
 // ── 算法实现 ──
 
 const BFS = {
+  legendKeys,
   generateSteps(
     nodes: Array<{ data: { id: string; label: string } }>,
     adjList: Record<string, string[]>,
@@ -51,6 +53,7 @@ const BFS = {
     const visited: Record<string, boolean> = {};
     const queue: string[] = [startId];
     const levels: Record<string, number> = {};
+    const order: string[] = [];
     levels[startId] = 0;
 
     steps.push({

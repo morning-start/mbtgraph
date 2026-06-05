@@ -8,7 +8,8 @@
  *   - getUIData: 返回状态数据（不操作 DOM）
  */
 
-import type { VizRenderer, RenderMode } from '../viz-renderer';
+import VizRenderer from '../viz-renderer';
+import type { RenderMode } from '../viz-renderer';
 import type { ColorMap, LegendSelector } from '../color-registry';
 import { darken } from '../color-registry';
 
@@ -45,6 +46,7 @@ export interface UIData {
 // ── 算法实现 ──
 
 const Dijkstra = {
+  legendKeys,
   /**
    * 生成 Dijkstra 算法执行步骤（纯逻辑，无渲染）
    */

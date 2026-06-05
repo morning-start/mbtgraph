@@ -16,7 +16,7 @@
 
 import cytoscape, { type Core } from 'cytoscape';
 import cytoscapeDagre from 'cytoscape-dagre';
-import VizRenderer, { DEFAULT_NODE_STYLE, DEFAULT_EDGE_STYLE } from './viz-renderer';
+import VizRenderer from './viz-renderer';
 import { resolveColors, type LegendSelector, type ColorMap } from './color-registry';
 import type { RenderMode } from './viz-renderer';
 
@@ -49,6 +49,7 @@ const SPEED_RANGE = { min: 60, max: 1100 } as const;
 
 // ── Cytoscape 默认样式常量 (P1#6) ──
 
+/** eslint-disable @typescript-eslint/no-explicit-any -- Cytoscape CSS 类型过于严格，使用 any 绕过 */
 const CYTOSCAPE_NODE_STYLE = {
   'label': 'data(label)',
   'text-valign': 'center',
@@ -63,12 +64,12 @@ const CYTOSCAPE_NODE_STYLE = {
   'font-weight': 700,
   'width': 48,
   'height': 48,
-  'shape': 'ellipse',
+  'shape': 'ellipse' as const,
   'text-outline-width': 2,
   'text-outline-color': '#1e293b',
   'transition-property': 'background-color,border-color,border-width,width,height,color,text-background-color,text-outline-color',
-  'transition-duration': '0.35s',
-};
+  'transition-duration': 0.35,
+} as const;
 
 const CYTOSCAPE_EDGE_STYLE = {
   'width': 2,
@@ -76,7 +77,7 @@ const CYTOSCAPE_EDGE_STYLE = {
   'target-arrow-color': '#475569',
   'source-arrow-color': '#475569',
   'arrow-scale': 0.8,
-  'curve-style': 'bezier',
+  'curve-style': 'bezier' as const,
   'opacity': 0.85,
   'label': 'data(weight)',
   'text-background-color': '#0f172a',
@@ -90,8 +91,8 @@ const CYTOSCAPE_EDGE_STYLE = {
   'color': '#94a3b8',
   'font-family': '"JetBrains Mono", ui-monospace, monospace',
   'transition-property': 'line-color,target-arrow-color,source-arrow-color,width,opacity,line-style',
-  'transition-duration': '0.35s',
-};
+  'transition-duration': 0.35,
+} as const;
 
 // ── 类型定义 ──
 
@@ -124,7 +125,7 @@ interface VizConfig {
   subtitle?: string;
   nodes: Array<{ data: { id: string; label: string } }>;
   edges: Array<{ data: { id: string; source: string; target: string; weight?: number | string } }>;
-  startNode: string;
+  startNode?: string;
   directed?: boolean;
   /** 算法模块实例 */
   algoInstance: AlgoModule<unknown>;
@@ -165,7 +166,7 @@ interface EngineState {
   steps: unknown[];
   config: VizConfig | null;
   dom: DOMRefs;
-  boundHandlers: Array<{ el: EventListenerTarget; event: string; handler: EventListener }>;
+  boundHandlers: Array<{ el: EventTarget; event: string; handler: EventListener }>;
 }
 
 // ── 引擎实现 ──
@@ -218,7 +219,7 @@ class VizEngine {
   }
 
   /** 安全注册事件监听，记录以便销毁时清理 (P2#9) */
-  private _on(el: EventListenerTarget | null, event: string, handler: EventListener): void {
+  private _on(el: EventTarget | null, event: string, handler: EventListener): void {
     if (!el) return;
     el.addEventListener(event, handler);
     this._state.boundHandlers.push({ el, event, handler });
@@ -279,7 +280,7 @@ class VizEngine {
 
       const cy = cytoscape({
         container,
-        elements: config.nodes.concat(config.edges),
+        elements: [...config.nodes, ...config.edges],
         layout: {
           name: 'dagre',
           rankDir: 'LR',
@@ -288,9 +289,9 @@ class VizEngine {
           animate: false,
           fit: true,
           padding: LAYOUT.padding,
-        },
+        } as cytoscape.LayoutOptions,
         style: [
-          { selector: 'node', style: CYTOSCAPE_NODE_STYLE },
+          { selector: 'node', style: CYTOSCAPE_NODE_STYLE},
           { selector: 'edge', style: CYTOSCAPE_EDGE_STYLE },
           {
             selector: '.highlighted',
@@ -302,7 +303,7 @@ class VizEngine {
             },
           },
         ],
-        userZoomEnabled: true,
+        userZoomingEnabled: true,
         userPanningEnabled: true,
         boxSelectionEnabled: false,
         minZoom: LAYOUT.minZoom,

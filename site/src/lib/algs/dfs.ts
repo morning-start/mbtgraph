@@ -2,7 +2,8 @@
  * dfs.ts — DFS 深度优先搜索可视化（ES Module）
  */
 
-import type { VizRenderer, RenderMode } from '../viz-renderer';
+import VizRenderer from '../viz-renderer';
+import type { RenderMode } from '../viz-renderer';
 import type { ColorMap, LegendSelector } from '../color-registry';
 import { darken } from '../color-registry';
 
@@ -33,6 +34,7 @@ export interface UIData {
 }
 
 const DFS = {
+  legendKeys,
   generateSteps(
     nodes: Array<{ data: { id: string; label: string } }>,
     adjList: Record<string, string[]>,
@@ -43,6 +45,7 @@ const DFS = {
     const steps: DFSStep[] = [];
     const visited: Record<string, boolean> = {};
     const stack: string[] = [startId];
+    const order: string[] = [];
 
     steps.push({
       type: 'init', targets: [startId],

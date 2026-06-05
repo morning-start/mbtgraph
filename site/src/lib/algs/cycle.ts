@@ -4,7 +4,8 @@
  * 基于 DFS 的有向图环检测
  */
 
-import type { VizRenderer, RenderMode } from '../viz-renderer';
+import VizRenderer from '../viz-renderer';
+import type { RenderMode } from '../viz-renderer';
 import type { ColorMap, LegendSelector } from '../color-registry';
 import { darken } from '../color-registry';
 
@@ -35,6 +36,7 @@ export interface UIData {
 }
 
 const Cycle = {
+  legendKeys,
   generateSteps(
     nodes: Array<{ data: { id: string; label: string } }>,
     adjList: Record<string, string[]>,
@@ -176,7 +178,7 @@ const Cycle = {
     }
   },
 
-  getUIData(step: CycleStep | null, state: { isFinished: boolean; currentIdx: number }): UIDData {
+  getUIData(step: CycleStep | null, state: { isFinished: boolean; currentIdx: number }): UIData {
     const hasCycle = !!(step && step.cycle);
     return {
       'current-node': (state.isFinished || state.currentIdx < 0)
@@ -189,7 +191,5 @@ const Cycle = {
     };
   },
 };
-
-type UIData = Record<string, string>;
 
 export default Cycle;

@@ -2,7 +2,8 @@
  * topo.ts — Kahn 拓扑排序算法可视化（ES Module）
  */
 
-import type { VizRenderer, RenderMode } from '../viz-renderer';
+import VizRenderer from '../viz-renderer';
+import type { RenderMode } from '../viz-renderer';
 import type { ColorMap, LegendSelector } from '../color-registry';
 import { darken } from '../color-registry';
 
@@ -49,6 +50,7 @@ function formatInDeg(d: Record<string, number>): string {
 // ── 算法实现 ──
 
 const Topo = {
+  legendKeys,
   generateSteps(
     nodes: Array<{ data: { id: string; label: string } }>,
     adjList: Record<string, string[]>,
