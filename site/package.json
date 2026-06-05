@@ -17,6 +17,7 @@
     "astro-expressive-code": "^0.42.0",
     "cytoscape": "^3.33.4",
     "cytoscape-dagre": "^3.0.0",
+    "dagre": "^0.8.5",
     "remark-gfm": "^4.0.1",
     "sharp": "^0.34.5"
   },
