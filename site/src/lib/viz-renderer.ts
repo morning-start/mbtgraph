@@ -10,7 +10,7 @@
  *   - 隔离 Cytoscape API，未来可替换渲染库
  */
 
-import type { Core } from 'cytoscape';
+import type { Core, ElementSingular } from 'cytoscape';
 
 // ── 类型定义 ──
 
@@ -118,22 +118,14 @@ class VizRenderer {
    */
   setNodesByFn(fn: (id: string) => NodeStyle | null, mode: RenderMode): void {
     const nodes = this.cy.nodes();
+    const colorMapper = (ele: ElementSingular): string => {
+      const s = fn(ele.data('id'));
+      return s ? s.backgroundColor : DEFAULT_NODE_STYLE.backgroundColor;
+    };
     if (mode === 'animate') {
-      nodes.animate({
-        style: {
-          'background-color': (ele: any) => {
-            const s = fn(ele.data('id'));
-            return s ? s.backgroundColor : DEFAULT_NODE_STYLE.backgroundColor;
-          },
-        },
-      }, { duration: 200 });
+      nodes.animate({ style: { 'background-color': colorMapper } }, { duration: 200 });
     } else {
-      nodes.style({
-        'background-color': (ele: any) => {
-          const s = fn(ele.data('id'));
-          return s ? s.backgroundColor : DEFAULT_NODE_STYLE.backgroundColor;
-        },
-      });
+      nodes.style({ 'background-color': colorMapper });
     }
   }
 
