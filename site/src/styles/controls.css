@@ -1,0 +1,217 @@
+/**
+ * controls.css — 底部控制栏样式 (Timeline, Transport, Play Button)
+ */
+
+/* ═══════════════════════════════════════════
+   Bottom Bar — Cinematic Transport Deck
+   ═══════════════════════════════════════════ */
+.viz-bottom-bar {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 10;
+  display: flex; flex-direction: column;
+  background:
+    linear-gradient(to top,
+      rgba(3, 5, 12, .98) 0%,
+      rgba(6, 10, 20, .95) 40%,
+      rgba(8, 14, 28, .85) 100%
+    );
+  backdrop-filter: blur(32px) saturate(1.6);
+  -webkit-backdrop-filter: blur(32px) saturate(1.6);
+  border-top: 1px solid rgba(148, 163, 184, .08);
+  pointer-events: auto;
+}
+
+/* ── Row 1: Timeline / Progress ── */
+.viz-timeline {
+  display: flex; align-items: center;
+  padding: 14px 32px 4px; gap: 16px;
+}
+.timeline-track {
+  position: relative; flex: 1; height: 4px;
+  background: rgba(255, 255, 255, .06);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: height .2s ease;
+}
+.timeline-track:hover { height: 7px; }
+.timeline-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #06b6d4, #22d3ee, #a5f3fc);
+  border-radius: 2px;
+  width: 0%;
+  transition: width .1s ease-out;
+  position: relative;
+}
+.timeline-glow {
+  position: absolute; top: 50%; right: 0;
+  width: 60px; height: 16px;
+  transform: translateY(-50%);
+  background: radial-gradient(ellipse at center, rgba(6, 182, 212, .35), transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+.timeline-track:hover .timeline-glow { opacity: 1; }
+.timeline-thumb {
+  position: absolute; top: 50%; left: 0;
+  width: 16px; height: 16px;
+  background: #22d3ee;
+  border: 2.5px solid #0f172a;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  box-shadow: 0 0 18px rgba(34, 211, 238, .5), 0 2px 8px rgba(0,0,0,.4);
+  opacity: 0;
+  transition: left .1s ease-out, opacity .2s ease, transform .2s var(--ease-spring);
+}
+.timeline-track:hover .timeline-thumb {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+.timeline-counter {
+  font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  font-size: 11px; font-weight: 600;
+  color: rgba(148, 163, 184, .6);
+  letter-spacing: .03em;
+  white-space: nowrap;
+  min-width: 52px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Row 2: Transport Controls ── */
+.viz-transport {
+  display: flex; align-items: center; justify-content: center;
+  gap: 24px;
+  padding: 8px 32px 14px;
+}
+.transport-group {
+  display: flex; align-items: center; gap: 6px;
+}
+
+/* Subtle control buttons (reset / step) */
+.ctrl-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: rgba(148, 163, 184, .45);
+  cursor: pointer;
+  transition: all .2s var(--ease-out);
+  outline: none;
+}
+.ctrl-btn:hover {
+  background: rgba(255, 255, 255, .06);
+  border-color: rgba(148, 163, 184, .12);
+  color: rgba(203, 213, 225, .85);
+  transform: scale(1.06);
+}
+.ctrl-btn:active { transform: scale(.95); }
+.ctrl-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ── Hero Play Button ── */
+.play-hero {
+  position: relative;
+  width: 56px; height: 56px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #0891b2, #06b6d4, #22d3ee);
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+  transition: all .3s var(--ease-spring);
+  box-shadow:
+    0 4px 24px rgba(6, 182, 212, .35),
+    0 0 0 1px rgba(255, 255, 255, .08) inset,
+    0 0 80px rgba(6, 182, 212, .1);
+}
+.play-hero::before {
+  content: '';
+  position: absolute; inset: -3px;
+  border-radius: 50%;
+  background: conic-gradient(from 180deg, transparent 70%, rgba(34, 211, 238, .15), transparent 90%);
+  animation: heroSpin 6s linear infinite;
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), black calc(100% - 3px));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), black calc(100% - 3px));
+  opacity: 0;
+  transition: opacity .4s ease;
+}
+.play-hero:hover::before { opacity: 1; }
+@keyframes heroSpin { to { transform: rotate(360deg); } }
+
+.play-hero:hover {
+  transform: scale(1.1);
+  box-shadow:
+    0 6px 36px rgba(6, 182, 212, .5),
+    0 0 0 1px rgba(255, 255, 255, .12) inset,
+    0 0 120px rgba(6, 182, 212, .15);
+}
+.play-hero:active { transform: scale(1.03); }
+.play-hero:focus-visible {
+  outline: 2px solid #67e8f9;
+  outline-offset: 4px;
+}
+
+/* Play button inner ring */
+.play-hero__ring {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  color: #fff;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,.2));
+}
+.play-icon--play { margin-left: 2px; }
+.play-icon--pause { opacity: .95; }
+
+/* Replay state */
+.play-hero.replay-pulse {
+  background: linear-gradient(145deg, #059669, #10b981, #34d399);
+  box-shadow:
+    0 4px 24px rgba(16, 185, 129, .35),
+    0 0 0 1px rgba(255, 255, 255, .08) inset;
+  animation: replayGlow 2.5s ease-in-out infinite;
+}
+@keyframes replayGlow {
+  0%, 100% { box-shadow: 0 4px 24px rgba(16, 185, 129, .3); }
+  50%      { box-shadow: 0 6px 36px rgba(16, 185, 129, .55), 0 0 80px rgba(16, 185, 129, .12); }
+}
+
+/* ── Speed Control ── */
+.speed-control-inline {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 9.5px; font-weight: 600;
+  color: rgba(148, 163, 184, .35);
+  text-transform: uppercase; letter-spacing: .04em;
+  padding: 3px 12px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, .02);
+  border: 1px solid rgba(148, 163, 184, .06);
+}
+.speed-control-inline label { white-space: nowrap; }
+.speed-slider {
+  width: 52px; height: 3px;
+  appearance: none; -webkit-appearance: none;
+  background: rgba(255, 255, 255, .08);
+  border-radius: 2px; cursor: pointer;
+  border: none;
+}
+.speed-slider::-webkit-slider-thumb {
+  appearance: none; -webkit-appearance: none;
+  width: 11px; height: 11px;
+  background: var(--accent);
+  border: 1.5px solid rgba(15, 23, 42, .6);
+  border-radius: 50%; cursor: pointer;
+  box-shadow: 0 0 6px rgba(6, 182, 212, .35);
+  transition: transform .15s ease;
+}
+.speed-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+}
+.speed-val {
+  font-weight: 700; color: var(--accent);
+  min-width: 20px; text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-size: 10px;
+}
