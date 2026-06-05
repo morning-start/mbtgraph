@@ -4,6 +4,7 @@
 
 import type { VizRenderer, RenderMode } from '../viz-renderer';
 import type { ColorMap, LegendSelector } from '../color-registry';
+import { darken } from '../color-registry';
 
 // ── 图例声明 ──
 
@@ -31,25 +32,17 @@ export interface UIData {
   [elementId: string]: string;
 }
 
-function darken(hex: string): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `#${Math.round(r * 0.75).toString(16).padStart(2, '0')}${Math.round(g * 0.75).toString(16).padStart(2, '0')}${Math.round(b * 0.75).toString(16).padStart(2, '0')}`;
-}
-
-// ── 算法实现 ──
-
 const DFS = {
   generateSteps(
     nodes: Array<{ data: { id: string; label: string } }>,
     adjList: Record<string, string[]>,
-    startId: string
+    _edgeWeights?: Record<string, number>,
+    startNode?: string,
   ): DFSStep[] {
+    const startId = startNode ?? '0';
     const steps: DFSStep[] = [];
     const visited: Record<string, boolean> = {};
     const stack: string[] = [startId];
-    const order: string[] = [];
 
     steps.push({
       type: 'init', targets: [startId],

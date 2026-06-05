@@ -10,6 +10,7 @@
 
 import type { VizRenderer, RenderMode } from '../viz-renderer';
 import type { ColorMap, LegendSelector } from '../color-registry';
+import { darken } from '../color-registry';
 
 // ── 图例声明 ──
 
@@ -39,16 +40,6 @@ export interface DijkstraStep {
 /** UI 状态数据 */
 export interface UIData {
   [elementId: string]: string;
-}
-
-// ── 辅助函数：加深颜色（用于 border）──
-
-function darken(hex: string): string {
-  // 简单变暗：取 RGB 各分量 * 0.75
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `#${Math.round(r * 0.75).toString(16).padStart(2, '0')}${Math.round(g * 0.75).toString(16).padStart(2, '0')}${Math.round(b * 0.75).toString(16).padStart(2, '0')}`;
 }
 
 // ── 算法实现 ──

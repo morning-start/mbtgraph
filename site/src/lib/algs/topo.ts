@@ -4,6 +4,7 @@
 
 import type { VizRenderer, RenderMode } from '../viz-renderer';
 import type { ColorMap, LegendSelector } from '../color-registry';
+import { darken } from '../color-registry';
 
 // ── 图例声明 ──
 
@@ -31,13 +32,6 @@ export interface UIData {
   [elementId: string]: string;
 }
 
-function darken(hex: string): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `#${Math.round(r * 0.75).toString(16).padStart(2, '0')}${Math.round(g * 0.75).toString(16).padStart(2, '0')}${Math.round(b * 0.75).toString(16).padStart(2, '0')}`;
-}
-
 function _clone(o: Record<string, number>): Record<string, number> {
   const c: Record<string, number> = {};
   for (const k in o) c[k] = o[k];
@@ -57,7 +51,9 @@ function formatInDeg(d: Record<string, number>): string {
 const Topo = {
   generateSteps(
     nodes: Array<{ data: { id: string; label: string } }>,
-    adjList: Record<string, string[]>
+    adjList: Record<string, string[]>,
+    _edgeWeights?: Record<string, number>,
+    _startNode?: string,
   ): TopoStep[] {
     const steps: TopoStep[] = [];
     const queue: string[] = [];

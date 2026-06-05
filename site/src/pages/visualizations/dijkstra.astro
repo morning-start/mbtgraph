@@ -1,5 +1,9 @@
 ---
 import VizLayout from '../../components/VizLayout.astro';
+import { resolveLegendItems } from '../../lib/color-registry';
+import { legendKeys } from '../../lib/algs/dijkstra';
+
+const legendItems = resolveLegendItems(legendKeys);
 ---
 
 <VizLayout
@@ -8,6 +12,7 @@ import VizLayout from '../../components/VizLayout.astro';
   hasStatusPanel={true}
   transportLeft={[{ action: 'reset' }, { action: 'step-back' }]}
   transportRight={[{ action: 'step-forward' }]}
+  {legendItems}
 >
   <div slot="status-panel">
     <div class="viz-status-item"><span class="viz-status-label">当前</span><span class="viz-status-value" id="current-node">—</span></div>

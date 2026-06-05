@@ -160,22 +160,14 @@ function renderBtn(btn: TransportAction) {
         </div>
 
         <!-- ── Row 3: Legend Strip (数据驱动) ── -->
-        {legendItems.length > 0 && (
-          <div class="viz-legend">
-            {legendItems.map(item => (
-              <div class="legend-chip">
-                <i class={`legend-${item.type ?? 'dot'}`} style={`background:${item.color}`}></i>
-                {item.label}
-              </div>
-            ))}
-          </div>
-        )}
-        {/* 兜底：无数据时回退到插槽 */}
-        {legendItems.length === 0 && (
-          <div class="viz-legend">
-            <slot name="legend" />
-          </div>
-        )}
+        <div class="viz-legend">
+          {legendItems.map(item => (
+            <div class="legend-chip">
+              <i class={`legend-${item.type ?? 'dot'}`} style={`background:${item.color}`}></i>
+              {item.label}
+            </div>
+          ))}
+        </div>
 
       </div><!-- /.viz-bottom-bar -->
     </div><!-- /.viz-canvas-wrap -->

@@ -94,3 +94,16 @@ export function resolveColors(selectors: LegendSelector[]): Record<string, Color
 
 /** 颜色映射的类型别名（算法文件中使用） */
 export type ColorMap = Record<string, ColorEntry>;
+
+// ── 颜色工具函数 ──
+
+/**
+ * 加深颜色值，用于生成 border-color 等辅助色
+ * 取 RGB 各分量 * 0.75
+ */
+export function darken(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `#${Math.round(r * 0.75).toString(16).padStart(2, '0')}${Math.round(g * 0.75).toString(16).padStart(2, '0')}${Math.round(b * 0.75).toString(16).padStart(2, '0')}`;
+}

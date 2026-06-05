@@ -1,5 +1,9 @@
 ---
 import VizLayout from '../../components/VizLayout.astro';
+import { resolveLegendItems } from '../../lib/color-registry';
+import { legendKeys } from '../../lib/algs/topo';
+
+const legendItems = resolveLegendItems(legendKeys);
 ---
 
 <VizLayout
@@ -8,12 +12,13 @@ import VizLayout from '../../components/VizLayout.astro';
   hasStatusPanel={true}
   transportLeft={[{ action: 'reset' }, { action: 'step-back' }]}
   transportRight={[{ action: 'step-forward' }]}
+  {legendItems}
 >
   <div slot="status-panel">
     <div class="viz-status-item"><span class="viz-status-label">当前</span><span class="viz-status-value" id="current-node">—</span></div>
-    <div class="viz-status-item"><span class="viz-status-label">入度</span><span class="viz-status-mono" id="in-degree">{}</span></div>
-    <div class="viz-status-item"><span class="viz-status-label">就绪队列</span><span class="viz-status-mono" id="ready">[]</span></div>
-    <div class="viz-status-item"><span class="viz-status-label">拓扑序</span><span class="viz-status-mono" id="result">[]</span></div>
+    <div class="viz-status-item"><span class="viz-status-label">就绪节点</span><span class="viz-status-mono" id="ready">[ ]</span></div>
+    <div class="viz-status-item"><span class="viz-status-label">拓扑序</span><span class="viz-status-mono" id="result">[ ]</span></div>
+    <div class="viz-status-item"><span class="viz-status-label">入度</span><span class="viz-status-mono" id="in-degree">-</span></div>
   </div>
 
   <div slot="scripts">
@@ -25,6 +30,7 @@ import VizLayout from '../../components/VizLayout.astro';
         algoInstance: Topo,
         title: "拓扑排序 (Kahn 算法)",
         subtitle: "6 节点 · 7 边 · DAG",
+        directed: true,
         nodes: [{data:{id:'0',label:'0'}},{data:{id:'1',label:'1'}},{data:{id:'2',label:'2'}},{data:{id:'3',label:'3'}},{data:{id:'4',label:'4'}},{data:{id:'5',label:'5'}}],
         edges: [{data:{id:'e02',source:'0',target:'2'}},{data:{id:'e12',source:'1',target:'2'}},{data:{id:'e23',source:'2',target:'3'}},{data:{id:'e34',source:'3',target:'4'}},{data:{id:'e35',source:'3',target:'5'}},{data:{id:'e04',source:'0',target:'4'}},{data:{id:'e15',source:'1',target:'5'}}],
       });

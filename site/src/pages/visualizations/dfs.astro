@@ -1,33 +1,74 @@
 ---
-import VizLayout from '../../components/VizLayout.astro';
+import VizLayout from "../../components/VizLayout.astro";
+import { resolveLegendItems } from "../../lib/color-registry";
+import { legendKeys } from "../../lib/algs/dfs";
+
+const legendItems = resolveLegendItems(legendKeys);
 ---
 
 <VizLayout
   title="DFS 深度优先搜索"
   subtitle="6 节点 · 7 边 · 无向图"
   hasStatusPanel={true}
-  transportLeft={[{ action: 'skip-to-start' }, { action: 'step-back' }]}
-  transportRight={[{ action: 'step-forward' }, { action: 'skip-to-end' }, { action: 'reset' }]}
+  transportLeft={[{ action: "skip-to-start" }, { action: "step-back" }]}
+  transportRight={[
+    { action: "step-forward" },
+    { action: "skip-to-end" },
+    { action: "reset" },
+  ]}
+  {legendItems}
 >
   <div slot="status-panel">
-    <div class="viz-status-item"><span class="viz-status-label">当前</span><span class="viz-status-value" id="current-node">—</span></div>
-    <div class="viz-status-item"><span class="viz-status-label">访问顺序</span><span class="viz-status-mono" id="order">[ ]</span></div>
-    <div class="viz-status-item"><span class="viz-status-label">栈</span><span class="viz-status-mono" id="stack">[ ]</span></div>
-    <div class="viz-status-item"><span class="viz-status-label">深度</span><span class="viz-status-mono" id="depth">-</span></div>
+    <div class="viz-status-item">
+      <span class="viz-status-label">当前</span><span
+        class="viz-status-value"
+        id="current-node">—</span>
+    </div>
+    <div class="viz-status-item">
+      <span class="viz-status-label">访问顺序</span><span
+        class="viz-status-mono"
+        id="order">[ ]</span>
+    </div>
+    <div class="viz-status-item">
+      <span class="viz-status-label">栈</span><span
+        class="viz-status-mono"
+        id="stack">[ ]</span>
+    </div>
+    <div class="viz-status-item">
+      <span class="viz-status-label">深度</span><span
+        class="viz-status-mono"
+        id="depth">-</span>
+    </div>
   </div>
 
   <div slot="scripts">
     <script>
-      import { VizApp } from '../../lib/viz-engine';
-      import DFS from '../../lib/algs/dfs';
+      import { VizApp } from "../../lib/viz-engine";
+      import DFS from "../../lib/algs/dfs";
 
-      var nodes = [{data:{id:'0',label:'0'}},{data:{id:'1',label:'1'}},{data:{id:'2',label:'2'}},{data:{id:'3',label:'3'}},{data:{id:'4',label:'4'}},{data:{id:'5',label:'5'}}];
-      var edges = [{data:{id:'e01',source:'0',target:'1'}},{data:{id:'e04',source:'0',target:'4'}},{data:{id:'e02',source:'0',target:'2'}},{data:{id:'e12',source:'1',target:'2'}},{data:{id:'e24',source:'2',target:'4'}},{data:{id:'e25',source:'2',target:'5'}},{data:{id:'e35',source:'3',target:'5'}}];
       VizApp.init({
         algoInstance: DFS,
         title: "DFS 深度优先搜索",
         subtitle: "6 节点 · 7 边 · 无向图",
-        nodes: nodes, edges: edges, startNode: '0',
+        nodes: [
+          { data: { id: "0", label: "0" } },
+          { data: { id: "1", label: "1" } },
+          { data: { id: "2", label: "2" } },
+          { data: { id: "3", label: "3" } },
+          { data: { id: "4", label: "4" } },
+          { data: { id: "5", label: "5" } },
+        ],
+        edges: [
+          { data: { id: "e01", source: "0", target: "1" } },
+          { data: { id: "e02", source: "0", target: "2" } },
+          { data: { id: "e13", source: "1", target: "3" } },
+          { data: { id: "e14", source: "1", target: "4" } },
+          { data: { id: "e24", source: "2", target: "4" } },
+          { data: { id: "e35", source: "3", target: "5" } },
+          { data: { id: "e45", source: "4", target: "5" } },
+          { data: { id: "e25", source: "2", target: "5" } },
+        ],
+        startNode: "0",
       });
     </script>
   </div>

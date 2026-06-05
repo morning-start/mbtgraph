@@ -91,7 +91,7 @@ class VizRenderer {
   setEdge(source: string, target: string, style: EdgeStyle, mode: RenderMode, directed?: boolean, duration?: number): void {
     const selector = directed
       ? `[source="${source}"][target="${target}"]`
-      : `[source="${source}"][target="${target}"], [source="${target}"][source="${source}"]`;
+      : `[source="${source}"][target="${target}"], [source="${target}"][target="${source}"]`;
 
     const ele = this.cy.edges(selector);
     if (!ele.length) return;
