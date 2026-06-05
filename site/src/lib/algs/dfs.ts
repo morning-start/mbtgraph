@@ -6,6 +6,7 @@ import VizRenderer from '../viz-renderer';
 import type { RenderMode } from '../viz-renderer';
 import type { ColorMap, LegendSelector } from '../color-registry';
 import { darken } from '../color-registry';
+import type { UIState } from '../viz-engine';
 
 // ── 图例声明 ──
 
@@ -27,10 +28,6 @@ export interface DFSStep {
   stack: string[];
   depth: number;
   order: string[];
-}
-
-export interface UIData {
-  [elementId: string]: string;
 }
 
 const DFS = {
@@ -162,7 +159,7 @@ const DFS = {
     }
   },
 
-  getUIData(step: DFSStep | null, state: { isFinished: boolean; currentIdx: number }): UIData {
+  getUIData(step: DFSStep | null, state: UIState): Record<string, string> {
     return {
       'current-node': (state.isFinished || state.currentIdx < 0)
         ? '—'

@@ -8,6 +8,7 @@ import VizRenderer from '../viz-renderer';
 import type { RenderMode } from '../viz-renderer';
 import type { ColorMap, LegendSelector } from '../color-registry';
 import { darken } from '../color-registry';
+import type { UIState } from '../viz-engine';
 
 // ── 图例声明 ──
 
@@ -29,10 +30,6 @@ export interface CycleStep {
   stack: string[];
   order: string[];
   cycle: string[] | null;
-}
-
-export interface UIData {
-  [elementId: string]: string;
 }
 
 const Cycle = {
@@ -178,7 +175,7 @@ const Cycle = {
     }
   },
 
-  getUIData(step: CycleStep | null, state: { isFinished: boolean; currentIdx: number }): UIData {
+  getUIData(step: CycleStep | null, state: UIState): Record<string, string> {
     const hasCycle = !!(step && step.cycle);
     return {
       'current-node': (state.isFinished || state.currentIdx < 0)

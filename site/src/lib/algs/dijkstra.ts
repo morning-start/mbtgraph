@@ -12,6 +12,7 @@ import VizRenderer from '../viz-renderer';
 import type { RenderMode } from '../viz-renderer';
 import type { ColorMap, LegendSelector } from '../color-registry';
 import { darken } from '../color-registry';
+import type { UIState } from '../viz-engine';
 
 // ── 图例声明 ──
 
@@ -36,11 +37,6 @@ export interface DijkstraStep {
   current: string | null;
   edge?: [string, string];
   relaxed?: boolean;
-}
-
-/** UI 状态数据 */
-export interface UIData {
-  [elementId: string]: string;
 }
 
 // ── 算法实现 ──
@@ -214,7 +210,7 @@ const Dijkstra = {
   /**
    * 返回 UI 状态数据（不操作 DOM，由引擎统一写入）
    */
-  getUIData(step: DijkstraStep | null, state: { isFinished: boolean; currentIdx: number }): UIData {
+  getUIData(step: DijkstraStep | null, state: UIState): Record<string, string> {
     return {
       'current-node': (!step || state.isFinished || state.currentIdx < 0)
         ? ((step && step.current !== null) ? String(step.current) : '—')

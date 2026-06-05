@@ -12,6 +12,7 @@ import VizRenderer from '../viz-renderer';
 import type { RenderMode } from '../viz-renderer';
 import type { ColorMap, LegendSelector } from '../color-registry';
 import { darken } from '../color-registry';
+import type { UIState } from '../viz-engine';
 
 // ── 图例声明 ──
 
@@ -32,10 +33,6 @@ export interface BFSStep {
   order: string[];
   queue: string[];
   levels: Record<string, number>;
-}
-
-export interface UIData {
-  [elementId: string]: string;
 }
 
 // ── 算法实现 ──
@@ -181,7 +178,7 @@ const BFS = {
     }
   },
 
-  getUIData(step: BFSStep | null, state: { isFinished: boolean; currentIdx: number }): UIData {
+  getUIData(step: BFSStep | null, state: UIState): Record<string, string> {
     return {
       'current-node': (state.isFinished || state.currentIdx < 0)
         ? '—'
