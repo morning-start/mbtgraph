@@ -25,4 +25,4 @@ export const cycleGraph = {
     { data: { id: 'e36', source: '3', target: '6' } },
   ],
   directed: true,
-} as const;
+};

@@ -24,4 +24,4 @@ export const dfsGraph = {
     { data: { id: 'e25', source: '2', target: '5' } },
   ],
   startNode: '0',
-} as const;
+};

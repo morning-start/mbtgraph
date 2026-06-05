@@ -23,4 +23,4 @@ export const topoGraph = {
     { data: { id: 'e15', source: '1', target: '5' } },
   ],
   directed: true,
-} as const;
+};

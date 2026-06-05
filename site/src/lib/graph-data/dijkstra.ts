@@ -25,4 +25,4 @@ export const dijkstraGraph = {
     { data: { id: 'e45', source: '4', target: '5', weight: 3 } },
   ],
   startNode: '0',
-} as const;
+};
