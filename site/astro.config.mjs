@@ -25,16 +25,12 @@ export default defineConfig({
 				// 预连接关键域名以提升性能
 				{ tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.googleapis.com' } },
 				{ tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' } },
-
-				// 预加载字体文件
+				// 字体加载（替代 CSS @import，避免阻塞渲染）
 				{
 					tag: 'link',
 					attrs: {
-						rel: 'preload',
-						href: '/fonts/plus-jakarta-sans-variable.woff2',
-						as: 'font',
-						type: 'font/woff2',
-						crossorigin: '',
+						rel: 'stylesheet',
+						href: 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap',
 					},
 				},
 
@@ -288,8 +284,8 @@ export default defineConfig({
 			editLink: {
 				baseUrl: 'https://github.com/moonbit/mbtgraph/edit/main/site/',
 			},
-			// 自定义配置（暂时禁用 CSS 以排查问题）
-			// customCss: ['/styles/global.css'],
+			// 仅加载预览卡片最小化样式（不影响 Starlight 文档站其他样式）
+			customCss: ['./src/styles/viz-preview.css'],
 		}),
 		mdx(), // 启用 MDX 支持（用于交互式组件嵌入，需在 starlight 之后）
 	],

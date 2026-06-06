@@ -254,8 +254,10 @@
    3. 全局基础样式重置与增强
    ============================================ */
 
-/* 导入 Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap');
+/* ═══════════════════════════════════════
+   字体提示 — 字体已通过 HTML <link> 加载
+   ═══════════════════════════════════════ */
+/* Google Fonts 通过 astro.config.mjs 的 head 配置加载 */
 
 html {
   scroll-behavior: smooth;
@@ -499,8 +501,9 @@ a:not([class]):hover::after {
   width: 100%;
 }
 
-/* 外部链接图标 */
-a[target="_blank"]::before {
+/* 外部链接图标 — 只在内容区域中生效 */
+.content a[target="_blank"]::before,
+article a[target="_blank"]::before {
   content: '↗';
   margin-right: var(--space-1);
   font-size: 0.85em;
@@ -1908,68 +1911,3 @@ textarea::placeholder {
   transform: translateX(-50%) translateY(0);
 }
 
-/* ============================================
-   25. 算法可视化预览卡片 (Visualization Preview)
-   ============================================ */
-
-.viz-preview-card {
-  position: relative;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-default);
-  overflow: hidden;
-  box-shadow: var(--shadow-md);
-  background: #0f172a;
-  margin: var(--space-4) 0;
-  transition: var(--transition-normal);
-}
-
-.viz-preview-card:hover {
-  box-shadow: var(--shadow-lg);
-  border-color: var(--color-primary-300);
-}
-
-.viz-preview-card iframe {
-  display: block;
-  width: 100%;
-  border: none;
-  border-radius: var(--radius-lg);
-}
-
-/* 全屏按钮 - 右下角悬浮 */
-.viz-fullscreen-btn {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  z-index: 10;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, rgba(99, 102, 241, .9), rgba(139, 92, 246, .85));
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(165, 180, 252, .3);
-  border-radius: var(--radius-full);
-  text-decoration: none;
-  cursor: pointer;
-  transition: all .2s ease;
-  box-shadow: 0 4px 14px rgba(99, 102, 241, .35);
-}
-
-.viz-fullscreen-btn:hover {
-  transform: scale(1.06);
-  box-shadow: 0 6px 20px rgba(99, 102, 241, .5);
-  background: linear-gradient(135deg, rgba(99, 102, 241, 1), rgba(139, 92, 246, .95));
-}
-
-.viz-fullscreen-btn svg {
-  flex-shrink: 0;
-}
-
-/* 暗色模式适配 */
-.dark .viz-preview-card,
-[data-theme="dark"] .viz-preview-card {
-  border-color: #334155;
-}
