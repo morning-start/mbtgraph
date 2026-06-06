@@ -7,3 +7,4 @@ _build/
 memory/
 .trae
 .codegraph/
+.atomcode/
