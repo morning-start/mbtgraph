@@ -1,20 +1,11 @@
 ---
-import VizLayout from '../../components/VizLayout.astro';
-import { resolveLegendItems } from '../../lib/color-registry';
-import { legendKeys } from '../../lib/algs/dijkstra';
-import { dijkstraGraph } from '../../lib/graph-data';
-
-const legendItems = resolveLegendItems(legendKeys);
-const subtitle = `${dijkstraGraph.nodes.length} 节点 · ${dijkstraGraph.edges.length} 边 · 带权有向图`;
+import VizPage from '../../components/VizPage.astro';
 ---
-
-<VizLayout
-  title="Dijkstra 最短路径"
-  {subtitle}
-  hasStatusPanel={true}
+<VizPage
+  algoSlug="dijkstra"
+  direction="带权有向图"
   transportLeft={[{ action: 'reset' }, { action: 'step-back' }]}
   transportRight={[{ action: 'step-forward' }]}
-  {legendItems}
 >
   <div slot="status-panel">
     <div class="viz-status-item"><span class="viz-status-label">当前</span><span class="viz-status-value" id="current-node">—</span></div>
@@ -37,4 +28,4 @@ const subtitle = `${dijkstraGraph.nodes.length} 节点 · ${dijkstraGraph.edges.
       });
     </script>
   </div>
-</VizLayout>
+</VizPage>

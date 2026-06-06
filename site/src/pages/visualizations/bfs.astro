@@ -1,21 +1,7 @@
 ---
-import VizLayout from '../../components/VizLayout.astro';
-import { resolveLegendItems } from '../../lib/color-registry';
-import { legendKeys } from '../../lib/algs/bfs';
-import { bfsGraph } from '../../lib/graph-data';
-
-const legendItems = resolveLegendItems(legendKeys);
-const subtitle = `${bfsGraph.nodes.length} 节点 · ${bfsGraph.edges.length} 边 · 无向图`;
+import VizPage from '../../components/VizPage.astro';
 ---
-
-<VizLayout
-  title="BFS"
-  {subtitle}
-  hasStatusPanel={true}
-  transportLeft={[{ action: 'skip-to-start' }, { action: 'step-back' }]}
-  transportRight={[{ action: 'step-forward' }, { action: 'skip-to-end' }, { action: 'reset' }]}
-  {legendItems}
->
+<VizPage algoSlug="bfs" direction="无向图">
   <div slot="status-panel">
     <div class="viz-status-item"><span class="viz-status-label">当前</span><span class="viz-status-value" id="current-node">—</span></div>
     <div class="viz-status-item"><span class="viz-status-label">访问顺序</span><span class="viz-status-mono" id="order">[ ]</span></div>
@@ -38,4 +24,4 @@ const subtitle = `${bfsGraph.nodes.length} 节点 · ${bfsGraph.edges.length} �
       });
     </script>
   </div>
-</VizLayout>
+</VizPage>
