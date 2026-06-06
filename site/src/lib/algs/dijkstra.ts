@@ -134,8 +134,8 @@ const Dijkstra = createAlgo<DijkstraStep>({
 
       case 'select':
         renderer.setNode(step.targets[0], {
-          backgroundColor: colors.active.value,
-          borderColor: darken(colors.active.value),
+          backgroundColor: colors['node_active'].value,
+          borderColor: darken(colors['node_active'].value),
           borderWidth: 3,
           width: 49,
           height: 49,
@@ -148,7 +148,7 @@ const Dijkstra = createAlgo<DijkstraStep>({
 
         if (step.relaxed) {
           renderer.setEdge(src, tgt, {
-            lineColor: colors.edgeActive.value,
+            lineColor: colors['edge_active'].value,
             width: 4,
           }, mode);
           renderer.setNode(tgt, {

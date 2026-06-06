@@ -7,6 +7,8 @@ export const legendKeys: LegendSelector[] = [
   { domain: 'node', key: 'default' },
   { domain: 'node', key: 'active' },
   { domain: 'node', key: 'visited' },
+  { domain: 'node', key: 'ready' },
+  { domain: 'edge', key: 'active' },
   { domain: 'edge', key: 'tree' },
 ];
 
@@ -115,8 +117,8 @@ const BFS = createAlgo<BFSStep>({
 
       case 'dequeue':
         renderer.setNode(step.targets[0], {
-          backgroundColor: colors.active.value,
-          borderColor: darken(colors.active.value),
+          backgroundColor: colors['node_active'].value,
+          borderColor: darken(colors['node_active'].value),
           borderWidth: 3, width: 49, height: 49,
         }, mode, speed);
         break;
@@ -132,8 +134,7 @@ const BFS = createAlgo<BFSStep>({
       case 'visit_edge': {
         const src = step.targets[0], tgt = step.targets[1];
         renderer.setEdge(src, tgt, {
-          lineColor: colors.edgeActive.value,
-          width: 4,
+          lineColor: colors['edge_active'].value, width: 4,
         }, mode, false, speed);
         renderer.setNode(tgt, {
           backgroundColor: colors.ready.value,

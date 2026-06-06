@@ -143,8 +143,8 @@ const Topo = createAlgo<TopoStep>({
 
       case 'dequeue':
         renderer.setNode(step.targets[0], {
-          backgroundColor: colors.active.value,
-          borderColor: darken(colors.active.value),
+          backgroundColor: colors['node_active'].value,
+          borderColor: darken(colors['node_active'].value),
           borderWidth: 3, width: 49, height: 49,
         }, mode, speed);
         break;
@@ -152,7 +152,7 @@ const Topo = createAlgo<TopoStep>({
       case 'decrement': {
         const ds = step.targets[0], dt = step.targets[1];
         renderer.setEdge(ds, dt, {
-          lineColor: colors.edgeActive.value, width: 4,
+          lineColor: colors['edge_active'].value, width: 4,
         }, mode, true, speed);
         if (step.inDegree[dt] === 0) {
           renderer.setNode(dt, {

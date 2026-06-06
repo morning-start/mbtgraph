@@ -87,7 +87,12 @@ export function resolveColors(selectors: LegendSelector[]): Record<string, Color
   const map: Record<string, ColorEntry> = {};
   for (const { domain, key } of selectors) {
     const entry = (ColorRegistry[domain] as Record<string, ColorEntry>)[key];
-    if (entry) map[key] = entry;
+    if (entry) {
+      // 使用短键名（向后兼容）
+      map[key] = entry;
+      // 使用领域前缀键名（避免 node.active vs edge.active 冲突）
+      map[`${domain}_${key}`] = entry;
+    }
   }
   return map;
 }

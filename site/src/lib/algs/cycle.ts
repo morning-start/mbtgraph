@@ -118,8 +118,8 @@ const Cycle = createAlgo<CycleStep>({
 
       case 'visit_start':
         renderer.setNode(step.targets[0], {
-          backgroundColor: colors.active.value,
-          borderColor: darken(colors.active.value),
+          backgroundColor: colors['node_active'].value,
+          borderColor: darken(colors['node_active'].value),
           borderWidth: 3, width: 49, height: 49,
         }, mode, speed);
         break;
@@ -127,7 +127,7 @@ const Cycle = createAlgo<CycleStep>({
       case 'explore_edge': {
         const src = step.targets[0], tgt = step.targets[1];
         renderer.setEdge(src, tgt, {
-          lineColor: colors.edgeActive.value, width: 4,
+          lineColor: colors['edge_active'].value, width: 4,
         }, mode, true, speed);
         break;
       }
@@ -135,7 +135,7 @@ const Cycle = createAlgo<CycleStep>({
       case 'cycle_found': {
         const csrc = step.targets[0], ctgt = step.targets[1];
         renderer.setEdge(csrc, ctgt, {
-          lineColor: colors.edgeActive.value, width: 5,
+          lineColor: colors['edge_active'].value, width: 5,
         }, mode, true, speed);
         if (step.cycle) {
           for (let ci = 0; ci < step.cycle.length; ci++) {

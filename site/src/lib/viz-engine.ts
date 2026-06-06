@@ -10,10 +10,10 @@ import { PlayerController, type PlayerState } from './player-controller';
 cytoscape.use(cytoscapeDagre);
 
 const LAYOUT = {
-  nodeSep: 80,
-  rankSep: 90,
-  padding: 40,
-  minZoom: 0.3,
+  nodeSep: 60,
+  rankSep: 70,
+  padding: 50,
+  minZoom: 0.25,
   maxZoom: 3,
   wheelSensitivity: 0.35,
 } as const;
@@ -89,6 +89,7 @@ interface DOMRefs {
   stepCounter: HTMLElement | null;
   iconPlay: HTMLElement | null;
   iconPause: HTMLElement | null;
+  iconReplay: HTMLElement | null;
   btnPrimary: HTMLElement | null;
   headerBadge: HTMLElement | null;
   headerInfo: HTMLElement | null;
@@ -124,7 +125,7 @@ class VizEngine {
   private _createEmptyDOMRefs(): DOMRefs {
     return {
       progressFill: null, progressThumb: null, stepCounter: null,
-      iconPlay: null, iconPause: null, btnPrimary: null,
+      iconPlay: null, iconPause: null, iconReplay: null, btnPrimary: null,
       headerBadge: null, headerInfo: null,
       speedSlider: null, speedVal: null,
       progressTrack: null, wrapper: null,
@@ -140,6 +141,7 @@ class VizEngine {
       stepCounter: $('step-counter'),
       iconPlay: $('icon-play'),
       iconPause: $('icon-pause'),
+      iconReplay: $('icon-replay'),
       btnPrimary: qs('.play-hero') as HTMLElement | null,
       headerBadge: qs('.viz-header .badge') as HTMLElement | null,
       headerInfo: qs('.viz-header .graph-info') as HTMLElement | null,
@@ -362,18 +364,20 @@ class VizEngine {
       if (dom.stepCounter) dom.stepCounter.textContent = Math.max(0, currentIdx) + ' / ' + (total - 1);
     }
 
-    if (dom.iconPlay) dom.iconPlay.classList.toggle('hidden', playerState.isPlaying);
-    if (dom.iconPause) dom.iconPause.classList.toggle('hidden', !playerState.isPlaying);
-
+    // 播放/暂停/重播 图标切换（通过 class 切换，不使用 textContent 避免 SVG 子元素被销毁）
     if (playerState.isFinished) {
-      if (dom.iconPlay) { dom.iconPlay.textContent = '↻'; dom.iconPlay.classList.remove('hidden'); }
+      // 完成状态：显示重播图标
+      if (dom.iconPlay) dom.iconPlay.classList.add('hidden');
       if (dom.iconPause) dom.iconPause.classList.add('hidden');
+      if (dom.iconReplay) dom.iconReplay.classList.remove('hidden');
       if (dom.btnPrimary) dom.btnPrimary.classList.add('replay-pulse');
-      if (!dom.iconPlay && dom.btnPrimary) dom.btnPrimary.textContent = '↻';
     } else {
-      if (dom.iconPlay) dom.iconPlay.textContent = '▶';
+      // 正常播放/暂停状态
+      const showPause = playerState.isPlaying;
+      if (dom.iconPlay) dom.iconPlay.classList.toggle('hidden', showPause);
+      if (dom.iconPause) dom.iconPause.classList.toggle('hidden', !showPause);
+      if (dom.iconReplay) dom.iconReplay.classList.add('hidden');
       if (dom.btnPrimary) dom.btnPrimary.classList.remove('replay-pulse');
-      if (!dom.iconPlay && dom.btnPrimary) dom.btnPrimary.textContent = playerState.isPlaying ? '⏸' : '▶';
     }
 
     const algo = config.algoInstance;
