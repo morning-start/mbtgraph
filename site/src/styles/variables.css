@@ -2,7 +2,7 @@
  * variables.css — CSS 自定义属性
  */
 
-:root {
+.viz-wrapper {
   /* ── Core palette ── */
   --bg-deep:       #050810;
   --bg-base:       #080d18;
