@@ -7,13 +7,6 @@ import astroExpressiveCode from 'astro-expressive-code';
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://mbtgraph.moonbit.dev',
-	markdown: {
-		// 启用 GitHub Flavored Markdown（支持表格、删除线、任务列表等）
-		shikiConfig: {
-			theme: 'github-dark',
-			wrap: true,
-		},
-	},
 	integrations: [
 		astroExpressiveCode(), // 必须在 mdx 之前（代码高亮）
 		starlight({
