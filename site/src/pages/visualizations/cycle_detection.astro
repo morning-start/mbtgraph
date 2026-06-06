@@ -2,13 +2,15 @@
 import VizLayout from '../../components/VizLayout.astro';
 import { resolveLegendItems } from '../../lib/color-registry';
 import { legendKeys } from '../../lib/algs/cycle';
+import { cycleGraph } from '../../lib/graph-data';
 
 const legendItems = resolveLegendItems(legendKeys);
+const subtitle = `${cycleGraph.nodes.length} 节点 · ${cycleGraph.edges.length} 边 · 有向图`;
 ---
 
 <VizLayout
   title="环检测"
-  subtitle="7 节点 · 8 边 · 有向图"
+  {subtitle}
   hasStatusPanel={true}
   transportLeft={[{ action: 'reset' }, { action: 'step-back' }]}
   transportRight={[{ action: 'step-forward' }]}
@@ -26,10 +28,11 @@ const legendItems = resolveLegendItems(legendKeys);
       import Cycle from '../../lib/algs/cycle';
       import { cycleGraph } from '../../lib/graph-data';
 
+      const initSubtitle = `${cycleGraph.nodes.length} 节点 · ${cycleGraph.edges.length} 边 · 有向图`;
       VizApp.init({
         algoInstance: Cycle,
         title: "DFS 环检测",
-        subtitle: "7 节点 · 8 边 · 有向图",
+        subtitle: initSubtitle,
         ...cycleGraph,
       });
     </script>

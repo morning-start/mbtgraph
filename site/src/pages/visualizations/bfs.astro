@@ -2,13 +2,15 @@
 import VizLayout from '../../components/VizLayout.astro';
 import { resolveLegendItems } from '../../lib/color-registry';
 import { legendKeys } from '../../lib/algs/bfs';
+import { bfsGraph } from '../../lib/graph-data';
 
 const legendItems = resolveLegendItems(legendKeys);
+const subtitle = `${bfsGraph.nodes.length} 节点 · ${bfsGraph.edges.length} 边 · 无向图`;
 ---
 
 <VizLayout
   title="BFS"
-  subtitle="6 节点 · 7 边 · 无向图"
+  {subtitle}
   hasStatusPanel={true}
   transportLeft={[{ action: 'skip-to-start' }, { action: 'step-back' }]}
   transportRight={[{ action: 'step-forward' }, { action: 'skip-to-end' }, { action: 'reset' }]}
@@ -27,10 +29,11 @@ const legendItems = resolveLegendItems(legendKeys);
       import BFS from '../../lib/algs/bfs';
       import { bfsGraph } from '../../lib/graph-data';
 
+      const initSubtitle = `${bfsGraph.nodes.length} 节点 · ${bfsGraph.edges.length} 边 · 无向图`;
       VizApp.init({
         algoInstance: BFS,
         title: "BFS 广度优先搜索",
-        subtitle: "6 节点 · 7 边 · 无向图",
+        subtitle: initSubtitle,
         ...bfsGraph,
       });
     </script>

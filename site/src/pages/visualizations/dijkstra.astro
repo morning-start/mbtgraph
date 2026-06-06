@@ -2,13 +2,15 @@
 import VizLayout from '../../components/VizLayout.astro';
 import { resolveLegendItems } from '../../lib/color-registry';
 import { legendKeys } from '../../lib/algs/dijkstra';
+import { dijkstraGraph } from '../../lib/graph-data';
 
 const legendItems = resolveLegendItems(legendKeys);
+const subtitle = `${dijkstraGraph.nodes.length} 节点 · ${dijkstraGraph.edges.length} 边 · 带权有向图`;
 ---
 
 <VizLayout
   title="Dijkstra 最短路径"
-  subtitle="6 节点 · 9 边 · 带权有向图"
+  {subtitle}
   hasStatusPanel={true}
   transportLeft={[{ action: 'reset' }, { action: 'step-back' }]}
   transportRight={[{ action: 'step-forward' }]}
@@ -26,10 +28,11 @@ const legendItems = resolveLegendItems(legendKeys);
       import Dijkstra from '../../lib/algs/dijkstra';
       import { dijkstraGraph } from '../../lib/graph-data';
 
+      const initSubtitle = `${dijkstraGraph.nodes.length} 节点 · ${dijkstraGraph.edges.length} 边 · 带权有向图`;
       VizApp.init({
         algoInstance: Dijkstra,
         title: "Dijkstra 最短路径",
-        subtitle: "6 节点 · 9 边 · 带权有向图",
+        subtitle: initSubtitle,
         ...dijkstraGraph,
       });
     </script>

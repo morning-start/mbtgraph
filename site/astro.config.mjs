@@ -316,6 +316,15 @@ export default defineConfig({
 		build: {
 			cssMinify: true,
 			minify: 'esbuild',
+			rollupOptions: {
+				output: {
+					manualChunks(id) {
+						if (id.includes('cytoscape')) {
+							return 'cytoscape';
+						}
+					},
+				},
+			},
 		},
 	},
 });

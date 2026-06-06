@@ -2,13 +2,15 @@
 import VizLayout from "../../components/VizLayout.astro";
 import { resolveLegendItems } from "../../lib/color-registry";
 import { legendKeys } from "../../lib/algs/dfs";
+import { dfsGraph } from "../../lib/graph-data";
 
 const legendItems = resolveLegendItems(legendKeys);
+const subtitle = `${dfsGraph.nodes.length} 节点 · ${dfsGraph.edges.length} 边 · 无向图`;
 ---
 
 <VizLayout
   title="DFS 深度优先搜索"
-  subtitle="6 节点 · 7 边 · 无向图"
+  {subtitle}
   hasStatusPanel={true}
   transportLeft={[{ action: "skip-to-start" }, { action: "step-back" }]}
   transportRight={[
@@ -47,10 +49,11 @@ const legendItems = resolveLegendItems(legendKeys);
       import DFS from "../../lib/algs/dfs";
       import { dfsGraph } from "../../lib/graph-data";
 
+      const initSubtitle = `${dfsGraph.nodes.length} 节点 · ${dfsGraph.edges.length} 边 · 无向图`;
       VizApp.init({
         algoInstance: DFS,
         title: "DFS 深度优先搜索",
-        subtitle: "6 节点 · 7 边 · 无向图",
+        subtitle: initSubtitle,
         ...dfsGraph,
       });
     </script>
