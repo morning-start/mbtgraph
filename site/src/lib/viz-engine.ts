@@ -255,8 +255,7 @@ class VizEngine {
         nodeSep: LAYOUT.nodeSep,
         rankSep: LAYOUT.rankSep,
         animate: false,
-        fit: true,
-        padding: LAYOUT.padding,
+        fit: false,
       } as cytoscape.LayoutOptions,
       style: [
         { selector: 'node', style: CYTOSCAPE_NODE_STYLE },
@@ -269,6 +268,13 @@ class VizEngine {
       maxZoom: LAYOUT.maxZoom,
       wheelSensitivity: LAYOUT.wheelSensitivity,
     }) as Core;
+
+    cy.ready(() => {
+      // 先 fit 到视口，再缩放至 75%，使图缩小到约 3/4 大小
+      cy.fit(undefined, LAYOUT.padding);
+      cy.zoom(cy.zoom() * 0.7);
+      cy.center();
+    });
 
     return cy;
   }
