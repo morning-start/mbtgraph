@@ -1,27 +1,24 @@
 ---
 import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">当前</span><span class="viz-status-value" id="current-node">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">访问顺序</span><span class="viz-status-mono" id="order">[ ]</span></div>
+<div class="viz-status-item"><span class="viz-status-label">队列</span><span class="viz-status-mono" id="queue">[ ]</span></div>
+<div class="viz-status-item"><span class="viz-status-label">层级</span><span class="viz-status-mono" id="levels">-</span></div>
+`;
 ---
-<VizPage algoSlug="bfs" direction="无向图">
-  <div slot="status-panel">
-    <div class="viz-status-item"><span class="viz-status-label">当前</span><span class="viz-status-value" id="current-node">—</span></div>
-    <div class="viz-status-item"><span class="viz-status-label">访问顺序</span><span class="viz-status-mono" id="order">[ ]</span></div>
-    <div class="viz-status-item"><span class="viz-status-label">队列</span><span class="viz-status-mono" id="queue">[ ]</span></div>
-    <div class="viz-status-item"><span class="viz-status-label">层级</span><span class="viz-status-mono" id="levels">-</span></div>
-  </div>
+<VizPage algoSlug="bfs" direction="无向图" statusPanelHtml={statusPanelHtml} />
 
-  <div slot="scripts">
-    <script>
-      import { VizApp } from '../../lib/viz-engine';
-      import BFS from '../../lib/algs/bfs';
-      import { bfsGraph } from '../../lib/graph-data';
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import BFS from '../../lib/algs/bfs';
+  import { bfsGraph } from '../../lib/graph-data';
 
-      const initSubtitle = `${bfsGraph.nodes.length} 节点 · ${bfsGraph.edges.length} 边 · 无向图`;
-      VizApp.init({
-        algoInstance: BFS,
-        title: "BFS 广度优先搜索",
-        subtitle: initSubtitle,
-        ...bfsGraph,
-      });
-    </script>
-  </div>
-</VizPage>
+  VizApp.init({
+    algoInstance: BFS,
+    title: "BFS 广度优先搜索",
+    subtitle: `${bfsGraph.nodes.length} 节点 · ${bfsGraph.edges.length} 边 · 无向图`,
+    ...bfsGraph,
+  });
+</script>

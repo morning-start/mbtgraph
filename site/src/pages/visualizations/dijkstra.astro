@@ -1,31 +1,29 @@
 ---
 import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">当前</span><span class="viz-status-value" id="current-node">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">距离</span><span class="viz-status-mono" id="dist-table">{}</span></div>
+<div class="viz-status-item"><span class="viz-status-label">已访问</span><span class="viz-status-mono" id="visited-nodes">[]</span></div>
+`;
 ---
 <VizPage
   algoSlug="dijkstra"
   direction="带权有向图"
+  statusPanelHtml={statusPanelHtml}
   transportLeft={[{ action: 'reset' }, { action: 'step-back' }]}
   transportRight={[{ action: 'step-forward' }]}
->
-  <div slot="status-panel">
-    <div class="viz-status-item"><span class="viz-status-label">当前</span><span class="viz-status-value" id="current-node">—</span></div>
-    <div class="viz-status-item"><span class="viz-status-label">距离</span><span class="viz-status-mono" id="dist-table">{}</span></div>
-    <div class="viz-status-item"><span class="viz-status-label">已访问</span><span class="viz-status-mono" id="visited-nodes">[]</span></div>
-  </div>
+/>
 
-  <div slot="scripts">
-    <script>
-      import { VizApp } from '../../lib/viz-engine';
-      import Dijkstra from '../../lib/algs/dijkstra';
-      import { dijkstraGraph } from '../../lib/graph-data';
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import Dijkstra from '../../lib/algs/dijkstra';
+  import { dijkstraGraph } from '../../lib/graph-data';
 
-      const initSubtitle = `${dijkstraGraph.nodes.length} 节点 · ${dijkstraGraph.edges.length} 边 · 带权有向图`;
-      VizApp.init({
-        algoInstance: Dijkstra,
-        title: "Dijkstra 最短路径",
-        subtitle: initSubtitle,
-        ...dijkstraGraph,
-      });
-    </script>
-  </div>
-</VizPage>
+  VizApp.init({
+    algoInstance: Dijkstra,
+    title: "Dijkstra 最短路径",
+    subtitle: `${dijkstraGraph.nodes.length} 节点 · ${dijkstraGraph.edges.length} 边 · 带权有向图`,
+    ...dijkstraGraph,
+  });
+</script>

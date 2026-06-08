@@ -7,6 +7,10 @@ import astroExpressiveCode from 'astro-expressive-code';
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://mbtgraph.moonbit.dev',
+	prefetch: {
+		prefetchAll: true,
+		defaultStrategy: 'viewport',
+	},
 	integrations: [
 		astroExpressiveCode(), // 必须在 mdx 之前（代码高亮）
 		starlight({
@@ -67,32 +71,8 @@ export default defineConfig({
 				{ tag: 'meta', attrs: { name: 'theme-color', content: '#6366f1' } },
 				{ tag: 'meta', attrs: { name: 'msapplication-TileColor', content: '#6366f1' } },
 
-				// 返回顶部按钮脚本注入
-				{
-					tag: 'script',
-					attrs: {},
-					content: `
-						document.addEventListener('DOMContentLoaded', function() {
-							var backToTop = document.createElement('button');
-							backToTop.className = 'back-to-top';
-							backToTop.innerHTML = '↑';
-							backToTop.setAttribute('aria-label', '返回顶部');
-							document.body.appendChild(backToTop);
-
-							window.addEventListener('scroll', function() {
-								if (window.pageYOffset > 300) {
-									backToTop.classList.add('visible');
-								} else {
-									backToTop.classList.remove('visible');
-								}
-							});
-
-							backToTop.addEventListener('click', function() {
-								window.scrollTo({ top: 0, behavior: 'smooth' });
-							});
-						});
-					`,
-				},
+				// 返回顶部按钮（外部 JS，可缓存）
+				{ tag: 'script', attrs: { src: '/js/back-to-top.js', defer: true } },
 			],
 			social: [
 				{

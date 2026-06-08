@@ -1,32 +1,30 @@
 ---
 import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">当前</span><span class="viz-status-value" id="current-node">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">就绪节点</span><span class="viz-status-mono" id="ready">[ ]</span></div>
+<div class="viz-status-item"><span class="viz-status-label">拓扑序</span><span class="viz-status-mono" id="result">[ ]</span></div>
+<div class="viz-status-item"><span class="viz-status-label">入度</span><span class="viz-status-mono" id="in-degree">-</span></div>
+`;
 ---
 <VizPage
   algoSlug="topo"
   direction="DAG"
+  statusPanelHtml={statusPanelHtml}
   transportLeft={[{ action: 'reset' }, { action: 'step-back' }]}
   transportRight={[{ action: 'step-forward' }]}
->
-  <div slot="status-panel">
-    <div class="viz-status-item"><span class="viz-status-label">当前</span><span class="viz-status-value" id="current-node">—</span></div>
-    <div class="viz-status-item"><span class="viz-status-label">就绪节点</span><span class="viz-status-mono" id="ready">[ ]</span></div>
-    <div class="viz-status-item"><span class="viz-status-label">拓扑序</span><span class="viz-status-mono" id="result">[ ]</span></div>
-    <div class="viz-status-item"><span class="viz-status-label">入度</span><span class="viz-status-mono" id="in-degree">-</span></div>
-  </div>
+/>
 
-  <div slot="scripts">
-    <script>
-      import { VizApp } from '../../lib/viz-engine';
-      import Topo from '../../lib/algs/topo';
-      import { topoGraph } from '../../lib/graph-data';
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import Topo from '../../lib/algs/topo';
+  import { topoGraph } from '../../lib/graph-data';
 
-      const initSubtitle = `${topoGraph.nodes.length} 节点 · ${topoGraph.edges.length} 边 · DAG`;
-      VizApp.init({
-        algoInstance: Topo,
-        title: "拓扑排序 (Kahn 算法)",
-        subtitle: initSubtitle,
-        ...topoGraph,
-      });
-    </script>
-  </div>
-</VizPage>
+  VizApp.init({
+    algoInstance: Topo,
+    title: "拓扑排序 (Kahn 算法)",
+    subtitle: `${topoGraph.nodes.length} 节点 · ${topoGraph.edges.length} 边 · DAG`,
+    ...topoGraph,
+  });
+</script>
