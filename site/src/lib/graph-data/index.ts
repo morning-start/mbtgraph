@@ -15,3 +15,4 @@ export { kruskalGraph } from './kruskal';
 export { tarjanGraph } from './tarjan';
 export { bellmanFordGraph } from './bellman_ford';
 export { kosarajuGraph } from './kosaraju';
+export { hungarianGraph } from './hungarian';

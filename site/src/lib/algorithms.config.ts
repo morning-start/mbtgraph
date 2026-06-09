@@ -25,6 +25,7 @@ import Kruskal from './algs/kruskal';
 import Tarjan from './algs/tarjan';
 import BellmanFord from './algs/bellman_ford';
 import Kosaraju from './algs/kosaraju';
+import Hungarian from './algs/hungarian';
 
 // ── 导入图数据 ──
 
@@ -39,6 +40,7 @@ import { kruskalGraph } from './graph-data/kruskal';
 import { tarjanGraph } from './graph-data/tarjan';
 import { bellmanFordGraph } from './graph-data/bellman_ford';
 import { kosarajuGraph } from './graph-data/kosaraju';
+import { hungarianGraph } from './graph-data/hungarian';
 
 // ── 算法配置类型 ──
 
@@ -144,6 +146,14 @@ export const algorithms: Record<string, AlgorithmConfig> = {
     title: 'Kosaraju 强连通分量',
     subtitle: '6 节点 · 7 边 · 有向图',
     slug: 'kosaraju',
+  },
+  // 第 6 批：二分图匹配
+  hungarian: {
+    module: Hungarian,
+    graph: hungarianGraph,
+    title: '匈牙利算法（二分图匹配）',
+    subtitle: '6 节点 · 9 边 · 完全二分图',
+    slug: 'hungarian',
   },
 };
 

@@ -206,6 +206,7 @@ export default defineConfig({
 									label: '二分图匹配',
 									items: [
 										{ label: '匈牙利算法', link: '/algorithms/matching/bipartite/hungarian' },
+										{ label: '匈牙利算法可视化', link: '/visualizations/hungarian/', badge: '新' },
 										{ label: 'Hopcroft-Karp 优化', link: '/algorithms/matching/bipartite/hopcroft-karp' },
 									],
 								},
