@@ -50,6 +50,7 @@ export interface TarjanStep {
   stack: string[];
   sccs: string[][];
   sccIdx: number;
+  nodeIds: string[];  // 所有节点 ID（用于 init 等栈/SCC 为空的步骤）
   message: string;
 }
 
@@ -85,6 +86,7 @@ const Tarjan = createAlgo<TarjanStep>({
       steps.push({
         type: 'finish', targets: [], current: null,
         disc: {}, lowlink: {}, stack: [], sccs: [], sccIdx: 0,
+        nodeIds: ids,
         message: '图为空，无节点',
       });
       return steps;
@@ -121,6 +123,7 @@ const Tarjan = createAlgo<TarjanStep>({
         stack: stack.slice(),
         sccs: sccs.slice(),
         sccIdx: sccs.length,
+        nodeIds: ids,
         message: `进入节点 ${u}：disc=${disc[u]}，lowlink=${lowlink[u]}`,
       });
 
@@ -140,6 +143,7 @@ const Tarjan = createAlgo<TarjanStep>({
             stack: stack.slice(),
             sccs: sccs.slice(),
             sccIdx: sccs.length,
+            nodeIds: ids,
             message: `DFS 树边 ${u}→${v}（v 未访问，将递归）`,
           });
 
@@ -157,6 +161,7 @@ const Tarjan = createAlgo<TarjanStep>({
             stack: stack.slice(),
             sccs: sccs.slice(),
             sccIdx: sccs.length,
+            nodeIds: ids,
             message: `回溯 ${v}→${u}：lowlink[${u}] = min(${lowlink[u]}, ${lowlink[v]}) = ${lowlink[u]}`,
           });
         } else if (inStack[v]) {
@@ -174,6 +179,7 @@ const Tarjan = createAlgo<TarjanStep>({
             stack: stack.slice(),
             sccs: sccs.slice(),
             sccIdx: sccs.length,
+            nodeIds: ids,
             message: `返祖边 ${u}→${v}（v 在栈中）：lowlink[${u}] = min(${oldLowlink}, disc[${v}]=${disc[v]}) = ${lowlink[u]}`,
           });
         } else {
@@ -189,6 +195,7 @@ const Tarjan = createAlgo<TarjanStep>({
             stack: stack.slice(),
             sccs: sccs.slice(),
             sccIdx: sccs.length,
+            nodeIds: ids,
             message: `横叉边 ${u}→${v}（v 已分配 SCC）：忽略，不更新 lowlink`,
           });
         }
@@ -216,6 +223,7 @@ const Tarjan = createAlgo<TarjanStep>({
           stack: stack.slice(),
           sccs: sccs.slice(),
           sccIdx: sccs.length,
+          nodeIds: ids,
           message: `🎉 发现 SCC #${sccs.length}：{${scc.join(', ')}}，lowlink=${lowlink[u]} == disc=${disc[u]}`,
         });
       }
@@ -225,6 +233,7 @@ const Tarjan = createAlgo<TarjanStep>({
     steps.push({
       type: 'init', targets: [], current: null,
       disc: {}, lowlink: {}, stack: [], sccs: [], sccIdx: 0,
+      nodeIds: ids,
       message: `初始化：${N} 个节点，准备 Tarjan SCC 算法（DFS + lowlink）`,
     });
 
@@ -241,6 +250,7 @@ const Tarjan = createAlgo<TarjanStep>({
         type: 'finish', targets: [], current: null,
         disc: { ...disc }, lowlink: { ...lowlink },
         stack: [], sccs: sccs.slice(), sccIdx: sccs.length,
+        nodeIds: ids,
         message: `✅ Tarjan 完成！共 ${sccs.length} 个强连通分量`,
       });
     }
@@ -249,13 +259,16 @@ const Tarjan = createAlgo<TarjanStep>({
   },
 
   renderStep(renderer: VizRenderer, step: TarjanStep, mode: RenderMode, speed: number, colors: ColorMap): void {
+    // 所有节点 ID（init 时 disc/sccs 为空，用 nodeIds 兜底）
     const allIds = Object.keys(step.disc).length > 0
       ? Object.keys(step.disc)
-      : (step.sccs.length > 0 ? step.sccs.flat() : []);
+      : (step.sccs.length > 0 ? step.sccs.flat() : step.nodeIds);
 
     // 染所有节点
-    function renderAllNodes(activeSet: Set<string> = new Set(), visitedSet: Set<string> = new Set()) {
-      // 先确定每个节点是否在已找到的 SCC 中
+    //   activeId: 当前正在处理的节点（active 色 + 放大）
+    //   stackSet: 栈中节点（用不同的"in-stack"色调）
+    //   sccCompleted: 已分配到 SCC 的节点
+    function renderAllNodes(activeId?: string, stackSet?: Set<string>, sccCompleted?: Set<string>) {
       const nodeSCC: Record<string, number> = {};
       for (let i = 0; i < step.sccs.length; i++) {
         for (const id of step.sccs[i]) {
@@ -263,11 +276,12 @@ const Tarjan = createAlgo<TarjanStep>({
         }
       }
 
-      // 所有已知节点
       const knownIds = new Set<string>([...allIds, ...Object.keys(nodeSCC)]);
+      const inStack = stackSet ?? new Set<string>();
 
       for (const id of knownIds) {
-        if (activeSet.has(id)) {
+        if (id === activeId) {
+          // 当前节点：亮色 + 放大
           renderer.setNode(id, {
             backgroundColor: colors['node_active'].value,
             borderColor: darken(colors['node_active'].value),
@@ -275,7 +289,16 @@ const Tarjan = createAlgo<TarjanStep>({
             width: 52,
             height: 52,
           }, mode, speed);
-        } else if (nodeSCC[id] !== undefined && !activeSet.has(id)) {
+        } else if (inStack.has(id)) {
+          // 栈中其他节点（非当前）：半透明橙色边框
+          renderer.setNode(id, {
+            backgroundColor: '#FEF3C7',
+            borderColor: '#F59E0B',
+            borderWidth: 3,
+            width: 48,
+            height: 48,
+          }, mode, speed);
+        } else if (nodeSCC[id] !== undefined) {
           const c = colorForSCC(nodeSCC[id]);
           renderer.setNode(id, {
             backgroundColor: c,
@@ -284,7 +307,7 @@ const Tarjan = createAlgo<TarjanStep>({
             width: 49,
             height: 49,
           }, mode, speed);
-        } else if (visitedSet.has(id)) {
+        } else if (sccCompleted?.has(id)) {
           renderer.setNode(id, {
             backgroundColor: colors['node_visited'].value,
             borderColor: darken(colors['node_visited'].value),
@@ -304,34 +327,31 @@ const Tarjan = createAlgo<TarjanStep>({
       }
     }
 
-    // 获取栈节点集合
+    // 栈节点集合
     const stackSet = new Set(step.stack);
 
     // 已分配 SCC 的所有节点
-    const sccNodeSet = new Set<string>();
+    const sccCompletedSet = new Set<string>();
     for (const scc of step.sccs) {
       for (const id of scc) {
-        sccNodeSet.add(id);
+        sccCompletedSet.add(id);
       }
     }
 
     switch (step.type) {
       case 'init': {
-        for (const id of (step as TarjanStep).disc ? Object.keys(step.disc) : []) {
-          // init 时没有 disc，fall back
-        }
-        // 没有已知节点时不操作
+        // init 时所有节点 default 色（由 cytoscape 默认样式承载）
+        renderAllNodes(undefined, new Set(), sccCompletedSet);
         break;
       }
 
       case 'dfs_enter': {
-        renderAllNodes(stackSet, sccNodeSet);
+        renderAllNodes(step.current ?? undefined, stackSet, sccCompletedSet);
         break;
       }
 
       case 'dfs_explore': {
-        renderAllNodes(stackSet, sccNodeSet);
-        // 渲染当前探索的边
+        renderAllNodes(step.current ?? undefined, stackSet, sccCompletedSet);
         if (step.edge) {
           const [src, tgt] = step.edge;
           renderer.setEdge(src, tgt, {
@@ -344,7 +364,7 @@ const Tarjan = createAlgo<TarjanStep>({
       }
 
       case 'dfs_backtrack': {
-        renderAllNodes(stackSet, sccNodeSet);
+        renderAllNodes(step.current ?? undefined, stackSet, sccCompletedSet);
         if (step.edge) {
           const [src, tgt] = step.edge;
           renderer.setEdge(src, tgt, {
@@ -357,8 +377,8 @@ const Tarjan = createAlgo<TarjanStep>({
       }
 
       case 'found_scc': {
-        renderAllNodes(new Set(), sccNodeSet);
-        // 刚找到的 SCC 高亮
+        renderAllNodes(undefined, new Set(), sccCompletedSet);
+        // 刚找到的 SCC 额外高亮
         const lastScc = step.sccs[step.sccs.length - 1];
         if (lastScc) {
           const c = colorForSCC(step.sccs.length - 1);
@@ -376,7 +396,7 @@ const Tarjan = createAlgo<TarjanStep>({
       }
 
       case 'finish': {
-        // 所有 SCC 着色
+        // 所有节点按 SCC 着色
         for (let i = 0; i < step.sccs.length; i++) {
           const c = colorForSCC(i);
           for (const id of step.sccs[i]) {

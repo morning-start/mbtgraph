@@ -282,8 +282,16 @@ const BellmanFord = createAlgo<BellmanFordStep>({
 
       case 'iter_end': {
         colorByDist();
-        // 所有已松弛的边用 tree 色
-        // （当前步骤不包含边信息，保持现状）
+        // 迭代边界视觉标志：给所有已确定距离的节点加粗边框
+        for (const id of allIds) {
+          const d = step.dist[id];
+          if (d !== Infinity && d !== 0) {
+            renderer.setNode(id, {
+              borderWidth: 4,
+              borderColor: '#94A3B8',
+            }, mode, speed);
+          }
+        }
         break;
       }
 

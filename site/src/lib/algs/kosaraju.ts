@@ -39,7 +39,7 @@ export const legendKeys: LegendSelector[] = [
 // ── 步骤类型 ──
 
 export interface KosarajuStep {
-  type: 'init' | 'dfs1_enter' | 'dfs1_exit' | 'reverse_graph' | 'dfs2_enter' | 'finish_scc' | 'finish';
+  type: 'init' | 'dfs1_enter' | 'dfs1_edge' | 'dfs1_exit' | 'reverse_graph' | 'dfs2_enter' | 'dfs2_edge' | 'finish_scc' | 'finish';
   targets: string[];
   current: string | null;
   edge?: [string, string];
@@ -118,7 +118,7 @@ const Kosaraju = createAlgo<KosarajuStep>({
       for (const v of neighbors) {
         if (!visited1[v]) {
           steps.push({
-            type: 'dfs1_enter', targets: [v], current: v, phase: 1,
+            type: 'dfs1_edge', targets: [v], current: v, phase: 1,
             edge: [u, v],
             stack: stack.slice(), sccs: sccs.slice(),
             visited1: { ...visited1 }, visited2: { ...visited2 },
@@ -175,7 +175,7 @@ const Kosaraju = createAlgo<KosarajuStep>({
       for (const v of neighbors) {
         if (!visited2[v]) {
           steps.push({
-            type: 'dfs2_enter', targets: [v], current: v, phase: 2,
+            type: 'dfs2_edge', targets: [v], current: v, phase: 2,
             edge: [u, v],
             stack: stack.slice(), sccs: sccs.slice(),
             visited1: { ...visited1 }, visited2: { ...visited2 },
@@ -278,7 +278,8 @@ const Kosaraju = createAlgo<KosarajuStep>({
         break;
       }
 
-      case 'dfs1_enter': {
+      case 'dfs1_enter':
+      case 'dfs1_edge': {
         renderNodes(step.current ?? undefined);
         if (step.edge) {
           renderer.setEdge(step.edge[0], step.edge[1], {
@@ -301,7 +302,8 @@ const Kosaraju = createAlgo<KosarajuStep>({
         break;
       }
 
-      case 'dfs2_enter': {
+      case 'dfs2_enter':
+      case 'dfs2_edge': {
         renderNodes(step.current ?? undefined);
         if (step.edge) {
           renderer.setEdge(step.edge[1], step.edge[0], {
