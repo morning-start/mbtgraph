@@ -14,3 +14,4 @@ export { pagerankGraph } from './pagerank';
 export { kruskalGraph } from './kruskal';
 export { tarjanGraph } from './tarjan';
 export { bellmanFordGraph } from './bellman_ford';
+export { kosarajuGraph } from './kosaraju';

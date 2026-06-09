@@ -178,6 +178,7 @@ export default defineConfig({
 										{ label: 'Tarjan 算法', link: '/algorithms/connectivity/scc/tarjan' },
 										{ label: 'Tarjan SCC 可视化', link: '/visualizations/tarjan/', badge: '新' },
 										{ label: 'Kosaraju 算法', link: '/algorithms/connectivity/scc/kosaraju' },
+										{ label: 'Kosaraju SCC 可视化', link: '/visualizations/kosaraju/', badge: '新' },
 									],
 								},
 								{ label: '割点与桥', link: '/algorithms/connectivity/articulation-points/' },

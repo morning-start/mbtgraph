@@ -24,6 +24,7 @@ import PageRank from './algs/pagerank';
 import Kruskal from './algs/kruskal';
 import Tarjan from './algs/tarjan';
 import BellmanFord from './algs/bellman_ford';
+import Kosaraju from './algs/kosaraju';
 
 // ── 导入图数据 ──
 
@@ -37,6 +38,7 @@ import { pagerankGraph } from './graph-data/pagerank';
 import { kruskalGraph } from './graph-data/kruskal';
 import { tarjanGraph } from './graph-data/tarjan';
 import { bellmanFordGraph } from './graph-data/bellman_ford';
+import { kosarajuGraph } from './graph-data/kosaraju';
 
 // ── 算法配置类型 ──
 
@@ -134,6 +136,14 @@ export const algorithms: Record<string, AlgorithmConfig> = {
     title: 'Bellman-Ford 最短路径',
     subtitle: '6 节点 · 7 边 · 带权有向图',
     slug: 'bellman_ford',
+  },
+  // 第 5 批：强连通分量（Kosaraju）
+  kosaraju: {
+    module: Kosaraju,
+    graph: kosarajuGraph,
+    title: 'Kosaraju 强连通分量',
+    subtitle: '6 节点 · 7 边 · 有向图',
+    slug: 'kosaraju',
   },
 };
 
