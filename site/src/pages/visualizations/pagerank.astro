@@ -1,0 +1,26 @@
+---
+import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">迭代</span><span class="viz-status-mono" id="iteration">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">阻尼 d</span><span class="viz-status-mono" id="damping">0.85</span></div>
+<div class="viz-status-item"><span class="viz-status-label" style="grid-column: span 2">排名 Top 3</span></div>
+<div class="viz-status-item"><span class="viz-status-label">🥇 #1</span><span class="viz-status-mono" id="top-1">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">🥈 #2</span><span class="viz-status-mono" id="top-2">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">🥉 #3</span><span class="viz-status-mono" id="top-3">—</span></div>
+`;
+---
+<VizPage algoSlug="pagerank" direction="带权有向图" statusPanelHtml={statusPanelHtml} />
+
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import PageRank from '../../lib/algs/pagerank';
+  import { pagerankGraph } from '../../lib/graph-data';
+
+  VizApp.init({
+    algoInstance: PageRank,
+    title: "PageRank",
+    subtitle: `${pagerankGraph.nodes.length} 节点 · ${pagerankGraph.edges.length} 边 · 带权有向图`,
+    ...pagerankGraph,
+  });
+</script>

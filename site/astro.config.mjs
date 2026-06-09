@@ -168,6 +168,7 @@ export default defineConfig({
 							label: '连通性算法',
 							items: [
 								{ label: '连通分量 (CC)', link: '/algorithms/connectivity/connected-components/' },
+								{ label: '连通分量 (CC) 可视化', link: '/visualizations/connected_components/', badge: '新' },
 								{
 									label: '强连通分量 (SCC)',
 									items: [
@@ -209,6 +210,7 @@ export default defineConfig({
 						{ label: '图着色算法', link: '/algorithms/coloring/' },
 						{ label: '社区检测算法', link: '/algorithms/community/' },
 						{ label: '中心性指标', link: '/algorithms/centrality/' },
+						{ label: 'PageRank 可视化', link: '/visualizations/pagerank/', badge: '新' },
 						{ label: '其他重要算法', link: '/algorithms/other/' },
 					],
 				},

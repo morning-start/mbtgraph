@@ -9,3 +9,5 @@ export { dfsGraph } from './dfs';
 export { dijkstraGraph } from './dijkstra';
 export { topoGraph } from './topo';
 export { cycleGraph } from './cycle';
+export { ccGraph } from './cc';
+export { pagerankGraph } from './pagerank';

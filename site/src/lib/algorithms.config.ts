@@ -19,6 +19,8 @@ import DFS from './algs/dfs';
 import Dijkstra from './algs/dijkstra';
 import Topo from './algs/topo';
 import Cycle from './algs/cycle';
+import CC from './algs/cc';
+import PageRank from './algs/pagerank';
 
 // ── 导入图数据 ──
 
@@ -27,6 +29,8 @@ import { dfsGraph } from './graph-data/dfs';
 import { dijkstraGraph } from './graph-data/dijkstra';
 import { topoGraph } from './graph-data/topo';
 import { cycleGraph } from './graph-data/cycle';
+import { ccGraph } from './graph-data/cc';
+import { pagerankGraph } from './graph-data/pagerank';
 
 // ── 算法配置类型 ──
 
@@ -85,6 +89,21 @@ export const algorithms: Record<string, AlgorithmConfig> = {
     title: 'DFS 环检测',
     subtitle: '7 节点 · 8 边 · 有向图',
     slug: 'cycle_detection',
+  },
+  // 第 1 批：连通性 + 中心性
+  cc: {
+    module: CC,
+    graph: ccGraph,
+    title: '连通分量 (CC)',
+    subtitle: '6 节点 · 5 边 · 无向图',
+    slug: 'connected_components',
+  },
+  pagerank: {
+    module: PageRank,
+    graph: pagerankGraph,
+    title: 'PageRank',
+    subtitle: '6 节点 · 9 边 · 带权有向图',
+    slug: 'pagerank',
   },
 };
 
