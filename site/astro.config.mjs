@@ -174,6 +174,7 @@ export default defineConfig({
 									label: '强连通分量 (SCC)',
 									items: [
 										{ label: 'Tarjan 算法', link: '/algorithms/connectivity/scc/tarjan' },
+										{ label: 'Tarjan SCC 可视化', link: '/visualizations/tarjan/', badge: '新' },
 										{ label: 'Kosaraju 算法', link: '/algorithms/connectivity/scc/kosaraju' },
 									],
 								},

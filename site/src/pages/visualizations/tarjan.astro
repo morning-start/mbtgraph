@@ -1,0 +1,27 @@
+---
+import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">当前节点</span><span class="viz-status-value" id="current-node">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">disc</span><span class="viz-status-mono" id="disc">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">lowlink</span><span class="viz-status-mono" id="lowlink">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">栈</span><span class="viz-status-mono" id="stack">[ ]</span></div>
+<div class="viz-status-item"><span class="viz-status-label">最新 SCC</span><span class="viz-status-value" id="scc-found">—</span></div>
+<div class="viz-status-item" style="grid-column: span 2"><span class="viz-status-label">已发现</span><span class="viz-status-mono" id="total-sccs">—</span></div>
+`;
+---
+
+<VizPage algoSlug="tarjan" direction="有向图" statusPanelHtml={statusPanelHtml} />
+
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import Tarjan from '../../lib/algs/tarjan';
+  import { tarjanGraph } from '../../lib/graph-data';
+
+  VizApp.init({
+    algoInstance: Tarjan,
+    title: "Tarjan 强连通分量",
+    subtitle: `${tarjanGraph.nodes.length} 节点 · ${tarjanGraph.edges.length} 边 · 有向图`,
+    ...tarjanGraph,
+  });
+</script>

@@ -22,6 +22,7 @@ import Cycle from './algs/cycle';
 import CC from './algs/cc';
 import PageRank from './algs/pagerank';
 import Kruskal from './algs/kruskal';
+import Tarjan from './algs/tarjan';
 
 // ── 导入图数据 ──
 
@@ -33,6 +34,7 @@ import { cycleGraph } from './graph-data/cycle';
 import { ccGraph } from './graph-data/cc';
 import { pagerankGraph } from './graph-data/pagerank';
 import { kruskalGraph } from './graph-data/kruskal';
+import { tarjanGraph } from './graph-data/tarjan';
 
 // ── 算法配置类型 ──
 
@@ -114,6 +116,14 @@ export const algorithms: Record<string, AlgorithmConfig> = {
     title: 'Kruskal 最小生成树',
     subtitle: '6 节点 · 9 边 · 无向带权图',
     slug: 'kruskal',
+  },
+  // 第 3 批：强连通分量
+  tarjan: {
+    module: Tarjan,
+    graph: tarjanGraph,
+    title: 'Tarjan 强连通分量',
+    subtitle: '6 节点 · 7 边 · 有向图',
+    slug: 'tarjan',
   },
 };
 
