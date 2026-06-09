@@ -1,0 +1,25 @@
+---
+import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">迭代</span><span class="viz-status-value" id="iteration">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">当前边</span><span class="viz-status-value" id="current-edge">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">是否更新</span><span class="viz-status-mono" id="has-update">—</span></div>
+<div class="viz-status-item" style="grid-column: span 2"><span class="viz-status-label">距离表</span><span class="viz-status-mono" id="dist-table">—</span></div>
+`;
+---
+
+<VizPage algoSlug="bellman_ford" direction="带权有向图" statusPanelHtml={statusPanelHtml} />
+
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import BellmanFord from '../../lib/algs/bellman_ford';
+  import { bellmanFordGraph } from '../../lib/graph-data';
+
+  VizApp.init({
+    algoInstance: BellmanFord,
+    title: "Bellman-Ford 最短路径",
+    subtitle: `${bellmanFordGraph.nodes.length} 节点 · ${bellmanFordGraph.edges.length} 边 · 带权有向图`,
+    ...bellmanFordGraph,
+  });
+</script>

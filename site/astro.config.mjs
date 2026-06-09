@@ -151,7 +151,9 @@ export default defineConfig({
 							label: '最短路径算法',
 							items: [
 								{ label: 'Dijkstra 算法', link: '/algorithms/shortest-path/dijkstra/' },
+								{ label: 'Dijkstra 可视化', link: '/visualizations/dijkstra/', badge: '新' },
 								{ label: 'Bellman-Ford 算法', link: '/algorithms/shortest-path/bellman-ford/' },
+								{ label: 'Bellman-Ford 可视化', link: '/visualizations/bellman_ford/', badge: '新' },
 								{ label: 'Floyd-Warshall 算法', link: '/algorithms/shortest-path/floyd-warshall/' },
 								{ label: 'A* 启发式搜索', link: '/algorithms/shortest-path/a-star/' },
 							],

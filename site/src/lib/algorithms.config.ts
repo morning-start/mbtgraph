@@ -23,6 +23,7 @@ import CC from './algs/cc';
 import PageRank from './algs/pagerank';
 import Kruskal from './algs/kruskal';
 import Tarjan from './algs/tarjan';
+import BellmanFord from './algs/bellman_ford';
 
 // ── 导入图数据 ──
 
@@ -35,6 +36,7 @@ import { ccGraph } from './graph-data/cc';
 import { pagerankGraph } from './graph-data/pagerank';
 import { kruskalGraph } from './graph-data/kruskal';
 import { tarjanGraph } from './graph-data/tarjan';
+import { bellmanFordGraph } from './graph-data/bellman_ford';
 
 // ── 算法配置类型 ──
 
@@ -124,6 +126,14 @@ export const algorithms: Record<string, AlgorithmConfig> = {
     title: 'Tarjan 强连通分量',
     subtitle: '6 节点 · 7 边 · 有向图',
     slug: 'tarjan',
+  },
+  // 第 4 批：最短路径（负权）
+  bellman_ford: {
+    module: BellmanFord,
+    graph: bellmanFordGraph,
+    title: 'Bellman-Ford 最短路径',
+    subtitle: '6 节点 · 7 边 · 带权有向图',
+    slug: 'bellman_ford',
   },
 };
 
