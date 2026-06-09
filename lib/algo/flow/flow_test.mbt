@@ -584,3 +584,167 @@ test "stoer_wagner_result_partition" {
   assert_true(result.min_cut_weight == 5.0)
   assert_true(result.partition.length() > 0 || true)
 }
+
+// ============================================================================
+// 容量缩放最大流 (Capacity Scaling) 测试
+// ============================================================================
+
+///|
+test "capacity_scaling_simple_two_nodes" {
+  let net = make_simple_network()
+  let result = capacity_scaling(net, 0, 1)
+  assert_true(result.max_flow == 10.0)
+}
+
+///|
+test "capacity_scaling_simple_flow_matrix_size" {
+  let net = make_simple_network()
+  let result = capacity_scaling(net, 0, 1)
+  assert_true(result.flow_matrix.length() == 2)
+  assert_true(result.flow_matrix[0].length() == 2)
+}
+
+///|
+test "capacity_scaling_simple_has_flow" {
+  let net = make_simple_network()
+  let result = capacity_scaling(net, 0, 1)
+  match result.flow_matrix[0][1] {
+    Some(flow) => assert_true(flow > 9.9)
+    None => assert_true(false)
+  }
+}
+
+///|
+test "capacity_scaling_classic_network_maxflow" {
+  let net = make_classic_network()
+  let result = capacity_scaling(net, 0, 3)
+  assert_true(result.max_flow == 5.0)
+}
+
+///|
+test "capacity_scaling_multi_path" {
+  let net = make_multi_path_network()
+  let result = capacity_scaling(net, 0, 5)
+  assert_true((result.max_flow - 23.0).abs() < 0.001)
+}
+
+///|
+test "capacity_scaling_empty_graph" {
+  let net = FlowNetwork::new(0)
+  let result = capacity_scaling(net, 0, 1)
+  assert_true(result.max_flow == 0.0)
+  assert_true(result.flow_matrix.length() == 0)
+}
+
+///|
+test "capacity_scaling_source_equals_sink" {
+  let net = make_simple_network()
+  let result = capacity_scaling(net, 0, 0)
+  assert_true(result.max_flow == 0.0)
+  assert_true(result.flow_matrix.length() == 0)
+}
+
+///|
+test "capacity_scaling_invalid_source_negative" {
+  let net = make_simple_network()
+  let result = capacity_scaling(net, -1, 1)
+  assert_true(result.max_flow == 0.0)
+}
+
+///|
+test "capacity_scaling_invalid_sink_out_of_bounds" {
+  let net = make_simple_network()
+  let result = capacity_scaling(net, 0, 99)
+  assert_true(result.max_flow == 0.0)
+}
+
+///|
+test "capacity_scaling_no_path_exists" {
+  let net = FlowNetwork::new(3)
+  let net = net.add_edge(0, 1, 5.0)
+  let result = capacity_scaling(net, 0, 2)
+  assert_true(result.max_flow == 0.0)
+}
+
+///|
+test "capacity_scaling_result_immutability" {
+  let net = make_simple_network()
+  let _result = capacity_scaling(net, 0, 1)
+  assert_true(net.flow[0][1] == 0.0)
+}
+
+///|
+test "capacity_scaling_large_capacity_values" {
+  let net = FlowNetwork::new(3)
+  let net = net.add_edge(0, 1, 1000000.0)
+  let net = net.add_edge(1, 2, 1000000.0)
+  let result = capacity_scaling(net, 0, 2)
+  assert_true((result.max_flow - 1000000.0).abs() < 0.001)
+}
+
+///|
+test "capacity_scaling_matches_edmonds_karp" {
+  let net = make_multi_path_network()
+  let ek = edmonds_karp(net, 0, 5)
+  let cs = capacity_scaling(net, 0, 5)
+  assert_true((cs.max_flow - ek.max_flow).abs() < 0.001)
+}
+
+///|
+test "capacity_scaling_matches_dinic" {
+  let net = make_multi_path_network()
+  let din = dinic(net, 0, 5)
+  let cs = capacity_scaling(net, 0, 5)
+  assert_true((cs.max_flow - din.max_flow).abs() < 0.001)
+}
+
+///|
+test "capacity_scaling_single_node" {
+  let net = FlowNetwork::new(1)
+  let result = capacity_scaling(net, 0, 0)
+  assert_true(result.max_flow == 0.0)
+  assert_true(result.flow_matrix.length() == 0)
+}
+
+///|
+test "capacity_scaling_four_node_chain" {
+  let net = FlowNetwork::new(4)
+  let net = net.add_edge(0, 1, 5.0)
+  let net = net.add_edge(1, 2, 4.0)
+  let net = net.add_edge(2, 3, 3.0)
+  let result = capacity_scaling(net, 0, 3)
+  assert_true((result.max_flow - 3.0).abs() < 0.001)
+}
+
+///|
+test "capacity_scaling_correct_flow_matrix" {
+  let net = make_classic_network()
+  let result = capacity_scaling(net, 0, 3)
+  assert_true(result.flow_matrix.length() == 4)
+  for i in 0..<4 {
+    assert_true(result.flow_matrix[i].length() == 4)
+  }
+}
+
+///|
+test "capacity_scaling_flow_conservation" {
+  let net = make_multi_path_network()
+  let result = capacity_scaling(net, 0, 5)
+  let n = result.flow_matrix.length()
+  // 中间节点流量守恒
+  for v in 1..<(n - 1) {
+    let mut inflow = 0.0
+    let mut outflow = 0.0
+    for i in 0..<n {
+      match result.flow_matrix[i][v] {
+        Some(val) => inflow = inflow + val
+        None => ()
+      }
+      match result.flow_matrix[v][i] {
+        Some(val) => outflow = outflow + val
+        None => ()
+      }
+    }
+    assert_true((inflow - outflow).abs() < 0.001)
+  }
+}

@@ -33,7 +33,7 @@
 ///
 /// # 参数
 ///
-/// - `net`: 流网络 (FlowNetwork)，包含节点数、容量矩阵和初始流量矩阵。
+/// - `graph`: 流网络 (FlowNetwork)，包含节点数、容量矩阵和初始流量矩阵。
 ///   算法内部会深拷贝容量和流量矩阵，不修改原网络。
 /// - `source`: 源点索引，范围 [0, node_count)
 /// - `sink`: 汇点索引，范围 [0, node_count)，且 sink ≠ source
@@ -64,8 +64,8 @@
 /// | Edmonds-Karp | O(VE²) | 简单易懂，小规模 |
 /// | Dinic | O(E√V) | 二分图/单位容量 |
 /// | Push-Relabel | O(V²E) | 通用，稀疏图优秀 |
-pub fn push_relabel(net : FlowNetwork, source : Int, sink : Int) -> MaxFlowResult {
-  let n = net.node_count
+pub fn push_relabel(graph : FlowNetwork, source : Int, sink : Int) -> MaxFlowResult {
+  let n = graph.node_count
   if n <= 1 || source == sink {
     return MaxFlowResult::{ max_flow: 0.0, flow_matrix: [] }
   }
@@ -73,8 +73,8 @@ pub fn push_relabel(net : FlowNetwork, source : Int, sink : Int) -> MaxFlowResul
     return MaxFlowResult::{ max_flow: 0.0, flow_matrix: [] }
   }
 
-  let cap = deep_copy_matrix(net.capacity)
-  let flow_matrix = deep_copy_matrix(net.flow)
+  let cap = deep_copy_matrix(graph.capacity)
+  let flow_matrix = deep_copy_matrix(graph.flow)
   let height : Array[Int] = Array::make(n, 0)
   let excess : Array[Double] = Array::make(n, 0.0)
   height[source] = n
