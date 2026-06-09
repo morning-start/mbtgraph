@@ -1,0 +1,25 @@
+/**
+ * cc.ts — 连通分量可视化示例图
+ *
+ * 6 节点 · 5 边 · 无向图
+ * 包含 2 个连通分量：
+ *   分量 1: { 0, 1, 2 }
+ *   分量 2: { 3, 4, 5 }
+ */
+export const ccGraph = {
+  nodes: [
+    { data: { id: '0', label: '0' } },
+    { data: { id: '1', label: '1' } },
+    { data: { id: '2', label: '2' } },
+    { data: { id: '3', label: '3' } },
+    { data: { id: '4', label: '4' } },
+    { data: { id: '5', label: '5' } },
+  ],
+  edges: [
+    { data: { id: 'e01', source: '0', target: '1' } },
+    { data: { id: 'e12', source: '1', target: '2' } },
+    { data: { id: 'e02', source: '0', target: '2' } },
+    { data: { id: 'e34', source: '3', target: '4' } },
+    { data: { id: 'e45', source: '4', target: '5' } },
+  ],
+};

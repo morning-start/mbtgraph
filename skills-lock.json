@@ -18,6 +18,18 @@
       "sourceType": "github",
       "skillPath": "moonbit-skills/SKILL.md",
       "computedHash": "cca42be0e53955d63dcf45ce9712c2744852ef9cdc2da4371810db947f93a1e3"
+    },
+    "software-design": {
+      "source": "morning-start/agent-skills",
+      "sourceType": "github",
+      "skillPath": "process/software-design-skill/SKILL.md",
+      "computedHash": "6b491fba8f462bd8506ea030723ead19cd6e50951b7bbbe2a75804c467495f66"
+    },
+    "tutorial-writer": {
+      "source": "morning-start/agent-skills",
+      "sourceType": "github",
+      "skillPath": "process/tutorial-writer-skill/SKILL.md",
+      "computedHash": "35c0bb77b5f0baefc0fb64d1e1be7ed7bbf426f85bd05cf3d8f75792a738e296"
     }
   }
 }

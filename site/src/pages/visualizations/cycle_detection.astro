@@ -1,0 +1,29 @@
+---
+import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">当前</span><span class="viz-status-value" id="current-node">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">DFS 栈</span><span class="viz-status-mono" id="stack">[ ]</span></div>
+<div class="viz-status-item"><span class="viz-status-label">环状态</span><span class="viz-status-value" id="cycle">-</span></div>
+`;
+---
+<VizPage
+  algoSlug="cycle"
+  direction="有向图"
+  statusPanelHtml={statusPanelHtml}
+  transportLeft={[{ action: 'reset' }, { action: 'step-back' }]}
+  transportRight={[{ action: 'step-forward' }]}
+/>
+
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import Cycle from '../../lib/algs/cycle';
+  import { cycleGraph } from '../../lib/graph-data';
+
+  VizApp.init({
+    algoInstance: Cycle,
+    title: "DFS 环检测",
+    subtitle: `${cycleGraph.nodes.length} 节点 · ${cycleGraph.edges.length} 边 · 有向图`,
+    ...cycleGraph,
+  });
+</script>

@@ -1,0 +1,180 @@
+import { createAlgo, snapshot, darken, type LegendSelector } from '../alg-base';
+import type { UIState } from '../alg-base';
+import type { VizRenderer, RenderMode, ColorMap } from '../alg-base';
+
+export const legendKeys: LegendSelector[] = [
+  { domain: 'node', key: 'default' },
+  { domain: 'node', key: 'active' },
+  { domain: 'node', key: 'visited' },
+  { domain: 'node', key: 'cycle' },
+  { domain: 'edge', key: 'active' },
+];
+
+export interface CycleStep {
+  type: 'init' | 'visit_start' | 'explore_edge' | 'cycle_found' | 'backtrack' | 'finish';
+  targets: string[];
+  message: string;
+  status: Record<string, string>;
+  stack: string[];
+  order: string[];
+  cycle: string[] | null;
+}
+
+const Cycle = createAlgo<CycleStep>({
+  legendKeys,
+  generateSteps(
+    nodes: Array<{ data: { id: string; label: string } }>,
+    adjList: Record<string, string[]>,
+    _edgeWeights?: Record<string, number>,
+    _startNode?: string,
+  ): CycleStep[] {
+    const steps: CycleStep[] = [];
+    const status: Record<string, string> = {};
+    const onStack: Record<string, boolean> = {};
+    const stack: string[] = [];
+    const order: string[] = [];
+    let cycleFound: string[] | null = null;
+
+    nodes.forEach((n) => { status[n.data.id] = 'unvisited'; });
+
+    steps.push({
+      type: 'init', targets: [], message: '开始环检测 (DFS-based)',
+      status: snapshot(status), stack: [], order: [], cycle: null,
+    });
+
+    function dfs(nodeId: string): void {
+      if (cycleFound) return;
+
+      status[nodeId] = 'visiting';
+      onStack[nodeId] = true;
+      stack.push(nodeId);
+      order.push(nodeId);
+
+      steps.push({
+        type: 'visit_start', targets: [nodeId],
+        message: `进入节点 ${nodeId}`,
+        status: snapshot(status), stack: stack.slice(), order: order.slice(), cycle: null,
+      });
+
+      const neighbors = adjList[nodeId] || [];
+      for (let ni = 0; ni < neighbors.length; ni++) {
+        const nbr = neighbors[ni];
+        if (cycleFound) return;
+
+        if (status[nbr] === 'unvisited') {
+          steps.push({
+            type: 'explore_edge', targets: [nodeId, nbr],
+            message: `探索边 ${nodeId} → ${nbr}`,
+            status: snapshot(status), stack: stack.slice(), order: order.slice(), cycle: null,
+          });
+          dfs(nbr);
+          if (cycleFound) return;
+        } else if (onStack[nbr]) {
+          const cycleStart = stack.indexOf(nbr);
+          cycleFound = stack.slice(cycleStart).concat([nbr]);
+
+          steps.push({
+            type: 'cycle_found', targets: [nodeId, nbr],
+            message: `发现环! ${cycleFound.join(' → ')} → ${nbr}`,
+            status: snapshot(status), stack: stack.slice(), order: order.slice(), cycle: cycleFound,
+          });
+          return;
+        }
+      }
+
+      status[nodeId] = 'visited';
+      delete onStack[nodeId];
+      stack.pop();
+
+      steps.push({
+        type: 'backtrack', targets: [nodeId],
+        message: `回溯节点 ${nodeId}`,
+        status: snapshot(status), stack: stack.slice(), order: order.slice(), cycle: null,
+      });
+    }
+
+    for (let ni = 0; ni < nodes.length; ni++) {
+      const nid = nodes[ni].data.id;
+      if (status[nid] === 'unvisited') {
+        dfs(nid);
+        if (cycleFound) break;
+      }
+    }
+
+    if (!cycleFound) {
+      steps.push({
+        type: 'finish', targets: [], message: '无环！图是 DAG',
+        status: snapshot(status), stack: [], order: order, cycle: null,
+      });
+    }
+
+    return steps;
+  },
+
+  renderStep(renderer: VizRenderer, step: CycleStep, mode: RenderMode, speed: number, colors: ColorMap): void {
+    switch (step.type) {
+      case 'init':
+        break;
+
+      case 'visit_start':
+        renderer.setNode(step.targets[0], {
+          backgroundColor: colors['node_active'].value,
+          borderColor: darken(colors['node_active'].value),
+          borderWidth: 3, width: 49, height: 49,
+        }, mode, speed);
+        break;
+
+      case 'explore_edge': {
+        const src = step.targets[0], tgt = step.targets[1];
+        renderer.setEdge(src, tgt, {
+          lineColor: colors['edge_active'].value, width: 4,
+        }, mode, true, speed);
+        break;
+      }
+
+      case 'cycle_found': {
+        const csrc = step.targets[0], ctgt = step.targets[1];
+        renderer.setEdge(csrc, ctgt, {
+          lineColor: colors['edge_active'].value, width: 5,
+        }, mode, true, speed);
+        if (step.cycle) {
+          for (let ci = 0; ci < step.cycle.length; ci++) {
+            renderer.setNode(step.cycle[ci], {
+              backgroundColor: colors.cycle.value,
+              borderColor: darken(colors.cycle.value),
+              borderWidth: 4,
+            }, mode, speed);
+          }
+        }
+        break;
+      }
+
+      case 'backtrack':
+        renderer.setNode(step.targets[0], {
+          backgroundColor: colors.visited.value,
+          borderColor: darken(colors.visited.value),
+          borderWidth: 2, width: 46, height: 46,
+        }, mode, speed);
+        break;
+
+      case 'finish':
+        renderer.setNodesByFn(() => ({ backgroundColor: colors.visited.value }), mode);
+        break;
+    }
+  },
+
+  getUIData(step: CycleStep | null, state: UIState): Record<string, string> {
+    const hasCycle = !!(step && step.cycle);
+    return {
+      'current-node': (state.isFinished || state.currentIdx < 0)
+        ? '—'
+        : (step?.targets?.length ? String(step.targets[0]) : '—'),
+      'stack': step && step.stack ? '[' + step.stack.join(',') + ']' : '[ ]',
+      'cycle': hasCycle
+        ? (step!.cycle!).join(' → ')
+        : (state.isFinished ? '无环' : '-'),
+    };
+  },
+});
+
+export default Cycle;

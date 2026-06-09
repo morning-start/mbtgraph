@@ -1,0 +1,26 @@
+---
+import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">当前边</span><span class="viz-status-value" id="current-edge">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">边权</span><span class="viz-status-mono" id="edge-weight">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">状态</span><span class="viz-status-value" id="status">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">MST 边数</span><span class="viz-status-mono" id="mst-edges">0</span></div>
+<div class="viz-status-item"><span class="viz-status-label">MST 总权</span><span class="viz-status-mono" id="mst-weight">0</span></div>
+`;
+---
+
+<VizPage algoSlug="kruskal" direction="无向带权图" statusPanelHtml={statusPanelHtml} />
+
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import Kruskal from '../../lib/algs/kruskal';
+  import { kruskalGraph } from '../../lib/graph-data';
+
+  VizApp.init({
+    algoInstance: Kruskal,
+    title: "Kruskal 最小生成树",
+    subtitle: `${kruskalGraph.nodes.length} 节点 · ${kruskalGraph.edges.length} 边 · 无向带权图`,
+    ...kruskalGraph,
+  });
+</script>

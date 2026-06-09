@@ -1,0 +1,24 @@
+---
+import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">当前分量</span><span class="viz-status-mono" id="current-component">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">当前节点</span><span class="viz-status-mono" id="current-node">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">分量大小</span><span class="viz-status-mono" id="component-size">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">分量总数</span><span class="viz-status-mono" id="total-components">0</span></div>
+`;
+---
+<VizPage algoSlug="cc" direction="无向图" statusPanelHtml={statusPanelHtml} />
+
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import CC from '../../lib/algs/cc';
+  import { ccGraph } from '../../lib/graph-data';
+
+  VizApp.init({
+    algoInstance: CC,
+    title: "连通分量 (CC)",
+    subtitle: `${ccGraph.nodes.length} 节点 · ${ccGraph.edges.length} 边 · 无向图`,
+    ...ccGraph,
+  });
+</script>

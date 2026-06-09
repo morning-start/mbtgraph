@@ -1,0 +1,181 @@
+---
+/**
+ * VizLayout.astro - 图算法可视化页面公共布局（数据驱动）
+ *
+ * 图例和播放按钮通过 props 配置自动生成，状态面板保留插槽灵活性。
+ * 新增页面只需 ~30 行配置即可完成。
+ *
+ * 样式与脚本均采用 ES Module 化：
+ *   - CSS: import 自 src/styles/viz-common.css
+ *   - JS: 各页面通过 <script> slot 导入引擎/加载器/算法模块
+ */
+
+import '../styles/viz-common.css';
+
+// ── 类型定义 ──
+
+/** 预定义的播放控制按钮类型 */
+type TransportAction =
+  | 'skip-to-start'  // ⏮ 跳到开头
+  | 'step-back'       // ◀ 上一步
+  | 'step-forward'    // ▶ 下一步
+  | 'skip-to-end'     // ⏭ 跳到末尾
+  | 'reset';          // ↺ 重置
+
+interface TransportButton {
+  action: TransportAction;
+  title?: string;  // 覆盖默认 title
+}
+
+interface LegendItem {
+  color: string;        // CSS background 值
+  type?: 'dot' | 'bar'; // 默认 dot
+  label: string;
+}
+
+export interface Props {
+  title: string;
+  subtitle?: string;
+  hasStatusPanel?: boolean;
+  lang?: string;
+  /** 左侧控制按钮 */
+  transportLeft?: TransportButton[];
+  /** 右侧控制按钮 */
+  transportRight?: TransportButton[];
+  /** 图例条目 */
+  legendItems?: LegendItem[];
+}
+
+const {
+  title,
+  subtitle = '',
+  hasStatusPanel = false,
+  lang = 'zh-CN',
+  transportLeft = [],
+  transportRight = [],
+  legendItems = [],
+} = Astro.props;
+
+// ── 按钮图标 SVG 映射表 ──
+
+const iconMap: Record<TransportAction, string> = {
+  'skip-to-start':
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 5v14H5V5h14m2-2H3c-.55 0-1 .45-1 1v18c0 .55.45 1 1 1h18c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1z"/><path d="M11 7l6 5-6 5V7z"/></svg>',
+  'step-back':
+    '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 4l-10 8 10 8V4z"/><rect x="2" y="4" width="3" height="16" rx=".5"/></svg>',
+  'step-forward':
+    '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l10 8-10 8V4z"/><rect x="19" y="4" width="3" height="16" rx=".5"/></svg>',
+  'skip-to-end':
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 5v14H5V5h14m2-2H3c-.55 0-1 .45-1 1v18c0 .55.45 1 1 1h18c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1z"/><path d="M13 7l-6 5 6 5V7z"/></svg>',
+  'reset':
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>',
+};
+
+const titleMap: Record<TransportAction, string> = {
+  'skip-to-start': '跳到开始',
+  'step-back': '上一步',
+  'step-forward': '下一步',
+  'skip-to-end': '跳到末尾',
+  'reset': '重置',
+};
+
+// ── 渲染单个控制按钮 ──
+
+function renderBtn(btn: TransportAction) {
+  return `<button class="ctrl-btn ctrl-btn--subtle" data-action="${btn}" title="${titleMap[btn]}">${iconMap[btn]}</button>`;
+}
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title} 可视化</title>
+  <slot name="head" />
+</head>
+<body>
+
+  <!-- 加载状态 -->
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text">正在加载图可视化...</div>
+  </div>
+
+  <!-- 错误状态 -->
+  <div id="error-overlay">
+    <div class="error-box">
+      <div class="error-title">加载失败</div>
+      <div class="error-msg" id="error-msg"></div>
+    </div>
+  </div>
+
+  <!-- 主容器 -->
+  <div class="viz-wrapper" tabindex="0" id="viz-root">
+
+    <!-- ═══ Header ═══ -->
+    <div class="viz-header">
+      <div class="viz-header-left">
+        <span class="badge">{title}</span>
+        {subtitle && <span class="graph-info">{subtitle}</span>}
+      </div>
+      <slot name="header-extra" />
+    </div>
+
+    <!-- ═══ Status Panel (右上角) ═══ -->
+    {hasStatusPanel && (
+      <div class="viz-status-panel" id="status-panel">
+        <slot name="status-panel" />
+      </div>
+    )}
+
+    <!-- 画布 + 底部栏 -->
+    <div class="viz-canvas-wrap">
+      <div id="viz-canvas"></div>
+      <div class="viz-bottom-bar">
+
+        <!-- ── Row 1: Timeline ── -->
+        <div class="viz-timeline">
+          <div class="timeline-track" id="progress-track">
+            <div class="timeline-fill" id="progress-fill"></div>
+            <div class="timeline-glow"></div>
+            <div class="timeline-thumb" id="progress-thumb"></div>
+          </div>
+          <span class="timeline-counter" id="step-counter">0 / 0</span>
+        </div>
+
+        <!-- ── Row 2: Transport Controls (数据驱动) ── -->
+        <div class="viz-transport">
+          <div class="transport-group" set:html={transportLeft.map(b => renderBtn(b.action)).join('')} />
+
+          <!-- Hero Play Button (固定居中) -->
+          <button class="play-hero" data-action="toggle-play" id="play-btn" title="播放/暂停">
+            <div class="play-hero__ring">
+              <svg class="play-icon play-icon--play" id="icon-play" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              <svg class="play-icon play-icon--pause hidden" id="icon-pause" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="3" width="5" height="18" rx="1"/><rect x="15" y="3" width="5" height="18" rx="1"/></svg>
+              <svg class="play-icon play-icon--replay hidden" id="icon-replay" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            </div>
+          </button>
+
+          <div class="transport-group" set:html={transportRight.map(b => renderBtn(b.action)).join('')} />
+        </div>
+
+        <!-- ── Row 3: Legend Strip (数据驱动) ── -->
+        <div class="viz-legend">
+          {legendItems.map(item => (
+            <div class="legend-chip">
+              <i class={`legend-${item.type ?? 'dot'}`} style={`background:${item.color}`}></i>
+              {item.label}
+            </div>
+          ))}
+        </div>
+
+      </div><!-- /.viz-bottom-bar -->
+    </div><!-- /.viz-canvas-wrap -->
+
+  </div><!-- /.viz-wrapper -->
+
+  <!-- 客户端脚本由 VizPage 组件注入 -->
+
+</body>
+</html>

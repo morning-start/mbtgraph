@@ -1,0 +1,24 @@
+---
+import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">当前</span><span class="viz-status-value" id="current-node">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">访问顺序</span><span class="viz-status-mono" id="order">[ ]</span></div>
+<div class="viz-status-item"><span class="viz-status-label">栈</span><span class="viz-status-mono" id="stack">[ ]</span></div>
+<div class="viz-status-item"><span class="viz-status-label">深度</span><span class="viz-status-mono" id="depth">-</span></div>
+`;
+---
+<VizPage algoSlug="dfs" direction="无向图" statusPanelHtml={statusPanelHtml} />
+
+<script>
+  import { VizApp } from "../../lib/viz-engine";
+  import DFS from "../../lib/algs/dfs";
+  import { dfsGraph } from "../../lib/graph-data";
+
+  VizApp.init({
+    algoInstance: DFS,
+    title: "DFS 深度优先搜索",
+    subtitle: `${dfsGraph.nodes.length} 节点 · ${dfsGraph.edges.length} 边 · 无向图`,
+    ...dfsGraph,
+  });
+</script>

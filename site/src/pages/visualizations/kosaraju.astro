@@ -1,0 +1,26 @@
+---
+import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">阶段</span><span class="viz-status-value" id="phase">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">当前节点</span><span class="viz-status-value" id="current-node">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">完成栈</span><span class="viz-status-mono" id="stack">[ ]</span></div>
+<div class="viz-status-item"><span class="viz-status-label">最新 SCC</span><span class="viz-status-value" id="scc-found">—</span></div>
+<div class="viz-status-item" style="grid-column: span 2"><span class="viz-status-label">已发现</span><span class="viz-status-mono" id="status">—</span></div>
+`;
+---
+
+<VizPage algoSlug="kosaraju" direction="有向图" statusPanelHtml={statusPanelHtml} />
+
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import Kosaraju from '../../lib/algs/kosaraju';
+  import { kosarajuGraph } from '../../lib/graph-data';
+
+  VizApp.init({
+    algoInstance: Kosaraju,
+    title: "Kosaraju 强连通分量",
+    subtitle: `${kosarajuGraph.nodes.length} 节点 · ${kosarajuGraph.edges.length} 边 · 有向图`,
+    ...kosarajuGraph,
+  });
+</script>

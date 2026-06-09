@@ -1,0 +1,84 @@
+---
+/**
+ * VizPage.astro — 算法可视化页面通用模板
+ *
+ * 消除 5 个可视化页面的重复代码：
+ * - 自动解析 legendItems
+ * - 自动构建 subtitle
+ * - 提供标准 transport 配置
+ * - 各页面只需提供 status-panel 和 scripts 插槽
+ */
+import VizLayout from "./VizLayout.astro";
+import { resolveLegendItems } from "../lib/color-registry";
+import {
+  getAlgorithmConfig,
+  getAlgorithmLegendKeys,
+} from "../lib/algorithms.config";
+
+export interface Props {
+  /** 算法 slug（如 'bfs', 'dfs'） */
+  algoSlug: string;
+  /** 图的类型描述（如 '无向图', '带权有向图', 'DAG'） */
+  direction: string;
+  /** 左侧传输按钮配置 */
+  transportLeft?: TransportButton[];
+  /** 右侧传输按钮配置 */
+  transportRight?: TransportButton[];
+  /** 状态面板 HTML 字符串（替代 slot，避免 Astro 多层 slot 透传问题） */
+  statusPanelHtml?: string;
+}
+
+// ── 与 VizLayout.astro 保持一致的传输按钮类型 ──
+
+/** 预定义的播放控制按钮类型 */
+type TransportAction =
+  | 'skip-to-start'  // ⏮ 跳到开始
+  | 'step-back'       // ◀ 上一步
+  | 'step-forward'    // ▶ 下一步
+  | 'skip-to-end'     // ⏭ 跳到末尾
+  | 'reset';          // ↺ 重置
+
+interface TransportButton {
+  action: TransportAction;
+  title?: string;  // 覆盖默认 title
+}
+
+const { algoSlug, direction, statusPanelHtml = '' } = Astro.props;
+const config = getAlgorithmConfig(algoSlug);
+const legendKeys = getAlgorithmLegendKeys(algoSlug);
+const legendItems = resolveLegendItems(legendKeys);
+const subtitle = config
+  ? `${config.graph.nodes.length} 节点 · ${config.graph.edges.length} 边 · ${direction}`
+  : "无法加载算法配置";
+
+const title = config?.title ?? algoSlug;
+
+// 默认传输按钮配置
+const transportLeft = Astro.props.transportLeft ?? [
+  { action: "skip-to-start" },
+  { action: "step-back" },
+];
+const transportRight = Astro.props.transportRight ?? [
+  { action: "step-forward" },
+  { action: "skip-to-end" },
+  { action: "reset" },
+];
+---
+
+<VizLayout
+  {title}
+  subtitle={subtitle}
+  hasStatusPanel={true}
+  {transportLeft}
+  {transportRight}
+  {legendItems}
+>
+  <!-- 状态面板内容通过 set:html 直接传递（避免 Astro 多层 slot 透传问题） -->
+  {statusPanelHtml && (
+    <div slot="status-panel" set:html={statusPanelHtml} />
+  )}
+</VizLayout>
+
+<!-- 说明：各可视化页面的初始化脚本直接放在对应 .astro 文件中（不在 slot 内），
+     以确保 Astro 正确打包注入。这是已知的 Astro 限制：多层 slot 透传中的
+     <script> 不会被注入到最终 HTML。 -->

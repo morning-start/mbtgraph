@@ -1,0 +1,27 @@
+---
+import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">阶段</span><span class="viz-status-value" id="phase">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">u 标号</span><span class="viz-status-mono" id="u-label">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">v 标号</span><span class="viz-status-mono" id="v-label">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">紧边数</span><span class="viz-status-mono" id="tight-count">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">匹配进度</span><span class="viz-status-value" id="matching-status">—</span></div>
+<div class="viz-status-item" style="grid-column: span 2"><span class="viz-status-label">当前匹配</span><span class="viz-status-mono" id="total-cost">—</span></div>
+`;
+---
+
+<VizPage algoSlug="hungarian" direction="3×3 完全二分图" statusPanelHtml={statusPanelHtml} />
+
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import Hungarian from '../../lib/algs/hungarian';
+  import { hungarianGraph } from '../../lib/graph-data';
+
+  VizApp.init({
+    algoInstance: Hungarian,
+    title: "匈牙利算法（二分图匹配）",
+    subtitle: `${hungarianGraph.nodes.length} 节点 · ${hungarianGraph.edges.length} 边 · 完全二分图`,
+    ...hungarianGraph,
+  });
+</script>
