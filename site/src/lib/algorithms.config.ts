@@ -21,6 +21,7 @@ import Topo from './algs/topo';
 import Cycle from './algs/cycle';
 import CC from './algs/cc';
 import PageRank from './algs/pagerank';
+import Kruskal from './algs/kruskal';
 
 // ── 导入图数据 ──
 
@@ -31,6 +32,7 @@ import { topoGraph } from './graph-data/topo';
 import { cycleGraph } from './graph-data/cycle';
 import { ccGraph } from './graph-data/cc';
 import { pagerankGraph } from './graph-data/pagerank';
+import { kruskalGraph } from './graph-data/kruskal';
 
 // ── 算法配置类型 ──
 
@@ -104,6 +106,14 @@ export const algorithms: Record<string, AlgorithmConfig> = {
     title: 'PageRank',
     subtitle: '6 节点 · 9 边 · 带权有向图',
     slug: 'pagerank',
+  },
+  // 第 2 批：最小生成树
+  kruskal: {
+    module: Kruskal,
+    graph: kruskalGraph,
+    title: 'Kruskal 最小生成树',
+    subtitle: '6 节点 · 9 边 · 无向带权图',
+    slug: 'kruskal',
   },
 };
 

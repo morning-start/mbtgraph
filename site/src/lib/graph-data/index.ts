@@ -11,3 +11,4 @@ export { topoGraph } from './topo';
 export { cycleGraph } from './cycle';
 export { ccGraph } from './cc';
 export { pagerankGraph } from './pagerank';
+export { kruskalGraph } from './kruskal';

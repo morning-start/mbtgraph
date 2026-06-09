@@ -161,6 +161,7 @@ export default defineConfig({
 					items: [
 						{ label: 'Kruskal & Prim 对比详解', link: '/algorithms/mst/kruskal-prim/' },
 						{ label: 'Kruskal 算法 (独立版)', link: '/algorithms/mst/kruskal/' },
+						{ label: 'Kruskal 可视化', link: '/visualizations/kruskal/', badge: '新' },
 						{ label: 'Prim 算法 (独立版)', link: '/algorithms/mst/prim/' },
 					],
 				},
