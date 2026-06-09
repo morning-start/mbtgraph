@@ -231,45 +231,74 @@ const PageRank = createAlgo<PageRankStep>({
   },
 
   renderStep(renderer: VizRenderer, step: PageRankStep, mode: RenderMode, speed: number, colors: ColorMap): void {
+    const allIds = Object.keys(step.ranks);
+    const minRank = Math.min(...allIds.map(id => step.ranks[id]));
+    const maxRank = Math.max(...allIds.map(id => step.ranks[id]));
+
     switch (step.type) {
       case 'init':
       case 'iterate': {
-        // 迭代过程中保持 default 着色（不显示中间状态）
-        for (const id of Object.keys(step.ranks)) {
+        // 显示当前迭代的 rank 渐变分布，让用户看到每轮变化
+        for (const id of allIds) {
+          const color = rankToColor(step.ranks[id], minRank, maxRank);
           renderer.setNode(id, {
-            backgroundColor: colors.default.value,
-            borderColor: darken(colors.default.value),
+            backgroundColor: color,
+            borderColor: darken(color),
             borderWidth: 2,
             width: 46,
             height: 46,
-          }, mode, 100);
+          }, mode, speed);
         }
         break;
       }
 
       case 'computed': {
-        // 准备染色（先全部恢复 default）
-        for (const id of Object.keys(step.ranks)) {
+        // computed：保持最后迭代的着色状态（不做重置）
+        for (const id of allIds) {
+          const color = rankToColor(step.ranks[id], minRank, maxRank);
           renderer.setNode(id, {
-            backgroundColor: colors.default.value,
-            borderColor: darken(colors.default.value),
+            backgroundColor: color,
+            borderColor: darken(color),
             borderWidth: 2,
             width: 46,
             height: 46,
-          }, mode, 100);
+          }, mode, speed);
         }
         break;
       }
 
-      case 'color':
+      case 'color': {
+        // 逐个染色：已染色的节点用 rank 色，未染色的保持 default
+        const coloredCount = (step.rankInOrder ?? 0) + 1;
+        for (const id of allIds) {
+          const isColored = step.sortedIds.indexOf(id) < coloredCount;
+          if (isColored) {
+            const color = rankToColor(step.ranks[id], minRank, maxRank);
+            const isTop = step.sortedIds.indexOf(id) < 3;
+            renderer.setNode(id, {
+              backgroundColor: color,
+              borderColor: darken(color),
+              borderWidth: isTop ? 4 : 2,
+              width: isTop ? 52 : 46,
+              height: isTop ? 52 : 46,
+            }, mode, speed);
+          } else {
+            renderer.setNode(id, {
+              backgroundColor: colors.default.value,
+              borderColor: darken(colors.default.value),
+              borderWidth: 2,
+              width: 46,
+              height: 46,
+            }, mode, speed);
+          }
+        }
+        break;
+      }
+
       case 'finish': {
-        // 按 rank 高低统一染色
-        const ranks = step.ranks;
-        const ids = Object.keys(ranks);
-        const minRank = Math.min(...ids.map(id => ranks[id]));
-        const maxRank = Math.max(...ids.map(id => ranks[id]));
-        for (const id of ids) {
-          const color = rankToColor(ranks[id], minRank, maxRank);
+        // 最终：全部按 rank 染色，top-3 加大突出
+        for (const id of allIds) {
+          const color = rankToColor(step.ranks[id], minRank, maxRank);
           const isTop = step.sortedIds.indexOf(id) < 3;
           renderer.setNode(id, {
             backgroundColor: color,
@@ -278,10 +307,6 @@ const PageRank = createAlgo<PageRankStep>({
             width: isTop ? 52 : 46,
             height: isTop ? 52 : 46,
           }, mode, speed);
-        }
-        // 高亮 top-3 节点的入边
-        if (step.type === 'finish' || (step.type === 'color' && (step.rankInOrder ?? 0) < 3)) {
-          // 边高亮留给图例，本身只染节点
         }
         break;
       }
