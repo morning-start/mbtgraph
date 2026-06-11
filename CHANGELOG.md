@@ -5,6 +5,13 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 本项目遵循 [语义化版本](https://semver.org/spec/v2.0.0.html)规范。
 
+## [v0.16.0] - 2026-06-11
+
+### 改进
+- 📝 **文档补全** (2 项):
+  - 更新 `lib/algo/matching/README.md`: 添加 KM/Hopcroft-Karp/Edmonds 算法文档 (21→56 tests)
+  - 创建 `lib/algo/README.md`: 算法模块总索引 (19 模块, ~65 算法, 651 测试)
+
 ## [v0.15.0] - 2026-05-29
 
 ### 新增
