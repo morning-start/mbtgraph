@@ -12,6 +12,11 @@
   - 更新 `lib/algo/matching/README.md`: 添加 KM/Hopcroft-Karp/Edmonds 算法文档 (21→56 tests)
   - 创建 `lib/algo/README.md`: 算法模块总索引 (19 模块, ~65 算法, 651 测试)
 
+- 🔒 **API 审查与冻结**:
+  - 创建 `docs/API_SURFACE.md`: 完整 API 表面文档，冻结决策记录
+  - 修复 `shared_helpers.mbt` 可见性: `has_node`/`find_slot`/`remove_from_list` 改为 private
+  - 冻结 5 个 Trait、54 个结构体、~70 个函数的 API 表面
+
 ## [v0.15.0] - 2026-05-29
 
 ### 新增

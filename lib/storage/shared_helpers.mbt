@@ -1,8 +1,9 @@
 ///|
-/// 存储层公共工具函数
+/// 存储层内部工具函数
 ///
 /// 所有存储实现共用的辅助逻辑，避免重复代码。
-pub fn has_node(nodes : Array[@core.Node?], idx : Int) -> Bool {
+/// 仅供同包内 storage 模块使用。
+fn has_node(nodes : Array[@core.Node?], idx : Int) -> Bool {
   match nodes[idx] {
     None => false
     Some(_) => true
@@ -10,7 +11,7 @@ pub fn has_node(nodes : Array[@core.Node?], idx : Int) -> Bool {
 }
 
 ///|
-pub fn find_slot(nodes : Array[@core.Node?], i : Int, n : Int) -> Int {
+fn find_slot(nodes : Array[@core.Node?], i : Int, n : Int) -> Int {
   if i >= n {
     -1
   } else {
@@ -22,7 +23,7 @@ pub fn find_slot(nodes : Array[@core.Node?], i : Int, n : Int) -> Int {
 }
 
 ///|
-pub fn remove_from_list(
+fn remove_from_list(
   list : Array[(@core.NodeId, Double)],
   target : Int,
 ) -> (Bool, Array[(@core.NodeId, Double)]) {

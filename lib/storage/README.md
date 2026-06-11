@@ -30,7 +30,7 @@ storage/
 │   └── converter.mbt            10 个泛型转换函数（三层语义安全架构）
 │
 └── 公共工具
-    └── shared_helpers.mbt       4 个辅助函数
+    └── shared_helpers.mbt       6 个辅助函数（2 个公共 + 4 个内部）
 ```
 
 ---
@@ -333,10 +333,10 @@ let roundtrip = to_directed_adj_list(to_csr(original))
 |------|:------:|------|:----:|
 | `bubble_sort_by_weight()` | **私有 (fn)** | 冒泡排序（已废弃）| 🚫 v0.16.0 移出公共 API |
 | `int_max(a, b)` | pub (⚠️ 内部用) | 返回较大值 | ⚠️ 仅供内部使用 |
-| `has_node(nodes, idx)` | pub | 检查节点槽位占用 | 内部辅助 |
-| `find_slot(nodes, i, n)` | pub | 查找空闲槽位 | 内部辅助 |
-| `remove_from_list(list, target)` | pub | 从邻接表移除边 | 内部辅助 |
-| `find_max_node_id(graph)` | pub | 查找最大 NodeId | 内部辅助 |
+| `has_node(nodes, idx)` | fn | 检查节点槽位占用 | 内部辅助 |
+| `find_slot(nodes, i, n)` | fn | 查找空闲槽位 | 内部辅助 |
+| `remove_from_list(list, target)` | fn | 从邻接表移除边 | 内部辅助 |
+| `find_max_node_id(graph)` | pub | 查找最大 NodeId | 供 algo 包复用 |
 
 **为什么 int_max 仍为 public？**
 
