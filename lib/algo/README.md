@@ -1,8 +1,8 @@
 # mbtgraph 算法模块 (`algo/)
 
-> **版本**: v0.16.0 | **算法模块**: 19 个 | **总测试**: 651 通过
+> **版本**: v0.16.0 | **算法模块**: 20 个 | **总测试**: 940 通过
 
-提供 ~65 种图算法的完整实现，覆盖图分析的核心领域。
+提供 ~98 种图算法的完整实现，覆盖图分析的核心领域。
 
 ## 算法全景
 
@@ -66,23 +66,26 @@
 |------|:------:|:----:|------|
 | [dense_subgraph](dense_subgraph/) | 4 | 20 | K-Core / K-Truss / 三角计数 / 聚类系数 |
 | [coloring](coloring/) | 4 | 29 | 贪心/Welsh-Powell/DSATUR/精确着色 |
-| [clique](clique/) | 1 | 14 | Bron-Kerbosch 最大团 |
+| [clique](clique/) | 4 | 14 | Bron-Kerbosch 最大团/独立集/顶点覆盖 |
 | [cutpoints](cutpoints/) | 2 | 15 | Tarjan 割点 / 桥检测 |
 
 ### 🟣 特殊图与路径
 
 | 模块 | 算法数 | 测试 | 说明 |
 |------|:------:|:----:|------|
-| [euler](euler/) | 1 | 22 | Hierholzer 欧拉路径/回路 |
+| [euler](euler/) | 2 | 22 | Hierholzer 欧拉路径/回路（有向+无向） |
 | [hamiltonian](hamiltonian/) | 3 | 20 | 回溯/最近邻/Held-Karp TSP |
 | [recognition](recognition/) | 7 | 38 | 弦图/二部图/完全图/正则图/树/森林/Havel-Hakimi |
 | [operators](operators/) | 11 | 28 | 补图/反转/并交差/图积/线图/收缩/幂图 |
 
 ### ⚪ 辅助
 
-| 模块 | 说明 |
-|------|------|
-| [integration](integration/) | 跨模块集成测试 (10 tests) |
+| 模块 | 算法数 | 测试 | 说明 |
+|------|:------:|:----:|------|
+| [integration](integration/) | — | 10 | 跨模块集成测试 |
+| [generators](../../utils/generators/) | 14 | 56 | 经典图/随机图/网格图生成器 |
+
+> **generators** 位于 `lib/utils/generators/`，提供 14 个图生成函数，覆盖完全图/环/路径/星形/网格/二部图/Erdos-Renyi 等。
 
 ## 快速使用
 
@@ -146,8 +149,8 @@ algo/* → storage (测试构建)
 
 <div align="center">
 
-**📊 统计**: 19 模块 | ~65 算法 | 651 测试 | 100% 通过
+**📊 统计**: 20 模块 | ~98 算法 | 940 测试 | 100% 通过
 
-*最后更新: 2026-05-29 | mbtgraph v0.16.0*
+*最后更新: 2026-06-12 | mbtgraph v0.16.0*
 
 </div>
