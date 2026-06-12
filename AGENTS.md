@@ -374,6 +374,11 @@ moon coverage analyze        # 覆盖率分析
 | **算法目录** | `docs/algorithms_catalog.md` | 图算法全景分类与实现状态 |
 | **更新规范** | `docs/UPDATE_GUIDE.md` | Agent 文档自动化更新规则 |
 | **Trait设计** | `docs/design/graph_trait_and_module_architecture.md` | 6层Trait详细设计 |
+| **流网络设计** | `docs/design/flow_design.md` | 独立类型模式与6种算法 |
+| **社区检测设计** | `docs/design/community_design.md` | 模块度优化与4种算法 |
+| **图匹配设计** | `docs/design/matching_design.md` | 4种匹配算法设计决策 |
+| **I/O模块设计** | `docs/design/io_design.md` | DOT/JSON序列化与统计 |
+| **调度分析** | `docs/design/dispatch_analysis.md` | Trait动态调度分析 |
 | **存储调研** | `docs/report/graph_storage_survey.md` | 8种存储选型依据 |
 | **竞品汇总** | `docs/report/library_survey.md` | 主流图库对比表 |
 | **测试策略** | `docs/test_strategy.md` | 双轨测试方法论 |
