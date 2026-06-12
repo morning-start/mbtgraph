@@ -18,7 +18,7 @@ pub fn[G : @core.GraphReadable] johnson(
     return Ok(FloydWarshallResult::{ distances: [], next: [] })
   }
   let max_id = @storage.find_max_node_id(graph)
-  let size = @storage.int_max(max_id + 1, 1)
+  let size = if max_id + 1 > 1 { max_id + 1 } else { 1 }
   let node_list : Array[@core.NodeId] = []
   for nid in @core.GraphReadable::node_ids(graph) {
     node_list.push(nid)

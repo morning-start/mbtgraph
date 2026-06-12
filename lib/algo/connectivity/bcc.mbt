@@ -106,7 +106,7 @@ pub fn[G : @core.GraphReadable] biconnected_components(
     }
   }
   let max_id = @storage.find_max_node_id(graph)
-  let size = @storage.int_max(max_id + 1, 1)
+  let size = if max_id + 1 > 1 { max_id + 1 } else { 1 }
   let state = new_bcc_state(size)
   let root_children = Array::make(size, 0)
   for node in @core.GraphReadable::node_ids(graph) {

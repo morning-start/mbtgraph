@@ -84,12 +84,10 @@ pub fn[G : @core.GraphReadable] find_max_node_id(graph : G) -> Int {
 
 ///|
 /// 返回两个整数中的较大值
-///|
-/// 返回两个整数中的较大值
 ///
 /// ⚠️ **内部工具函数**：仅供 mbtgraph 内部模块使用。
 /// 外部代码应自行实现或等待 MoonBit 标准库提供 `Int::max()` 方法。
-pub fn int_max(a : Int, b : Int) -> Int {
+fn int_max(a : Int, b : Int) -> Int {
   if a > b {
     a
   } else {

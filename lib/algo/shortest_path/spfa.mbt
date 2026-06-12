@@ -22,7 +22,7 @@ pub fn[G : @core.GraphReadable] spfa(
     return Err("source node not found")
   }
   let max_id = @storage.find_max_node_id(graph)
-  let size = @storage.int_max(max_id + 1, 1)
+  let size = if max_id + 1 > 1 { max_id + 1 } else { 1 }
   let inf = 1000000000000000000.0
   let distances : Array[Double?] = Array::make(size, None)
   let parents : Array[@core.NodeId?] = Array::make(size, None)

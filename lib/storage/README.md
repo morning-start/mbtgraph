@@ -332,16 +332,13 @@ let roundtrip = to_directed_adj_list(to_csr(original))
 | 函数 | 可见性 | 用途 | 状态 |
 |------|:------:|------|:----:|
 | `bubble_sort_by_weight()` | **私有 (fn)** | 冒泡排序（已废弃）| 🚫 v0.16.0 移出公共 API |
-| `int_max(a, b)` | pub (⚠️ 内部用) | 返回较大值 | ⚠️ 仅供内部使用 |
+| `int_max(a, b)` | fn | 返回较大值 | 内部辅助 |
 | `has_node(nodes, idx)` | fn | 检查节点槽位占用 | 内部辅助 |
 | `find_slot(nodes, i, n)` | fn | 查找空闲槽位 | 内部辅助 |
 | `remove_from_list(list, target)` | fn | 从邻接表移除边 | 内部辅助 |
 | `find_max_node_id(graph)` | pub | 查找最大 NodeId | 供 algo 包复用 |
 
-**为什么 int_max 仍为 public？**
-
-被 6 个核心算法模块依赖（johnson/spfa/kosaraju/tarjan/bcc/components），
-贸然改会导致编译失败。计划在 v1.1.0 统一替换为内联实现后移除。
+**说明**: `int_max` 已私有化；6 个算法模块已切换为内联尺寸计算。
 
 ---
 
