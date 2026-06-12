@@ -5,7 +5,15 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 本项目遵循 [语义化版本](https://semver.org/spec/v2.0.0.html)规范。
 
-## [v0.16.0] - 2026-06-11
+## [v0.16.0] - 2026-06-12
+
+### 新增
+- 🏷️ **API 简短别名** (Phase 2, 11 个别名):
+  - **Euler**: `has_euler_path` / `has_euler_circuit` / `find_euler_path` / `find_euler_circuit`（去掉 `_undirected` 后缀）
+  - **Cutpoints**: `find_articulation_points` / `find_bridges`（去掉 `_undirected` 后缀）
+  - **Hamiltonian**: `find_hamiltonian_path` / `find_hamiltonian_circuit` / `can_have_hamiltonian_circuit`（去掉 `_backtrack`/`_quick_check`）
+  - **Clique**: `find_minimum_vertex_cover` / `find_minimum_vertex_cover_greedy`（`_exact`→默认, `_approx`→`_greedy`）
+  - 原始函数名保持可用，完全向后兼容
 
 ### 改进
 - 📝 **文档补全** (2 项):
@@ -15,7 +23,12 @@
 - 🔒 **API 审查与冻结**:
   - 创建 `docs/API_SURFACE.md`: 完整 API 表面文档，冻结决策记录
   - 修复 `shared_helpers.mbt` 可见性: `has_node`/`find_slot`/`remove_from_list` 改为 private
-  - 冻结 5 个 Trait、54 个结构体、~70 个函数的 API 表面
+  - 冻结 5 个 Trait、54 个结构体、~81 个函数的 API 表面
+  - 11 个简短别名已列入冻结范围
+
+### 统计数据
+- 全量测试 **940**（比 v0.15.0 增加 18），无回归
+- 净增 API 别名: 11 个
 
 ## [v0.15.0] - 2026-05-29
 

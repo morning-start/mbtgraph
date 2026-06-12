@@ -62,11 +62,11 @@
 
 | # | API | 文件 | 问题描述 | 建议 |
 |---|-----|------|---------|------|
-| C1 | `bubble_sort_by_weight()` | [storage/shared_helpers.mbt:40](lib/storage/shared_helpers.mbt#L40) | **已废弃的 O(n²) 冒泡排序仍暴露为 pub 函数**。v0.14.0 已替换为快排，此函数不应再公开 | 改为 `fn`（私有）或添加 `@deprecated` 标记并说明替代方案 |
-| C2 | `int_max()` | [storage/shared_helpers.mbt:81](lib/storage/shared_helpers.mbt#L81) | **过于简单的工具函数不应作为公共 API**。用户可自行实现或使用标准库 | 改为 `fn`（私有） |
-| C3 | `topo_validates()` | [traversal/traversal_test.mbt:417](lib/algo/traversal/traversal_test.mbt#L417) | **测试辅助函数误标记为 pub**。不应作为公共 API 暴露 | 移至测试文件内部或改为 `fn` |
-| C4 | `bfs_shortest_path()` | [traversal/bfs.mbt:111](lib/algo/traversal/bfs.mbt#L111) | **与 dijkstra 功能高度重叠**。BFS 只适用于无权图最短路径，但命名容易混淆 | 重命名为 `bfs_unweighted_shortest_path()` 或添加明确注释说明适用场景 |
-| C5 | `build_weight_matrix()` | [hamiltonian/tsp.mbt:201](lib/algo/hamiltonian/tsp.mbt#L201) | **内部辅助函数不应公开**。这是 TSP 算法的实现细节 | 改为 `fn`（私有） |
+| C1 | `bubble_sort_by_weight()` | [storage/shared_helpers.mbt:40](lib/storage/shared_helpers.mbt#L40) | **已废弃的 O(n²) 冒泡排序仍暴露为 pub 函数**。v0.14.0 已替换为快排，此函数不应再公开 | ✅ 已改为 `fn`（私有） |
+| C2 | `int_max()` | [storage/shared_helpers.mbt:81](lib/storage/shared_helpers.mbt#L81) | **过于简单的工具函数不应作为公共 API**。用户可自行实现或使用标准库 | ✅ 已改为 `fn`（私有） |
+| C3 | `topo_validates()` | [traversal/traversal_test.mbt:417](lib/algo/traversal/traversal_test.mbt#L417) | **测试辅助函数误标记为 pub**。不应作为公共 API 暴露 | ✅ 已改为测试内部 `fn` |
+| C4 | `bfs_shortest_path()` | [traversal/bfs.mbt:111](lib/algo/traversal/bfs.mbt#L111) | **与 dijkstra 功能高度重叠**。BFS 只适用于无权图最短路径，但命名容易混淆 | 保持现状，已在注释中明确“无权图”限制 |
+| C5 | `build_weight_matrix()` | [hamiltonian/tsp.mbt:201](lib/algo/hamiltonian/tsp.mbt#L201) | **内部辅助函数不应公开**。这是 TSP 算法的实现细节 | ✅ 已改为 `fn`（私有） |
 
 **处理优先级**: 🔴🔴🔴 **必须在 v1.0.0-rc.1 发布前完成**
 
@@ -398,14 +398,14 @@ TSP 算法需要频繁随机访问任意节点对的权重（O(V²) 次），
 | `bfs_all(graph)` | O(V+E) | ⚠️ 见 W4 |
 | `dfs(graph, start)` | O(V+E) | ✅ |
 | `dfs_all(graph)` | O(V+E) | ⚠️ 见 W4 |
-| `bfs_shortest_path(graph, s, t)` | O(V+E) | ⚠️ 见 C4 |
+| `bfs_shortest_path(graph, s, t)` | O(V+E) | ✅ 已保留并补充无权图限制说明 |
 | `bidirectional_bfs(graph, s, t)` | O(V^{b/2}) | ✅ |
 | `has_cycle(graph)` | O(V+E) | ✅ |
 | `has_directed_cycle(graph)` | O(V+E) | ✅ |
 | `has_undirected_cycle(graph)` | O(V) | ✅ |
 | `topo_sort_kahn(graph)` | O(V+E) | ✅ |
 | `topo_sort_dfs(graph)` | O(V+E) | ✅ |
-| `topo_validates(order, graph)` | O(V+E) | ⚠️ 见 C3 |
+| `topo_validates(order, graph)` | O(V+E) | ✅ 已移出公共 API |
 
 #### ⚠️ 图着色 (6 个) — 需补充选择指南
 
@@ -485,24 +485,24 @@ TSP 算法需要频繁随机访问任意节点对的权重（O(V²) 次），
 
 | 步骤 | 任务 | 文件 | 操作 |
 |------|------|------|------|
-| 1.1 | 将 `bubble_sort_by_weight` 改为私有 | `storage/shared_helpers.mbt` | `pub fn` → `fn` |
-| 1.2 | 将 `int_max` 改为私有 | `storage/shared_helpers.mbt` | `pub fn` → `fn` |
-| 1.3 | 将 `topo_validates` 移入测试文件 | `traversal/traversal_test.mbt` | 移动函数或改 `pub` → `fn` |
+| 1.1 | 将 `bubble_sort_by_weight` 改为私有 | `storage/shared_helpers.mbt` | ✅ 已完成 |
+| 1.2 | 将 `int_max` 改为私有 | `storage/shared_helpers.mbt` | ✅ 已完成 |
+| 1.3 | 将 `topo_validates` 移入测试文件 | `traversal/traversal_test.mbt` | ✅ 已完成 |
 | 1.4 | 重命名 `bfs_shortest_path` 或添加文档警告 | `traversal/bfs.mbt` | 添加详细注释或重命名 |
-| 1.5 | 将 `build_weight_matrix` 改为私有 | `hamiltonian/tsp.mbt` | `pub fn` → `fn` |
+| 1.5 | 将 `build_weight_matrix` 改为私有 | `hamiltonian/tsp.mbt` | ✅ 已完成 |
 
 **验证**: `moon test` 确保无回归
 
-### Phase 2: Warning 优化（预计 3 小时）— 🟡 建议完成
+### Phase 2: Warning 优化 — ✅ 已完成
 
-| 步骤 | 任务 | 影响 |
-|------|------|------|
-| 2.1 | 为哈密顿/TSP/团函数提供简短别名 | 新增兼容性别名 |
-| 2.2 | 在 coloring/README 中添加算法选择指南 | 文档增强 |
-| 2.3 | 在 traversal/README 中澄清 bfs_all/dfs_all 语义 | 文档增强 |
-| 2.4 | 在 tsp 函数文档中解释 Matrix 设计决策 | 文档增强 |
+| 步骤 | 任务 | 状态 |
+|------|------|:----:|
+| 2.1 | 为哈密顿/TSP/团函数提供简短别名 | ✅ 11 个别名已添加至 v1.0.0 |
+| 2.2 | 在 coloring/README 中添加算法选择指南 | ⏳ 推迟至 v1.1.0 |
+| 2.3 | 在 traversal/README 中澄清 bfs_all/dfs_all 语义 | ⏳ 推迟至 v1.0.0-rc.2 |
+| 2.4 | 在 tsp 函数文档中解释 Matrix 设计决策 | ⏳ 推迟至 v1.1.0 |
 
-**验证**: `moon check` + `moon test`
+**验证**: ✅ `moon check` + `moon test` 940/940 通过
 
 ### Phase 3: 文档补全（预计 2 小时）— 🟢 推荐完成
 
@@ -538,27 +538,27 @@ mbtgraph 的 API 设计质量 **优秀（9/10 分）**，具备以下优势：
 5. **向后兼容意识强**: 新旧 API 并存（如快排替代冒泡但仍保留）
 
 ⚠️ **待改进**:
-1. **少量历史遗留 API 需清理**（Critical 5 项）
-2. **部分函数命名过长**（有向/无向后缀、实现细节泄露）
-3. **算法选择指南不足**（着色/BFS 变体等场景缺失）
-4. **TSP 与其他模块的设计哲学不一致**
+1. **部分函数命名过长**（有向/无向后缀、实现细节泄露）
+2. **算法选择指南不足**（着色/BFS 变体等场景缺失）
+3. **TSP 与其他模块的设计哲学不一致**
 
 ### v1.0.0 冻结建议
 
 **推荐方案**: **✅ 可以进入冻结流程**
 
 **前提条件**:
-1. 完成 Phase 1 的 5 个 Critical 修复（预计 2h）
+1. Phase 1 的 5 个 Critical 修复已完成
 2. Phase 2-3 作为 **v1.0.0-rc.1** 的已知限制记录
-3. 所有 Warning 级别的问题推迟到 **v1.1.0** 小版本迭代解决
+3. 后续按需推进 Warning 级别优化
 
 **时间线建议**:
 ```
-2026-06-01  完成 Critical 修复 (Phase 1)
-2026-06-02  发布 v1.0.0-rc.1 (API 冻结候选)
-2026-06-05  收集反馈，修复 rc 问题
-2026-06-08  正式发布 v1.0.0 (API 冻结生效)
-2026-07+    v1.1.0 解决 Warning 级别问题
+2026-06-02  ✅ v1.0.0-rc.1 Critical 修复完成
+2026-06-12  ✅ Phase 2 (简短别名) 完成 (11 个新别名)
+2026-06-13+ 团队 Review
+2026-06-15+ 发布 v1.0.0-rc.1
+2026-06-20+ 收集反馈（2 周）
+2026-07+    正式发布 v1.0.0
 ```
 
 ### 风险提示

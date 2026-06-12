@@ -201,7 +201,7 @@ let result = dinic(net, 0, 3)
 | 函数 | 理由 |
 |------|------|
 | `find_max_node_id` | 被 algo 包调用 |
-| `int_max` | 被 algo 包调用 |
+| `int_max` | 私有内部工具，已不对外暴露 |
 
 ---
 
@@ -209,7 +209,7 @@ let result = dinic(net, 0, 3)
 
 | API | 废弃版本 | 替代方案 | 计划移除 |
 |-----|---------|---------|---------|
-| `bubble_sort_by_weight` | v0.14.0 | 快速排序 (csr_qsort) | v2.0.0 |
+| `bubble_sort_by_weight` | v0.14.0 | 快速排序 (csr_qsort) | 已私有化 |
 
 ---
 
@@ -240,10 +240,30 @@ let result = dinic(net, 0, 3)
 
 ---
 
+## 7. API 简短别名（v1.0.0 Phase 2 新增）
+
+| 模块 | 别名 | 原始名称 |
+|------|------|---------|
+| euler | `has_euler_path(graph)` | `has_euler_path_undirected(graph)` |
+| euler | `has_euler_circuit(graph)` | `has_euler_circuit_undirected(graph)` |
+| euler | `find_euler_path(graph)` | `find_euler_path_undirected(graph)` |
+| euler | `find_euler_circuit(graph)` | `find_euler_circuit_undirected(graph)` |
+| cutpoints | `find_articulation_points(graph)` | `find_articulation_points_undirected(graph)` |
+| cutpoints | `find_bridges(graph)` | `find_bridges_undirected(graph)` |
+| hamiltonian | `find_hamiltonian_path(graph)` | `find_hamiltonian_path_backtrack(graph)` |
+| hamiltonian | `find_hamiltonian_circuit(graph)` | `find_hamiltonian_circuit_backtrack(graph)` |
+| hamiltonian | `can_have_hamiltonian_circuit(graph)` | `has_hamiltonian_circuit_quick_check(graph)` |
+| clique | `find_minimum_vertex_cover(graph)` | `find_minimum_vertex_cover_exact(graph)` |
+| clique | `find_minimum_vertex_cover_greedy(graph)` | `find_minimum_vertex_cover_approx(graph)` |
+
+**冻结决策**: 11 个别名已同步冻结，原始函数名保持可用（向后兼容）。
+
+---
+
 <div align="center">
 
 **🔒 API Freeze Status**: 本文档记录的 API 表面已冻结
 
-*最后更新: 2026-06-11 | mbtgraph v0.16.0*
+*最后更新: 2026-06-12 | mbtgraph v0.16.0 | **940 tests** | **~278 API surface***
 
 </div>
