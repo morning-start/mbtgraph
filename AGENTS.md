@@ -374,10 +374,10 @@ moon coverage analyze        # 覆盖率分析
 | **算法目录** | `docs/algorithms_catalog.md` | 图算法全景分类与实现状态 |
 | **更新规范** | `docs/UPDATE_GUIDE.md` | Agent 文档自动化更新规则 |
 | **Trait设计** | `docs/design/graph_trait_and_module_architecture.md` | 6层Trait详细设计 |
-| **存储调研** | `docs/design/graph_storage_survey.md` | 8种存储选型依据 |
-| **竞品汇总** | `docs/reference/library_survey.md` | 主流图库对比表 |
-| **测试策略** | `docs/quality/test_strategy.md` | 双轨测试方法论 |
-| **重构分析** | `docs/design/v0130_refactoring_analysis.md` | 接口重构时机与方案 |
+| **存储调研** | `docs/report/graph_storage_survey.md` | 8种存储选型依据 |
+| **竞品汇总** | `docs/report/library_survey.md` | 主流图库对比表 |
+| **测试策略** | `docs/test_strategy.md` | 双轨测试方法论 |
+| **重构分析** | `docs/report/v0130_refactoring_analysis.md` | 接口重构时机与方案 |
 | **项目记忆** | `MEMORY.md` | 关键决策与架构约定 |
 | **变更日志** | `CHANGELOG.md` | 版本历史记录 |
 
