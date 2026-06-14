@@ -18,7 +18,7 @@
 ### Trait 层次
 
 ```
-GraphReadable (13 methods, 根 trait)
+GraphReadable (12 methods, 根 trait)
 ├── GraphWritable     (5 methods, 动态存储)
 ├── GraphDirected     (6 methods, 有向扩展)
 │   └── GraphFull    = Writable + Directed (组合别名)
@@ -201,7 +201,6 @@ let result = dinic(net, 0, 3)
 | 函数 | 理由 |
 |------|------|
 | `find_max_node_id` | 被 algo 包调用 |
-| `int_max` | 私有内部工具，已不对外暴露 |
 
 ---
 
@@ -230,6 +229,7 @@ let result = dinic(net, 0, 3)
 | API | 废弃版本 | 替代方案 | 计划移除 |
 |-----|---------|---------|---------|
 | `bubble_sort_by_weight` | v0.14.0 | 快速排序 (csr_qsort) | 已私有化 |
+| `int_max` | v0.16.0 | 用户自行实现或使用标准库 | 已私有化 |
 
 ---
 
@@ -237,14 +237,15 @@ let result = dinic(net, 0, 3)
 
 | 类别 | 数量 | 说明 |
 |------|:----:|------|
-| 公共结构体 | 56 | 含 4 I/O 统计类型 |
+| 公共结构体 | 61 | 含 4 I/O 统计类型 + 8 存储 + 4 Builder |
+| 公共枚举 | 9 | GraphError, IOError, DegreeMode, DotToken 等 |
 | 公共 Trait | 5 | GraphReadable → GraphBatchReadable |
-| Trait 方法 | 27 | 全部冻结 |
-| 存储类型 | 8 | 含 4 Builder |
+| Trait 方法 | 26 | 全部冻结 |
+| 存储类型 | 8 种结构 + 4 Builder | 共 12 个存储相关类型 |
 | 算法模块 | 19 | lib/algo/* |
-| 算法函数 | 98 | 不含 11 个别名 |
-| 简短别名 | 11 | Phase 2 新增（函数总调用约 109）|
-| 结果类型 | 52 | 19 个算法模块独有结果类型 |
+| 泛型算法函数 | 136 | `[G: GraphReadable]` 约束的算法 |
+| 简短别名 | 11 | Phase 2 新增（函数总调用约 147）|
+| 结果类型 | 42 | 19 个算法模块独有结果类型 |
 | I/O 函数 | ~15 | DOT/JSON/统计 |
 
 ---
@@ -258,6 +259,9 @@ let result = dinic(net, 0, 3)
 | Result 方法命名不统一 | `size()`/`count()`/`edge_count()` | v2.0.0 |
 | matching 函数命名不统一 | 4 种命名模式 | v2.0.0 |
 | FlowNetwork 用 Int 节点索引 | 与 NodeId 类型体系分离 | v2.0.0 |
+| 着色算法选择指南缺失 | greedy_coloring 与 greedy_coloring_with_order 功能重叠，用户难以选择 | v1.1.0 |
+| TSP 使用 Matrix 而非 Graph trait | 性能考虑（矩阵 O(1) 访问），文档需解释 | v1.1.0 |
+| bfs_all/dfs_all 语义不明确 | 需说明是否按连通分量分别遍历 | v1.0.0-rc.2 |
 
 ---
 
@@ -265,6 +269,6 @@ let result = dinic(net, 0, 3)
 
 **🔒 API Freeze Status**: 本文档记录的 API 表面已冻结
 
-*最后更新: 2026-06-12 | mbtgraph v0.16.0 | **940 tests** | **~278 API surface***
+*最后更新: 2026-06-14 | mbtgraph v0.16.0 | **940 tests** | **~278 API surface***
 
 </div>
