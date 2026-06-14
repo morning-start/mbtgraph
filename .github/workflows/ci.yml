@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  # MoonBit 库测试
+  test-lib:
+    name: Test MoonBit Library
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup MoonBit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - name: Check formatting
+        run: moon fmt --check
+
+      - name: Type check
+        run: moon check
+
+      - name: Run tests
+        run: moon test
+
+  # Site 构建测试
+  test-site:
+    name: Build Site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        working-directory: ./site
+        run: bun install --frozen-lockfile
+
+      - name: Build site
+        working-directory: ./site
+        run: bun run build

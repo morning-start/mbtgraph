@@ -2,12 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main, site]
-    paths:
-      - 'site/**'
-      - '.github/workflows/deploy-pages.yml'
-  pull_request:
-    branches: [main, site]
+    branches: [master, main]
     paths:
       - 'site/**'
       - '.github/workflows/deploy-pages.yml'
