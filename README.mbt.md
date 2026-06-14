@@ -246,6 +246,8 @@ moon check lib/algo/shortest_path  # 单模块编译检查
 
 设计灵感来源: [NetworkX](https://networkx.org/) (Python), [petgraph](https://github.com/petgraph/petgraph) (Rust), [JGraphT](https://jgrapht.org/) (Java), [LEMON](https://lemon.cs.elte.hu/) (C++)
 
+官方赛事支持: [2026 MoonBit 创新大赛](https://www.gitlink.org.cn/competitions/track1_2026MoonBit) — 本项目为 MoonBit 生态图算法赛道的参赛作品
+
 ---
 
 <div align="center">
