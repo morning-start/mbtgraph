@@ -5,6 +5,82 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 本项目遵循 [语义化版本](https://semver.org/spec/v2.0.0.html)规范。
 
+## [v1.1.0] - 2026-06-14
+
+### 新增
+
+- 🔄 **CI/CD 工作流上线**:
+  - `ci.yml`: moon check + moon test + site build (on push/PR to master/main)
+  - `deploy-pages.yml`: trigger on master/main push only
+  - 运行环境: ubuntu-latest with latest MoonBit/Bun
+
+### 改进
+
+- 📝 **文档同步更新**:
+  - 更新 CHANGELOG.md 添加 v1.0.0 和 v1.1.0 章节
+  - 更新 ROADMAP.md 反映 v1.0.0 已发布
+  - 更新 TODO.md 添加 v1.1.0 任务
+  - 更新 MEMORY.md 反映当前版本状态
+  - 更新 AGENTS.md 项目统计信息
+  - 更新 README.mbt.md 算法数量和测试数据
+
+### 统计数据
+
+- 全量测试 **940**（无回归）
+- CI/CD 工作流已上线 ✅
+
+---
+
+## [v1.0.0] - 2026-06-14
+
+### 🎉 正式发布
+
+**首个生产级稳定版本** — API 冻结，向后兼容保证
+
+### 亮点
+
+- ✅ **65+ 图算法** 覆盖 8 大领域（遍历/路径/MST/连通性/流/匹配/图论/NP-Hard + 高级分析）
+- ✅ **5 层 Trait 设计** 业界领先（对标 petgraph 的 3 层）
+- ✅ **8 种存储结构** 完整覆盖（AdjList/Matrix/EdgeList/CSR/CSC + 有向/无向变体）
+- ✅ **940 测试用例** 全部通过，核心模块覆盖率 ≥ 85%
+- ✅ **原生多后端** 支持 wasm/js/native
+- ✅ **API 冻结** 5 Trait + 61 结构体 + ~136 函数，向后兼容保证
+
+### 核心算法清单
+
+```
+遍历: BFS, DFS, 双向 BFS, 拓扑排序, 环检测
+最短路径: Dijkstra, Bellman-Ford, Floyd-Warshall, A*, Johnson, SPFA, 双向 Dijkstra, Yen's K短路
+MST: Kruskal, Prim
+连通性: CC, Tarjan SCC, Kosaraju SCC, BCC 双连通分量
+流网络: Edmonds-Karp, Dinic, 最小费用最大流, Push-Relabel, Stoer-Wagner 最小割, 容量缩放
+匹配: Hungarian, Hopcroft-Karp, Edmonds (一般图), Kuhn-Munkres (最大权)
+图论: Euler, Cutpoints/Bridges, Coloring, Clique, Hamiltonian/TSP
+社区检测: Louvain, Leiden, 标签传播, 谱聚类
+中心性: 度/介数/接近/特征向量/Katz/Harmonic/通信/集团中心性
+链接预测: 共同邻居/Jaccard/Adamic-Adar/优先连接/资源分配
+稠密子图: K-Core/K-Truss/三角计数/聚类系数
+图算子: 补图/反转/并交差/笛卡尔积/张量积/字典序积/线图/收缩/幂图
+特殊图识别: 弦图/二部图/正则图/完全图/树/森林/Havel-Hakimi
+I/O: DOT/JSON 序列化 + 图统计工具
+```
+
+### 统计数据
+
+| 指标 | 数值 |
+|------|------|
+| 算法模块 | 19+ |
+| 算法总数 | 65+ |
+| 测试用例 | 940 |
+| 代码行数 | ~15,000+ |
+| Git Tags | 17 (v0.1.0 → v1.0.0) |
+
+### 致谢
+
+感谢所有贡献者和 MoonBit 社区的支持！
+
+---
+
 ## [v0.16.0] - 2026-06-12
 
 ### 新增

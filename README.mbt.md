@@ -78,10 +78,10 @@ match @traversal.topo_sort_kahn(g) {
 
 - **5 层 Trait 分层** — GraphReadable → Writable → Directed → Full + BatchRead，接口隔离设计
 - **8 种存储结构** — 有向/无向邻接表、邻接矩阵、边集数组、CSR/CSC，覆盖稀疏/稠密/动态/静态全场景
-- **49+ 图算法** — 覆盖遍历、最短路径、MST、连通性、网络流、匹配、欧拉路径、着色、团检测、TSP、PageRank、中心性、社区检测等
+- **65+ 图算法** — 覆盖遍历、最短路径、MST、连通性、网络流、匹配、欧拉路径、着色、团检测、TSP、PageRank、中心性、社区检测等
 - **I/O 序列化** — DOT 格式读写、JSON 序列化、图统计工具
 - **纯函数语义** — 深拷贝隔离副作用，保证算法不可变性
-- **736 测试用例** — Blackbox + Whitebox 双轨测试，跨存储一致性验证
+- **940 测试用例** — Blackbox + Whitebox 双轨测试，跨存储一致性验证
 
 ---
 
@@ -169,10 +169,10 @@ match @traversal.topo_sort_kahn(g) {
 | 维度 | mgraph | graphviz | **mbtgraph** |
 |------|:------:|:--------:|:------------:|
 | 定位 | 轻量遍历库 | Graphviz 重写 | **完整算法库** |
-| 算法数 | 2 | 0 | **49+** |
+| 算法数 | 2 | 0 | **65+** |
 | 存储数 | 0 | 1 | **8** |
 | Trait 层 | 1 | 0 | **5** |
-| 测试数 | ~10 | fixture parity | **736** |
+| 测试数 | ~10 | fixture parity | **940** |
 
 ### 技术特性
 

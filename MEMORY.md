@@ -5,10 +5,13 @@
 - **模块**: `morning-start/mbtgraph`
 - **语言**: MoonBit (native/wasm/js 三后端)
 - **协议**: MIT
-- **版本**: v0.14.0 (详见 CHANGELOG.md)
+- **版本**: v1.1.0 🎉 正式发布 + CI/CD 上线 (详见 CHANGELOG.md)
 - **架构**: MoonBit 包按目录组织，每个目录含 `moon.pkg` 声明依赖
-- **总测试数**: 运行 `moon test` 获取实时数据
-- **算法模块**: **15 子模块** + **~49 算法** + **I/O 模块** (DOT/JSON/统计)
+- **总测试数**: 940 (运行 `moon test` 获取实时数据)
+- **算法模块**: **19+ 子模块** + **~65 算法** + **I/O 模块** (DOT/JSON/统计)
+- **API 状态**: ✅ 冻结 (5 Trait + 61 结构体 + ~136 函数)
+- **CI/CD**: ✅ GitHub Actions 工作流已配置
+- **当前阶段**: 阶段 2 - 生态建设 + 社区运营
 
 ## 2. 图存储架构
 
@@ -105,12 +108,12 @@ lib/
 
 | 日期 | 决策（一句话） | 详情链接 |
 |------|---------------|---------|
+| 2026-06-14 | v1.1.0 CI/CD 上线：GitHub Actions 工作流配置完成 | CHANGELOG.md |
+| 2026-06-14 | v1.0.0 正式发布：首个生产级稳定版本，API 冻结，65+ 算法，940 测试 | CHANGELOG.md |
+| 2026-06-14 | ROADMAP/TODO 重新规划：基于 v0.16.0 API 冻结现状，三阶段发展 | docs/ROADMAP.md, docs/TODO.md |
+| 2026-06-12 | v0.16.0 API 冻结候选完成：5 Trait + 61 结构体 + ~136 函数冻结 | CHANGELOG.md |
+| 2026-05-29 | v0.15.0 经典算法扩充：7 新模块, ~41 算法/函数, 182 新测试 | CHANGELOG.md |
 | 2026-05-29 | v0.14.0 性能优化：heap/CSR快排/batch等8任务完成 | CHANGELOG.md |
-| 2026-05-28 | v0.13.0 接口重构：6→5层trait, 移除EdgeIterable, 参数g→graph | docs/design/v0130_refactoring_analysis.md |
-| 2026-05-27 | AGENTS.md 剥离动态元数据，降为稳定文档 | — |
-| 2026-05-25 | ROADMAP v2.0.0：四阶段规划+方案C功能集群+小步快跑 | docs/design/roadmap_v2_redesign_2026-05-25.md |
-| 2026-05-23 | MIT 协议确认 + Sprint任务体系 + Git Tags 管理 | — |
-| 2026-05-22 | P5 五大模块全部完成（Euler/Cutpoints/Coloring/Clique/Hamiltonian） | — |
 
 ### 架构与设计决策
 
@@ -154,3 +157,4 @@ moon build --target <tgt> # 构建（wasm/js/native）
 > **算法复杂度详情**: 详见 docs/algorithms_catalog.md
 > **任务规划**: 详见 docs/TODO.md
 > **变更日志**: 详见 CHANGELOG.md
+> **当前状态**: v1.1.0 正式发布 + CI/CD 上线，进入文档完善阶段

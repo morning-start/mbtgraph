@@ -1,6 +1,8 @@
 # mbtgraph — MoonBit 图算法库
 
-MoonBit 生态首个生产级图算法库：8 种存储 + 5 层 Trait + ~49 算法 + 高级图分析。
+MoonBit 生态首个生产级图算法库：8 种存储 + 5 层 Trait + 65+ 算法 + 高级图分析。
+
+**当前版本**: v1.1.0 🎉 正式发布 + CI/CD 上线 | **测试**: 940 | **API**: ✅ 冻结
 
 ## 📖 快速入口
 
@@ -76,7 +78,7 @@ site/
 | 组件 | 技术 | 说明 |
 |------|------|------|
 | 语言 | MoonBit | native/wasm/js 三后端 |
-| 架构 | Trait-based (6 层) | GraphReadable → Writable → Directed → Full |
+| 架构 | Trait-based (5 层) | GraphReadable → Writable → Directed → Full |
 | 存储实现 | 8 种结构 | AdjList/Matrix/EdgeList/CSR/CSC (+ 有向/无向变体) |
 | 算法模式 | 双轨制 | Trait 兼容型 + 独立类型型 (如 FlowNetwork) |
 | 测试体系 | Blackbox + Whitebox | `*_test.mbt` + `*_wbtest.mbt` |
