@@ -374,6 +374,7 @@ moon coverage analyze        # 覆盖率分析
 | **路线图** | `docs/ROADMAP.md` | 版本规划与时间线 |
 | **任务清单** | `docs/TODO.md` | 当前版本任务分解 |
 | **算法目录** | `docs/algorithms_catalog.md` | 图算法全景分类与实现状态 |
+| **API Reference** | `docs/api/README.md` | API 参考文档索引（23 个模块） |
 | **更新规范** | `docs/UPDATE_GUIDE.md` | Agent 文档自动化更新规则 |
 | **Trait设计** | `docs/design/graph_trait_and_module_architecture.md` | 6层Trait详细设计 |
 | **流网络设计** | `docs/design/flow_design.md` | 独立类型模式与6种算法 |
