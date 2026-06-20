@@ -1,3 +1,68 @@
 #!/bin/sh
+#
+# mbtgraph pre-commit hook
+#
+# Runs moon fmt + moon info + moon check before each commit.
+# Skips if no .mbt files are staged.
+#
 
-moon check
+set -e
+
+# Detect staged .mbt files
+STAGED=$(git diff-index --cached --name-only --diff-filter=ACM HEAD 2>/dev/null | grep '\.mbt$' || true)
+
+if [ -z "$STAGED" ]; then
+    exit 0
+fi
+
+echo "[pre-commit] Detected staged .mbt files, running checks..."
+
+# Step 1: Format code with moon fmt
+echo "[pre-commit] Running moon fmt..."
+if ! moon fmt 2>&1; then
+    echo ""
+    echo "============================================"
+    echo "  ERROR: moon fmt failed!"
+    echo "  Commit aborted."
+    echo "============================================"
+    exit 1
+fi
+
+# Re-add formatted files (moon fmt may modify files)
+FORMAT_CHANGED=$(git diff --name-only -- '*.mbt' 2>/dev/null || true)
+if [ -n "$FORMAT_CHANGED" ]; then
+    echo "[pre-commit] Re-staging formatted files..."
+    git add $FORMAT_CHANGED
+fi
+
+# Step 2: Update interface files (.mbti) with moon info
+echo "[pre-commit] Running moon info..."
+if ! moon info 2>&1; then
+    echo ""
+    echo "============================================"
+    echo "  ERROR: moon info failed!"
+    echo "  Commit aborted."
+    echo "============================================"
+    exit 1
+fi
+
+# Stage updated .mbti files if any changed
+MBTI_CHANGED=$(git diff --name-only -- '*.mbti' 2>/dev/null || true)
+if [ -n "$MBTI_CHANGED" ]; then
+    echo "[pre-commit] Staging updated .mbti files..."
+    git add $MBTI_CHANGED
+fi
+
+# Step 3: Compile check with moon check
+echo "[pre-commit] Running moon check..."
+if ! moon check 2>&1; then
+    echo ""
+    echo "============================================"
+    echo "  ERROR: moon check failed!"
+    echo "  Commit aborted. Fix compilation errors first."
+    echo "============================================"
+    exit 1
+fi
+
+echo "[pre-commit] All checks passed (fmt + info + check)."
+exit 0

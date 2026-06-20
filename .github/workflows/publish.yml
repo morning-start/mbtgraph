@@ -1,0 +1,35 @@
+name: Publish to mooncakes.io
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  publish:
+    name: Publish Module
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup MoonBit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - name: Write credentials
+        run: |
+          mkdir -p ~/.moon
+          echo '{"mooncakes.io": {"token": "${{ secrets.MOONCAKES_TOKEN }}"}}' > ~/.moon/credentials.json
+
+      - name: Check formatting
+        run: moon fmt --check
+
+      - name: Type check
+        run: moon check
+
+      - name: Run tests
+        run: moon test
+
+      - name: Publish
+        run: moon publish
