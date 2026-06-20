@@ -8,3 +8,4 @@ memory/
 .trae
 .codegraph/
 .atomcode/
+.env
