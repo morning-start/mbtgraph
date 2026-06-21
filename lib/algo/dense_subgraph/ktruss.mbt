@@ -30,7 +30,9 @@
 /// - 仅适用于无向图
 /// - 孤立节点不参与任何 truss
 /// - 时间复杂度取决于图的稠密程度
-pub fn[G : @core.GraphReadable] k_truss_decomposition(graph : G) -> KTrussResult {
+pub fn[G : @core.GraphReadable] k_truss_decomposition(
+  graph : G,
+) -> KTrussResult {
   let n = @core.GraphReadable::node_count(graph)
   let result_graph = @storage.new_undirected()
 
@@ -121,7 +123,8 @@ pub fn[G : @core.GraphReadable] k_truss_decomposition(graph : G) -> KTrussResult
           @core.NodeId(a),
           @core.NodeId(b),
           weight,
-        ) |> ignore
+        )
+        |> ignore
       }
     }
   }

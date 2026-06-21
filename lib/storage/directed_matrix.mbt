@@ -22,23 +22,23 @@ pub fn new_directed_matrix(capacity : Int) -> DirectedMatrix {
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedMatrix with node_count(self) -> Int {
+pub impl @core.GraphReadable for DirectedMatrix with fn node_count(self) -> Int {
   self.node_count
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedMatrix with edge_count(self) -> Int {
+pub impl @core.GraphReadable for DirectedMatrix with fn edge_count(self) -> Int {
   self.edge_count
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedMatrix with contains_node(self, id) -> Bool {
+pub impl @core.GraphReadable for DirectedMatrix with fn contains_node(self, id) -> Bool {
   let idx = id.0
   idx >= 0 && idx < self.nodes.length() && has_node(self.nodes, idx)
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedMatrix with contains_edge(
+pub impl @core.GraphReadable for DirectedMatrix with fn contains_edge(
   self,
   from,
   to,
@@ -56,7 +56,7 @@ pub impl @core.GraphReadable for DirectedMatrix with contains_edge(
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedMatrix with get_node(self, id) -> Double? {
+pub impl @core.GraphReadable for DirectedMatrix with fn get_node(self, id) -> Double? {
   match self.nodes[id.0] {
     Some(n) => Some(n.data)
     None => None
@@ -64,12 +64,12 @@ pub impl @core.GraphReadable for DirectedMatrix with get_node(self, id) -> Doubl
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedMatrix with get_edge(self, from, to) -> Double? {
+pub impl @core.GraphReadable for DirectedMatrix with fn get_edge(self, from, to) -> Double? {
   self.matrix[from.0][to.0]
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedMatrix with neighbors(self, id) -> Iter[
+pub impl @core.GraphReadable for DirectedMatrix with fn neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let idx = id.0
@@ -86,8 +86,8 @@ pub impl @core.GraphReadable for DirectedMatrix with neighbors(self, id) -> Iter
   r.iter()
 }
 
-///
-pub impl @core.GraphReadable for DirectedMatrix with neighbors_with_weight(
+///|
+pub impl @core.GraphReadable for DirectedMatrix with fn neighbors_with_weight(
   self,
   id,
 ) -> Iter[(@core.NodeId, Double)] {
@@ -120,7 +120,7 @@ fn dm_count_row(matrix : Array[Array[Double?]], cap : Int, row : Int) -> Int {
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedMatrix with degree(self, id) -> Int {
+pub impl @core.GraphReadable for DirectedMatrix with fn degree(self, id) -> Int {
   let idx = id.0
   if idx < 0 || idx >= self.capacity {
     0
@@ -130,17 +130,17 @@ pub impl @core.GraphReadable for DirectedMatrix with degree(self, id) -> Int {
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedMatrix with is_directed(self) -> Bool {
+pub impl @core.GraphReadable for DirectedMatrix with fn is_directed(self) -> Bool {
   true
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedMatrix with is_empty(self) -> Bool {
+pub impl @core.GraphReadable for DirectedMatrix with fn is_empty(self) -> Bool {
   self.node_count == 0
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedMatrix with node_ids(self) -> Iter[
+pub impl @core.GraphReadable for DirectedMatrix with fn node_ids(self) -> Iter[
   @core.NodeId,
 ] {
   let r : Array[@core.NodeId] = []
@@ -153,7 +153,7 @@ pub impl @core.GraphReadable for DirectedMatrix with node_ids(self) -> Iter[
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedMatrix with edges(self) -> Iter[
+pub impl @core.GraphReadable for DirectedMatrix with fn edges(self) -> Iter[
   (@core.NodeId, @core.NodeId, Double),
 ] {
   let r : Array[(@core.NodeId, @core.NodeId, Double)] = []
@@ -171,7 +171,7 @@ pub impl @core.GraphReadable for DirectedMatrix with edges(self) -> Iter[
 }
 
 ///|
-pub impl @core.GraphWritable for DirectedMatrix with add_node(self, data) -> @core.NodeId {
+pub impl @core.GraphWritable for DirectedMatrix with fn add_node(self, data) -> @core.NodeId {
   let slot = find_slot(self.nodes, 0, self.nodes.length())
   let idx = if slot >= 0 { slot } else { self.nodes.length() }
   let g = self
@@ -183,7 +183,7 @@ pub impl @core.GraphWritable for DirectedMatrix with add_node(self, data) -> @co
 }
 
 ///|
-pub impl @core.GraphWritable for DirectedMatrix with remove_node(self, id) -> Bool {
+pub impl @core.GraphWritable for DirectedMatrix with fn remove_node(self, id) -> Bool {
   let idx = id.0
   if idx < 0 || idx >= self.capacity {
     return false
@@ -218,7 +218,7 @@ pub impl @core.GraphWritable for DirectedMatrix with remove_node(self, id) -> Bo
 }
 
 ///|
-pub impl @core.GraphWritable for DirectedMatrix with add_edge(
+pub impl @core.GraphWritable for DirectedMatrix with fn add_edge(
   self,
   from,
   to,
@@ -250,7 +250,11 @@ pub impl @core.GraphWritable for DirectedMatrix with add_edge(
 }
 
 ///|
-pub impl @core.GraphWritable for DirectedMatrix with remove_edge(self, from, to) -> Bool {
+pub impl @core.GraphWritable for DirectedMatrix with fn remove_edge(
+  self,
+  from,
+  to,
+) -> Bool {
   let fi = from.0
   let ti = to.0
   if fi < 0 || fi >= self.capacity || ti < 0 || ti >= self.capacity {
@@ -269,7 +273,7 @@ pub impl @core.GraphWritable for DirectedMatrix with remove_edge(self, from, to)
 }
 
 ///|
-pub impl @core.GraphWritable for DirectedMatrix with clear(self) -> Unit {
+pub impl @core.GraphWritable for DirectedMatrix with fn clear(self) -> Unit {
   let g = self
   for i in 0..<g.capacity {
     g.nodes[i] = None
@@ -282,7 +286,7 @@ pub impl @core.GraphWritable for DirectedMatrix with clear(self) -> Unit {
 }
 
 ///|
-pub impl @core.GraphDirected for DirectedMatrix with in_neighbors(self, id) -> Iter[
+pub impl @core.GraphDirected for DirectedMatrix with fn in_neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let idx = id.0
@@ -300,7 +304,7 @@ pub impl @core.GraphDirected for DirectedMatrix with in_neighbors(self, id) -> I
 }
 
 ///|
-pub impl @core.GraphDirected for DirectedMatrix with out_neighbors(self, id) -> Iter[
+pub impl @core.GraphDirected for DirectedMatrix with fn out_neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   @core.GraphReadable::neighbors(self, id)
@@ -321,7 +325,7 @@ fn dm_count_col(matrix : Array[Array[Double?]], cap : Int, col : Int) -> Int {
 }
 
 ///|
-pub impl @core.GraphDirected for DirectedMatrix with in_degree(self, id) -> Int {
+pub impl @core.GraphDirected for DirectedMatrix with fn in_degree(self, id) -> Int {
   let idx = id.0
   if idx < 0 || idx >= self.capacity {
     0
@@ -331,12 +335,12 @@ pub impl @core.GraphDirected for DirectedMatrix with in_degree(self, id) -> Int 
 }
 
 ///|
-pub impl @core.GraphDirected for DirectedMatrix with out_degree(self, id) -> Int {
+pub impl @core.GraphDirected for DirectedMatrix with fn out_degree(self, id) -> Int {
   @core.GraphReadable::degree(self, id)
 }
 
 ///|
-pub impl @core.GraphDirected for DirectedMatrix with predecessors(self, id) -> Iter[
+pub impl @core.GraphDirected for DirectedMatrix with fn predecessors(self, id) -> Iter[
   (@core.NodeId, Double),
 ] {
   let idx = id.0
@@ -354,7 +358,7 @@ pub impl @core.GraphDirected for DirectedMatrix with predecessors(self, id) -> I
 }
 
 ///|
-pub impl @core.GraphDirected for DirectedMatrix with successors(self, id) -> Iter[
+pub impl @core.GraphDirected for DirectedMatrix with fn successors(self, id) -> Iter[
   (@core.NodeId, Double),
 ] {
   let idx = id.0

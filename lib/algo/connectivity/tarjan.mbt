@@ -2,6 +2,7 @@
 /// Tarjan 强连通分量算法
 ///
 /// 基于 DFS 时间戳和栈的单次遍历算法，时间复杂度 O(V+E)。
+
 ///|
 priv struct TarjanState {
   index : Array[Int]

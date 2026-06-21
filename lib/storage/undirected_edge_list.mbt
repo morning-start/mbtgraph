@@ -15,17 +15,21 @@ pub fn new_undirected_edge_list() -> UndirectedEdgeListGraph {
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedEdgeListGraph with node_count(self) -> Int {
+pub impl @core.GraphReadable for UndirectedEdgeListGraph with fn node_count(
+  self,
+) -> Int {
   self.node_cnt
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedEdgeListGraph with edge_count(self) -> Int {
+pub impl @core.GraphReadable for UndirectedEdgeListGraph with fn edge_count(
+  self,
+) -> Int {
   self.edges.length()
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedEdgeListGraph with contains_node(
+pub impl @core.GraphReadable for UndirectedEdgeListGraph with fn contains_node(
   self,
   id,
 ) -> Bool {
@@ -34,7 +38,7 @@ pub impl @core.GraphReadable for UndirectedEdgeListGraph with contains_node(
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedEdgeListGraph with contains_edge(
+pub impl @core.GraphReadable for UndirectedEdgeListGraph with fn contains_edge(
   self,
   from,
   to,
@@ -48,7 +52,10 @@ pub impl @core.GraphReadable for UndirectedEdgeListGraph with contains_edge(
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedEdgeListGraph with get_node(self, id) -> Double? {
+pub impl @core.GraphReadable for UndirectedEdgeListGraph with fn get_node(
+  self,
+  id,
+) -> Double? {
   let idx = id.0
   if idx < 0 || idx >= self.nodes.length() {
     return None
@@ -60,7 +67,7 @@ pub impl @core.GraphReadable for UndirectedEdgeListGraph with get_node(self, id)
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedEdgeListGraph with get_edge(
+pub impl @core.GraphReadable for UndirectedEdgeListGraph with fn get_edge(
   self,
   from,
   to,
@@ -77,7 +84,7 @@ pub impl @core.GraphReadable for UndirectedEdgeListGraph with get_edge(
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedEdgeListGraph with neighbors(
+pub impl @core.GraphReadable for UndirectedEdgeListGraph with fn neighbors(
   self,
   id,
 ) -> Iter[@core.NodeId] {
@@ -92,8 +99,8 @@ pub impl @core.GraphReadable for UndirectedEdgeListGraph with neighbors(
   r.iter()
 }
 
-///
-pub impl @core.GraphReadable for UndirectedEdgeListGraph with neighbors_with_weight(
+///|
+pub impl @core.GraphReadable for UndirectedEdgeListGraph with fn neighbors_with_weight(
   self,
   id,
 ) -> Iter[(@core.NodeId, Double)] {
@@ -109,7 +116,10 @@ pub impl @core.GraphReadable for UndirectedEdgeListGraph with neighbors_with_wei
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedEdgeListGraph with degree(self, id) -> Int {
+pub impl @core.GraphReadable for UndirectedEdgeListGraph with fn degree(
+  self,
+  id,
+) -> Int {
   let mut c = 0
   for e in self.edges {
     if e.from == id || e.to == id {
@@ -120,17 +130,19 @@ pub impl @core.GraphReadable for UndirectedEdgeListGraph with degree(self, id) -
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedEdgeListGraph with is_directed(self) -> Bool {
+pub impl @core.GraphReadable for UndirectedEdgeListGraph with fn is_directed(
+  self,
+) -> Bool {
   false
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedEdgeListGraph with is_empty(self) -> Bool {
+pub impl @core.GraphReadable for UndirectedEdgeListGraph with fn is_empty(self) -> Bool {
   self.node_cnt == 0
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedEdgeListGraph with node_ids(self) -> Iter[
+pub impl @core.GraphReadable for UndirectedEdgeListGraph with fn node_ids(self) -> Iter[
   @core.NodeId,
 ] {
   let r : Array[@core.NodeId] = []
@@ -143,7 +155,7 @@ pub impl @core.GraphReadable for UndirectedEdgeListGraph with node_ids(self) -> 
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedEdgeListGraph with edges(self) -> Iter[
+pub impl @core.GraphReadable for UndirectedEdgeListGraph with fn edges(self) -> Iter[
   (@core.NodeId, @core.NodeId, Double),
 ] {
   let r : Array[(@core.NodeId, @core.NodeId, Double)] = []
@@ -154,7 +166,7 @@ pub impl @core.GraphReadable for UndirectedEdgeListGraph with edges(self) -> Ite
 }
 
 ///|
-pub impl @core.GraphWritable for UndirectedEdgeListGraph with add_node(
+pub impl @core.GraphWritable for UndirectedEdgeListGraph with fn add_node(
   self,
   data,
 ) -> @core.NodeId {
@@ -170,7 +182,7 @@ pub impl @core.GraphWritable for UndirectedEdgeListGraph with add_node(
 }
 
 ///|
-pub impl @core.GraphWritable for UndirectedEdgeListGraph with remove_node(
+pub impl @core.GraphWritable for UndirectedEdgeListGraph with fn remove_node(
   self,
   id,
 ) -> Bool {
@@ -211,7 +223,7 @@ fn uel_contains_edge(
 }
 
 ///|
-pub impl @core.GraphWritable for UndirectedEdgeListGraph with add_edge(
+pub impl @core.GraphWritable for UndirectedEdgeListGraph with fn add_edge(
   self,
   from,
   to,
@@ -245,7 +257,7 @@ pub impl @core.GraphWritable for UndirectedEdgeListGraph with add_edge(
 }
 
 ///|
-pub impl @core.GraphWritable for UndirectedEdgeListGraph with remove_edge(
+pub impl @core.GraphWritable for UndirectedEdgeListGraph with fn remove_edge(
   self,
   from,
   to,
@@ -265,7 +277,7 @@ pub impl @core.GraphWritable for UndirectedEdgeListGraph with remove_edge(
 }
 
 ///|
-pub impl @core.GraphWritable for UndirectedEdgeListGraph with clear(self) -> Unit {
+pub impl @core.GraphWritable for UndirectedEdgeListGraph with fn clear(self) -> Unit {
   let g = self
   for i in 0..<g.nodes.length() {
     g.nodes[i] = None
@@ -273,6 +285,3 @@ pub impl @core.GraphWritable for UndirectedEdgeListGraph with clear(self) -> Uni
   g.edges = []
   g.node_cnt = 0
 }
-
-
-

@@ -12,7 +12,9 @@
 
 ///|
 /// 任意有向图 → 有向邻接表
-pub fn[G : @core.GraphDirected] to_directed_adj_list(graph : G) -> DirectedAdjList {
+pub fn[G : @core.GraphDirected] to_directed_adj_list(
+  graph : G,
+) -> DirectedAdjList {
   let r = new_directed()
   for nid in @core.GraphReadable::node_ids(graph) {
     match @core.GraphReadable::get_node(graph, nid) {
@@ -208,7 +210,9 @@ pub fn[G : @core.GraphReadable] to_undirected_edge_list(
 /// 如果同时存在 `(a→b)` 和 `(b→a)`，第二条会因为 `EdgeAlreadyExists` 被丢弃。
 ///
 /// 典型用途：算法需要无向图输入，但数据源是有向的。
-pub fn[G : @core.GraphReadable] as_undirected(graph : G) -> UndirectedAdjList raise {
+pub fn[G : @core.GraphReadable] as_undirected(
+  graph : G,
+) -> UndirectedAdjList raise {
   assert_true(@core.GraphReadable::is_directed(graph))
   let r = new_undirected()
   for nid in @core.GraphReadable::node_ids(graph) {

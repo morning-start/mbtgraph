@@ -159,7 +159,13 @@ pub fn dinic(graph : FlowNetwork, source : Int, sink : Int) -> MaxFlowResult {
   let mut total_flow = 0.0
 
   while true {
-    let (level, can_reach) = dinic_bfs(graph.capacity, work_flow, n, source, sink)
+    let (level, can_reach) = dinic_bfs(
+      graph.capacity,
+      work_flow,
+      n,
+      source,
+      sink,
+    )
 
     if !can_reach {
       break

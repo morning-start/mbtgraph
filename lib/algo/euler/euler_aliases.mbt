@@ -25,6 +25,8 @@ pub fn[G : @core.GraphReadable] find_euler_path(graph : G) -> EulerPathResult {
 
 ///|
 /// 查找无向图的欧拉回路（find_euler_circuit_undirected 的别名）
-pub fn[G : @core.GraphReadable] find_euler_circuit(graph : G) -> EulerCircuitResult {
+pub fn[G : @core.GraphReadable] find_euler_circuit(
+  graph : G,
+) -> EulerCircuitResult {
   find_euler_circuit_undirected(graph)
 }

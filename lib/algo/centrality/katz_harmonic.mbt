@@ -1,3 +1,4 @@
+///|
 /// Katz 中心性, Harmonic 中心性, 通信能力, 集团中心性
 ///
 /// 对不连通图使用 harmonic 风格计算
@@ -265,7 +266,7 @@ pub fn[G : @core.GraphReadable] communication_centrality(
 
   if n <= 2 {
     let scores : Array[Double] = Array::make(n, 0.0)
-    return CommunicationResult::{ scores }
+    return CommunicationResult::{ scores, }
   }
 
   let base_efficiency = compute_network_efficiency(graph, n, -1)
@@ -281,7 +282,7 @@ pub fn[G : @core.GraphReadable] communication_centrality(
     v = v + 1
   }
 
-  CommunicationResult::{ scores }
+  CommunicationResult::{ scores, }
 }
 
 ///|
@@ -311,7 +312,11 @@ fn[G : @core.GraphReadable] compute_network_efficiency(
     }
     i = i + 1
   }
-  if count > 0 { total / count.to_double() } else { 0.0 }
+  if count > 0 {
+    total / count.to_double()
+  } else {
+    0.0
+  }
 }
 
 ///|
@@ -330,7 +335,9 @@ fn[G : @core.GraphReadable] all_pairs_bfs_comm(
     head = head + 1
     for w in @core.GraphReadable::neighbors(graph, @core.NodeId(v)) {
       let wi = w.0
-      if wi == exclude { continue }
+      if wi == exclude {
+        continue
+      }
       if wi >= 0 && wi < n && dist[wi] < 0 {
         dist[wi] = dist[v] + 1
         queue.push(wi)
@@ -392,10 +399,16 @@ pub fn[G : @core.GraphReadable] group_betweenness_centrality(
 
   let mut s = 0
   while s < n {
-    if in_group[s] { s = s + 1; continue }
+    if in_group[s] {
+      s = s + 1
+      continue
+    }
     let mut t = s + 1
     while t < n {
-      if in_group[t] { t = t + 1; continue }
+      if in_group[t] {
+        t = t + 1
+        continue
+      }
       // 计算完整图上 s->t 的最短距离
       let dist_full = group_bfs_to_target(graph, s, t, n, [])
       if dist_full > 0 {
@@ -427,7 +440,9 @@ fn[G : @core.GraphReadable] group_bfs_to_target(
   n : Int,
   blocked : Array[Bool],
 ) -> Int {
-  if source == target { return 0 }
+  if source == target {
+    return 0
+  }
   let visited : Array[Bool] = Array::make(n, false)
   visited[source] = true
   let queue : Array[(Int, Int)] = [(source, 0)]
@@ -437,9 +452,13 @@ fn[G : @core.GraphReadable] group_bfs_to_target(
     head = head + 1
     for w in @core.GraphReadable::neighbors(graph, @core.NodeId(v)) {
       let wi = w.0
-      if wi == target { return d + 1 }
+      if wi == target {
+        return d + 1
+      }
       if wi >= 0 && wi < n && !visited[wi] {
-        if blocked.length() > wi && blocked[wi] { continue }
+        if blocked.length() > wi && blocked[wi] {
+          continue
+        }
         visited[wi] = true
         queue.push((wi, d + 1))
       }

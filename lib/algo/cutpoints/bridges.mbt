@@ -112,7 +112,9 @@ fn[G : @core.GraphReadable] tarjan_bridge_dfs(
 /// }
 /// println("总桥数: ${result.count}")
 /// ```
-pub fn[G : @core.GraphReadable] find_bridges_undirected(graph : G) -> BridgeResult {
+pub fn[G : @core.GraphReadable] find_bridges_undirected(
+  graph : G,
+) -> BridgeResult {
   let nc = @core.GraphReadable::node_count(graph)
   if nc == 0 {
     return BridgeResult::{ bridges: [], is_bridge: [], count: 0 }
@@ -182,6 +184,8 @@ pub fn[G : @core.GraphReadable] find_bridges_undirected(graph : G) -> BridgeResu
 /// let result = find_bridges_directed(g)
 /// println("桥的数量: ${result.count}")
 /// ```
-pub fn[G : @core.GraphDirected] find_bridges_directed(graph : G) -> BridgeResult {
+pub fn[G : @core.GraphDirected] find_bridges_directed(
+  graph : G,
+) -> BridgeResult {
   find_bridges_undirected(graph)
 }

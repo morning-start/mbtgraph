@@ -8,7 +8,10 @@
 // ============================================================================
 
 ///|
-fn[G : @core.GraphReadable] copy_nodes(g : G, target : @storage.UndirectedAdjList) -> Unit {
+fn[G : @core.GraphReadable] copy_nodes(
+  g : G,
+  target : @storage.UndirectedAdjList,
+) -> Unit {
   for nid in @core.GraphReadable::node_ids(g) {
     match @core.GraphReadable::get_node(g, nid) {
       Some(data) => @core.GraphWritable::add_node(target, data) |> ignore
@@ -18,7 +21,10 @@ fn[G : @core.GraphReadable] copy_nodes(g : G, target : @storage.UndirectedAdjLis
 }
 
 ///|
-fn[G : @core.GraphReadable] copy_nodes_directed(g : G, target : @storage.DirectedAdjList) -> Unit {
+fn[G : @core.GraphReadable] copy_nodes_directed(
+  g : G,
+  target : @storage.DirectedAdjList,
+) -> Unit {
   for nid in @core.GraphReadable::node_ids(g) {
     match @core.GraphReadable::get_node(g, nid) {
       Some(data) => @core.GraphWritable::add_node(target, data) |> ignore
@@ -29,7 +35,11 @@ fn[G : @core.GraphReadable] copy_nodes_directed(g : G, target : @storage.Directe
 
 ///|
 /// 为图积创建 n1 * n2 个节点
-fn make_product_nodes(r : @storage.UndirectedAdjList, n1 : Int, n2 : Int) -> Unit {
+fn make_product_nodes(
+  r : @storage.UndirectedAdjList,
+  n1 : Int,
+  n2 : Int,
+) -> Unit {
   let mut i = 0
   while i < n1 {
     let mut j = 0
@@ -43,7 +53,9 @@ fn make_product_nodes(r : @storage.UndirectedAdjList, n1 : Int, n2 : Int) -> Uni
 
 ///|
 /// 收集所有边（含双向），用于图积计算
-fn[G : @core.GraphReadable] collect_edges_bidi(g : G) -> Array[(@core.NodeId, @core.NodeId, Double)] {
+fn[G : @core.GraphReadable] collect_edges_bidi(
+  g : G,
+) -> Array[(@core.NodeId, @core.NodeId, Double)] {
   let result : Array[(@core.NodeId, @core.NodeId, Double)] = []
   for triple in @core.GraphReadable::edges(g) {
     let (f, t, w) = triple
@@ -57,6 +69,7 @@ fn[G : @core.GraphReadable] collect_edges_bidi(g : G) -> Array[(@core.NodeId, @c
 // 一元算子
 // ============================================================================
 
+///|
 /// 补图：顶点集不变，边集取补
 ///
 /// 对无向图 G = (V, E) 构造其补图 Ḡ = (V, Ē)，
@@ -69,7 +82,9 @@ fn[G : @core.GraphReadable] collect_edges_bidi(g : G) -> Array[(@core.NodeId, @c
 /// **返回值** 新建的 `UndirectedAdjList`，包含所有原图节点和补边集
 ///
 /// **复杂度** O(V²)
-pub fn[G : @core.GraphReadable] complement(graph : G) -> @storage.UndirectedAdjList {
+pub fn[G : @core.GraphReadable] complement(
+  graph : G,
+) -> @storage.UndirectedAdjList {
   let r = @storage.new_undirected()
   copy_nodes(graph, r)
   let nids : Array[@core.NodeId] = []
@@ -90,6 +105,7 @@ pub fn[G : @core.GraphReadable] complement(graph : G) -> @storage.UndirectedAdjL
   r
 }
 
+///|
 /// 反转图：有向边的方向全部反转
 ///
 /// 对有向图 G = (V, E) 构造其反转图 G^R = (V, E^R)，
@@ -117,6 +133,7 @@ pub fn[G : @core.GraphReadable] reverse(graph : G) -> @storage.DirectedAdjList {
 // 二元算子
 // ============================================================================
 
+///|
 /// 并图：顶点集取并，边集取并
 ///
 /// 对两幅无向图 G₁ = (V₁, E₁) 和 G₂ = (V₂, E₂) 构造并图 G₁ ∪ G₂ = (V₁∪V₂, E₁∪E₂)。
@@ -164,6 +181,7 @@ pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] graph_union(
   r
 }
 
+///|
 /// 交图：边集取交（仅保留两图中同时存在的边）
 ///
 /// 对两幅无向图 G₁ 和 G₂ 构造交图 G₁ ∩ G₂，
@@ -203,6 +221,7 @@ pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] graph_intersection(
   r
 }
 
+///|
 /// 差图：保留在 a 中但不在 b 中的边
 ///
 /// 对两幅无向图 G₁ 和 G₂ 构造差图 G₁ \ G₂，
@@ -242,6 +261,7 @@ pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] graph_difference(
 // 图积
 // ============================================================================
 
+///|
 /// 笛卡尔积 G₁ □ G₂（又称直积、盒积）
 ///
 /// 顶点集为 V₁ × V₂，节点 (i, j) 的 ID 编码为 `i.0 * n2 + j.0`。
@@ -288,6 +308,7 @@ pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] cartesian_product(
   r
 }
 
+///|
 /// 张量积 G₁ × G₂（又称 Kronecker 积、直接积）
 ///
 /// 顶点集为 V₁ × V₂。
@@ -327,6 +348,7 @@ pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] tensor_product(
   r
 }
 
+///|
 /// 字典序积 G₁[G₂]（又称复合图）
 ///
 /// 顶点集为 V₁ × V₂。
@@ -383,6 +405,7 @@ pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] lexicographic_product
 // 线图与收缩
 // ============================================================================
 
+///|
 /// 线图 L(G)（Line Graph）
 ///
 /// 构造原图 G 的线图：L(G) 的每个顶点对应 G 的一条边，
@@ -395,7 +418,9 @@ pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] lexicographic_product
 /// **返回值** 新建的 `UndirectedAdjList`，顶点对应原图的边
 ///
 /// **复杂度** O(E²)
-pub fn[G : @core.GraphReadable] line_graph(graph : G) -> @storage.UndirectedAdjList {
+pub fn[G : @core.GraphReadable] line_graph(
+  graph : G,
+) -> @storage.UndirectedAdjList {
   let r = @storage.new_undirected()
   let edge_list : Array[(@core.NodeId, @core.NodeId, Double)] = []
   for triple in @core.GraphReadable::edges(graph) {
@@ -417,7 +442,8 @@ pub fn[G : @core.GraphReadable] line_graph(graph : G) -> @storage.UndirectedAdjL
       let (f1, t1, _) = edge_list[i]
       let (f2, t2, _) = edge_list[j]
       if f1 == f2 || f1 == t2 || t1 == f2 || t1 == t2 {
-        @core.GraphWritable::add_edge(r, edge_ids[i], edge_ids[j], 1.0) |> ignore
+        @core.GraphWritable::add_edge(r, edge_ids[i], edge_ids[j], 1.0)
+        |> ignore
       }
       j = j + 1
     }
@@ -426,6 +452,7 @@ pub fn[G : @core.GraphReadable] line_graph(graph : G) -> @storage.UndirectedAdjL
   r
 }
 
+///|
 /// 边收缩：将节点 u 合并到节点 v 中
 ///
 /// 移去节点 u，将所有与 u 关联的边重新连接到 v。
@@ -477,6 +504,7 @@ pub fn[G : @core.GraphReadable] contract(
 // 幂图
 // ============================================================================
 
+///|
 /// 幂图 G^k（k-th Power Graph）
 ///
 /// 顶点集与原图相同，在所有最短路径距离 ≤ k 的节点对之间添加边。
@@ -524,7 +552,9 @@ pub fn[G : @core.GraphReadable] power_graph(
     }
     for target in @core.GraphReadable::node_ids(graph) {
       let d = dist[target.0]
-      if d > 0 && d <= k && !@core.GraphReadable::contains_edge(r, start, target) {
+      if d > 0 &&
+        d <= k &&
+        !@core.GraphReadable::contains_edge(r, start, target) {
         @core.GraphWritable::add_edge(r, start, target, 1.0) |> ignore
       }
     }

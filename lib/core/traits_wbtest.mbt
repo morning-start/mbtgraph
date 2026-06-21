@@ -22,23 +22,23 @@ fn new_mock(directed : Bool) -> MockGraph {
 // --- GraphReadable (12 methods) ---
 
 ///|
-impl GraphReadable for MockGraph with node_count(self) -> Int {
+impl GraphReadable for MockGraph with fn node_count(self) -> Int {
   self.node_cnt
 }
 
 ///|
-impl GraphReadable for MockGraph with edge_count(self) -> Int {
+impl GraphReadable for MockGraph with fn edge_count(self) -> Int {
   self.edges.length()
 }
 
 ///|
-impl GraphReadable for MockGraph with contains_node(self, id) -> Bool {
+impl GraphReadable for MockGraph with fn contains_node(self, id) -> Bool {
   let idx = id.0
   idx >= 0 && idx < self.nodes.length()
 }
 
 ///|
-impl GraphReadable for MockGraph with contains_edge(self, from, to) -> Bool {
+impl GraphReadable for MockGraph with fn contains_edge(self, from, to) -> Bool {
   for e in self.edges {
     match e {
       (f, t, _) => if f == from && t == to { return true }
@@ -48,7 +48,7 @@ impl GraphReadable for MockGraph with contains_edge(self, from, to) -> Bool {
 }
 
 ///|
-impl GraphReadable for MockGraph with get_node(self, id) -> Double? {
+impl GraphReadable for MockGraph with fn get_node(self, id) -> Double? {
   let idx = id.0
   if idx < 0 || idx >= self.nodes.length() {
     None
@@ -58,7 +58,7 @@ impl GraphReadable for MockGraph with get_node(self, id) -> Double? {
 }
 
 ///|
-impl GraphReadable for MockGraph with get_edge(self, from, to) -> Double? {
+impl GraphReadable for MockGraph with fn get_edge(self, from, to) -> Double? {
   for e in self.edges {
     match e {
       (f, t, w) => if f == from && t == to { return Some(w) }
@@ -68,7 +68,7 @@ impl GraphReadable for MockGraph with get_edge(self, from, to) -> Double? {
 }
 
 ///|
-impl GraphReadable for MockGraph with neighbors(self, id) -> Iter[NodeId] {
+impl GraphReadable for MockGraph with fn neighbors(self, id) -> Iter[NodeId] {
   let r : Array[NodeId] = []
   for e in self.edges {
     match e {
@@ -78,8 +78,8 @@ impl GraphReadable for MockGraph with neighbors(self, id) -> Iter[NodeId] {
   r.iter()
 }
 
-///
-impl GraphReadable for MockGraph with neighbors_with_weight(self, id) -> Iter[
+///|
+impl GraphReadable for MockGraph with fn neighbors_with_weight(self, id) -> Iter[
   (NodeId, Double),
 ] {
   let r : Array[(NodeId, Double)] = []
@@ -92,7 +92,7 @@ impl GraphReadable for MockGraph with neighbors_with_weight(self, id) -> Iter[
 }
 
 ///|
-impl GraphReadable for MockGraph with degree(self, id) -> Int {
+impl GraphReadable for MockGraph with fn degree(self, id) -> Int {
   let mut c = 0
   for e in self.edges {
     match e {
@@ -103,17 +103,17 @@ impl GraphReadable for MockGraph with degree(self, id) -> Int {
 }
 
 ///|
-impl GraphReadable for MockGraph with is_directed(self) -> Bool {
+impl GraphReadable for MockGraph with fn is_directed(self) -> Bool {
   self.directed
 }
 
 ///|
-impl GraphReadable for MockGraph with is_empty(self) -> Bool {
+impl GraphReadable for MockGraph with fn is_empty(self) -> Bool {
   self.nodes.length() == 0
 }
 
 ///|
-impl GraphReadable for MockGraph with node_ids(self) -> Iter[NodeId] {
+impl GraphReadable for MockGraph with fn node_ids(self) -> Iter[NodeId] {
   let r : Array[NodeId] = []
   for i in 0..<self.nodes.length() {
     r.push(self.nodes[i].id)
@@ -122,7 +122,7 @@ impl GraphReadable for MockGraph with node_ids(self) -> Iter[NodeId] {
 }
 
 ///|
-impl GraphReadable for MockGraph with edges(self) -> Iter[
+impl GraphReadable for MockGraph with fn edges(self) -> Iter[
   (NodeId, NodeId, Double),
 ] {
   self.edges.iter()
@@ -131,7 +131,7 @@ impl GraphReadable for MockGraph with edges(self) -> Iter[
 // --- GraphWritable (+5 methods, inherits Readable) ---
 
 ///|
-impl GraphWritable for MockGraph with add_node(self, data) -> NodeId {
+impl GraphWritable for MockGraph with fn add_node(self, data) -> NodeId {
   let g = self
   let idx = g.nodes.length()
   let id = NodeId(idx)
@@ -141,7 +141,7 @@ impl GraphWritable for MockGraph with add_node(self, data) -> NodeId {
 }
 
 ///|
-impl GraphWritable for MockGraph with remove_node(self, id) -> Bool {
+impl GraphWritable for MockGraph with fn remove_node(self, id) -> Bool {
   let idx = id.0
   if idx < 0 || idx >= self.nodes.length() {
     return false
@@ -159,7 +159,7 @@ impl GraphWritable for MockGraph with remove_node(self, id) -> Bool {
 }
 
 ///|
-impl GraphWritable for MockGraph with add_edge(self, from, to, data) -> Result[
+impl GraphWritable for MockGraph with fn add_edge(self, from, to, data) -> Result[
   Unit,
   GraphError,
 ] {
@@ -177,7 +177,7 @@ impl GraphWritable for MockGraph with add_edge(self, from, to, data) -> Result[
 }
 
 ///|
-impl GraphWritable for MockGraph with remove_edge(self, from, to) -> Bool {
+impl GraphWritable for MockGraph with fn remove_edge(self, from, to) -> Bool {
   let ne : Array[(NodeId, NodeId, Double)] = []
   let mut found = false
   for e in self.edges {
@@ -196,7 +196,7 @@ impl GraphWritable for MockGraph with remove_edge(self, from, to) -> Bool {
 }
 
 ///|
-impl GraphWritable for MockGraph with clear(self) -> Unit {
+impl GraphWritable for MockGraph with fn clear(self) -> Unit {
   let g = self
   g.nodes = []
   g.edges = []
@@ -206,7 +206,7 @@ impl GraphWritable for MockGraph with clear(self) -> Unit {
 // --- GraphDirected (+6 methods, inherits Readable) ---
 
 ///|
-impl GraphDirected for MockGraph with in_neighbors(self, id) -> Iter[NodeId] {
+impl GraphDirected for MockGraph with fn in_neighbors(self, id) -> Iter[NodeId] {
   let r : Array[NodeId] = []
   for e in self.edges {
     match e {
@@ -217,12 +217,12 @@ impl GraphDirected for MockGraph with in_neighbors(self, id) -> Iter[NodeId] {
 }
 
 ///|
-impl GraphDirected for MockGraph with out_neighbors(self, id) -> Iter[NodeId] {
+impl GraphDirected for MockGraph with fn out_neighbors(self, id) -> Iter[NodeId] {
   GraphReadable::neighbors(self, id)
 }
 
 ///|
-impl GraphDirected for MockGraph with in_degree(self, id) -> Int {
+impl GraphDirected for MockGraph with fn in_degree(self, id) -> Int {
   let mut c = 0
   for e in self.edges {
     match e {
@@ -233,12 +233,12 @@ impl GraphDirected for MockGraph with in_degree(self, id) -> Int {
 }
 
 ///|
-impl GraphDirected for MockGraph with out_degree(self, id) -> Int {
+impl GraphDirected for MockGraph with fn out_degree(self, id) -> Int {
   GraphReadable::degree(self, id)
 }
 
 ///|
-impl GraphDirected for MockGraph with predecessors(self, id) -> Iter[
+impl GraphDirected for MockGraph with fn predecessors(self, id) -> Iter[
   (NodeId, Double),
 ] {
   let r : Array[(NodeId, Double)] = []
@@ -251,7 +251,7 @@ impl GraphDirected for MockGraph with predecessors(self, id) -> Iter[
 }
 
 ///|
-impl GraphDirected for MockGraph with successors(self, id) -> Iter[
+impl GraphDirected for MockGraph with fn successors(self, id) -> Iter[
   (NodeId, Double),
 ] {
   let r : Array[(NodeId, Double)] = []
@@ -266,7 +266,7 @@ impl GraphDirected for MockGraph with successors(self, id) -> Iter[
 // --- GraphBatchReadable (+2 methods, inherits Readable) ---
 
 ///|
-impl GraphBatchReadable for MockGraph with batch_neighbors(
+impl GraphBatchReadable for MockGraph with fn batch_neighbors(
   self,
   ids : Array[NodeId],
 ) -> Array[Array[NodeId]] {
@@ -284,7 +284,7 @@ impl GraphBatchReadable for MockGraph with batch_neighbors(
 }
 
 ///|
-impl GraphBatchReadable for MockGraph with batch_edges(
+impl GraphBatchReadable for MockGraph with fn batch_edges(
   self,
   pairs : Array[(NodeId, NodeId)],
 ) -> Array[Double?] {
@@ -596,5 +596,3 @@ test "MockGraph BatchReadable: batch_edges returns per-pair weights" {
     None => assert_true(true)
   }
 }
-
-

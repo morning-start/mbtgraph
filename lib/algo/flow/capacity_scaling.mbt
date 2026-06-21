@@ -210,14 +210,17 @@ pub fn capacity_scaling(
     // 在当前 Δ 残量图中反复增广
     while true {
       let (parent, found) = cs_bfs(
-        graph.capacity, work_flow, n, source, sink, delta,
+        graph.capacity,
+        work_flow,
+        n,
+        source,
+        sink,
+        delta,
       )
       if !found {
         break
       }
-      let bottleneck = cs_bottleneck(
-        parent, sink, graph.capacity, work_flow,
-      )
+      let bottleneck = cs_bottleneck(parent, sink, graph.capacity, work_flow)
       if bottleneck < delta {
         break
       }

@@ -7,6 +7,7 @@
 #   1. moon fmt        — format .mbt code
 #   2. moon info       — update .mbti interface files
 #   3. moon check      — compile check
+#   4. moon test       — run all tests
 #
 
 set -e
@@ -132,5 +133,11 @@ if ! moon check 2>&1; then
     echo ""; echo "ERROR: moon check failed!"; echo "Commit aborted."; exit 1
 fi
 
-echo "[pre-commit] All checks passed (security + fmt + info + check)."
+# Step 4: Run tests
+echo "[pre-commit] Running moon test..."
+if ! moon test 2>&1; then
+    echo ""; echo "ERROR: moon test failed!"; echo "Commit aborted."; exit 1
+fi
+
+echo "[pre-commit] All checks passed (security + fmt + info + check + test)."
 exit 0

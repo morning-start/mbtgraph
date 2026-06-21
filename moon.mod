@@ -1,0 +1,24 @@
+name = "morning-start/mbtgraph"
+
+version = "0.13.0"
+
+import {
+  "Luna-Flow/linear-algebra@0.2.11",
+  "Luna-Flow/luna-generic@0.3.0",
+}
+
+readme = "README.mbt.md"
+
+repository = ""
+
+license = "MIT"
+
+keywords = [
+  "moonbit",
+  "graph",
+  "algorithms",
+  "data-structures",
+  "trait-based",
+]
+
+description = "MoonBit 图算法库 - 完整的图数据结构和算法实现"

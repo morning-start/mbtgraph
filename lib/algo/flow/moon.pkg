@@ -1,5 +1,5 @@
 import {
-  "morning-start/mbtgraph/lib/core" @core,
+  "morning-start/mbtgraph/lib/core",
 }
 
 warnings = "-unused_value-unused_package"

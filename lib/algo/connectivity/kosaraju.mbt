@@ -3,6 +3,7 @@
 ///
 /// 基于两次 DFS 的经典算法：第一次 DFS 记录完成顺序，
 /// 第二次按逆序 DFS 得到 SCC。时间复杂度 O(V+E)。
+
 ///|
 fn[T] reverse_array(arr : Array[T]) -> Array[T] {
   let n = arr.length()
@@ -90,4 +91,3 @@ pub fn[G : @core.GraphDirected] kosaraju_scc(
   }
   StronglyConnectedComponentsResult::{ components: result }
 }
-

@@ -5,7 +5,9 @@ pub(all) struct ConnectedComponentsResult {
 }
 
 ///|
-pub fn ConnectedComponentsResult::count(self : ConnectedComponentsResult) -> Int {
+pub fn ConnectedComponentsResult::count(
+  self : ConnectedComponentsResult,
+) -> Int {
   self.components.length()
 }
 
@@ -89,7 +91,9 @@ pub(all) struct BiconnectedComponentsResult {
 }
 
 ///|
-pub fn BiconnectedComponentsResult::count(self : BiconnectedComponentsResult) -> Int {
+pub fn BiconnectedComponentsResult::count(
+  self : BiconnectedComponentsResult,
+) -> Int {
   self.components.length()
 }
 

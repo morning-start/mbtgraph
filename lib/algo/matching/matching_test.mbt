@@ -1057,7 +1057,11 @@ test "km_2x2_cross" {
 
 ///|
 test "km_3x3_uniform" {
-  let w : Array[Array[Double]] = [[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]
+  let w : Array[Array[Double]] = [
+    [1.0, 1.0, 1.0],
+    [1.0, 1.0, 1.0],
+    [1.0, 1.0, 1.0],
+  ]
   let r = kuhn_munkres(w)
   assert_eq(r.matching.length(), 3)
   assert_true(r.total_weight > 2.99)
@@ -1065,7 +1069,11 @@ test "km_3x3_uniform" {
 
 ///|
 test "km_3x3_diag_prefer" {
-  let w : Array[Array[Double]] = [[5.0, 1.0, 1.0], [1.0, 5.0, 1.0], [1.0, 1.0, 5.0]]
+  let w : Array[Array[Double]] = [
+    [5.0, 1.0, 1.0],
+    [1.0, 5.0, 1.0],
+    [1.0, 1.0, 5.0],
+  ]
   let r = kuhn_munkres(w)
   assert_eq(r.matching.length(), 3)
   assert_true(r.total_weight > 14.99)

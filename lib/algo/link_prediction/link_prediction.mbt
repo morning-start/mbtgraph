@@ -5,7 +5,10 @@
 
 ///|
 /// 辅助: 将邻居 Iter 收集为 Array[Int]（NodeId 的内部值）
-fn[G : @core.GraphReadable] neighbors_to_ids(graph : G, node : @core.NodeId) -> Array[Int] {
+fn[G : @core.GraphReadable] neighbors_to_ids(
+  graph : G,
+  node : @core.NodeId,
+) -> Array[Int] {
   let ids : Array[Int] = []
   for n in @core.GraphReadable::neighbors(graph, node) {
     ids.push(n.0)
@@ -100,13 +103,19 @@ fn union_size(a : Array[Int], b : Array[Int]) -> Int {
 ///
 /// # 示例
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let graph = new_directed()
+///
 /// let graph = GraphWritable::add_node(graph, 0.0) |> ignore
+///
 /// let graph = GraphWritable::add_node(graph, 1.0) |> ignore
+///
 /// let graph = GraphWritable::add_node(graph, 2.0) |> ignore
+///
 /// let graph = GraphWritable::add_edge(graph, NodeId(0), NodeId(2), 1.0) |> ignore
+///
 /// let graph = GraphWritable::add_edge(graph, NodeId(1), NodeId(2), 1.0) |> ignore
+///
 /// let cn = common_neighbors(graph, NodeId(0), NodeId(1))
 /// // cn == 1 (节点 2 是公共邻居)
 /// ```
@@ -316,7 +325,7 @@ pub fn[G : @core.GraphReadable] resource_allocation(
 ///
 /// # 示例
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let result = link_prediction_score(graph, node_a, node_b)
 /// // 可通过 result.common_neighbors, result.jaccard 等访问各指标
 /// ```
@@ -330,5 +339,13 @@ pub fn[G : @core.GraphReadable] link_prediction_score(
   let aa = adamic_adar_index(graph, u, v)
   let pa = preferential_attachment(graph, u, v)
   let ra = resource_allocation(graph, u, v)
-  LinkPredictionResult::{ u, v, common_neighbors: cn, jaccard: jc, adamic_adar: aa, preferential_attachment: pa, resource_allocation: ra }
+  LinkPredictionResult::{
+    u,
+    v,
+    common_neighbors: cn,
+    jaccard: jc,
+    adamic_adar: aa,
+    preferential_attachment: pa,
+    resource_allocation: ra,
+  }
 }

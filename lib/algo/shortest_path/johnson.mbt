@@ -87,7 +87,10 @@ pub fn[G : @core.GraphReadable] johnson(
               } else {
                 let vh_opt = h[vid]
                 match vh_opt {
-                  Some(vh) => if uh + w < vh { return Err("negative cycle detected") }
+                  Some(vh) =>
+                    if uh + w < vh {
+                      return Err("negative cycle detected")
+                    }
                   None => ()
                 }
               }

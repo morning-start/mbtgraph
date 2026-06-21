@@ -1,7 +1,7 @@
 import {
-  "morning-start/mbtgraph/lib/core" @core,
-  "morning-start/mbtgraph/lib/storage" @storage,
-  "moonbitlang/core/hashmap" @hashmap,
+  "morning-start/mbtgraph/lib/core",
+  "morning-start/mbtgraph/lib/storage",
+  "moonbitlang/core/hashmap",
 }
 
 warnings = "-unused_value-unused_package"

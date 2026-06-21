@@ -7,7 +7,9 @@
 
 ///|
 /// 在无向图中查找所有割点（find_articulation_points_undirected 的别名）
-pub fn[G : @core.GraphReadable] find_articulation_points(g : G) -> CutPointResult {
+pub fn[G : @core.GraphReadable] find_articulation_points(
+  g : G,
+) -> CutPointResult {
   find_articulation_points_undirected(g)
 }
 

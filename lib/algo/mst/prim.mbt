@@ -33,7 +33,10 @@ fn prim_min_key(
 /// Prim 最小生成树
 ///
 /// 从 root 节点开始构建最小生成树。
-pub fn[G : @core.GraphReadable] prim(graph : G, root : @core.NodeId) -> MstResult {
+pub fn[G : @core.GraphReadable] prim(
+  graph : G,
+  root : @core.NodeId,
+) -> MstResult {
   let nc = @core.GraphReadable::node_count(graph)
   if nc == 0 || !@core.GraphReadable::contains_node(graph, root) {
     return MstResult::{ total_weight: 0.0, edges: [] }

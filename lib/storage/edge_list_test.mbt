@@ -91,9 +91,6 @@ test "edge list remove_node removes node and incident edges" {
   assert_eq(@core.GraphReadable::edge_count(g), 0)
 }
 
-
-
-
 ///|
 test "edge list clear empties everything" {
   let g = new_edge_list()
@@ -180,6 +177,3 @@ test "undirected edge list remove_edge works bidirectionally" {
   assert_true(!@core.GraphReadable::contains_edge(g, a, b))
   assert_true(!@core.GraphReadable::contains_edge(g, b, a))
 }
-
-
-

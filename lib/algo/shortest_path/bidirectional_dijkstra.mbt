@@ -184,12 +184,11 @@ pub fn[G : @core.GraphReadable] bidirectional_dijkstra(
           Some(p) => {
             final_parents[cidx] = Some(p)
             let pd = match final_distances[p.0] {
-              None => {
+              None =>
                 match forward_dist[p.0] {
                   Some(d) => d
                   None => break
                 }
-              }
               Some(d) => d
             }
             let cd = match forward_dist[cidx] {
@@ -218,10 +217,13 @@ pub fn[G : @core.GraphReadable] bidirectional_dijkstra(
                 Some(d) => d
                 None => break
               }
-              final_distances[cidx2] = Some(best_distance - (match backward_dist[p.0] {
-                Some(d) => d
-                None => break
-              }))
+              final_distances[cidx2] = Some(
+                best_distance -
+                (match backward_dist[p.0] {
+                  Some(d) => d
+                  None => break
+                }),
+              )
               cur2 = p
             }
             None => done2 = true
@@ -229,7 +231,10 @@ pub fn[G : @core.GraphReadable] bidirectional_dijkstra(
         }
       }
 
-      Ok(ShortestPathResult::{ distances: final_distances, parents: final_parents })
+      Ok(ShortestPathResult::{
+        distances: final_distances,
+        parents: final_parents,
+      })
     }
   }
 }

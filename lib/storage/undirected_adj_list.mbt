@@ -59,12 +59,11 @@ pub fn UndirectedAdjList::add_edges_batch(
   let mut count = 0
   for edge in edges {
     match edge {
-      (from, to, data) => {
+      (from, to, data) =>
         match self.add_edge_unchecked(from, to, data) {
           Ok(_) => count = count + 1
           Err(e) => return Err(e)
         }
-      }
     }
   }
   Ok(count)
@@ -76,23 +75,26 @@ pub fn new_undirected() -> UndirectedAdjList {
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedAdjList with node_count(self) -> Int {
+pub impl @core.GraphReadable for UndirectedAdjList with fn node_count(self) -> Int {
   self.node_cnt
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedAdjList with edge_count(self) -> Int {
+pub impl @core.GraphReadable for UndirectedAdjList with fn edge_count(self) -> Int {
   self.edge_cnt
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedAdjList with contains_node(self, id) -> Bool {
+pub impl @core.GraphReadable for UndirectedAdjList with fn contains_node(
+  self,
+  id,
+) -> Bool {
   let idx = id.0
   idx >= 0 && idx < self.nodes.length() && has_node(self.nodes, idx)
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedAdjList with contains_edge(
+pub impl @core.GraphReadable for UndirectedAdjList with fn contains_edge(
   self,
   from,
   to,
@@ -112,7 +114,7 @@ pub impl @core.GraphReadable for UndirectedAdjList with contains_edge(
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedAdjList with get_node(self, id) -> Double? {
+pub impl @core.GraphReadable for UndirectedAdjList with fn get_node(self, id) -> Double? {
   let idx = id.0
   if idx < 0 || idx >= self.nodes.length() {
     return None
@@ -124,7 +126,11 @@ pub impl @core.GraphReadable for UndirectedAdjList with get_node(self, id) -> Do
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedAdjList with get_edge(self, from, to) -> Double? {
+pub impl @core.GraphReadable for UndirectedAdjList with fn get_edge(
+  self,
+  from,
+  to,
+) -> Double? {
   let fi = from.0
   let ti = to.0
   if fi < 0 || fi >= self.adj.length() {
@@ -140,7 +146,7 @@ pub impl @core.GraphReadable for UndirectedAdjList with get_edge(self, from, to)
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedAdjList with neighbors(self, id) -> Iter[
+pub impl @core.GraphReadable for UndirectedAdjList with fn neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let idx = id.0
@@ -165,8 +171,8 @@ pub impl @core.GraphReadable for UndirectedAdjList with neighbors(self, id) -> I
   r.iter()
 }
 
-///
-pub impl @core.GraphReadable for UndirectedAdjList with neighbors_with_weight(
+///|
+pub impl @core.GraphReadable for UndirectedAdjList with fn neighbors_with_weight(
   self,
   id,
 ) -> Iter[(@core.NodeId, Double)] {
@@ -191,7 +197,7 @@ pub impl @core.GraphReadable for UndirectedAdjList with neighbors_with_weight(
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedAdjList with degree(self, id) -> Int {
+pub impl @core.GraphReadable for UndirectedAdjList with fn degree(self, id) -> Int {
   let idx = id.0
   if idx < 0 || idx >= self.adj.length() {
     0
@@ -211,17 +217,17 @@ pub impl @core.GraphReadable for UndirectedAdjList with degree(self, id) -> Int 
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedAdjList with is_directed(self) -> Bool {
+pub impl @core.GraphReadable for UndirectedAdjList with fn is_directed(self) -> Bool {
   false
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedAdjList with is_empty(self) -> Bool {
+pub impl @core.GraphReadable for UndirectedAdjList with fn is_empty(self) -> Bool {
   self.node_cnt == 0
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedAdjList with node_ids(self) -> Iter[
+pub impl @core.GraphReadable for UndirectedAdjList with fn node_ids(self) -> Iter[
   @core.NodeId,
 ] {
   let r : Array[@core.NodeId] = []
@@ -234,7 +240,7 @@ pub impl @core.GraphReadable for UndirectedAdjList with node_ids(self) -> Iter[
 }
 
 ///|
-pub impl @core.GraphReadable for UndirectedAdjList with edges(self) -> Iter[
+pub impl @core.GraphReadable for UndirectedAdjList with fn edges(self) -> Iter[
   (@core.NodeId, @core.NodeId, Double),
 ] {
   let r : Array[(@core.NodeId, @core.NodeId, Double)] = []
@@ -251,7 +257,7 @@ pub impl @core.GraphReadable for UndirectedAdjList with edges(self) -> Iter[
 }
 
 ///|
-pub impl @core.GraphWritable for UndirectedAdjList with add_node(self, data) -> @core.NodeId {
+pub impl @core.GraphWritable for UndirectedAdjList with fn add_node(self, data) -> @core.NodeId {
   let slot = find_slot(self.nodes, 0, self.nodes.length())
   let idx = if slot >= 0 { slot } else { self.nodes.length() }
   let g = self
@@ -265,7 +271,7 @@ pub impl @core.GraphWritable for UndirectedAdjList with add_node(self, data) -> 
 }
 
 ///|
-pub impl @core.GraphWritable for UndirectedAdjList with remove_node(self, id) -> Bool {
+pub impl @core.GraphWritable for UndirectedAdjList with fn remove_node(self, id) -> Bool {
   let idx = id.0
   if idx < 0 || idx >= self.nodes.length() {
     return false
@@ -298,7 +304,7 @@ pub impl @core.GraphWritable for UndirectedAdjList with remove_node(self, id) ->
 }
 
 ///|
-pub impl @core.GraphWritable for UndirectedAdjList with add_edge(
+pub impl @core.GraphWritable for UndirectedAdjList with fn add_edge(
   self,
   from,
   to,
@@ -354,7 +360,7 @@ fn ual_contains_edge(
 }
 
 ///|
-pub impl @core.GraphWritable for UndirectedAdjList with remove_edge(
+pub impl @core.GraphWritable for UndirectedAdjList with fn remove_edge(
   self,
   from,
   to,
@@ -376,7 +382,7 @@ pub impl @core.GraphWritable for UndirectedAdjList with remove_edge(
 }
 
 ///|
-pub impl @core.GraphWritable for UndirectedAdjList with clear(self) -> Unit {
+pub impl @core.GraphWritable for UndirectedAdjList with fn clear(self) -> Unit {
   let g = self
   for i in 0..<g.nodes.length() {
     g.nodes[i] = None
@@ -385,6 +391,3 @@ pub impl @core.GraphWritable for UndirectedAdjList with clear(self) -> Unit {
   g.node_cnt = 0
   g.edge_cnt = 0
 }
-
-
-
