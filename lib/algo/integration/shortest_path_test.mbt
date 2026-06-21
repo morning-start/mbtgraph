@@ -624,3 +624,28 @@ test "fw_fw_5" {
     }
   }
 }
+
+///|
+test "bidirectional dijkstra on directed graph" {
+  // Create directed graph: 0->1 (weight 1), 1->2 (weight 2)
+  // Path 0->2 should be distance 3
+  let builder = @storage.new_directed()
+  @core.GraphWritable::add_node(builder, 0.0) |> ignore
+  @core.GraphWritable::add_node(builder, 1.0) |> ignore
+  @core.GraphWritable::add_node(builder, 2.0) |> ignore
+  @core.GraphWritable::add_edge(builder, @core.NodeId(0), @core.NodeId(1), 1.0)
+  |> ignore
+  @core.GraphWritable::add_edge(builder, @core.NodeId(1), @core.NodeId(2), 2.0)
+  |> ignore
+  let g = builder
+
+  let result = @sp.bidirectional_dijkstra(g, @core.NodeId(0), @core.NodeId(2))
+  match result {
+    Ok(path) =>
+      match path.distances[2] {
+        Some(d) => assert_eq(d, 3.0)
+        None => assert_true(false) // Should have distance
+      }
+    Err(_) => assert_true(false) // Should not error
+  }
+}

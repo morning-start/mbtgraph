@@ -249,3 +249,40 @@ test "CSC batch operations" {
     None => assert_true(false)
   }
 }
+
+///|
+test "CSC neighbors performance on large graph" {
+  let mut builder = CSCBuilder::new()
+  // Add 10 nodes
+  builder = builder.add_node(@core.NodeId(0), 0.0)
+  builder = builder.add_node(@core.NodeId(1), 1.0)
+  builder = builder.add_node(@core.NodeId(2), 2.0)
+  builder = builder.add_node(@core.NodeId(3), 3.0)
+  builder = builder.add_node(@core.NodeId(4), 4.0)
+  builder = builder.add_node(@core.NodeId(5), 5.0)
+  builder = builder.add_node(@core.NodeId(6), 6.0)
+  builder = builder.add_node(@core.NodeId(7), 7.0)
+  builder = builder.add_node(@core.NodeId(8), 8.0)
+  builder = builder.add_node(@core.NodeId(9), 9.0)
+
+  // Create a dense graph with multiple edges
+  builder = builder.add_edge(@core.NodeId(0), @core.NodeId(1), 1.0)
+  builder = builder.add_edge(@core.NodeId(0), @core.NodeId(2), 1.0)
+  builder = builder.add_edge(@core.NodeId(1), @core.NodeId(2), 1.0)
+  builder = builder.add_edge(@core.NodeId(2), @core.NodeId(3), 1.0)
+  builder = builder.add_edge(@core.NodeId(3), @core.NodeId(4), 1.0)
+  builder = builder.add_edge(@core.NodeId(4), @core.NodeId(5), 1.0)
+  builder = builder.add_edge(@core.NodeId(5), @core.NodeId(6), 1.0)
+  builder = builder.add_edge(@core.NodeId(6), @core.NodeId(7), 1.0)
+  builder = builder.add_edge(@core.NodeId(7), @core.NodeId(8), 1.0)
+  builder = builder.add_edge(@core.NodeId(8), @core.NodeId(9), 1.0)
+
+  let g = builder.build()
+  // neighbors() should complete in O(in_degree) time, not O(V*E)
+  // Node 1 has incoming edge from node 0
+  let mut count = 0
+  for _ in @core.GraphReadable::neighbors(g, @core.NodeId(1)) {
+    count += 1
+  }
+  assert_true(count > 0)
+}

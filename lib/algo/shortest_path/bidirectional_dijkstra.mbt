@@ -138,13 +138,20 @@ pub fn[G : @core.GraphReadable] bidirectional_dijkstra(
             continue
           }
 
-          for u in @core.GraphReadable::neighbors(graph, v) {
-            let uid = u.0
-            if uid < 0 || uid >= size || backward_visited[uid] {
+          // For backward search, we need incoming edges to v
+          // In a directed graph, neighbors(graph, v) returns OUTGOING edges
+          // We need to iterate all nodes and check if they have edges TO v
+          for u_idx in 0..<nc {
+            let u = @core.NodeId(u_idx)
+            if backward_visited[u_idx] || u == v {
               continue
             }
             match @core.GraphReadable::get_edge(graph, u, v) {
               Some(weight) => {
+                let uid = u_idx
+                if uid < 0 || uid >= size || backward_visited[uid] {
+                  continue
+                }
                 let new_dist = d_v + weight
                 let should_update = match backward_dist[uid] {
                   None => true

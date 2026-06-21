@@ -162,23 +162,12 @@ pub impl @core.GraphReadable for CSCGraph with fn neighbors(self, id) -> Iter[
   if idx < 0 || idx >= self.col_ptr.length() - 1 {
     return [].iter()
   }
+  // CSC stores incoming edges: column idx contains all sources that have edges TO node idx
+  // neighbors() returns sources (in-neighbors for directed graph)
+  let s = self.col_ptr[idx]
+  let e = self.col_ptr[idx + 1]
   let r : Array[@core.NodeId] = []
-  for i in 0..<self.nodes.length() {
-    if i == idx {
-      continue
-    }
-    let s = self.col_ptr[idx]
-    let e = self.col_ptr[idx + 1]
-    for k in s..<e {
-      if self.row_idx[k] == i {
-        r.push(i)
-        break
-      }
-    }
-  }
-  let s2 = self.col_ptr[idx]
-  let e2 = self.col_ptr[idx + 1]
-  for k in s2..<e2 {
+  for k in s..<e {
     r.push(self.row_idx[k])
   }
   r.iter()
@@ -193,23 +182,10 @@ pub impl @core.GraphReadable for CSCGraph with fn neighbors_with_weight(
   if idx < 0 || idx >= self.col_ptr.length() - 1 {
     return [].iter()
   }
+  let s = self.col_ptr[idx]
+  let e = self.col_ptr[idx + 1]
   let r : Array[(@core.NodeId, Double)] = []
-  for i in 0..<self.nodes.length() {
-    if i == idx {
-      continue
-    }
-    let s = self.col_ptr[idx]
-    let e = self.col_ptr[idx + 1]
-    for k in s..<e {
-      if self.row_idx[k] == i {
-        r.push((@core.NodeId(i), self.values[k]))
-        break
-      }
-    }
-  }
-  let s2 = self.col_ptr[idx]
-  let e2 = self.col_ptr[idx + 1]
-  for k in s2..<e2 {
+  for k in s..<e {
     r.push((self.row_idx[k], self.values[k]))
   }
   r.iter()
