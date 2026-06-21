@@ -11,6 +11,166 @@ fn approx_shortest_path(a : Double, b : Double, eps : Double) -> Bool {
 }
 
 ///|
+test "astar_astar_1" {
+  let json = "{\"mbtgraph\":\"1.0\",\"directed\":true,\"nodes\":[0,1,2,3,4,5,6,7,8,9],\"edges\":[{\"source\":0,\"target\":5,\"weight\":4.59},{\"source\":0,\"target\":7,\"weight\":8.19},{\"source\":0,\"target\":9,\"weight\":5.44},{\"source\":1,\"target\":2,\"weight\":5.13},{\"source\":2,\"target\":0,\"weight\":3.12},{\"source\":2,\"target\":5,\"weight\":7.02},{\"source\":3,\"target\":0,\"weight\":3.29},{\"source\":3,\"target\":4,\"weight\":9.74},{\"source\":3,\"target\":6,\"weight\":3.19},{\"source\":3,\"target\":9,\"weight\":9.66},{\"source\":4,\"target\":2,\"weight\":1.86},{\"source\":4,\"target\":3,\"weight\":5.02},{\"source\":4,\"target\":5,\"weight\":5.98},{\"source\":4,\"target\":7,\"weight\":9.56},{\"source\":5,\"target\":0,\"weight\":8.6},{\"source\":5,\"target\":1,\"weight\":3.79},{\"source\":5,\"target\":3,\"weight\":6.7},{\"source\":5,\"target\":9,\"weight\":8.72},{\"source\":6,\"target\":2,\"weight\":2.57},{\"source\":6,\"target\":8,\"weight\":8.36},{\"source\":7,\"target\":0,\"weight\":8.31},{\"source\":7,\"target\":2,\"weight\":9.68},{\"source\":7,\"target\":3,\"weight\":2.98},{\"source\":7,\"target\":8,\"weight\":7.64},{\"source\":8,\"target\":5,\"weight\":5.12},{\"source\":8,\"target\":9,\"weight\":9.6},{\"source\":9,\"target\":0,\"weight\":7.93},{\"source\":9,\"target\":2,\"weight\":1.16},{\"source\":9,\"target\":7,\"weight\":9.48}]}"
+  let g = @storage.new_directed()
+  match @io.parse_json_into(g, json) {
+    Ok(_) => {
+      assert_eq(@core.GraphReadable::node_count(g), 10)
+      let _ = @sp.a_star(g, @core.NodeId(0), @core.NodeId(1), fn(_) { 0.0 })
+    }
+    Err(e) => {
+      println("parse error: {e}")
+      assert_true(false)
+    }
+  }
+}
+
+///|
+test "astar_astar_2" {
+  let json = "{\"mbtgraph\":\"1.0\",\"directed\":true,\"nodes\":[0,1,2,3,4,5,6,7,8,9,10,11],\"edges\":[{\"source\":0,\"target\":5,\"weight\":9.69},{\"source\":0,\"target\":6,\"weight\":5.85},{\"source\":1,\"target\":0,\"weight\":5.98},{\"source\":1,\"target\":3,\"weight\":5.27},{\"source\":1,\"target\":4,\"weight\":2.7},{\"source\":1,\"target\":5,\"weight\":1.34},{\"source\":2,\"target\":8,\"weight\":4.58},{\"source\":2,\"target\":10,\"weight\":5.53},{\"source\":3,\"target\":0,\"weight\":7.98},{\"source\":3,\"target\":6,\"weight\":4.06},{\"source\":3,\"target\":7,\"weight\":9.73},{\"source\":3,\"target\":8,\"weight\":2.02},{\"source\":4,\"target\":1,\"weight\":6.92},{\"source\":4,\"target\":2,\"weight\":1.26},{\"source\":4,\"target\":3,\"weight\":2.98},{\"source\":4,\"target\":10,\"weight\":2.15},{\"source\":5,\"target\":0,\"weight\":9.8},{\"source\":5,\"target\":6,\"weight\":7.11},{\"source\":5,\"target\":8,\"weight\":5.99},{\"source\":5,\"target\":11,\"weight\":8.76},{\"source\":7,\"target\":2,\"weight\":9.57},{\"source\":7,\"target\":10,\"weight\":4.39},{\"source\":8,\"target\":5,\"weight\":8.76},{\"source\":8,\"target\":11,\"weight\":3.61},{\"source\":9,\"target\":0,\"weight\":7.34},{\"source\":9,\"target\":7,\"weight\":8.45},{\"source\":10,\"target\":7,\"weight\":4.4},{\"source\":11,\"target\":3,\"weight\":6.9},{\"source\":11,\"target\":7,\"weight\":7.57}]}"
+  let g = @storage.new_directed()
+  match @io.parse_json_into(g, json) {
+    Ok(_) => {
+      assert_eq(@core.GraphReadable::node_count(g), 12)
+      let _ = @sp.a_star(g, @core.NodeId(0), @core.NodeId(1), fn(_) { 0.0 })
+    }
+    Err(e) => {
+      println("parse error: {e}")
+      assert_true(false)
+    }
+  }
+}
+
+///|
+test "astar_astar_3" {
+  let json = "{\"mbtgraph\":\"1.0\",\"directed\":true,\"nodes\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],\"edges\":[{\"source\":0,\"target\":1,\"weight\":1.28},{\"source\":0,\"target\":3,\"weight\":9.72},{\"source\":1,\"target\":2,\"weight\":2.75},{\"source\":1,\"target\":12,\"weight\":9.95},{\"source\":3,\"target\":0,\"weight\":9.52},{\"source\":4,\"target\":0,\"weight\":3.33},{\"source\":4,\"target\":2,\"weight\":5.65},{\"source\":4,\"target\":7,\"weight\":4.58},{\"source\":4,\"target\":9,\"weight\":4.69},{\"source\":4,\"target\":11,\"weight\":8.11},{\"source\":4,\"target\":12,\"weight\":8.45},{\"source\":5,\"target\":0,\"weight\":3.31},{\"source\":5,\"target\":6,\"weight\":5.9},{\"source\":5,\"target\":11,\"weight\":7.17},{\"source\":5,\"target\":13,\"weight\":6.34},{\"source\":5,\"target\":14,\"weight\":2.09},{\"source\":6,\"target\":1,\"weight\":4.52},{\"source\":7,\"target\":0,\"weight\":5.44},{\"source\":7,\"target\":3,\"weight\":9.32},{\"source\":7,\"target\":11,\"weight\":8.4},{\"source\":8,\"target\":7,\"weight\":7.07},{\"source\":9,\"target\":3,\"weight\":3.52},{\"source\":9,\"target\":4,\"weight\":9.45},{\"source\":9,\"target\":6,\"weight\":3.06},{\"source\":9,\"target\":10,\"weight\":4.04},{\"source\":9,\"target\":14,\"weight\":2.41},{\"source\":10,\"target\":3,\"weight\":6.3},{\"source\":10,\"target\":5,\"weight\":8.16},{\"source\":11,\"target\":3,\"weight\":7.32},{\"source\":11,\"target\":4,\"weight\":8.44},{\"source\":12,\"target\":1,\"weight\":7.32},{\"source\":12,\"target\":5,\"weight\":6.88},{\"source\":12,\"target\":7,\"weight\":3.26},{\"source\":12,\"target\":10,\"weight\":9.63},{\"source\":12,\"target\":14,\"weight\":9.91},{\"source\":13,\"target\":0,\"weight\":7.59},{\"source\":13,\"target\":5,\"weight\":9.97},{\"source\":13,\"target\":6,\"weight\":8.95},{\"source\":13,\"target\":8,\"weight\":8.9},{\"source\":13,\"target\":12,\"weight\":7.81},{\"source\":14,\"target\":3,\"weight\":8.31},{\"source\":14,\"target\":5,\"weight\":7.22},{\"source\":14,\"target\":8,\"weight\":2.15},{\"source\":14,\"target\":13,\"weight\":8.54}]}"
+  let g = @storage.new_directed()
+  match @io.parse_json_into(g, json) {
+    Ok(_) => {
+      assert_eq(@core.GraphReadable::node_count(g), 15)
+      let _ = @sp.a_star(g, @core.NodeId(0), @core.NodeId(1), fn(_) { 0.0 })
+    }
+    Err(e) => {
+      println("parse error: {e}")
+      assert_true(false)
+    }
+  }
+}
+
+///|
+test "astar_astar_4" {
+  let json = "{\"mbtgraph\":\"1.0\",\"directed\":true,\"nodes\":[0,1,2,3,4,5,6,7],\"edges\":[{\"source\":0,\"target\":1,\"weight\":2.2},{\"source\":0,\"target\":5,\"weight\":4.84},{\"source\":0,\"target\":7,\"weight\":8.67},{\"source\":1,\"target\":2,\"weight\":5.06},{\"source\":1,\"target\":4,\"weight\":3.09},{\"source\":1,\"target\":5,\"weight\":7.02},{\"source\":1,\"target\":7,\"weight\":3.75},{\"source\":2,\"target\":0,\"weight\":6.26},{\"source\":2,\"target\":1,\"weight\":3.07},{\"source\":2,\"target\":3,\"weight\":7.8},{\"source\":2,\"target\":7,\"weight\":1.46},{\"source\":3,\"target\":2,\"weight\":3.6},{\"source\":3,\"target\":4,\"weight\":9.37},{\"source\":3,\"target\":5,\"weight\":1.78},{\"source\":3,\"target\":6,\"weight\":4.51},{\"source\":4,\"target\":1,\"weight\":2.68},{\"source\":4,\"target\":3,\"weight\":4.43},{\"source\":4,\"target\":5,\"weight\":6.09},{\"source\":4,\"target\":7,\"weight\":9.59},{\"source\":5,\"target\":2,\"weight\":9.53},{\"source\":5,\"target\":3,\"weight\":3.78},{\"source\":5,\"target\":6,\"weight\":7.88},{\"source\":5,\"target\":7,\"weight\":5.13},{\"source\":6,\"target\":0,\"weight\":1.91},{\"source\":6,\"target\":4,\"weight\":3.41},{\"source\":6,\"target\":5,\"weight\":3.86},{\"source\":7,\"target\":0,\"weight\":4.57},{\"source\":7,\"target\":1,\"weight\":9.98},{\"source\":7,\"target\":2,\"weight\":8.21},{\"source\":7,\"target\":5,\"weight\":1.86},{\"source\":7,\"target\":6,\"weight\":6.22}]}"
+  let g = @storage.new_directed()
+  match @io.parse_json_into(g, json) {
+    Ok(_) => {
+      assert_eq(@core.GraphReadable::node_count(g), 8)
+      let _ = @sp.a_star(g, @core.NodeId(0), @core.NodeId(1), fn(_) { 0.0 })
+    }
+    Err(e) => {
+      println("parse error: {e}")
+      assert_true(false)
+    }
+  }
+}
+
+///|
+test "astar_astar_5" {
+  let json = "{\"mbtgraph\":\"1.0\",\"directed\":true,\"nodes\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],\"edges\":[{\"source\":1,\"target\":0,\"weight\":2.64},{\"source\":1,\"target\":2,\"weight\":6.1},{\"source\":1,\"target\":13,\"weight\":6.68},{\"source\":1,\"target\":18,\"weight\":3.55},{\"source\":2,\"target\":4,\"weight\":2.56},{\"source\":2,\"target\":6,\"weight\":7.98},{\"source\":2,\"target\":9,\"weight\":6.55},{\"source\":3,\"target\":5,\"weight\":2.66},{\"source\":4,\"target\":2,\"weight\":6.1},{\"source\":4,\"target\":17,\"weight\":7.24},{\"source\":5,\"target\":9,\"weight\":7.31},{\"source\":5,\"target\":15,\"weight\":8.41},{\"source\":5,\"target\":17,\"weight\":9.57},{\"source\":6,\"target\":1,\"weight\":7.15},{\"source\":6,\"target\":2,\"weight\":9.77},{\"source\":6,\"target\":4,\"weight\":5.44},{\"source\":7,\"target\":3,\"weight\":3.34},{\"source\":7,\"target\":5,\"weight\":9.32},{\"source\":7,\"target\":14,\"weight\":3.4},{\"source\":7,\"target\":18,\"weight\":2.33},{\"source\":8,\"target\":3,\"weight\":2.18},{\"source\":8,\"target\":5,\"weight\":5.85},{\"source\":8,\"target\":7,\"weight\":9.18},{\"source\":9,\"target\":4,\"weight\":4.18},{\"source\":9,\"target\":13,\"weight\":9.59},{\"source\":9,\"target\":18,\"weight\":8.95},{\"source\":10,\"target\":2,\"weight\":3.25},{\"source\":10,\"target\":13,\"weight\":5.47},{\"source\":12,\"target\":0,\"weight\":6.32},{\"source\":12,\"target\":11,\"weight\":6.89},{\"source\":13,\"target\":7,\"weight\":7.17},{\"source\":13,\"target\":18,\"weight\":1.59},{\"source\":13,\"target\":19,\"weight\":7.28},{\"source\":14,\"target\":18,\"weight\":2.48},{\"source\":15,\"target\":7,\"weight\":5.45},{\"source\":17,\"target\":1,\"weight\":5.77},{\"source\":17,\"target\":2,\"weight\":1.98},{\"source\":17,\"target\":8,\"weight\":6.76},{\"source\":18,\"target\":3,\"weight\":6.13},{\"source\":18,\"target\":9,\"weight\":3.13},{\"source\":18,\"target\":13,\"weight\":7.82},{\"source\":18,\"target\":17,\"weight\":2.28},{\"source\":19,\"target\":11,\"weight\":9.31},{\"source\":19,\"target\":14,\"weight\":1.7},{\"source\":19,\"target\":17,\"weight\":8.27}]}"
+  let g = @storage.new_directed()
+  match @io.parse_json_into(g, json) {
+    Ok(_) => {
+      assert_eq(@core.GraphReadable::node_count(g), 20)
+      let _ = @sp.a_star(g, @core.NodeId(0), @core.NodeId(1), fn(_) { 0.0 })
+    }
+    Err(e) => {
+      println("parse error: {e}")
+      assert_true(false)
+    }
+  }
+}
+
+///|
+test "bdj_bdj_1" {
+  let json = "{\"mbtgraph\":\"1.0\",\"directed\":true,\"nodes\":[0,1,2,3,4,5,6,7,8,9],\"edges\":[{\"source\":0,\"target\":8,\"weight\":5.48},{\"source\":1,\"target\":2,\"weight\":4.85},{\"source\":1,\"target\":5,\"weight\":8.41},{\"source\":1,\"target\":9,\"weight\":8.15},{\"source\":2,\"target\":4,\"weight\":8.14},{\"source\":2,\"target\":6,\"weight\":4.53},{\"source\":2,\"target\":8,\"weight\":9.58},{\"source\":3,\"target\":0,\"weight\":2.69},{\"source\":3,\"target\":4,\"weight\":8.12},{\"source\":4,\"target\":1,\"weight\":7.02},{\"source\":4,\"target\":2,\"weight\":2.69},{\"source\":5,\"target\":3,\"weight\":9.49},{\"source\":5,\"target\":6,\"weight\":7.08},{\"source\":5,\"target\":9,\"weight\":1.66},{\"source\":6,\"target\":3,\"weight\":7.79},{\"source\":7,\"target\":2,\"weight\":7.09},{\"source\":7,\"target\":3,\"weight\":5.74},{\"source\":7,\"target\":5,\"weight\":1.11},{\"source\":8,\"target\":2,\"weight\":6.93},{\"source\":8,\"target\":3,\"weight\":9.73},{\"source\":8,\"target\":4,\"weight\":9.24},{\"source\":8,\"target\":7,\"weight\":3.67},{\"source\":8,\"target\":9,\"weight\":7.0},{\"source\":9,\"target\":3,\"weight\":2.42},{\"source\":9,\"target\":4,\"weight\":5.71},{\"source\":9,\"target\":5,\"weight\":3.08},{\"source\":9,\"target\":8,\"weight\":5.72}]}"
+  let g = @storage.new_directed()
+  match @io.parse_json_into(g, json) {
+    Ok(_) => {
+      assert_eq(@core.GraphReadable::node_count(g), 10)
+      let _ = @sp.bidirectional_dijkstra(g, @core.NodeId(0), @core.NodeId(1))
+    }
+    Err(e) => {
+      println("parse error: {e}")
+      assert_true(false)
+    }
+  }
+}
+
+///|
+test "bdj_bdj_2" {
+  let json = "{\"mbtgraph\":\"1.0\",\"directed\":true,\"nodes\":[0,1,2,3,4,5,6,7,8,9,10,11],\"edges\":[{\"source\":0,\"target\":2,\"weight\":8.4},{\"source\":0,\"target\":10,\"weight\":1.88},{\"source\":1,\"target\":10,\"weight\":6.78},{\"source\":2,\"target\":4,\"weight\":4.65},{\"source\":2,\"target\":10,\"weight\":5.95},{\"source\":3,\"target\":7,\"weight\":4.68},{\"source\":3,\"target\":9,\"weight\":4.65},{\"source\":3,\"target\":10,\"weight\":7.14},{\"source\":3,\"target\":11,\"weight\":8.56},{\"source\":4,\"target\":7,\"weight\":2.54},{\"source\":4,\"target\":8,\"weight\":7.91},{\"source\":4,\"target\":9,\"weight\":6.6},{\"source\":5,\"target\":4,\"weight\":5.3},{\"source\":5,\"target\":6,\"weight\":7.24},{\"source\":5,\"target\":7,\"weight\":7.83},{\"source\":5,\"target\":8,\"weight\":7.22},{\"source\":6,\"target\":7,\"weight\":5.37},{\"source\":6,\"target\":10,\"weight\":8.42},{\"source\":7,\"target\":0,\"weight\":7.96},{\"source\":7,\"target\":1,\"weight\":5.3},{\"source\":7,\"target\":2,\"weight\":2.36},{\"source\":7,\"target\":3,\"weight\":3.64},{\"source\":7,\"target\":11,\"weight\":3.38},{\"source\":8,\"target\":5,\"weight\":4.37},{\"source\":8,\"target\":6,\"weight\":9.25},{\"source\":8,\"target\":9,\"weight\":2.06},{\"source\":9,\"target\":4,\"weight\":7.74},{\"source\":9,\"target\":8,\"weight\":6.08},{\"source\":9,\"target\":10,\"weight\":3.54},{\"source\":10,\"target\":2,\"weight\":7.17},{\"source\":10,\"target\":6,\"weight\":4.3},{\"source\":10,\"target\":7,\"weight\":3.04},{\"source\":10,\"target\":8,\"weight\":6.87},{\"source\":11,\"target\":2,\"weight\":6.98},{\"source\":11,\"target\":5,\"weight\":8.0}]}"
+  let g = @storage.new_directed()
+  match @io.parse_json_into(g, json) {
+    Ok(_) => {
+      assert_eq(@core.GraphReadable::node_count(g), 12)
+      let _ = @sp.bidirectional_dijkstra(g, @core.NodeId(0), @core.NodeId(1))
+    }
+    Err(e) => {
+      println("parse error: {e}")
+      assert_true(false)
+    }
+  }
+}
+
+///|
+test "bdj_bdj_3" {
+  let json = "{\"mbtgraph\":\"1.0\",\"directed\":true,\"nodes\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],\"edges\":[{\"source\":1,\"target\":5,\"weight\":3.25},{\"source\":1,\"target\":6,\"weight\":4.08},{\"source\":2,\"target\":3,\"weight\":8.06},{\"source\":2,\"target\":13,\"weight\":9.08},{\"source\":3,\"target\":11,\"weight\":9.92},{\"source\":3,\"target\":12,\"weight\":7.59},{\"source\":3,\"target\":13,\"weight\":5.3},{\"source\":4,\"target\":14,\"weight\":9.89},{\"source\":5,\"target\":1,\"weight\":8.91},{\"source\":5,\"target\":2,\"weight\":8.59},{\"source\":5,\"target\":9,\"weight\":7.7},{\"source\":5,\"target\":10,\"weight\":9.05},{\"source\":6,\"target\":4,\"weight\":4.58},{\"source\":6,\"target\":12,\"weight\":7.25},{\"source\":8,\"target\":9,\"weight\":9.67},{\"source\":8,\"target\":10,\"weight\":6.88},{\"source\":9,\"target\":4,\"weight\":8.92},{\"source\":9,\"target\":8,\"weight\":9.23},{\"source\":9,\"target\":12,\"weight\":2.34},{\"source\":9,\"target\":13,\"weight\":2.43},{\"source\":10,\"target\":1,\"weight\":7.8},{\"source\":10,\"target\":9,\"weight\":9.72},{\"source\":10,\"target\":13,\"weight\":6.26},{\"source\":11,\"target\":5,\"weight\":8.17},{\"source\":11,\"target\":12,\"weight\":7.61},{\"source\":11,\"target\":13,\"weight\":5.17},{\"source\":11,\"target\":14,\"weight\":8.31},{\"source\":13,\"target\":5,\"weight\":7.83},{\"source\":13,\"target\":10,\"weight\":9.72},{\"source\":13,\"target\":11,\"weight\":7.72},{\"source\":13,\"target\":14,\"weight\":1.03},{\"source\":14,\"target\":5,\"weight\":7.1}]}"
+  let g = @storage.new_directed()
+  match @io.parse_json_into(g, json) {
+    Ok(_) => {
+      assert_eq(@core.GraphReadable::node_count(g), 15)
+      let _ = @sp.bidirectional_dijkstra(g, @core.NodeId(0), @core.NodeId(1))
+    }
+    Err(e) => {
+      println("parse error: {e}")
+      assert_true(false)
+    }
+  }
+}
+
+///|
+test "bdj_bdj_4" {
+  let json = "{\"mbtgraph\":\"1.0\",\"directed\":true,\"nodes\":[0,1,2,3,4,5,6,7],\"edges\":[{\"source\":0,\"target\":1,\"weight\":1.79},{\"source\":0,\"target\":3,\"weight\":4.65},{\"source\":0,\"target\":4,\"weight\":1.03},{\"source\":0,\"target\":6,\"weight\":1.84},{\"source\":0,\"target\":7,\"weight\":6.37},{\"source\":1,\"target\":0,\"weight\":3.99},{\"source\":1,\"target\":6,\"weight\":4.56},{\"source\":2,\"target\":1,\"weight\":1.9},{\"source\":2,\"target\":3,\"weight\":8.94},{\"source\":2,\"target\":5,\"weight\":7.01},{\"source\":2,\"target\":7,\"weight\":5.32},{\"source\":3,\"target\":0,\"weight\":5.79},{\"source\":3,\"target\":1,\"weight\":2.61},{\"source\":3,\"target\":5,\"weight\":6.27},{\"source\":3,\"target\":6,\"weight\":7.75},{\"source\":3,\"target\":7,\"weight\":2.65},{\"source\":4,\"target\":6,\"weight\":2.27},{\"source\":5,\"target\":1,\"weight\":5.55},{\"source\":5,\"target\":3,\"weight\":2.19},{\"source\":5,\"target\":6,\"weight\":4.68},{\"source\":5,\"target\":7,\"weight\":3.4},{\"source\":6,\"target\":1,\"weight\":1.41},{\"source\":6,\"target\":2,\"weight\":4.06},{\"source\":6,\"target\":3,\"weight\":8.35},{\"source\":6,\"target\":5,\"weight\":5.91},{\"source\":6,\"target\":7,\"weight\":2.87},{\"source\":7,\"target\":0,\"weight\":1.47},{\"source\":7,\"target\":2,\"weight\":1.85},{\"source\":7,\"target\":4,\"weight\":9.91}]}"
+  let g = @storage.new_directed()
+  match @io.parse_json_into(g, json) {
+    Ok(_) => {
+      assert_eq(@core.GraphReadable::node_count(g), 8)
+      let _ = @sp.bidirectional_dijkstra(g, @core.NodeId(0), @core.NodeId(1))
+    }
+    Err(e) => {
+      println("parse error: {e}")
+      assert_true(false)
+    }
+  }
+}
+
+///|
+test "bdj_bdj_5" {
+  let json = "{\"mbtgraph\":\"1.0\",\"directed\":true,\"nodes\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],\"edges\":[{\"source\":0,\"target\":1,\"weight\":1.39},{\"source\":0,\"target\":8,\"weight\":9.71},{\"source\":0,\"target\":14,\"weight\":7.5},{\"source\":1,\"target\":19,\"weight\":8.49},{\"source\":2,\"target\":3,\"weight\":8.57},{\"source\":2,\"target\":10,\"weight\":6.51},{\"source\":2,\"target\":13,\"weight\":7.02},{\"source\":2,\"target\":14,\"weight\":1.89},{\"source\":2,\"target\":18,\"weight\":4.65},{\"source\":3,\"target\":2,\"weight\":6.33},{\"source\":3,\"target\":5,\"weight\":3.05},{\"source\":3,\"target\":13,\"weight\":2.8},{\"source\":3,\"target\":15,\"weight\":3.98},{\"source\":4,\"target\":6,\"weight\":1.13},{\"source\":4,\"target\":12,\"weight\":5.73},{\"source\":4,\"target\":14,\"weight\":5.9},{\"source\":5,\"target\":4,\"weight\":3.6},{\"source\":5,\"target\":6,\"weight\":2.46},{\"source\":5,\"target\":12,\"weight\":8.05},{\"source\":5,\"target\":14,\"weight\":7.34},{\"source\":6,\"target\":1,\"weight\":3.89},{\"source\":7,\"target\":5,\"weight\":5.61},{\"source\":8,\"target\":2,\"weight\":5.91},{\"source\":10,\"target\":2,\"weight\":5.32},{\"source\":10,\"target\":7,\"weight\":9.84},{\"source\":10,\"target\":13,\"weight\":4.56},{\"source\":10,\"target\":19,\"weight\":7.14},{\"source\":11,\"target\":19,\"weight\":7.43},{\"source\":12,\"target\":8,\"weight\":4.76},{\"source\":12,\"target\":14,\"weight\":7.03},{\"source\":12,\"target\":19,\"weight\":6.19},{\"source\":13,\"target\":0,\"weight\":6.65},{\"source\":13,\"target\":1,\"weight\":3.04},{\"source\":13,\"target\":6,\"weight\":9.19},{\"source\":13,\"target\":11,\"weight\":7.11},{\"source\":14,\"target\":12,\"weight\":3.41},{\"source\":15,\"target\":7,\"weight\":9.91},{\"source\":15,\"target\":16,\"weight\":1.76},{\"source\":16,\"target\":0,\"weight\":5.81},{\"source\":16,\"target\":8,\"weight\":3.63},{\"source\":17,\"target\":6,\"weight\":1.41},{\"source\":17,\"target\":8,\"weight\":9.25},{\"source\":17,\"target\":18,\"weight\":10.0},{\"source\":17,\"target\":19,\"weight\":8.23},{\"source\":18,\"target\":17,\"weight\":4.41},{\"source\":19,\"target\":4,\"weight\":6.26},{\"source\":19,\"target\":6,\"weight\":8.17},{\"source\":19,\"target\":11,\"weight\":1.09},{\"source\":19,\"target\":12,\"weight\":6.63}]}"
+  let g = @storage.new_directed()
+  match @io.parse_json_into(g, json) {
+    Ok(_) => {
+      assert_eq(@core.GraphReadable::node_count(g), 20)
+      let _ = @sp.bidirectional_dijkstra(g, @core.NodeId(0), @core.NodeId(1))
+    }
+    Err(e) => {
+      println("parse error: {e}")
+      assert_true(false)
+    }
+  }
+}
+
+///|
 test "bf_bf_1" {
   let json = "{\"mbtgraph\":\"1.0\",\"directed\":true,\"nodes\":[0,1,2,3,4,5,6,7,8,9],\"edges\":[{\"source\":0,\"target\":2,\"weight\":6.23},{\"source\":0,\"target\":7,\"weight\":2.75},{\"source\":0,\"target\":8,\"weight\":9.69},{\"source\":0,\"target\":9,\"weight\":9.32},{\"source\":1,\"target\":2,\"weight\":5.2},{\"source\":1,\"target\":4,\"weight\":6.97},{\"source\":1,\"target\":5,\"weight\":2.93},{\"source\":1,\"target\":6,\"weight\":3.0},{\"source\":2,\"target\":4,\"weight\":3.6},{\"source\":2,\"target\":7,\"weight\":7.23},{\"source\":3,\"target\":8,\"weight\":2.91},{\"source\":4,\"target\":2,\"weight\":9.74},{\"source\":4,\"target\":5,\"weight\":1.63},{\"source\":4,\"target\":7,\"weight\":2.74},{\"source\":4,\"target\":8,\"weight\":1.8},{\"source\":4,\"target\":9,\"weight\":7.93},{\"source\":5,\"target\":0,\"weight\":4.3},{\"source\":5,\"target\":1,\"weight\":5.25},{\"source\":6,\"target\":4,\"weight\":3.93},{\"source\":6,\"target\":5,\"weight\":6.74},{\"source\":6,\"target\":7,\"weight\":4.64},{\"source\":7,\"target\":2,\"weight\":2.87},{\"source\":7,\"target\":8,\"weight\":4.87},{\"source\":7,\"target\":9,\"weight\":3.74},{\"source\":8,\"target\":5,\"weight\":2.0},{\"source\":9,\"target\":0,\"weight\":8.41},{\"source\":9,\"target\":4,\"weight\":7.12},{\"source\":9,\"target\":5,\"weight\":6.98},{\"source\":9,\"target\":7,\"weight\":8.94}]}"
   let g = @storage.new_directed()
