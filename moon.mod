@@ -21,4 +21,4 @@ keywords = [
   "trait-based",
 ]
 
-description = "MoonBit 图算法库 - 完整的图数据结构和算法实现 (P0-P5, 15模块, 736 tests, 49+算法, 5层Trait)"
+description = "MoonBit 图算法库 - 完整的图数据结构和算法实现"
