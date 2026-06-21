@@ -82,14 +82,10 @@ pub fn[G : @core.GraphReadable] louvain(
         }
 
         let k_i_in_tgt = int_to_double(
-          count_edges_to_community(
-            adjacency, node_i, community_of, target_comm,
-          ),
+          count_edges_to_community(adjacency, node_i, community_of, target_comm),
         )
         let k_i_in_curr = int_to_double(
-          count_edges_to_community(
-            adjacency, node_i, community_of, curr_comm,
-          ),
+          count_edges_to_community(adjacency, node_i, community_of, curr_comm),
         )
 
         let curr_int = fine_internal[curr_comm]
@@ -98,8 +94,7 @@ pub fn[G : @core.GraphReadable] louvain(
         let tgt_sum = sum_tot[target_comm]
 
         let gain = compute_gain(
-          curr_int, curr_sum, tgt_int, tgt_sum, deg_i,
-          k_i_in_curr, k_i_in_tgt, total_weight,
+          curr_int, curr_sum, tgt_int, tgt_sum, deg_i, k_i_in_curr, k_i_in_tgt, total_weight,
           res_factor,
         )
 
@@ -164,8 +159,12 @@ fn compute_gain(
   let two_m_sq = 2.0 * m * (2.0 * m)
   let four_m_sq = 4.0 * m * m
 
-  let gain_remove = -deg_to_curr / m + curr_sum * deg_i / two_m_sq - deg_i * deg_i / four_m_sq
-  let gain_add = deg_to_tgt / m - tgt_sum * deg_i / two_m_sq - deg_i * deg_i / four_m_sq
+  let gain_remove = -deg_to_curr / m +
+    curr_sum * deg_i / two_m_sq -
+    deg_i * deg_i / four_m_sq
+  let gain_add = deg_to_tgt / m -
+    tgt_sum * deg_i / two_m_sq -
+    deg_i * deg_i / four_m_sq
 
   (gain_remove + gain_add) * res_factor
 }
@@ -205,7 +204,7 @@ fn[G : @core.GraphReadable] build_edge_info(graph : G, n : Int) -> EdgeInfo {
   for edge in edges {
     ec = ec + 1
   }
-  EdgeInfo::{ edge_count: ec, adjacency: adj, self_loop: self_loop, degree: degree }
+  EdgeInfo::{ edge_count: ec, adjacency: adj, self_loop, degree }
 }
 
 ///|
@@ -228,6 +227,7 @@ fn find_neighbor_communities(
 }
 
 ///|
+
 ///|
 fn count_edges_to_community(
   adjacency : Array[Array[Int]],

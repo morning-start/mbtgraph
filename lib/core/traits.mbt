@@ -10,43 +10,43 @@
 /// - 算法应使用此 trait 作为约束，而非依赖具体存储类型
 pub(open) trait GraphReadable {
   /// 节点数量
-  node_count(Self) -> Int
+  fn node_count(Self) -> Int
 
   /// 边数量
-  edge_count(Self) -> Int
+  fn edge_count(Self) -> Int
 
   /// 检查节点是否存在
-  contains_node(Self, NodeId) -> Bool
+  fn contains_node(Self, NodeId) -> Bool
 
   /// 检查边是否存在
-  contains_edge(Self, NodeId, NodeId) -> Bool
+  fn contains_edge(Self, NodeId, NodeId) -> Bool
 
   /// 获取节点数据
-  get_node(Self, NodeId) -> Double?
+  fn get_node(Self, NodeId) -> Double?
 
   /// 获取边数据
-  get_edge(Self, NodeId, NodeId) -> Double?
+  fn get_edge(Self, NodeId, NodeId) -> Double?
 
   /// 获取邻居节点（出边目标）
-  neighbors(Self, NodeId) -> Iter[NodeId]
+  fn neighbors(Self, NodeId) -> Iter[NodeId]
 
   /// 获取邻居节点及边权重（优化用，避免 get_edge 二次查找）
-  neighbors_with_weight(Self, NodeId) -> Iter[(NodeId, Double)]
+  fn neighbors_with_weight(Self, NodeId) -> Iter[(NodeId, Double)]
 
   /// 节点度（无向图）或出度（有向图）
-  degree(Self, NodeId) -> Int
+  fn degree(Self, NodeId) -> Int
 
   /// 是否为有向图
-  is_directed(Self) -> Bool
+  fn is_directed(Self) -> Bool
 
   /// 是否为空图
-  is_empty(Self) -> Bool
+  fn is_empty(Self) -> Bool
 
   /// 迭代所有节点 ID
-  node_ids(Self) -> Iter[NodeId]
+  fn node_ids(Self) -> Iter[NodeId]
 
   /// 迭代所有边 (from, to, weight)
-  edges(Self) -> Iter[(NodeId, NodeId, Double)]
+  fn edges(Self) -> Iter[(NodeId, NodeId, Double)]
 }
 
 ///|
@@ -60,10 +60,10 @@ pub(open) trait GraphReadable {
 /// 继承自 `GraphReadable`，实现此 trait 必须同时实现 `GraphReadable`
 pub(open) trait GraphWritable: GraphReadable {
   /// 添加节点，返回其 ID
-  add_node(Self, Double) -> NodeId
+  fn add_node(Self, Double) -> NodeId
 
   /// 删除节点及其关联的所有边
-  remove_node(Self, NodeId) -> Bool
+  fn remove_node(Self, NodeId) -> Bool
 
   /// 添加边
   ///
@@ -71,13 +71,13 @@ pub(open) trait GraphWritable: GraphReadable {
   ///
   /// - `NodeNotFound`: 起点或终点节点不存在
   /// - `EdgeAlreadyExists`: 边已存在
-  add_edge(Self, NodeId, NodeId, Double) -> Result[Unit, GraphError]
+  fn add_edge(Self, NodeId, NodeId, Double) -> Result[Unit, GraphError]
 
   /// 删除边
-  remove_edge(Self, NodeId, NodeId) -> Bool
+  fn remove_edge(Self, NodeId, NodeId) -> Bool
 
   /// 清空图
-  clear(Self) -> Unit
+  fn clear(Self) -> Unit
 }
 
 ///|
@@ -91,22 +91,22 @@ pub(open) trait GraphWritable: GraphReadable {
 /// 继承自 `GraphReadable`
 pub(open) trait GraphDirected: GraphReadable {
   /// 获取前驱节点（入边源）
-  in_neighbors(Self, NodeId) -> Iter[NodeId]
+  fn in_neighbors(Self, NodeId) -> Iter[NodeId]
 
   /// 获取后继节点（出边目标）
-  out_neighbors(Self, NodeId) -> Iter[NodeId]
+  fn out_neighbors(Self, NodeId) -> Iter[NodeId]
 
   /// 入度
-  in_degree(Self, NodeId) -> Int
+  fn in_degree(Self, NodeId) -> Int
 
   /// 出度
-  out_degree(Self, NodeId) -> Int
+  fn out_degree(Self, NodeId) -> Int
 
   /// 前驱边 (源节点, 边数据)
-  predecessors(Self, NodeId) -> Iter[(NodeId, Double)]
+  fn predecessors(Self, NodeId) -> Iter[(NodeId, Double)]
 
   /// 后继边 (目标节点, 边数据)
-  successors(Self, NodeId) -> Iter[(NodeId, Double)]
+  fn successors(Self, NodeId) -> Iter[(NodeId, Double)]
 }
 
 ///|
@@ -132,10 +132,8 @@ pub(open) trait GraphFull: GraphWritable + GraphDirected {
 /// 继承自 `GraphReadable`
 pub(open) trait GraphBatchReadable: GraphReadable {
   /// 批量获取邻居
-  batch_neighbors(Self, Array[NodeId]) -> Array[Array[NodeId]]
+  fn batch_neighbors(Self, Array[NodeId]) -> Array[Array[NodeId]]
 
   /// 批量获取边数据
-  batch_edges(Self, Array[(NodeId, NodeId)]) -> Array[Double?]
+  fn batch_edges(Self, Array[(NodeId, NodeId)]) -> Array[Double?]
 }
-
-

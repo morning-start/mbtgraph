@@ -176,5 +176,3 @@ pub fn stoer_wagner(adj : Array[Array[Double]]) -> StoerWagnerResult {
 
   StoerWagnerResult::{ min_cut_weight: best_cut, partition: best_partition }
 }
-
-

@@ -24,7 +24,11 @@ pub(all) struct KTrussResult {
 
 ///|
 /// 获取指定边的 truss number
-pub fn KTrussResult::truss_number(self : KTrussResult, u : @core.NodeId, v : @core.NodeId) -> Int? {
+pub fn KTrussResult::truss_number(
+  self : KTrussResult,
+  u : @core.NodeId,
+  v : @core.NodeId,
+) -> Int? {
   match @core.GraphReadable::get_edge(self.truss, u, v) {
     Some(w) => Some(w.to_int())
     None => None
@@ -46,7 +50,10 @@ pub fn TriangleCountResult::total_triangles(self : TriangleCountResult) -> Int {
 
 ///|
 /// 获取指定节点参与的三角形数
-pub fn TriangleCountResult::node_triangles(self : TriangleCountResult, node : @core.NodeId) -> Int {
+pub fn TriangleCountResult::node_triangles(
+  self : TriangleCountResult,
+  node : @core.NodeId,
+) -> Int {
   self.per_node[node.0]
 }
 
@@ -68,6 +75,8 @@ pub fn ClusteringCoefficientResult::local_coefficient(
 
 ///|
 /// 获取全局平均聚类系数
-pub fn ClusteringCoefficientResult::global_coefficient(self : ClusteringCoefficientResult) -> Double {
+pub fn ClusteringCoefficientResult::global_coefficient(
+  self : ClusteringCoefficientResult,
+) -> Double {
   self.global
 }

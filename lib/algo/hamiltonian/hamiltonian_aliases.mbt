@@ -24,8 +24,6 @@ pub fn[G : @core.GraphReadable] find_hamiltonian_circuit(
 
 ///|
 /// 快速检查哈密顿回路存在性的必要条件（has_hamiltonian_circuit_quick_check 的别名）
-pub fn[G : @core.GraphReadable] can_have_hamiltonian_circuit(
-  graph : G,
-) -> Bool {
+pub fn[G : @core.GraphReadable] can_have_hamiltonian_circuit(graph : G) -> Bool {
   has_hamiltonian_circuit_quick_check(graph)
 }

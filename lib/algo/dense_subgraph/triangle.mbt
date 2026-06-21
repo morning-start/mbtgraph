@@ -4,7 +4,10 @@
 
 ///|
 /// 辅助: 将邻居收集为排序数组
-fn[G : @core.GraphReadable] sorted_neighbors(graph : G, node : @core.NodeId) -> Array[Int] {
+fn[G : @core.GraphReadable] sorted_neighbors(
+  graph : G,
+  node : @core.NodeId,
+) -> Array[Int] {
   let ns : Array[Int] = []
   for n in @core.GraphReadable::neighbors(graph, node) {
     ns.push(n.0)
@@ -63,7 +66,9 @@ fn intersection_result(a : Array[Int], b : Array[Int]) -> Array[Int] {
 /// - 社交网络紧密社群检测
 /// - 聚类系数计算的基础
 /// - 网络传递性分析
-pub fn[G : @core.GraphReadable] count_triangles(graph : G) -> TriangleCountResult {
+pub fn[G : @core.GraphReadable] count_triangles(
+  graph : G,
+) -> TriangleCountResult {
   let n = @core.GraphReadable::node_count(graph)
   let per_node : Array[Int] = []
   let mut i = 0

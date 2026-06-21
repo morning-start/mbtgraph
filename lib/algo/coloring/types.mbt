@@ -34,7 +34,10 @@ pub fn EdgeColoringResult::edge_color(
 ) -> Int {
   let ui = u.0
   let vi = v.0
-  if ui < 0 || ui >= self.edge_colors.length() || vi < 0 || vi >= self.edge_colors.length() {
+  if ui < 0 ||
+    ui >= self.edge_colors.length() ||
+    vi < 0 ||
+    vi >= self.edge_colors.length() {
     return -1
   }
   match self.edge_colors[ui][vi] {

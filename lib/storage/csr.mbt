@@ -154,30 +154,30 @@ pub fn CSRBuilder::build(self : CSRBuilder) -> CSRGraph {
     row_ptr: rp,
     col_idx: ci,
     values: vals,
-    in_ptr: in_ptr,
-    in_idx: in_idx,
-    in_vals: in_vals,
+    in_ptr,
+    in_idx,
+    in_vals,
   }
 }
 
 ///|
-pub impl @core.GraphReadable for CSRGraph with node_count(self) -> Int {
+pub impl @core.GraphReadable for CSRGraph with fn node_count(self) -> Int {
   self.nodes.length()
 }
 
 ///|
-pub impl @core.GraphReadable for CSRGraph with edge_count(self) -> Int {
+pub impl @core.GraphReadable for CSRGraph with fn edge_count(self) -> Int {
   self.col_idx.length()
 }
 
 ///|
-pub impl @core.GraphReadable for CSRGraph with contains_node(self, id) -> Bool {
+pub impl @core.GraphReadable for CSRGraph with fn contains_node(self, id) -> Bool {
   let idx = id.0
   idx >= 0 && idx < self.nodes.length()
 }
 
 ///|
-pub impl @core.GraphReadable for CSRGraph with contains_edge(self, from, to) -> Bool {
+pub impl @core.GraphReadable for CSRGraph with fn contains_edge(self, from, to) -> Bool {
   let fi = from.0
   if fi < 0 || fi >= self.row_ptr.length() - 1 {
     return false
@@ -193,7 +193,7 @@ pub impl @core.GraphReadable for CSRGraph with contains_edge(self, from, to) -> 
 }
 
 ///|
-pub impl @core.GraphReadable for CSRGraph with get_node(self, id) -> Double? {
+pub impl @core.GraphReadable for CSRGraph with fn get_node(self, id) -> Double? {
   let idx = id.0
   if idx < 0 || idx >= self.nodes.length() {
     None
@@ -203,7 +203,7 @@ pub impl @core.GraphReadable for CSRGraph with get_node(self, id) -> Double? {
 }
 
 ///|
-pub impl @core.GraphReadable for CSRGraph with get_edge(self, from, to) -> Double? {
+pub impl @core.GraphReadable for CSRGraph with fn get_edge(self, from, to) -> Double? {
   let fi = from.0
   if fi < 0 || fi >= self.row_ptr.length() - 1 {
     return None
@@ -219,7 +219,7 @@ pub impl @core.GraphReadable for CSRGraph with get_edge(self, from, to) -> Doubl
 }
 
 ///|
-pub impl @core.GraphReadable for CSRGraph with neighbors(self, id) -> Iter[
+pub impl @core.GraphReadable for CSRGraph with fn neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let idx = id.0
@@ -235,8 +235,8 @@ pub impl @core.GraphReadable for CSRGraph with neighbors(self, id) -> Iter[
   r.iter()
 }
 
-///
-pub impl @core.GraphReadable for CSRGraph with neighbors_with_weight(
+///|
+pub impl @core.GraphReadable for CSRGraph with fn neighbors_with_weight(
   self,
   id,
 ) -> Iter[(@core.NodeId, Double)] {
@@ -254,7 +254,7 @@ pub impl @core.GraphReadable for CSRGraph with neighbors_with_weight(
 }
 
 ///|
-pub impl @core.GraphReadable for CSRGraph with degree(self, id) -> Int {
+pub impl @core.GraphReadable for CSRGraph with fn degree(self, id) -> Int {
   let idx = id.0
   if idx < 0 || idx >= self.row_ptr.length() - 1 {
     0
@@ -264,17 +264,17 @@ pub impl @core.GraphReadable for CSRGraph with degree(self, id) -> Int {
 }
 
 ///|
-pub impl @core.GraphReadable for CSRGraph with is_directed(self) -> Bool {
+pub impl @core.GraphReadable for CSRGraph with fn is_directed(self) -> Bool {
   true
 }
 
 ///|
-pub impl @core.GraphReadable for CSRGraph with is_empty(self) -> Bool {
+pub impl @core.GraphReadable for CSRGraph with fn is_empty(self) -> Bool {
   self.nodes.length() == 0
 }
 
 ///|
-pub impl @core.GraphReadable for CSRGraph with node_ids(self) -> Iter[
+pub impl @core.GraphReadable for CSRGraph with fn node_ids(self) -> Iter[
   @core.NodeId,
 ] {
   let r : Array[@core.NodeId] = []
@@ -285,7 +285,7 @@ pub impl @core.GraphReadable for CSRGraph with node_ids(self) -> Iter[
 }
 
 ///|
-pub impl @core.GraphReadable for CSRGraph with edges(self) -> Iter[
+pub impl @core.GraphReadable for CSRGraph with fn edges(self) -> Iter[
   (@core.NodeId, @core.NodeId, Double),
 ] {
   let r : Array[(@core.NodeId, @core.NodeId, Double)] = []
@@ -301,7 +301,7 @@ pub impl @core.GraphReadable for CSRGraph with edges(self) -> Iter[
 }
 
 ///|
-pub impl @core.GraphBatchReadable for CSRGraph with batch_neighbors(
+pub impl @core.GraphBatchReadable for CSRGraph with fn batch_neighbors(
   self,
   ids : Array[@core.NodeId],
 ) -> Array[Array[@core.NodeId]] {
@@ -324,7 +324,7 @@ pub impl @core.GraphBatchReadable for CSRGraph with batch_neighbors(
 }
 
 ///|
-pub impl @core.GraphDirected for CSRGraph with in_neighbors(self, id) -> Iter[
+pub impl @core.GraphDirected for CSRGraph with fn in_neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let idx = id.0
@@ -341,14 +341,14 @@ pub impl @core.GraphDirected for CSRGraph with in_neighbors(self, id) -> Iter[
 }
 
 ///|
-pub impl @core.GraphDirected for CSRGraph with out_neighbors(self, id) -> Iter[
+pub impl @core.GraphDirected for CSRGraph with fn out_neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   @core.GraphReadable::neighbors(self, id)
 }
 
 ///|
-pub impl @core.GraphDirected for CSRGraph with in_degree(self, id) -> Int {
+pub impl @core.GraphDirected for CSRGraph with fn in_degree(self, id) -> Int {
   let idx = id.0
   if idx < 0 || idx >= self.nodes.length() {
     0
@@ -358,12 +358,12 @@ pub impl @core.GraphDirected for CSRGraph with in_degree(self, id) -> Int {
 }
 
 ///|
-pub impl @core.GraphDirected for CSRGraph with out_degree(self, id) -> Int {
+pub impl @core.GraphDirected for CSRGraph with fn out_degree(self, id) -> Int {
   @core.GraphReadable::degree(self, id)
 }
 
 ///|
-pub impl @core.GraphDirected for CSRGraph with predecessors(self, id) -> Iter[
+pub impl @core.GraphDirected for CSRGraph with fn predecessors(self, id) -> Iter[
   (@core.NodeId, Double),
 ] {
   let idx = id.0
@@ -380,7 +380,7 @@ pub impl @core.GraphDirected for CSRGraph with predecessors(self, id) -> Iter[
 }
 
 ///|
-pub impl @core.GraphDirected for CSRGraph with successors(self, id) -> Iter[
+pub impl @core.GraphDirected for CSRGraph with fn successors(self, id) -> Iter[
   (@core.NodeId, Double),
 ] {
   let idx = id.0
@@ -397,7 +397,7 @@ pub impl @core.GraphDirected for CSRGraph with successors(self, id) -> Iter[
 }
 
 ///|
-pub impl @core.GraphBatchReadable for CSRGraph with batch_edges(
+pub impl @core.GraphBatchReadable for CSRGraph with fn batch_edges(
   self,
   pairs : Array[(@core.NodeId, @core.NodeId)],
 ) -> Array[Double?] {

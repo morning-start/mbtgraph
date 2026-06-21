@@ -5,7 +5,10 @@
 
 ///|
 /// 辅助: 将邻居收集为 Array[Int]
-fn[G : @core.GraphReadable] collect_neighbors(graph : G, node : @core.NodeId) -> Array[Int] {
+fn[G : @core.GraphReadable] collect_neighbors(
+  graph : G,
+  node : @core.NodeId,
+) -> Array[Int] {
   let ns : Array[Int] = []
   for n in @core.GraphReadable::neighbors(graph, node) {
     ns.push(n.0)
@@ -161,5 +164,5 @@ pub fn[G : @core.GraphReadable] k_core_decomposition(graph : G) -> KCoreResult {
     processed = processed + 1
   }
 
-  KCoreResult::{ core }
+  KCoreResult::{ core, }
 }

@@ -123,9 +123,7 @@ fn count_used_colors(ec : Array[Array[Int?]]) -> Int {
 /// - `num_colors`: 使用的颜色总数
 /// - `max_degree`: 图的最大度数 Δ
 /// - `is_valid`: 是否为合法边着色
-pub fn[G : @core.GraphReadable] edge_coloring(
-  graph : G,
-) -> EdgeColoringResult {
+pub fn[G : @core.GraphReadable] edge_coloring(graph : G) -> EdgeColoringResult {
   let n = @core.GraphReadable::node_count(graph)
   if n == 0 {
     return EdgeColoringResult::{

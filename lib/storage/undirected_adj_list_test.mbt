@@ -158,6 +158,3 @@ test "self-loop in undirected graph" {
   // Actually for our implementation it counts as 1 since we check from==to once
   assert_eq(@core.GraphReadable::degree(g, a), 1)
 }
-
-
-

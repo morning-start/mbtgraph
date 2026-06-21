@@ -1,0 +1,8 @@
+[project]
+name = "mbtgraph-test-gen"
+version = "0.1.0"
+description = "Generate test data for mbtgraph using NetworkX"
+requires-python = ">=3.10"
+dependencies = [
+    "networkx>=3.0",
+]

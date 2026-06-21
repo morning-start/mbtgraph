@@ -38,10 +38,7 @@ fn cand_heap_new() -> CandidateHeap {
 }
 
 ///|
-fn cand_heap_push(
-  h : CandidateHeap,
-  candidate : Candidate,
-) -> CandidateHeap {
+fn cand_heap_push(h : CandidateHeap, candidate : Candidate) -> CandidateHeap {
   let hh = h
   hh.data.push(candidate)
   cand_heap_sift_up(hh, hh.data.length() - 1)
@@ -157,11 +154,7 @@ fn forbidden_contains(
   let mut found = false
   for e in fe.edges {
     match e {
-      (u, v) => {
-        if u == from && v == to {
-          found = true
-        }
-      }
+      (u, v) => if u == from && v == to { found = true }
     }
   }
   found
@@ -175,8 +168,7 @@ fn[G : @core.GraphReadable] dijkstra_with_forbidden(
   target : @core.NodeId,
   forbidden : ForbiddenEdges,
 ) -> (Array[@core.NodeId], Double) {
-  if spur_node == target &&
-    @core.GraphReadable::contains_node(graph, spur_node) {
+  if spur_node == target && @core.GraphReadable::contains_node(graph, spur_node) {
     return ([spur_node], 0.0)
   }
   let nc = @core.GraphReadable::node_count(graph)
@@ -358,10 +350,7 @@ fn path_exists_in_list(
 
 ///|
 /// 比较两条路径是否完全相同
-fn path_equal(
-  path1 : Array[@core.NodeId],
-  path2 : Array[@core.NodeId],
-) -> Bool {
+fn path_equal(path1 : Array[@core.NodeId], path2 : Array[@core.NodeId]) -> Bool {
   if path1.length() != path2.length() {
     return false
   }
@@ -417,11 +406,7 @@ pub fn[G : @core.GraphReadable] yen_k_shortest_paths(
 
   // 如果没有路径，返回空结果
   if first_path.length() == 0 {
-    return Ok(KShortestPathsResult::{
-      paths: [],
-      distances: [],
-      k: 0,
-    })
+    return Ok(KShortestPathsResult::{ paths: [], distances: [], k: 0 })
   }
 
   // 初始化结果列表
@@ -467,8 +452,9 @@ pub fn[G : @core.GraphReadable] yen_k_shortest_paths(
       }
 
       // 从 spur_node 到 target 运行带禁止边的 Dijkstra
-      let (spur_path, spur_cost) =
-        dijkstra_with_forbidden(graph, spur_node, target, forbidden)
+      let (spur_path, spur_cost) = dijkstra_with_forbidden(
+        graph, spur_node, target, forbidden,
+      )
 
       // 如果找到了绕行路径
       if spur_path.length() > 0 && spur_cost >= 0.0 {
@@ -478,10 +464,7 @@ pub fn[G : @core.GraphReadable] yen_k_shortest_paths(
 
         // 检查是否已存在（避免重复）
         if !path_exists_in_list(total_path, result_paths) {
-          let cand = Candidate::{
-            path: total_path,
-            cost: total_cost,
-          }
+          let cand = Candidate::{ path: total_path, cost: total_cost }
           candidates = cand_heap_push(candidates, cand)
         }
       }

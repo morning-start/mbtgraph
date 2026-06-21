@@ -671,7 +671,7 @@ test "metrics_distance_path_4" {
   let m = distance_metrics(g)
   assert_eq(m.diameter, 3)
   assert_eq(m.radius, 2)
-  assert_eq(m.wiener_index, 10)  // 1+2+3 + 1+2 + 1 = 10
+  assert_eq(m.wiener_index, 10) // 1+2+3 + 1+2 + 1 = 10
 }
 
 ///|

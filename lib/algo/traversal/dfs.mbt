@@ -6,7 +6,10 @@
 
 ///|
 /// 单源 DFS：从 start 节点开始遍历（迭代式，显式栈）
-pub fn[G : @core.GraphReadable] dfs(graph : G, start : @core.NodeId) -> DfsResult {
+pub fn[G : @core.GraphReadable] dfs(
+  graph : G,
+  start : @core.NodeId,
+) -> DfsResult {
   let nc = @core.GraphReadable::node_count(graph)
   if nc == 0 || !@core.GraphReadable::contains_node(graph, start) {
     let empty_v : Array[Bool] = []

@@ -6,7 +6,10 @@
 
 ///|
 /// 单源 BFS：从 start 节点开始遍历
-pub fn[G : @core.GraphReadable] bfs(graph : G, start : @core.NodeId) -> BfsResult {
+pub fn[G : @core.GraphReadable] bfs(
+  graph : G,
+  start : @core.NodeId,
+) -> BfsResult {
   let nc = @core.GraphReadable::node_count(graph)
   if nc == 0 || !@core.GraphReadable::contains_node(graph, start) {
     let empty_visited : Array[Bool] = []

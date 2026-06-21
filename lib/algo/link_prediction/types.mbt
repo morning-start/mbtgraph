@@ -13,6 +13,8 @@ pub(all) struct LinkPredictionResult {
 } derive(Debug)
 
 ///|
-pub fn LinkPredictionResult::node_pair(self : LinkPredictionResult) -> (@core.NodeId, @core.NodeId) {
+pub fn LinkPredictionResult::node_pair(
+  self : LinkPredictionResult,
+) -> (@core.NodeId, @core.NodeId) {
   (self.u, self.v)
 }

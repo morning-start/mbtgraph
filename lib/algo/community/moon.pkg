@@ -1,6 +1,6 @@
 import {
-  "morning-start/mbtgraph/lib/core" @core,
-  "morning-start/mbtgraph/lib/storage" @storage,
+  "morning-start/mbtgraph/lib/core",
+  "morning-start/mbtgraph/lib/storage",
   "Luna-Flow/linear-algebra/mutable" @la,
   "Luna-Flow/luna-generic" @lg,
 }

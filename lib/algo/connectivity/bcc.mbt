@@ -3,8 +3,8 @@
 ///
 /// 基于 DFS 时间戳和 lowlink 值的无向图双连通分量检测算法。
 /// 时间复杂度 O(V+E)，同时检测割点和双连通分量。
-///|
 
+///|
 priv struct BccState {
   disc : Array[Int]
   low : Array[Int]
@@ -75,7 +75,7 @@ fn[G : @core.GraphReadable] bcc_dfs(
                 done = true
               }
             }
-            None => { done = true }
+            None => done = true
           }
         }
         if component.length() > 0 {

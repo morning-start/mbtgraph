@@ -15,23 +15,23 @@ pub fn new_edge_list() -> EdgeListGraph {
 }
 
 ///|
-pub impl @core.GraphReadable for EdgeListGraph with node_count(self) -> Int {
+pub impl @core.GraphReadable for EdgeListGraph with fn node_count(self) -> Int {
   self.node_cnt
 }
 
 ///|
-pub impl @core.GraphReadable for EdgeListGraph with edge_count(self) -> Int {
+pub impl @core.GraphReadable for EdgeListGraph with fn edge_count(self) -> Int {
   self.edges.length()
 }
 
 ///|
-pub impl @core.GraphReadable for EdgeListGraph with contains_node(self, id) -> Bool {
+pub impl @core.GraphReadable for EdgeListGraph with fn contains_node(self, id) -> Bool {
   let idx = id.0
   idx >= 0 && idx < self.nodes.length() && has_node(self.nodes, idx)
 }
 
 ///|
-pub impl @core.GraphReadable for EdgeListGraph with contains_edge(
+pub impl @core.GraphReadable for EdgeListGraph with fn contains_edge(
   self,
   from,
   to,
@@ -45,7 +45,7 @@ pub impl @core.GraphReadable for EdgeListGraph with contains_edge(
 }
 
 ///|
-pub impl @core.GraphReadable for EdgeListGraph with get_node(self, id) -> Double? {
+pub impl @core.GraphReadable for EdgeListGraph with fn get_node(self, id) -> Double? {
   let idx = id.0
   if idx < 0 || idx >= self.nodes.length() {
     return None
@@ -57,7 +57,7 @@ pub impl @core.GraphReadable for EdgeListGraph with get_node(self, id) -> Double
 }
 
 ///|
-pub impl @core.GraphReadable for EdgeListGraph with get_edge(self, from, to) -> Double? {
+pub impl @core.GraphReadable for EdgeListGraph with fn get_edge(self, from, to) -> Double? {
   for e in self.edges {
     if e.from == from && e.to == to {
       return Some(e.data)
@@ -67,7 +67,7 @@ pub impl @core.GraphReadable for EdgeListGraph with get_edge(self, from, to) -> 
 }
 
 ///|
-pub impl @core.GraphReadable for EdgeListGraph with neighbors(self, id) -> Iter[
+pub impl @core.GraphReadable for EdgeListGraph with fn neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let r : Array[@core.NodeId] = []
@@ -79,8 +79,8 @@ pub impl @core.GraphReadable for EdgeListGraph with neighbors(self, id) -> Iter[
   r.iter()
 }
 
-///
-pub impl @core.GraphReadable for EdgeListGraph with neighbors_with_weight(
+///|
+pub impl @core.GraphReadable for EdgeListGraph with fn neighbors_with_weight(
   self,
   id,
 ) -> Iter[(@core.NodeId, Double)] {
@@ -94,7 +94,7 @@ pub impl @core.GraphReadable for EdgeListGraph with neighbors_with_weight(
 }
 
 ///|
-pub impl @core.GraphReadable for EdgeListGraph with degree(self, id) -> Int {
+pub impl @core.GraphReadable for EdgeListGraph with fn degree(self, id) -> Int {
   let mut c = 0
   for e in self.edges {
     if e.from == id {
@@ -105,17 +105,17 @@ pub impl @core.GraphReadable for EdgeListGraph with degree(self, id) -> Int {
 }
 
 ///|
-pub impl @core.GraphReadable for EdgeListGraph with is_directed(self) -> Bool {
+pub impl @core.GraphReadable for EdgeListGraph with fn is_directed(self) -> Bool {
   true
 }
 
 ///|
-pub impl @core.GraphReadable for EdgeListGraph with is_empty(self) -> Bool {
+pub impl @core.GraphReadable for EdgeListGraph with fn is_empty(self) -> Bool {
   self.node_cnt == 0
 }
 
 ///|
-pub impl @core.GraphReadable for EdgeListGraph with node_ids(self) -> Iter[
+pub impl @core.GraphReadable for EdgeListGraph with fn node_ids(self) -> Iter[
   @core.NodeId,
 ] {
   let r : Array[@core.NodeId] = []
@@ -128,7 +128,7 @@ pub impl @core.GraphReadable for EdgeListGraph with node_ids(self) -> Iter[
 }
 
 ///|
-pub impl @core.GraphReadable for EdgeListGraph with edges(self) -> Iter[
+pub impl @core.GraphReadable for EdgeListGraph with fn edges(self) -> Iter[
   (@core.NodeId, @core.NodeId, Double),
 ] {
   let r : Array[(@core.NodeId, @core.NodeId, Double)] = []
@@ -139,7 +139,7 @@ pub impl @core.GraphReadable for EdgeListGraph with edges(self) -> Iter[
 }
 
 ///|
-pub impl @core.GraphWritable for EdgeListGraph with add_node(self, data) -> @core.NodeId {
+pub impl @core.GraphWritable for EdgeListGraph with fn add_node(self, data) -> @core.NodeId {
   let slot = find_slot(self.nodes, 0, self.nodes.length())
   let idx = if slot >= 0 { slot } else { self.nodes.length() }
   let g = self
@@ -152,7 +152,7 @@ pub impl @core.GraphWritable for EdgeListGraph with add_node(self, data) -> @cor
 }
 
 ///|
-pub impl @core.GraphWritable for EdgeListGraph with remove_node(self, id) -> Bool {
+pub impl @core.GraphWritable for EdgeListGraph with fn remove_node(self, id) -> Bool {
   let idx = id.0
   if idx < 0 || idx >= self.nodes.length() {
     return false
@@ -176,7 +176,7 @@ pub impl @core.GraphWritable for EdgeListGraph with remove_node(self, id) -> Boo
 }
 
 ///|
-pub impl @core.GraphWritable for EdgeListGraph with add_edge(
+pub impl @core.GraphWritable for EdgeListGraph with fn add_edge(
   self,
   from,
   to,
@@ -207,7 +207,11 @@ pub impl @core.GraphWritable for EdgeListGraph with add_edge(
 }
 
 ///|
-pub impl @core.GraphWritable for EdgeListGraph with remove_edge(self, from, to) -> Bool {
+pub impl @core.GraphWritable for EdgeListGraph with fn remove_edge(
+  self,
+  from,
+  to,
+) -> Bool {
   let ne : Array[@core.Edge] = []
   let mut found = false
   for e in self.edges {
@@ -223,7 +227,7 @@ pub impl @core.GraphWritable for EdgeListGraph with remove_edge(self, from, to) 
 }
 
 ///|
-pub impl @core.GraphWritable for EdgeListGraph with clear(self) -> Unit {
+pub impl @core.GraphWritable for EdgeListGraph with fn clear(self) -> Unit {
   let g = self
   for i in 0..<g.nodes.length() {
     g.nodes[i] = None
@@ -232,10 +236,8 @@ pub impl @core.GraphWritable for EdgeListGraph with clear(self) -> Unit {
   g.node_cnt = 0
 }
 
-
-
 ///|
-pub impl @core.GraphDirected for EdgeListGraph with in_neighbors(self, id) -> Iter[
+pub impl @core.GraphDirected for EdgeListGraph with fn in_neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let r : Array[@core.NodeId] = []
@@ -248,7 +250,7 @@ pub impl @core.GraphDirected for EdgeListGraph with in_neighbors(self, id) -> It
 }
 
 ///|
-pub impl @core.GraphDirected for EdgeListGraph with out_neighbors(self, id) -> Iter[
+pub impl @core.GraphDirected for EdgeListGraph with fn out_neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let r : Array[@core.NodeId] = []
@@ -261,7 +263,7 @@ pub impl @core.GraphDirected for EdgeListGraph with out_neighbors(self, id) -> I
 }
 
 ///|
-pub impl @core.GraphDirected for EdgeListGraph with in_degree(self, id) -> Int {
+pub impl @core.GraphDirected for EdgeListGraph with fn in_degree(self, id) -> Int {
   let mut c = 0
   for e in self.edges {
     if e.to == id {
@@ -272,7 +274,7 @@ pub impl @core.GraphDirected for EdgeListGraph with in_degree(self, id) -> Int {
 }
 
 ///|
-pub impl @core.GraphDirected for EdgeListGraph with out_degree(self, id) -> Int {
+pub impl @core.GraphDirected for EdgeListGraph with fn out_degree(self, id) -> Int {
   let mut c = 0
   for e in self.edges {
     if e.from == id {
@@ -283,7 +285,7 @@ pub impl @core.GraphDirected for EdgeListGraph with out_degree(self, id) -> Int 
 }
 
 ///|
-pub impl @core.GraphDirected for EdgeListGraph with predecessors(self, id) -> Iter[
+pub impl @core.GraphDirected for EdgeListGraph with fn predecessors(self, id) -> Iter[
   (@core.NodeId, Double),
 ] {
   let r : Array[(@core.NodeId, Double)] = []
@@ -296,7 +298,7 @@ pub impl @core.GraphDirected for EdgeListGraph with predecessors(self, id) -> It
 }
 
 ///|
-pub impl @core.GraphDirected for EdgeListGraph with successors(self, id) -> Iter[
+pub impl @core.GraphDirected for EdgeListGraph with fn successors(self, id) -> Iter[
   (@core.NodeId, Double),
 ] {
   let r : Array[(@core.NodeId, Double)] = []

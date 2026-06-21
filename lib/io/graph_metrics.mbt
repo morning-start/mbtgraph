@@ -35,13 +35,16 @@ pub(all) struct TriadCount {
 
 ///|
 /// 计算图的直径/半径/Wiener指数/平均路径长度
-pub fn[G : @core.GraphReadable] distance_metrics(
-  graph : G,
-) -> DistanceMetrics {
+pub fn[G : @core.GraphReadable] distance_metrics(graph : G) -> DistanceMetrics {
   let n = @core.GraphReadable::node_count(graph)
 
   if n <= 1 {
-    return DistanceMetrics::{ diameter: 0, radius: 0, wiener_index: 0, avg_path_length: 0.0 }
+    return DistanceMetrics::{
+      diameter: 0,
+      radius: 0,
+      wiener_index: 0,
+      avg_path_length: 0.0,
+    }
   }
 
   let mut diameter = 0
@@ -83,7 +86,11 @@ pub fn[G : @core.GraphReadable] distance_metrics(
     diameter,
     radius,
     wiener_index: wiener,
-    avg_path_length: if total_paths > 0 { path_sum / total_paths.to_double() } else { 0.0 },
+    avg_path_length: if total_paths > 0 {
+      path_sum / total_paths.to_double()
+    } else {
+      0.0
+    },
   }
 }
 
@@ -123,7 +130,11 @@ pub fn[G : @core.GraphReadable] network_efficiency(
   }
 
   NetworkEfficiency::{
-    global_efficiency: if global_pairs > 0.0 { global_sum / global_pairs } else { 0.0 },
+    global_efficiency: if global_pairs > 0.0 {
+      global_sum / global_pairs
+    } else {
+      0.0
+    },
     local_efficiency: local_sum / n.to_double(),
   }
 }
@@ -169,7 +180,11 @@ fn[G : @core.GraphReadable] neighbor_subgraph_efficiency(
     a = a + 1
   }
 
-  if pairs > 0.0 { sum / pairs } else { 0.0 }
+  if pairs > 0.0 {
+    sum / pairs
+  } else {
+    0.0
+  }
 }
 
 ///|
@@ -177,7 +192,11 @@ fn[G : @core.GraphReadable] neighbor_subgraph_efficiency(
 pub fn[G : @core.GraphReadable] triad_counting(graph : G) -> TriadCount {
   let n = @core.GraphReadable::node_count(graph)
   if n < 3 {
-    return TriadCount::{ open_triads: 0, closed_triads: 0, global_clustering: 0.0 }
+    return TriadCount::{
+      open_triads: 0,
+      closed_triads: 0,
+      global_clustering: 0.0,
+    }
   }
 
   // 构建邻接集合 (使用无重复邻居)
@@ -218,7 +237,11 @@ pub fn[G : @core.GraphReadable] triad_counting(graph : G) -> TriadCount {
     0.0
   }
 
-  TriadCount::{ open_triads: open, closed_triads: true_triangles, global_clustering: gc }
+  TriadCount::{
+    open_triads: open,
+    closed_triads: true_triangles,
+    global_clustering: gc,
+  }
 }
 
 ///|
@@ -261,7 +284,9 @@ fn[G : @core.GraphReadable] graph_metrics_bfs_with_exclude(
     head = head + 1
     for w in @core.GraphReadable::neighbors(graph, @core.NodeId(v)) {
       let wi = w.0
-      if wi == exclude { continue }
+      if wi == exclude {
+        continue
+      }
       if wi >= 0 && wi < n && dist[wi] < 0 {
         dist[wi] = dist[v] + 1
         queue.push(wi)

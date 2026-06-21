@@ -64,7 +64,11 @@
 /// | Edmonds-Karp | O(VE²) | 简单易懂，小规模 |
 /// | Dinic | O(E√V) | 二分图/单位容量 |
 /// | Push-Relabel | O(V²E) | 通用，稀疏图优秀 |
-pub fn push_relabel(graph : FlowNetwork, source : Int, sink : Int) -> MaxFlowResult {
+pub fn push_relabel(
+  graph : FlowNetwork,
+  source : Int,
+  sink : Int,
+) -> MaxFlowResult {
   let n = graph.node_count
   if n <= 1 || source == sink {
     return MaxFlowResult::{ max_flow: 0.0, flow_matrix: [] }

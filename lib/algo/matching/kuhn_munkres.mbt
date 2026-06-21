@@ -105,7 +105,9 @@ pub fn kuhn_munkres(weights : Array[Array[Double]]) -> KMMatchingResult {
       let visited_y : Array[Bool] = Array::make(n, false)
       let slack : Array[Double] = Array::make(n, 1.0e100)
 
-      if km_dfs(u, visited_x, visited_y, lx, ly, match_y, slack, weights, n, eps) {
+      if km_dfs(
+          u, visited_x, visited_y, lx, ly, match_y, slack, weights, n, eps,
+        ) {
         break
       }
 
@@ -170,14 +172,24 @@ fn km_dfs(
       let gap = lx[u] + ly[v] - w[u][v]
       if gap <= eps {
         visited_y[v] = true
-        if match_y[v] < 0 || km_dfs(match_y[v], visited_x, visited_y, lx, ly, match_y, slack, w, n, eps) {
+        if match_y[v] < 0 ||
+          km_dfs(
+            match_y[v],
+            visited_x,
+            visited_y,
+            lx,
+            ly,
+            match_y,
+            slack,
+            w,
+            n,
+            eps,
+          ) {
           match_y[v] = u
           return true
         }
-      } else {
-        if gap < slack[v] {
-          slack[v] = gap
-        }
+      } else if gap < slack[v] {
+        slack[v] = gap
       }
     }
     v = v + 1

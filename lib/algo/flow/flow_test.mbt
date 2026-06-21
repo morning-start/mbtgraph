@@ -516,10 +516,7 @@ test "push_relabel_matches_edmonds_karp" {
 
 ///|
 test "stoer_wagner_two_node" {
-  let adj : Array[Array[Double]] = [
-    [0.0, 5.0],
-    [5.0, 0.0],
-  ]
+  let adj : Array[Array[Double]] = [[0.0, 5.0], [5.0, 0.0]]
   let result = stoer_wagner(adj)
   assert_true(result.min_cut_weight == 5.0)
 }

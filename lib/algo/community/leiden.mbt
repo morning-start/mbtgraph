@@ -45,10 +45,20 @@ pub fn[G : @core.GraphReadable] leiden(
   let n = @core.GraphReadable::node_count(graph)
 
   if n == 0 {
-    return CommunityResult::{ labels: [], modularity: 0.0, num_communities: 0, levels: 0 }
+    return CommunityResult::{
+      labels: [],
+      modularity: 0.0,
+      num_communities: 0,
+      levels: 0,
+    }
   }
   if n == 1 {
-    return CommunityResult::{ labels: [0], modularity: 0.0, num_communities: 1, levels: 1 }
+    return CommunityResult::{
+      labels: [0],
+      modularity: 0.0,
+      num_communities: 1,
+      levels: 1,
+    }
   }
 
   let edges_info = build_edge_info(graph, n)
@@ -88,7 +98,9 @@ pub fn[G : @core.GraphReadable] leiden(
       let node_i = idx
       let curr_comm = community_of[node_i]
       let deg_i = degree[node_i]
-      let neigh_communities = find_neighbor_communities(adjacency, community_of, node_i, n)
+      let neigh_communities = find_neighbor_communities(
+        adjacency, community_of, node_i, n,
+      )
 
       let mut best_comm = curr_comm
       let mut best_gain = 0.0
@@ -101,12 +113,22 @@ pub fn[G : @core.GraphReadable] leiden(
           continue
         }
 
-        let k_i_in_tgt = int_to_double(count_edges_to_community(adjacency, node_i, community_of, target_comm))
-        let k_i_in_curr = int_to_double(count_edges_to_community(adjacency, node_i, community_of, curr_comm))
+        let k_i_in_tgt = int_to_double(
+          count_edges_to_community(adjacency, node_i, community_of, target_comm),
+        )
+        let k_i_in_curr = int_to_double(
+          count_edges_to_community(adjacency, node_i, community_of, curr_comm),
+        )
         let gain = compute_gain(
-          fine_internal[curr_comm], sum_tot[curr_comm],
-          fine_internal[target_comm], sum_tot[target_comm],
-          deg_i, k_i_in_curr, k_i_in_tgt, total_weight, res_factor,
+          fine_internal[curr_comm],
+          sum_tot[curr_comm],
+          fine_internal[target_comm],
+          sum_tot[target_comm],
+          deg_i,
+          k_i_in_curr,
+          k_i_in_tgt,
+          total_weight,
+          res_factor,
         )
 
         if gain > best_gain {
@@ -118,11 +140,19 @@ pub fn[G : @core.GraphReadable] leiden(
 
       if best_gain > 0.0 && best_comm != curr_comm {
         improved = true
-        let edges_to_curr = int_to_double(count_edges_to_community(adjacency, node_i, community_of, curr_comm))
-        let edges_to_best = int_to_double(count_edges_to_community(adjacency, node_i, community_of, best_comm))
+        let edges_to_curr = int_to_double(
+          count_edges_to_community(adjacency, node_i, community_of, curr_comm),
+        )
+        let edges_to_best = int_to_double(
+          count_edges_to_community(adjacency, node_i, community_of, best_comm),
+        )
 
-        fine_internal[curr_comm] = fine_internal[curr_comm] - edges_to_curr * 2.0 - self_loop[node_i]
-        fine_internal[best_comm] = fine_internal[best_comm] + edges_to_best * 2.0 + self_loop[node_i]
+        fine_internal[curr_comm] = fine_internal[curr_comm] -
+          edges_to_curr * 2.0 -
+          self_loop[node_i]
+        fine_internal[best_comm] = fine_internal[best_comm] +
+          edges_to_best * 2.0 +
+          self_loop[node_i]
         sum_tot[curr_comm] = sum_tot[curr_comm] - deg_i
         sum_tot[best_comm] = sum_tot[best_comm] + deg_i
         community_of[node_i] = best_comm
@@ -136,13 +166,22 @@ pub fn[G : @core.GraphReadable] leiden(
 
   // Phase 2: Refinement
   // 在每个社区内部运行局部移动，避免内部不连通
-  let refined = refine_partition(adjacency, community_of, n, degree, self_loop, total_weight, res_factor)
+  let refined = refine_partition(
+    adjacency, community_of, n, degree, self_loop, total_weight, res_factor,
+  )
 
   let relabeled = relabel_communities(refined, n)
   let num_comms = count_unique_comms(relabeled, n)
-  let mod_val = compute_modularity(adjacency, self_loop, relabeled, degree, total_weight, n)
+  let mod_val = compute_modularity(
+    adjacency, self_loop, relabeled, degree, total_weight, n,
+  )
 
-  CommunityResult::{ labels: relabeled, modularity: mod_val, num_communities: num_comms, levels: 1 }
+  CommunityResult::{
+    labels: relabeled,
+    modularity: mod_val,
+    num_communities: num_comms,
+    levels: 1,
+  }
 }
 
 ///|
@@ -235,13 +274,23 @@ fn refine_partition(
         let mut si2 = 0
         while si2 < neigh_subs.length() {
           let target_sub = neigh_subs[si2]
-          let k_to_target = int_to_double(count_edges_to_community(adjacency, node_i, sub_comm, target_sub))
-          let k_from_curr = int_to_double(count_edges_to_community(adjacency, node_i, sub_comm, curr_sub))
+          let k_to_target = int_to_double(
+            count_edges_to_community(adjacency, node_i, sub_comm, target_sub),
+          )
+          let k_from_curr = int_to_double(
+            count_edges_to_community(adjacency, node_i, sub_comm, curr_sub),
+          )
 
           let gain = compute_gain(
-            sub_int[curr_sub], sub_sum[curr_sub],
-            sub_int[target_sub], sub_sum[target_sub],
-            deg_i, k_from_curr, k_to_target, total_weight, res_factor,
+            sub_int[curr_sub],
+            sub_sum[curr_sub],
+            sub_int[target_sub],
+            sub_sum[target_sub],
+            deg_i,
+            k_from_curr,
+            k_to_target,
+            total_weight,
+            res_factor,
           )
 
           if gain > best_gain {
@@ -253,11 +302,19 @@ fn refine_partition(
 
         if best_gain > 0.0 && best_sub != curr_sub {
           improved = true
-          let k_from_curr2 = int_to_double(count_edges_to_community(adjacency, node_i, sub_comm, curr_sub))
-          let k_to_target2 = int_to_double(count_edges_to_community(adjacency, node_i, sub_comm, best_sub))
+          let k_from_curr2 = int_to_double(
+            count_edges_to_community(adjacency, node_i, sub_comm, curr_sub),
+          )
+          let k_to_target2 = int_to_double(
+            count_edges_to_community(adjacency, node_i, sub_comm, best_sub),
+          )
 
-          sub_int[curr_sub] = sub_int[curr_sub] - k_from_curr2 * 2.0 - self_loop[node_i]
-          sub_int[best_sub] = sub_int[best_sub] + k_to_target2 * 2.0 + self_loop[node_i]
+          sub_int[curr_sub] = sub_int[curr_sub] -
+            k_from_curr2 * 2.0 -
+            self_loop[node_i]
+          sub_int[best_sub] = sub_int[best_sub] +
+            k_to_target2 * 2.0 +
+            self_loop[node_i]
           sub_sum[curr_sub] = sub_sum[curr_sub] - deg_i
           sub_sum[best_sub] = sub_sum[best_sub] + deg_i
           sub_comm[node_i] = best_sub

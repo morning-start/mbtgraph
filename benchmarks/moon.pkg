@@ -1,11 +1,11 @@
 import {
   "moonbitlang/core/bench",
-  "morning-start/mbtgraph/lib/core" @core,
-  "morning-start/mbtgraph/lib/storage" @storage,
-  "morning-start/mbtgraph/lib/algo/traversal" @traversal,
+  "morning-start/mbtgraph/lib/core",
+  "morning-start/mbtgraph/lib/storage",
+  "morning-start/mbtgraph/lib/algo/traversal",
   "morning-start/mbtgraph/lib/algo/shortest_path" @sp,
-  "morning-start/mbtgraph/lib/algo/flow" @flow,
-  "morning-start/mbtgraph/lib/algo/community" @community,
+  "morning-start/mbtgraph/lib/algo/flow",
+  "morning-start/mbtgraph/lib/algo/community",
   "morning-start/mbtgraph/lib/utils/generators" @gen,
 }
 

@@ -90,5 +90,3 @@ fn heap_sift_down(h : BinaryHeap, idx : Int) -> Unit {
     }
   }
 }
-
-

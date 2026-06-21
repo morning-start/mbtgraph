@@ -97,23 +97,23 @@ pub fn CSCBuilder::build(self : CSCBuilder) -> CSCGraph {
 }
 
 ///|
-pub impl @core.GraphReadable for CSCGraph with node_count(self) -> Int {
+pub impl @core.GraphReadable for CSCGraph with fn node_count(self) -> Int {
   self.nodes.length()
 }
 
 ///|
-pub impl @core.GraphReadable for CSCGraph with edge_count(self) -> Int {
+pub impl @core.GraphReadable for CSCGraph with fn edge_count(self) -> Int {
   self.row_idx.length()
 }
 
 ///|
-pub impl @core.GraphReadable for CSCGraph with contains_node(self, id) -> Bool {
+pub impl @core.GraphReadable for CSCGraph with fn contains_node(self, id) -> Bool {
   let idx = id.0
   idx >= 0 && idx < self.nodes.length()
 }
 
 ///|
-pub impl @core.GraphReadable for CSCGraph with contains_edge(self, from, to) -> Bool {
+pub impl @core.GraphReadable for CSCGraph with fn contains_edge(self, from, to) -> Bool {
   let ti = to.0
   if ti < 0 || ti >= self.col_ptr.length() - 1 {
     return false
@@ -129,7 +129,7 @@ pub impl @core.GraphReadable for CSCGraph with contains_edge(self, from, to) -> 
 }
 
 ///|
-pub impl @core.GraphReadable for CSCGraph with get_node(self, id) -> Double? {
+pub impl @core.GraphReadable for CSCGraph with fn get_node(self, id) -> Double? {
   let idx = id.0
   if idx < 0 || idx >= self.nodes.length() {
     None
@@ -139,7 +139,7 @@ pub impl @core.GraphReadable for CSCGraph with get_node(self, id) -> Double? {
 }
 
 ///|
-pub impl @core.GraphReadable for CSCGraph with get_edge(self, from, to) -> Double? {
+pub impl @core.GraphReadable for CSCGraph with fn get_edge(self, from, to) -> Double? {
   let ti = to.0
   if ti < 0 || ti >= self.col_ptr.length() - 1 {
     return None
@@ -155,7 +155,7 @@ pub impl @core.GraphReadable for CSCGraph with get_edge(self, from, to) -> Doubl
 }
 
 ///|
-pub impl @core.GraphReadable for CSCGraph with neighbors(self, id) -> Iter[
+pub impl @core.GraphReadable for CSCGraph with fn neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let idx = id.0
@@ -184,8 +184,8 @@ pub impl @core.GraphReadable for CSCGraph with neighbors(self, id) -> Iter[
   r.iter()
 }
 
-///
-pub impl @core.GraphReadable for CSCGraph with neighbors_with_weight(
+///|
+pub impl @core.GraphReadable for CSCGraph with fn neighbors_with_weight(
   self,
   id,
 ) -> Iter[(@core.NodeId, Double)] {
@@ -216,7 +216,7 @@ pub impl @core.GraphReadable for CSCGraph with neighbors_with_weight(
 }
 
 ///|
-pub impl @core.GraphReadable for CSCGraph with degree(self, id) -> Int {
+pub impl @core.GraphReadable for CSCGraph with fn degree(self, id) -> Int {
   let idx = id.0
   if idx < 0 || idx >= self.col_ptr.length() - 1 {
     0
@@ -226,17 +226,17 @@ pub impl @core.GraphReadable for CSCGraph with degree(self, id) -> Int {
 }
 
 ///|
-pub impl @core.GraphReadable for CSCGraph with is_directed(self) -> Bool {
+pub impl @core.GraphReadable for CSCGraph with fn is_directed(self) -> Bool {
   true
 }
 
 ///|
-pub impl @core.GraphReadable for CSCGraph with is_empty(self) -> Bool {
+pub impl @core.GraphReadable for CSCGraph with fn is_empty(self) -> Bool {
   self.nodes.length() == 0
 }
 
 ///|
-pub impl @core.GraphReadable for CSCGraph with node_ids(self) -> Iter[
+pub impl @core.GraphReadable for CSCGraph with fn node_ids(self) -> Iter[
   @core.NodeId,
 ] {
   let r : Array[@core.NodeId] = []
@@ -247,7 +247,7 @@ pub impl @core.GraphReadable for CSCGraph with node_ids(self) -> Iter[
 }
 
 ///|
-pub impl @core.GraphReadable for CSCGraph with edges(self) -> Iter[
+pub impl @core.GraphReadable for CSCGraph with fn edges(self) -> Iter[
   (@core.NodeId, @core.NodeId, Double),
 ] {
   let r : Array[(@core.NodeId, @core.NodeId, Double)] = []
@@ -263,7 +263,7 @@ pub impl @core.GraphReadable for CSCGraph with edges(self) -> Iter[
 }
 
 ///|
-pub impl @core.GraphBatchReadable for CSCGraph with batch_neighbors(
+pub impl @core.GraphBatchReadable for CSCGraph with fn batch_neighbors(
   self,
   ids : Array[@core.NodeId],
 ) -> Array[Array[@core.NodeId]] {
@@ -286,7 +286,7 @@ pub impl @core.GraphBatchReadable for CSCGraph with batch_neighbors(
 }
 
 ///|
-pub impl @core.GraphDirected for CSCGraph with in_neighbors(self, id) -> Iter[
+pub impl @core.GraphDirected for CSCGraph with fn in_neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let idx = id.0
@@ -303,7 +303,7 @@ pub impl @core.GraphDirected for CSCGraph with in_neighbors(self, id) -> Iter[
 }
 
 ///|
-pub impl @core.GraphDirected for CSCGraph with out_neighbors(self, id) -> Iter[
+pub impl @core.GraphDirected for CSCGraph with fn out_neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let idx = id.0
@@ -323,7 +323,7 @@ pub impl @core.GraphDirected for CSCGraph with out_neighbors(self, id) -> Iter[
 }
 
 ///|
-pub impl @core.GraphDirected for CSCGraph with in_degree(self, id) -> Int {
+pub impl @core.GraphDirected for CSCGraph with fn in_degree(self, id) -> Int {
   let idx = id.0
   if idx < 0 || idx >= self.col_ptr.length() - 1 {
     0
@@ -333,7 +333,7 @@ pub impl @core.GraphDirected for CSCGraph with in_degree(self, id) -> Int {
 }
 
 ///|
-pub impl @core.GraphDirected for CSCGraph with out_degree(self, id) -> Int {
+pub impl @core.GraphDirected for CSCGraph with fn out_degree(self, id) -> Int {
   let idx = id.0
   let mut c = 0
   let nc = self.nodes.length()
@@ -355,7 +355,7 @@ pub impl @core.GraphDirected for CSCGraph with out_degree(self, id) -> Int {
 }
 
 ///|
-pub impl @core.GraphDirected for CSCGraph with predecessors(self, id) -> Iter[
+pub impl @core.GraphDirected for CSCGraph with fn predecessors(self, id) -> Iter[
   (@core.NodeId, Double),
 ] {
   let idx = id.0
@@ -372,7 +372,7 @@ pub impl @core.GraphDirected for CSCGraph with predecessors(self, id) -> Iter[
 }
 
 ///|
-pub impl @core.GraphDirected for CSCGraph with successors(self, id) -> Iter[
+pub impl @core.GraphDirected for CSCGraph with fn successors(self, id) -> Iter[
   (@core.NodeId, Double),
 ] {
   let idx = id.0
@@ -392,7 +392,7 @@ pub impl @core.GraphDirected for CSCGraph with successors(self, id) -> Iter[
 }
 
 ///|
-pub impl @core.GraphBatchReadable for CSCGraph with batch_edges(
+pub impl @core.GraphBatchReadable for CSCGraph with fn batch_edges(
   self,
   pairs : Array[(@core.NodeId, @core.NodeId)],
 ) -> Array[Double?] {

@@ -84,7 +84,9 @@ pub fn[G : @core.GraphReadable] local_clustering_coefficient(
 ///
 /// - 时间: O(V × d²)，其中 d 为平均度数
 /// - 空间: O(1)
-pub fn[G : @core.GraphReadable] average_clustering_coefficient(graph : G) -> Double {
+pub fn[G : @core.GraphReadable] average_clustering_coefficient(
+  graph : G,
+) -> Double {
   let n = @core.GraphReadable::node_count(graph)
   if n == 0 {
     return 0.0
@@ -118,7 +120,9 @@ pub fn[G : @core.GraphReadable] average_clustering_coefficient(graph : G) -> Dou
 ///
 /// - 时间: O(V × d²)，其中 d 为平均度数
 /// - 空间: O(V) 用于存储结果数组
-pub fn[G : @core.GraphReadable] clustering_coefficients(graph : G) -> ClusteringCoefficientResult {
+pub fn[G : @core.GraphReadable] clustering_coefficients(
+  graph : G,
+) -> ClusteringCoefficientResult {
   let n = @core.GraphReadable::node_count(graph)
   let locals : Array[Double] = []
   let mut i = 0

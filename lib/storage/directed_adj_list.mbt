@@ -66,35 +66,34 @@ pub fn DirectedAdjList::add_edges_batch(
   let mut count = 0
   for edge in edges {
     match edge {
-      (from, to, data) => {
+      (from, to, data) =>
         match self.add_edge_unchecked(from, to, data) {
           Ok(_) => count = count + 1
           Err(e) => return Err(e)
         }
-      }
     }
   }
   Ok(count)
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedAdjList with node_count(self) -> Int {
+pub impl @core.GraphReadable for DirectedAdjList with fn node_count(self) -> Int {
   self.node_cnt
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedAdjList with edge_count(self) -> Int {
+pub impl @core.GraphReadable for DirectedAdjList with fn edge_count(self) -> Int {
   self.edge_cnt
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedAdjList with contains_node(self, id) -> Bool {
+pub impl @core.GraphReadable for DirectedAdjList with fn contains_node(self, id) -> Bool {
   let idx = id.0
   idx >= 0 && idx < self.nodes.length() && has_node(self.nodes, idx)
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedAdjList with contains_edge(
+pub impl @core.GraphReadable for DirectedAdjList with fn contains_edge(
   self,
   from,
   to,
@@ -112,7 +111,7 @@ pub impl @core.GraphReadable for DirectedAdjList with contains_edge(
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedAdjList with get_node(self, id) -> Double? {
+pub impl @core.GraphReadable for DirectedAdjList with fn get_node(self, id) -> Double? {
   let idx = id.0
   if idx < 0 || idx >= self.nodes.length() {
     return None
@@ -124,7 +123,11 @@ pub impl @core.GraphReadable for DirectedAdjList with get_node(self, id) -> Doub
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedAdjList with get_edge(self, from, to) -> Double? {
+pub impl @core.GraphReadable for DirectedAdjList with fn get_edge(
+  self,
+  from,
+  to,
+) -> Double? {
   let fi = from.0
   if fi < 0 || fi >= self.adj.length() {
     return None
@@ -138,7 +141,7 @@ pub impl @core.GraphReadable for DirectedAdjList with get_edge(self, from, to) -
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedAdjList with neighbors(self, id) -> Iter[
+pub impl @core.GraphReadable for DirectedAdjList with fn neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let idx = id.0
@@ -154,8 +157,8 @@ pub impl @core.GraphReadable for DirectedAdjList with neighbors(self, id) -> Ite
   r.iter()
 }
 
-///
-pub impl @core.GraphReadable for DirectedAdjList with neighbors_with_weight(
+///|
+pub impl @core.GraphReadable for DirectedAdjList with fn neighbors_with_weight(
   self,
   id,
 ) -> Iter[(@core.NodeId, Double)] {
@@ -171,7 +174,7 @@ pub impl @core.GraphReadable for DirectedAdjList with neighbors_with_weight(
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedAdjList with degree(self, id) -> Int {
+pub impl @core.GraphReadable for DirectedAdjList with fn degree(self, id) -> Int {
   let idx = id.0
   if idx < 0 || idx >= self.adj.length() {
     0
@@ -181,17 +184,17 @@ pub impl @core.GraphReadable for DirectedAdjList with degree(self, id) -> Int {
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedAdjList with is_directed(self) -> Bool {
+pub impl @core.GraphReadable for DirectedAdjList with fn is_directed(self) -> Bool {
   true
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedAdjList with is_empty(self) -> Bool {
+pub impl @core.GraphReadable for DirectedAdjList with fn is_empty(self) -> Bool {
   self.node_cnt == 0
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedAdjList with node_ids(self) -> Iter[
+pub impl @core.GraphReadable for DirectedAdjList with fn node_ids(self) -> Iter[
   @core.NodeId,
 ] {
   let r : Array[@core.NodeId] = []
@@ -204,7 +207,7 @@ pub impl @core.GraphReadable for DirectedAdjList with node_ids(self) -> Iter[
 }
 
 ///|
-pub impl @core.GraphReadable for DirectedAdjList with edges(self) -> Iter[
+pub impl @core.GraphReadable for DirectedAdjList with fn edges(self) -> Iter[
   (@core.NodeId, @core.NodeId, Double),
 ] {
   let r : Array[(@core.NodeId, @core.NodeId, Double)] = []
@@ -221,7 +224,7 @@ pub impl @core.GraphReadable for DirectedAdjList with edges(self) -> Iter[
 }
 
 ///|
-pub impl @core.GraphWritable for DirectedAdjList with add_node(self, data) -> @core.NodeId {
+pub impl @core.GraphWritable for DirectedAdjList with fn add_node(self, data) -> @core.NodeId {
   let slot = find_slot(self.nodes, 0, self.nodes.length())
   let idx = if slot >= 0 { slot } else { self.nodes.length() }
   let g = self
@@ -236,7 +239,7 @@ pub impl @core.GraphWritable for DirectedAdjList with add_node(self, data) -> @c
 }
 
 ///|
-pub impl @core.GraphWritable for DirectedAdjList with remove_node(self, id) -> Bool {
+pub impl @core.GraphWritable for DirectedAdjList with fn remove_node(self, id) -> Bool {
   let idx = id.0
   if idx < 0 || idx >= self.nodes.length() {
     return false
@@ -307,7 +310,7 @@ fn dal_remove_from_adj(
 }
 
 ///|
-pub impl @core.GraphWritable for DirectedAdjList with add_edge(
+pub impl @core.GraphWritable for DirectedAdjList with fn add_edge(
   self,
   from,
   to,
@@ -360,7 +363,7 @@ fn dal_contains_edge(
 }
 
 ///|
-pub impl @core.GraphWritable for DirectedAdjList with remove_edge(
+pub impl @core.GraphWritable for DirectedAdjList with fn remove_edge(
   self,
   from,
   to,
@@ -383,7 +386,7 @@ pub impl @core.GraphWritable for DirectedAdjList with remove_edge(
 }
 
 ///|
-pub impl @core.GraphWritable for DirectedAdjList with clear(self) -> Unit {
+pub impl @core.GraphWritable for DirectedAdjList with fn clear(self) -> Unit {
   let g = self
   for i in 0..<g.nodes.length() {
     g.nodes[i] = None
@@ -395,7 +398,7 @@ pub impl @core.GraphWritable for DirectedAdjList with clear(self) -> Unit {
 }
 
 ///|
-pub impl @core.GraphDirected for DirectedAdjList with in_neighbors(self, id) -> Iter[
+pub impl @core.GraphDirected for DirectedAdjList with fn in_neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   let idx = id.0
@@ -412,14 +415,14 @@ pub impl @core.GraphDirected for DirectedAdjList with in_neighbors(self, id) -> 
 }
 
 ///|
-pub impl @core.GraphDirected for DirectedAdjList with out_neighbors(self, id) -> Iter[
+pub impl @core.GraphDirected for DirectedAdjList with fn out_neighbors(self, id) -> Iter[
   @core.NodeId,
 ] {
   @core.GraphReadable::neighbors(self, id)
 }
 
 ///|
-pub impl @core.GraphDirected for DirectedAdjList with in_degree(self, id) -> Int {
+pub impl @core.GraphDirected for DirectedAdjList with fn in_degree(self, id) -> Int {
   let idx = id.0
   if idx < 0 || idx >= self.rev_adj.length() {
     0
@@ -429,12 +432,12 @@ pub impl @core.GraphDirected for DirectedAdjList with in_degree(self, id) -> Int
 }
 
 ///|
-pub impl @core.GraphDirected for DirectedAdjList with out_degree(self, id) -> Int {
+pub impl @core.GraphDirected for DirectedAdjList with fn out_degree(self, id) -> Int {
   @core.GraphReadable::degree(self, id)
 }
 
 ///|
-pub impl @core.GraphDirected for DirectedAdjList with predecessors(self, id) -> Iter[
+pub impl @core.GraphDirected for DirectedAdjList with fn predecessors(self, id) -> Iter[
   (@core.NodeId, Double),
 ] {
   let idx = id.0
@@ -449,7 +452,7 @@ pub impl @core.GraphDirected for DirectedAdjList with predecessors(self, id) -> 
 }
 
 ///|
-pub impl @core.GraphDirected for DirectedAdjList with successors(self, id) -> Iter[
+pub impl @core.GraphDirected for DirectedAdjList with fn successors(self, id) -> Iter[
   (@core.NodeId, Double),
 ] {
   let idx = id.0

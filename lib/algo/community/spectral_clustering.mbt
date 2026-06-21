@@ -51,10 +51,20 @@ pub fn[G : @core.GraphReadable] spectral_clustering(
 ) -> CommunityResult {
   let n = @core.GraphReadable::node_count(graph)
   if n == 0 {
-    return CommunityResult::{ labels: [], modularity: 0.0, num_communities: 0, levels: 0 }
+    return CommunityResult::{
+      labels: [],
+      modularity: 0.0,
+      num_communities: 0,
+      levels: 0,
+    }
   }
   if n == 1 || k <= 1 {
-    return CommunityResult::{ labels: Array::make(n, 0), modularity: 0.0, num_communities: 1, levels: 1 }
+    return CommunityResult::{
+      labels: Array::make(n, 0),
+      modularity: 0.0,
+      num_communities: 1,
+      levels: 1,
+    }
   }
   if k > n {
     return spectral_clustering(graph, n)
@@ -92,12 +102,20 @@ pub fn[G : @core.GraphReadable] spectral_clustering(
   let relabeled = relabel_communities(labels, n)
   let num_comms = count_unique_comms(relabeled, n)
 
-  CommunityResult::{ labels: relabeled, modularity: 0.0, num_communities: num_comms, levels: 1 }
+  CommunityResult::{
+    labels: relabeled,
+    modularity: 0.0,
+    num_communities: num_comms,
+    levels: 1,
+  }
 }
 
 ///|
 /// 构建邻接矩阵 A
-fn[G : @core.GraphReadable] build_adjacency_matrix(graph : G, n : Int) -> @la.Matrix[Double] {
+fn[G : @core.GraphReadable] build_adjacency_matrix(
+  graph : G,
+  n : Int,
+) -> @la.Matrix[Double] {
   let a = @la.Matrix::new(n, n, 0.0)
   let mut u = 0
   while u < n {
@@ -162,14 +180,11 @@ fn build_u_matrix(
 /// K-Means 聚类
 ///
 /// 对 n 个 d 维向量进行 k 个簇的划分
-fn k_means(
-  data : @la.Matrix[Double],
-  n : Int,
-  d : Int,
-  k : Int,
-) -> Array[Int] {
+fn k_means(data : @la.Matrix[Double], n : Int, d : Int, k : Int) -> Array[Int] {
   let labels : Array[Int] = Array::make(n, 0)
-  if k <= 0 { return labels }
+  if k <= 0 {
+    return labels
+  }
   if k == 1 {
     let mut i = 0
     while i < n {
