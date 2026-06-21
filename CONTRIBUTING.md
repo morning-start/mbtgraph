@@ -1,10 +1,10 @@
 ---
 title: "mbtgraph 贡献者指南"
-version: "1.0.0"
+version: "2.0.0"
 status: "active"
 type: "contributing"
 created: "2026-05-02"
-updated: "2026-05-23"
+updated: "2026-06-21"
 author: "morning-start"
 license: "MIT"
 tags: ["contributing", "guide", "development"]
@@ -16,13 +16,10 @@ tags: ["contributing", "guide", "development"]
 
 ---
 
-## 📋 目录
+## 目录
 
 - [行为准则](#行为准则)
 - [如何贡献](#如何贡献)
-  - [报告 Bug](#报告-bug)
-  - [提出新功能](#提出新功能)
-  - [提交代码](#提交代码)
 - [开发环境设置](#开发环境设置)
 - [项目结构概览](#项目结构概览)
 - [开发流程](#开发流程)
@@ -43,49 +40,24 @@ tags: ["contributing", "guide", "development"]
 
 ### 报告 Bug
 
-如果你发现了 Bug，请：
-
 1. 搜索 [现有 Issues](https://github.com/morning-start/mbtgraph/issues) 确认是否已有报告
-2. 创建新 Issue，包含：
-   - **标题**: 简洁描述问题
-   - **环境**: MoonBit 版本（当前 0.9.0）、操作系统
-   - **复现步骤**: 详细的复现步骤
-   - **预期行为**: 应该发生什么
-   - **实际行为**: 实际发生了什么
-   - **代码示例**: 最小复现代码
+2. 创建新 Issue，包含：标题、环境（MoonBit 版本、OS）、复现步骤、预期/实际行为、最小复现代码
 
 ### 提出新功能
 
-如果你想添加新算法或功能，请：
-
 1. 先在 [Discussions](https://github.com/morning-start/mbtgraph/discussions) 或 Issues 中讨论
-2. 说明功能的需求和使用场景
-3. 提供算法的伪代码或参考文献
-4. 与 maintainer 确认后再开始实现
-
-**当前算法模块覆盖情况**（P0-P5 已完成）：
-
-| 模块 | 状态 | 算法 |
-|------|:----:|------|
-| traversal (遍历) | ✅ 完成 | BFS / DFS / 环检测 / 拓扑排序 |
-| shortest_path (最短路径) | ✅ 完成 | Dijkstra / Bellman-Ford / Floyd-Warshall |
-| mst (最小生成树) | ✅ 完成 | Kruskal / Prim |
-| connectivity (连通性) | ✅ 完成 | 连通分量 / Tarjan SCC / Kosaraju SCC |
-| flow (网络流) | ✅ 完成 | Edmonds-Karp / Dinic |
-| matching (图匹配) | ✅ 完成 | Hungarian 二分图匹配 |
-| euler (欧拉路径) | ✅ 完成 | Hierholzer 回路/路径 + 判定 |
-| cutpoints (割点与桥) | ✅ 完成 | Tarjan 割点/桥检测 |
-| coloring (图着色) | ✅ 完成 | Greedy / Welsh-Powell / DSATUR / 回溯精确 |
-| clique (团检测) | ✅ 完成 | Bron-Kerbosch 最大团 / 独立集 / 顶点覆盖 |
-| hamiltonian (哈密顿/TSP) | ✅ 完成 | 快速检查 / 回溯 / TSP 最近邻与精确解 |
+2. 说明功能需求和使用场景，提供算法伪代码或参考文献
+3. 与 maintainer 确认后再开始实现
 
 ### 提交代码
 
 1. Fork 本仓库
 2. 创建特性分支: `git checkout -b feature/amazing-feature`
-3. 提交更改: `git commit -m 'feat(algo): add amazing algorithm'`
-4. 推送到分支: `git push origin feature/amazing-feature`
-5. 提交 Pull Request
+3. 实现功能 + 编写测试
+4. 运行 `uv run python tests/gen/all.py` 重新生成随机图测试（如涉及算法模块）
+5. 提交: `git commit -m 'feat(algo): add amazing algorithm'`
+6. 推送: `git push origin feature/amazing-feature`
+7. 创建 Pull Request（CI 必须通过）
 
 ---
 
@@ -93,8 +65,12 @@ tags: ["contributing", "guide", "development"]
 
 ### 前置要求
 
-- **MoonBit**: 安装最新版 (https://moonbitlang.com)，当前项目使用版本兼容 0.9.0
-- **Git**: 版本控制工具
+| 工具 | 版本 | 用途 |
+|------|------|------|
+| **MoonBit** | 最新 | 编译、测试、格式化 |
+| **Git** | 2.x | 版本控制 |
+| **uv** | 0.11+ | Python 环境管理（测试生成用） |
+| **Python** | 3.10+ | NetworkX 随机图测试生成 |
 
 ### 快速开始
 
@@ -103,12 +79,14 @@ tags: ["contributing", "guide", "development"]
 git clone https://github.com/YOUR_USERNAME/mbtgraph.git
 cd mbtgraph
 
-# 2. 验证环境（确保 483 个测试全通过）
+# 2. 验证环境（736 tests 全通过）
 moon test
 
-# 3. 配置 Git Hooks（推荐）
-cp .githooks/* .git/hooks/
-chmod +x .git/hooks/*
+# 3. 配置 Git Hooks（pre-commit 含 fmt+info+check+test）
+git config core.hooksPath .githooks
+
+# 4. 安装 Python 测试生成依赖（可选，用于扩展测试）
+cd tests && uv sync && cd ..
 ```
 
 ---
@@ -117,12 +95,12 @@ chmod +x .git/hooks/*
 
 ```
 lib/
-├── core/                      # 核心抽象层 [68 tests]
+├── core/                      # 核心抽象层
 │   ├── types.mbt             # NodeId / Node / Edge 基础类型
 │   ├── traits.mbt            # 6 层 Trait 分层体系
 │   └── error.mbt             # GraphError 错误类型
 │
-├── storage/                   # 存储实现层 [~107 tests]
+├── storage/                   # 存储实现层 (8 种)
 │   ├── directed_adj_list.mbt # 有向邻接表（推荐默认）
 │   ├── undirected_adj_list.mbt # 无向邻接表（半存储优化）
 │   ├── directed_matrix.mbt   # 有向邻接矩阵
@@ -134,25 +112,46 @@ lib/
 │   ├── converter.mbt         # 10 个格式转换函数
 │   └── shared_helpers.mbt    # 公共辅助函数
 │
-├── algo/                      # 算法模块 [~309 tests] ⭐ P0-P5 全部完成
+├── algo/                      # 算法模块 (18 个)
 │   ├── traversal/            # 遍历 [BFS/DFS/环检测/拓扑排序]
-│   ├── shortest_path/        # 最短路径 [Dijkstra/BF/FW]
+│   ├── shortest_path/        # 最短路径 [Dijkstra/BF/FW/A*/Bidirectional]
 │   ├── mst/                  # 最小生成树 [Kruskal/Prim]
-│   ├── connectivity/         # 连通性 [CC/Tarjan/Kosaraju]
-│   ├── flow/                 # 网络流 [Edmonds-Karp/Dinic]
-│   ├── matching/             # 图匹配 [Hungarian]
+│   ├── connectivity/         # 连通性 [CC/Tarjan/Kosaraju/BCC]
+│   ├── flow/                 # 网络流 [Edmonds-Karp/Dinic/Push-Relabel]
+│   ├── matching/             # 图匹配 [Hopcroft-Karp/Hungarian/Edmonds]
 │   ├── euler/                # 欧拉路径 [Hierholzer]
 │   ├── cutpoints/            # 割点与桥 [Tarjan]
-│   ├── coloring/             # 图着色 [Greedy/WP/DSATUR/回溯]
-│   ├── clique/               # 团检测 [Bron-Kerbosch]
-│   └── hamiltonian/          # 哈密顿/TSP [回溯/最近邻/Held-Karp]
+│   ├── coloring/             # 图着色 [Greedy/WP/DSATUR/Edge]
+│   ├── clique/               # 团检测 [Bron-Kerbosch/独立集/顶点覆盖]
+│   ├── hamiltonian/          # 哈密顿/TSP [回溯/Held-Karp]
+│   ├── pagerank/             # PageRank
+│   ├── centrality/           # 中心性 [Degree/Betweenness/Closeness/Eigenvector/Katz/Harmonic]
+│   ├── community/            # 社区检测 [Louvain/Leiden/LabelPropagation]
+│   ├── recognition/          # 图识别 [Bipartite/Complete/Tree/Chordal]
+│   ├── dense_subgraph/       # 稠密子图 [K-Core/三角形/聚类系数]
+│   ├── link_prediction/      # 链接预测 [CommonNeighbors/Jaccard/AA/PA]
+│   ├── operators/            # 图运算 [Complement/Reverse/Union/Cartesian/Tensor/Lex/Line/Power]
+│   └── integration/          # Python/NetworkX 随机图集成测试
+│
+├── io/                        # I/O 模块
+│   ├── dot.mbt               # DOT 格式读写
+│   ├── json_serializer.mbt   # JSON 格式读写
+│   └── graph_stats.mbt       # 图统计工具
 │
 └── utils/
-    └── generators/           # 图生成器 [56 tests, 15 函数]
-        ├── classic.mbt       # 经典图 (complete/path/cycle/star...)
-        ├── random.mbt        # 随机图 (erdos_renyi/tree/dag)
-        ├── grid.mbt          # 网格 (2d/hexagonal)
+    └── generators/           # 图生成器
+        ├── classic.mbt       # 完全图/环图/路径图/星型图
+        ├── random.mbt        # Erdos-Renyi 随机图
+        ├── grid.mbt          # 网格图
         └── bipartite.mbt     # 二分图
+
+tests/
+├── gen/                       # Python 测试生成工具
+│   ├── gen_fixtures.py       # 每算法生成 5 个随机图 + NetworkX ground truth
+│   ├── gen_tests.py          # 自动生成 MoonBit 集成测试文件
+│   ├── all.py                # 主控脚本（一键生成）
+│   └── utils.py              # 公共 JSON 导出函数
+└── fixtures/                  # 按模块分目录的 JSON fixture 数据
 ```
 
 ---
@@ -162,267 +161,157 @@ lib/
 ### 分支策略
 
 ```
-main (稳定分支)
+master (稳定分支, CI 必须通过)
   ↑
-  │ PR
+  │ PR (require 1 approval + CI pass)
   │
 feature/* (特性分支)
 ```
 
-- `main`: 稳定分支，只能通过 PR 合并
-- `feature/*`: 特性分支，从 `main` 创建
-- `fix/*`: 修复分支，从 `main` 创建
-- `docs/*`: 文档分支，从 `main` 创建
+- `master`: 稳定分支，只能通过 PR 合并，CI 必须通过
+- `feature/*`: 从 `master` 创建
+- `fix/*`: 从 `master` 创建
+- `docs/*`: 从 `master` 创建
 
 ### 工作流
 
-1. 从 `main` 创建特性分支
+1. 从 `master` 创建特性分支
 2. 实现功能，编写测试
-3. 运行 `moon test` 确保通过
-4. 运行 `moon fmt` 格式化代码
-5. 运行 `moon info` 更新接口
-6. 提交并推送
-7. 创建 Pull Request
-8. 等待 Review
-9. 合并到 `main`
+3. 如涉及算法模块，运行 `cd tests && uv run python gen/all.py` 重新生成随机图测试
+4. 运行 `moon test` 确保通过（pre-commit 会自动运行）
+5. 提交并推送
+6. 创建 Pull Request
+7. 等待 CI 通过 + Review 批准
+8. 合并到 `master`
+
+### CI/CD 流水线
+
+**本地 pre-commit（每次提交自动运行）：**
+1. Security scan — 检测密钥/凭证
+2. `moon fmt` — 格式化
+3. `moon info` — 更新 .mbti 接口
+4. `moon check` — 编译检查
+5. `moon test` — 运行所有测试
+
+**GitHub CI（PR 合并前必须通过）：**
+- `moon fmt --check` + `moon check` + `moon test`
+- Bun 构建 site
+
+**分支保护（master）：**
+- 要求 CI 通过
+- 要求 1 个 reviewer 批准
+- 管理员也受约束
 
 ---
 
 ## 编码规范
 
-> ⚠️ **重要**: 完整编码规范见 [`AGENTS.md`](../AGENTS.md)，以下为核心规则速查。
+> 完整编码规范见 [`AGENTS.md`](AGENTS.md)，以下为核心规则速查。
 
 ### 强制规则（CI 检查）
 
-| # | 规则 | ✅ 正确 | ❌ 错误 | 检测方式 |
-|---|------|--------|--------|---------|
-| R1 | 使用 `@core.` 完全限定名 | `@core.NodeId(0)` | use 别名 | Code Review |
-| R2 | Impl 用 `(self)` 非 `mut self` | `let g = self` | `mut self` | 编译报错 E3002 |
-| R3 | 可变性按需声明 | 只改字段→`let g` | 需重新赋值→`let mut g` | Warning E0015 |
-| R4 | 可见性正确选择 | 核心类型→`pub(all)` | trait→`pub(open)trait` | 编译报错 E4036/E4145 |
-| R5 | For 循环不直接解构元组 | 先绑定再 match | `for (a,b) in ...` | 编译报错 E3002 |
-| R6 | **嵌套泛型用 `]]` 结尾** | `Array[Array[Double?]]` | `Array[Array[Double?>>` | Parse error |
-| R7 | **避免保留字命名** | `net`, `graph` | `fn`, `var` | Parse error / deprecated |
+| # | 规则 | ✅ 正确 | ❌ 错误 |
+|---|------|--------|--------|
+| R1 | 使用 `@core.` 完全限定名 | `@core.NodeId(0)` | use 别名 |
+| R2 | Impl 用 `(self)` 非 `mut self` | `let g = self` | `mut self` |
+| R3 | 可变性按需声明 | 只改字段→`let g` | 需重新赋值→`let mut g` |
+| R4 | 可见性正确选择 | 核心类型→`pub(all)` | trait→`pub(open)trait` |
+| R5 | For 循环不直接解构元组 | 先绑定再 match | `for (a,b) in ...` |
+| R6 | 嵌套泛型用 `]]` 结尾 | `Array[Array[Double?]]` | `Array[Array[Double?>>` |
+| R7 | 避免保留字命名 | `net`, `graph` | `fn`, `var` |
 
 ### 命名约定
 
 | 类别 | 规范 | 示例 |
 |------|------|------|
-| **类型/Struct** | PascalCase | `DirectedGraph`, `BFSResult`, `FlowNetwork` |
-| **Trait** | PascalCase | `GraphReadable`, `GraphWritable`, `GraphDirected` |
-| **公开函数** | snake_case | `breadth_first_search`, `dijkstra`, `kruskal` |
-| **私有函数** | 无前缀 (MoonBit priv) | `ek_bfs`, `deep_copy_matrix` |
-| **常量** | UPPER_SNAKE_CASE | `DEFAULT_DAMPING_FACTOR` |
-
-### 推荐惯例
-
-- Match 多语句用 `{}` 包裹（不用逗号分隔）
-- Option 匹配不需要 `_ => ()` 分支
-- 同包内函数直接调用，无需模块前缀
-- 公共逻辑复用 `shared_helpers.mbt`，不重复实现
-- **数组修改需深拷贝**（保证纯函数语义）
-- **链式赋值处理返回值**（`let net = net.add_edge(...)` 而非 ignore）
-
-### 组件内聚策略
-
-| 数据结构 | 位置 | 可见性 | 使用者 |
-|----------|------|:------:|--------|
-| BinaryHeap (二叉最小堆) | `algo/shortest_path/heap.mbt` | priv | Dijkstra |
-| UnionFind (并查集) | `algo/mst/union_find.mbt` | priv | Kruskal |
-| TarjanState (可变状态载体) | `algo/connectivity/tarjan.mbt` | priv | Tarjan SCC |
-| FlowNetwork (流网络) | `algo/flow/flow_network.mbt` | pub(all) | Edmonds-Karp / Dinic |
+| 类型/Struct | PascalCase | `DirectedGraph`, `BFSResult` |
+| Trait | PascalCase | `GraphReadable`, `GraphWritable` |
+| 公开函数 | snake_case | `breadth_first_search`, `dijkstra` |
+| 私有函数 | 无前缀 | `ek_bfs`, `deep_copy_matrix` |
 
 ### 文档注释
 
-所有公开函数必须有文档注释：
-
-```moonbit
-/// 广度优先搜索
-///
-/// # 参数
-/// - graph: 图 (实现 GraphReadable trait)
-/// - source: 起始节点
-///
-/// # 返回值
-/// BfsResult 包含遍历顺序、距离和父指针
-///
-/// # 复杂度
-/// 时间 O(V+E), 空间 O(V)
-pub fn[G : @core.GraphReadable] bfs(g : G, start : @core.NodeId) -> BfsResult {
-  // ...
-}
-```
+所有公开函数必须有文档注释（参数、返回值、复杂度）。
 
 ---
 
 ## 提交规范
 
-### Commit Message 格式
-
-遵循 [Conventional Commits](https://www.conventionalcommits.org/) 规范：
+遵循 [Conventional Commits](https://www.conventionalcommits.org/)：
 
 ```
 <type>(<scope>): <description>
-
-[optional body]
-
-[optional footer(s)]
 ```
-
-### Type 类型
 
 | Type | 说明 | 示例 |
 |------|------|------|
 | `feat` | 新功能 | `feat(hamiltonian): add TSP algorithms` |
-| `fix` | Bug 修复 | `fix(core): fix edge duplication in undirected graph` |
-| `docs` | 文档 | `docs(readme): add installation instructions` |
-| `test` | 测试代码 | `test(flow): add dinic test cases` |
+| `fix` | Bug 修复 | `fix(core): fix edge duplication` |
+| `test` | 测试 | `test(flow): add dinic test cases` |
 | `refactor` | 重构 | `refactor(core): simplify graph trait` |
-| `perf` | 性能优化 | `perf(sp): optimize dijkstra with fibonacci heap` |
 | `ci` | CI 配置 | `ci: add github actions workflow` |
 | `chore` | 杂项 | `chore: update dependencies` |
-
-### Scope 范围（完整列表）
-
-| Scope | 说明 | 对应目录 |
-|-------|------|---------|
-| `core` | 核心类型 + Trait | `lib/core/` |
-| `storage` | 存储实现层 | `lib/storage/` |
-| `traversal` | 遍历算法 | `lib/algo/traversal/` |
-| `shortest_path` | 最短路径 | `lib/algo/shortest_path/` |
-| `mst` | 最小生成树 | `lib/algo/mst/` |
-| `connectivity` | 连通性分析 | `lib/algo/connectivity/` |
-| `flow` | 网络流 | `lib/algo/flow/` |
-| `matching` | 图匹配 | `lib/algo/matching/` |
-| `euler` | 欧拉路径 | `lib/algo/euler/` |
-| `cutpoints` | 割点与桥 | `lib/algo/cutpoints/` |
-| `coloring` | 图着色 | `lib/algo/coloring/` |
-| `clique` | 团检测 | `lib/algo/clique/` |
-| `hamiltonian` | 哈密顿/TSP | `lib/algo/hamiltonian/` |
-| `generators` | 图生成器 | `lib/utils/generators/` |
-| `test` | 测试代码 | 各模块 `*_test.mbt` |
-| `docs` | 文档 | `docs/` |
-| `ci` | CI/CD | `.github/workflows/` |
-
-### 示例
-
-```
-feat(euler): add Hierholzer euler path/circuit algorithms
-
-- Implement undirected/directed Hierholzer algorithm
-- Add has_euler_path/is_euler_circuit predicates
-- Add EulerResult type with path and circuit methods
-- Add unit tests with standard test cases (22 tests)
-
-Closes #123
-```
 
 ---
 
 ## 测试要求
 
-### 测试文件命名
+### 测试体系
 
-- 黑盒测试: `<module>_test.mbt` — 公开 API 行为验证
-- 白盒测试: `<module>_wbtest.mbt` — 内部实现细节验证
+项目采用**双轨制测试** + **Python/NetworkX 随机图验证**：
 
-### 当前测试统计
+| 测试类型 | 文件位置 | 说明 |
+|---------|---------|------|
+| 黑盒测试 | `lib/algo/*_test.mbt` | 公开 API 行为验证 |
+| 白盒测试 | `lib/algo/*_wbtest.mbt` | 内部实现细节验证 |
+| 随机图集成测试 | `lib/algo/integration/*_test.mbt` | Python/NetworkX ground truth 验证 |
 
-| 模块 | 测试文件数 | 测试用例数 | 状态 |
-|------|:---------:|:---------:|:----:|
-| core | 3 (types/traits/error) | ~68 | ✅ 全通过 |
-| storage | ~8 | ~107 | ✅ 全通过 |
-| traversal | 2 (traversal/cross_storage) | ~47 | ✅ 全通过 |
-| generators | 1 | 56 | ✅ 全通过 |
-| shortest_path | 1 | 32 | ✅ 全通过 |
-| mst | 1 | 16 | ✅ 全通过 |
-| connectivity | 1 | 21 | ✅ 全通过 |
-| flow | 2 (flow/dinic) | 33 | ✅ 全通过 |
-| matching | 1 | 21 | ✅ 全通过 |
-| euler | 1 | 22 | ✅ 全通过 |
-| cutpoints | 1 | 15 | ✅ 全通过 |
-| coloring | 1 | 21 | ✅ 全通过 |
-| clique | 1 | 14 | ✅ 全通过 |
-| hamiltonian | 1 | 20 | ✅ 全通过 |
-| **合计** | **~25** | **483** | **✅ 100% 通过** |
+### Python/NetworkX 随机图测试
 
-### 测试分类比例（参考标准）
+每个算法用 5 个随机图验证，数据由 Python/NetworkX 生成：
 
-| 分类 | 占比 | 说明 |
-|------|:----:|------|
-| 基础功能测试 | ~30% | 类型创建/方法正确性 |
-| 算法正确性测试 | ~40% | 经典案例/已知答案 |
-| 边界情况测试 | ~20% | 空图/越界/异常输入 |
-| 属性验证测试 | ~10% | 不可变性/一致性约束 |
+```bash
+# 重新生成所有随机图测试
+cd tests && uv run python gen/all.py
 
-### 测试类型
+# 单独生成 fixture 或测试
+uv run python gen/gen_fixtures.py  # 生成随机图 JSON
+uv run python gen/gen_tests.py     # 生成 MoonBit 测试文件
+```
 
-1. **正确性测试**: 使用 `assert_eq` 验证算法输出
-2. **属性测试**: 验证算法属性（如 MST 边数 = V-1；SCC 分割覆盖所有节点）
-3. **边界测试**: 空图、单节点、不连通图等
-4. **跨存储一致性验证**: 每算法在 AdjList/Matrix/EdgeList 上测试结果一致
-5. **结果不可变性验证**: 保证原始输入不被算法修改
+当前覆盖 **55 个算法，295 个随机图测试**。
 
 ### 运行测试
 
 ```bash
-# 运行全量测试（483 tests）
-moon test
-
-# 运行特定模块测试
-moon test lib/algo/hamiltonian       # P5 最新模块 (20 tests)
-moon test lib/algo/euler             # 欧拉路径模块 (22 tests)
-moon test lib/algo/flow              # 网络流模块 (33 tests)
-
-# 更新快照
-moon test --update
-
-# 检查单模块编译
-moon check lib/algorithms/shortest_path
+moon test                          # 全量测试 (736 tests)
+moon test lib/algo/integration     # 仅随机图集成测试
+moon test lib/algo/shortest_path   # 仅最短路径模块
 ```
 
 ---
 
 ## 文档要求
 
-### 文档类型
-
-| 文档 | 路径 | 说明 | 状态 |
-|------|------|------|:----:|
-| README | `README.mbt.md` | 项目入口文档 | ✅ |
-| 架构设计 | `docs/ARCHITECTURE.md` | 架构总览、Trait 分层、SOLID 评审 | ✅ |
-| 开发规范 | `AGENTS.md` | 编码规范 + Top 10 陷阱 + 算法 SOP | ✅ |
-| 模块设计 | `docs/design/*.md` | 各算法模块详细设计规范 (8 份) | ✅ |
-| 竞品调研 | `docs/reference/*.md` | 主流图库分析报告 (8 份) | ✅ |
-| 路线图 | `docs/ROADMAP.md` | 发展路线图与里程碑 | ✅ |
-| 变更日志 | `CHANGELOG.md` | 版本变更记录 | ✅ |
-| 记忆系统 | `MEMORY.md` | 关键决策与语法陷阱记录 | ✅ |
-
-### 文档更新时机
-
-- 添加新算法时：更新 `README.mbt.md` + 新增 `docs/design/xxx_design.md` + 更新 `ROADMAP.md`
-- 修改公共 API 时：运行 `moon info` 更新接口 + 更新 `CHANGELOG.md`
-- 添加测试用例时：更新对应模块 README 的测试统计
+| 文档 | 路径 | 说明 |
+|------|------|------|
+| README | `README.mbt.md` | 项目入口文档 |
+| 架构设计 | `docs/ARCHITECTURE.md` | 架构总览、Trait 分层 |
+| 开发规范 | `AGENTS.md` | 编码规范 + Top 10 陷阱 |
+| 路线图 | `docs/ROADMAP.md` | 发展路线图 |
+| 变更日志 | `CHANGELOG.md` | 版本变更记录 |
 
 ---
 
-## 📚 相关资源
+## 相关资源
 
 | 资源 | 说明 |
 |------|------|
-| [`AGENTS.md`](../AGENTS.md) | **必读** — 开发规范速查（Top 10 陷阱/错误码表/算法 SOP） |
-| [`MEMORY.md`](../MEMORY.md) | 项目记忆 — 关键决策与语法陷阱 |
-| [`README.mbt.md`](../README.mbt.md) | 库使用文档 — API 总览与快速开始 |
-| [`docs/ARCHITECTURE.md`](../docs/ARCHITECTURE.md) | 架构权威文档 — Trait 分层/SOLID 评审/竞品对比 |
-| [`docs/ROADMAP.md`](../docs/ROADMAP.md) | 战略蓝图 — Phase 进度/版本规划/依赖关系 |
+| [`AGENTS.md`](AGENTS.md) | 开发规范速查 |
+| [`README.mbt.md`](README.mbt.md) | 库使用文档 |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | 架构权威文档 |
+| [`docs/ROADMAP.md`](docs/ROADMAP.md) | 路线图 |
 
 ---
 
-## 📞 联系方式
-
-- **Issues**: [GitHub Issues](https://github.com/morning-start/mbtgraph/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/morning-start/mbtgraph/discussions)
-
----
-
-**最后更新**: 2026-05-23 | **适用版本**: v0.9.0+ | **测试基线**: 483 tests passed
+**最后更新**: 2026-06-21 | **适用版本**: v1.1.0+ | **测试基线**: 736 tests passed
