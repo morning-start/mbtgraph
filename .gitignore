@@ -11,3 +11,5 @@ memory/
 .env
 .mimocode/
 tests/fixtures/
+.claude
+.superpowers/
