@@ -1,10 +1,10 @@
 ---
 title: "mbtgraph 测试策略与计划"
-version: "1.0.0"
+version: "1.1.0"
 status: "active"
 type: "test-strategy"
 created: "2026-05-02"
-updated: "2026-05-25"
+updated: "2026-06-21"
 author: "morning-start"
 license: "MIT"
 tags: ["testing", "quality", "graph", "algorithm", "moonbit"]
@@ -21,8 +21,8 @@ traceability:
 
 # mbtgraph 测试策略与计划
 
-> **版本**: v1.0.0 | **状态**: 生效 | **日期**: 2026-05-25
-> **基线**: v0.9.0 | **总测试数**: 551 | **通过率**: 100%
+> **版本**: v1.1.0 | **状态**: 生效 | **日期**: 2026-06-21
+> **基线**: v1.1.0 | **总测试数**: 940 | **通过率**: 100%
 
 ---
 
