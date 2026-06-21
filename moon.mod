@@ -1,6 +1,6 @@
 name = "morning-start/mbtgraph"
 
-version = "0.13.0"
+version = "1.2.0"
 
 import {
   "Luna-Flow/linear-algebra@0.2.11",

@@ -5,6 +5,31 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 本项目遵循 [语义化版本](https://semver.org/spec/v2.0.0.html)规范。
 
+## [v1.2.0] - 2026-06-21
+
+### 新增
+
+- 📚 **文档与示例完善**:
+  - 新增 4 个模块示例：link_prediction、dense_subgraph、operators、recognition
+  - 更新所有文档版本引用至 v1.1.0
+
+### 修复
+
+- 🐛 **storage**: CSC `neighbors()` 从 O(V*E) 优化至 O(in_degree)，使用列指针直接获取入边
+- 🐛 **shortest_path**: 双向 Dijkstra 反向搜索使用入边替代出边，修复有向图语义错误
+
+### 改进
+
+- 📝 **文档**: 统一所有文档版本引用至 v1.1.0（PROJECT_VISION、ARCHITECTURE、test_strategy、API_SURFACE、TODO、ROADMAP）
+- 🔧 **配置**: 更新 moon.mod 版本号至 1.1.0
+
+### 统计数据
+
+- 全量测试 **738**（无回归）
+- 新增示例 **4** 个
+
+---
+
 ## [v1.1.0] - 2026-06-14
 
 ### 新增
