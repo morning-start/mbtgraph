@@ -21,3 +21,6 @@ export { primGraph } from './prim';
 export { coloringGraph } from './coloring';
 export { eulerGraph } from './euler';
 export { cutpointsGraph } from './cutpoints';
+export { fordFulkersonGraph } from './ford_fulkerson';
+export { dinicGraph } from './dinic';
+export { louvainGraph } from './louvain';

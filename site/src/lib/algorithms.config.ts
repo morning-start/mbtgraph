@@ -31,6 +31,9 @@ import Prim from './algs/prim';
 import Coloring from './algs/coloring';
 import Euler from './algs/euler';
 import Cutpoints from './algs/cutpoints';
+import FordFulkerson from './algs/ford_fulkerson';
+import Dinic from './algs/dinic';
+import Louvain from './algs/louvain';
 
 // ── 导入图数据 ──
 
@@ -51,6 +54,9 @@ import { primGraph } from './graph-data/prim';
 import { coloringGraph } from './graph-data/coloring';
 import { eulerGraph } from './graph-data/euler';
 import { cutpointsGraph } from './graph-data/cutpoints';
+import { fordFulkersonGraph } from './graph-data/ford_fulkerson';
+import { dinicGraph } from './graph-data/dinic';
+import { louvainGraph } from './graph-data/louvain';
 
 // ── 算法配置类型 ──
 
@@ -204,6 +210,30 @@ export const algorithms: Record<string, AlgorithmConfig> = {
     title: '割点与桥 (Tarjan)',
     subtitle: '6 节点 · 7 边 · 无向图',
     slug: 'cutpoints',
+  },
+  // 第 12 批：Ford-Fulkerson 最大流
+  ford_fulkerson: {
+    module: FordFulkerson,
+    graph: fordFulkersonGraph,
+    title: 'Ford-Fulkerson 最大流',
+    subtitle: '6 节点 · 8 边 · 有向图',
+    slug: 'ford_fulkerson',
+  },
+  // 第 13 批：Dinic 最大流
+  dinic: {
+    module: Dinic,
+    graph: dinicGraph,
+    title: 'Dinic 最大流',
+    subtitle: '6 节点 · 8 边 · 有向图',
+    slug: 'dinic',
+  },
+  // 第 14 批：Louvain 社区检测
+  louvain: {
+    module: Louvain,
+    graph: louvainGraph,
+    title: 'Louvain 社区检测',
+    subtitle: '8 节点 · 12 边 · 无向图',
+    slug: 'louvain',
   },
 };
 

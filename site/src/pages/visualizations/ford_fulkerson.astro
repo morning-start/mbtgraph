@@ -1,0 +1,30 @@
+---
+import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">源点</span><span class="viz-status-value" id="source">s</span></div>
+<div class="viz-status-item"><span class="viz-status-label">汇点</span><span class="viz-status-value" id="sink">t</span></div>
+<div class="viz-status-item"><span class="viz-status-label">最大流</span><span class="viz-status-mono" id="max-flow">0</span></div>
+<div class="viz-status-item"><span class="viz-status-label">边流量</span><span class="viz-status-mono" id="edges">-</span></div>
+`;
+---
+<VizPage
+  algoSlug="ford_fulkerson"
+  direction="带权有向图"
+  statusPanelHtml={statusPanelHtml}
+  transportLeft={[{ action: 'reset' }, { action: 'step-back' }]}
+  transportRight={[{ action: 'step-forward' }]}
+/>
+
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import FordFulkerson from '../../lib/algs/ford_fulkerson';
+  import { fordFulkersonGraph } from '../../lib/graph-data';
+
+  VizApp.init({
+    algoInstance: FordFulkerson,
+    title: "Ford-Fulkerson 最大流",
+    subtitle: `${fordFulkersonGraph.nodes.length} 节点 · ${fordFulkersonGraph.edges.length} 边 · 有向图`,
+    ...fordFulkersonGraph,
+  });
+</script>

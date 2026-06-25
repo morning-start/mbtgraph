@@ -1,0 +1,29 @@
+---
+import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">社区数</span><span class="viz-status-mono" id="num-communities">-</span></div>
+<div class="viz-status-item"><span class="viz-status-label">模块度 Q</span><span class="viz-status-mono" id="modularity">-</span></div>
+<div class="viz-status-item"><span class="viz-status-label">最近移动</span><span class="viz-status-mono" id="last-move">-</span></div>
+`;
+---
+<VizPage
+  algoSlug="louvain"
+  direction="无向图"
+  statusPanelHtml={statusPanelHtml}
+  transportLeft={[{ action: 'reset' }, { action: 'step-back' }]}
+  transportRight={[{ action: 'step-forward' }]}
+/>
+
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import Louvain from '../../lib/algs/louvain';
+  import { louvainGraph } from '../../lib/graph-data';
+
+  VizApp.init({
+    algoInstance: Louvain,
+    title: "Louvain 社区检测",
+    subtitle: `${louvainGraph.nodes.length} 节点 · ${louvainGraph.edges.length} 边 · 无向图`,
+    ...louvainGraph,
+  });
+</script>
