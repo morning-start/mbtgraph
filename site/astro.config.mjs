@@ -148,41 +148,35 @@ export default defineConfig({
 							],
 						},
 						{
-							label: '最短路径算法',
-							items: [
-								{ label: 'Dijkstra 算法', link: '/algorithms/shortest-path/dijkstra/' },
-								{ label: 'Dijkstra 可视化', link: '/visualizations/dijkstra/', badge: '新' },
-								{ label: 'Bellman-Ford 算法', link: '/algorithms/shortest-path/bellman-ford/' },
-								{ label: 'Bellman-Ford 可视化', link: '/visualizations/bellman_ford/', badge: '新' },
-								{ label: 'Floyd-Warshall 算法', link: '/algorithms/shortest-path/floyd-warshall/' },
-								{ label: 'A* 启发式搜索', link: '/algorithms/shortest-path/a-star/' },
-							],
+						 label: '最短路径算法',
+						 items: [
+						  { label: 'Dijkstra 算法', link: '/algorithms/shortest-path/dijkstra/' },
+						  { label: 'Bellman-Ford 算法', link: '/algorithms/shortest-path/bellman-ford/' },
+						  { label: 'Floyd-Warshall 算法', link: '/algorithms/shortest-path/floyd-warshall/' },
+						  { label: 'A* 启发式搜索', link: '/algorithms/shortest-path/a-star/' },
+						 ],
 						},
 						{
 					label: '最小生成树 (MST)',
 					items: [
-						{ label: 'Kruskal & Prim 对比详解', link: '/algorithms/mst/kruskal-prim/' },
-						{ label: 'Kruskal 算法 (独立版)', link: '/algorithms/mst/kruskal/' },
-						{ label: 'Kruskal 可视化', link: '/visualizations/kruskal/', badge: '新' },
-						{ label: 'Prim 算法 (独立版)', link: '/algorithms/mst/prim/' },
+					 { label: 'Kruskal & Prim 对比详解', link: '/algorithms/mst/kruskal-prim/' },
+					 { label: 'Kruskal 算法 (独立版)', link: '/algorithms/mst/kruskal/' },
+					 { label: 'Prim 算法 (独立版)', link: '/algorithms/mst/prim/' },
 					],
 				},
 						{
-							label: '连通性算法',
-							items: [
-								{ label: '连通分量 (CC)', link: '/algorithms/connectivity/connected-components/' },
-								{ label: '连通分量 (CC) 可视化', link: '/visualizations/connected_components/', badge: '新' },
-								{
-									label: '强连通分量 (SCC)',
-									items: [
-										{ label: 'Tarjan 算法', link: '/algorithms/connectivity/scc/tarjan' },
-										{ label: 'Tarjan SCC 可视化', link: '/visualizations/tarjan/', badge: '新' },
-										{ label: 'Kosaraju 算法', link: '/algorithms/connectivity/scc/kosaraju' },
-										{ label: 'Kosaraju SCC 可视化', link: '/visualizations/kosaraju/', badge: '新' },
-									],
-								},
-								{ label: '割点与桥', link: '/algorithms/connectivity/articulation-points/' },
-							],
+						 label: '连通性算法',
+						 items: [
+						  { label: '连通分量 (CC)', link: '/algorithms/connectivity/connected-components/' },
+						  {
+						   label: '强连通分量 (SCC)',
+						   items: [
+						    { label: 'Tarjan 算法', link: '/algorithms/connectivity/scc/tarjan' },
+						    { label: 'Kosaraju 算法', link: '/algorithms/connectivity/scc/kosaraju' },
+						   ],
+						  },
+						  { label: '割点与桥', link: '/algorithms/connectivity/articulation-points/' },
+						 ],
 						},
 						{
 							label: '网络流算法',
@@ -203,12 +197,11 @@ export default defineConfig({
 							label: '图匹配算法',
 							items: [
 								{
-									label: '二分图匹配',
-									items: [
-										{ label: '匈牙利算法', link: '/algorithms/matching/bipartite/hungarian' },
-										{ label: '匈牙利算法可视化', link: '/visualizations/hungarian/', badge: '新' },
-										{ label: 'Hopcroft-Karp 优化', link: '/algorithms/matching/bipartite/hopcroft-karp' },
-									],
+								 label: '二分图匹配',
+								 items: [
+								  { label: '匈牙利算法', link: '/algorithms/matching/bipartite/hungarian' },
+								  { label: 'Hopcroft-Karp 优化', link: '/algorithms/matching/bipartite/hopcroft-karp' },
+								 ],
 								},
 								{ label: '一般图匹配', link: '/algorithms/matching/general/edmonds' },
 							],
@@ -216,7 +209,7 @@ export default defineConfig({
 						{ label: '图着色算法', link: '/algorithms/coloring/' },
 						{ label: '社区检测算法', link: '/algorithms/community/' },
 						{ label: '中心性指标', link: '/algorithms/centrality/' },
-						{ label: 'PageRank 可视化', link: '/visualizations/pagerank/', badge: '新' },
+						{ label: 'PageRank', link: '/visualizations/pagerank/' },
 						{ label: '其他重要算法', link: '/algorithms/other/' },
 					],
 				},

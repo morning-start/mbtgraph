@@ -9,6 +9,16 @@ description: "无向连通图最小生成树详解：割性质证明、边排序
 >
 > ⏱️ **预计阅读时间**: 40 分钟 | 🎮 **互动演示**: 2 个算法的完整分步动画 + 对比分析
 
+<div class="viz-preview-card">
+  <iframe src="/visualizations/kruskal/" width="100%" height="540" frameborder="0" style="height:540px"></iframe>
+  <a href="/visualizations/kruskal/" target="_blank" class="viz-fullscreen-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+    全屏演示
+  </a>
+</div>
+
+---
+
 ## 📖 算法简介
 
 **最小生成树（Minimum Spanning Tree, MST）** 是一个**无向连通图的极小连通子图**，它包含图中所有节点，且边的权重之和最小。
