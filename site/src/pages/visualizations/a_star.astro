@@ -1,0 +1,31 @@
+---
+import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">当前</span><span class="viz-status-value" id="current-node">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">f 值</span><span class="viz-status-mono" id="f-values">{}</span></div>
+<div class="viz-status-item"><span class="viz-status-label">g 值</span><span class="viz-status-mono" id="g-values">{}</span></div>
+<div class="viz-status-item"><span class="viz-status-label">Open 集</span><span class="viz-status-mono" id="open-set">[]</span></div>
+<div class="viz-status-item"><span class="viz-status-label">Closed 集</span><span class="viz-status-mono" id="closed-set">[]</span></div>
+`;
+---
+<VizPage
+  algoSlug="a_star"
+  direction="带权有向图"
+  statusPanelHtml={statusPanelHtml}
+  transportLeft={[{ action: 'reset' }, { action: 'step-back' }]}
+  transportRight={[{ action: 'step-forward' }]}
+/>
+
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import AStar from '../../lib/algs/a_star';
+  import { aStarGraph } from '../../lib/graph-data';
+
+  VizApp.init({
+    algoInstance: AStar,
+    title: "A* 启发式搜索",
+    subtitle: `${aStarGraph.nodes.length} 节点 · ${aStarGraph.edges.length} 边 · 带权有向图`,
+    ...aStarGraph,
+  });
+</script>

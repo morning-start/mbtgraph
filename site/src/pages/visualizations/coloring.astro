@@ -1,0 +1,30 @@
+---
+import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">当前</span><span class="viz-status-value" id="current-node">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">使用颜色</span><span class="viz-status-mono" id="colors-used">0</span></div>
+<div class="viz-status-item"><span class="viz-status-label">着色顺序</span><span class="viz-status-mono" id="assign-order">[]</span></div>
+<div class="viz-status-item"><span class="viz-status-label">颜色映射</span><span class="viz-status-mono" id="color-map">{}</span></div>
+`;
+---
+<VizPage
+  algoSlug="coloring"
+  direction="无向图"
+  statusPanelHtml={statusPanelHtml}
+  transportLeft={[{ action: 'reset' }, { action: 'step-back' }]}
+  transportRight={[{ action: 'step-forward' }]}
+/>
+
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import Coloring from '../../lib/algs/coloring';
+  import { coloringGraph } from '../../lib/graph-data';
+
+  VizApp.init({
+    algoInstance: Coloring,
+    title: "图着色 (Greedy)",
+    subtitle: `${coloringGraph.nodes.length} 节点 · ${coloringGraph.edges.length} 边 · 无向图`,
+    ...coloringGraph,
+  });
+</script>

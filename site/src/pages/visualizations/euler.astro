@@ -1,0 +1,29 @@
+---
+import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">当前</span><span class="viz-status-value" id="current-node">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">路径</span><span class="viz-status-mono" id="path">-</span></div>
+<div class="viz-status-item"><span class="viz-status-label">已用边</span><span class="viz-status-mono" id="used-edges">0</span></div>
+`;
+---
+<VizPage
+  algoSlug="euler"
+  direction="无向图"
+  statusPanelHtml={statusPanelHtml}
+  transportLeft={[{ action: 'reset' }, { action: 'step-back' }]}
+  transportRight={[{ action: 'step-forward' }]}
+/>
+
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import Euler from '../../lib/algs/euler';
+  import { eulerGraph } from '../../lib/graph-data';
+
+  VizApp.init({
+    algoInstance: Euler,
+    title: "欧拉路径 (Hierholzer)",
+    subtitle: `${eulerGraph.nodes.length} 节点 · ${eulerGraph.edges.length} 边 · 无向图`,
+    ...eulerGraph,
+  });
+</script>

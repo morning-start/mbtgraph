@@ -1,0 +1,30 @@
+---
+import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">当前</span><span class="viz-status-value" id="current-node">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">MST 节点</span><span class="viz-status-mono" id="in-tree">[]</span></div>
+<div class="viz-status-item"><span class="viz-status-label">候选边</span><span class="viz-status-mono" id="candidates">-</span></div>
+<div class="viz-status-item"><span class="viz-status-label">总权重</span><span class="viz-status-mono" id="total-weight">0</span></div>
+`;
+---
+<VizPage
+  algoSlug="prim"
+  direction="无向带权图"
+  statusPanelHtml={statusPanelHtml}
+  transportLeft={[{ action: 'reset' }, { action: 'step-back' }]}
+  transportRight={[{ action: 'step-forward' }]}
+/>
+
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import Prim from '../../lib/algs/prim';
+  import { primGraph } from '../../lib/graph-data';
+
+  VizApp.init({
+    algoInstance: Prim,
+    title: "Prim 最小生成树",
+    subtitle: `${primGraph.nodes.length} 节点 · ${primGraph.edges.length} 边 · 无向带权图`,
+    ...primGraph,
+  });
+</script>

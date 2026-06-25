@@ -16,3 +16,8 @@ export { tarjanGraph } from './tarjan';
 export { bellmanFordGraph } from './bellman_ford';
 export { kosarajuGraph } from './kosaraju';
 export { hungarianGraph } from './hungarian';
+export { aStarGraph } from './a_star';
+export { primGraph } from './prim';
+export { coloringGraph } from './coloring';
+export { eulerGraph } from './euler';
+export { cutpointsGraph } from './cutpoints';

@@ -1,0 +1,31 @@
+---
+import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">当前</span><span class="viz-status-value" id="current-node">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">DFS时间</span><span class="viz-status-mono" id="disc-time">0</span></div>
+<div class="viz-status-item"><span class="viz-status-label">Low值</span><span class="viz-status-mono" id="low-values">{}</span></div>
+<div class="viz-status-item"><span class="viz-status-label">割点</span><span class="viz-status-mono" id="cutpoints">-</span></div>
+<div class="viz-status-item"><span class="viz-status-label">桥</span><span class="viz-status-mono" id="bridges">-</span></div>
+`;
+---
+<VizPage
+  algoSlug="cutpoints"
+  direction="无向图"
+  statusPanelHtml={statusPanelHtml}
+  transportLeft={[{ action: 'reset' }, { action: 'step-back' }]}
+  transportRight={[{ action: 'step-forward' }]}
+/>
+
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import Cutpoints from '../../lib/algs/cutpoints';
+  import { cutpointsGraph } from '../../lib/graph-data';
+
+  VizApp.init({
+    algoInstance: Cutpoints,
+    title: "割点与桥 (Tarjan)",
+    subtitle: `${cutpointsGraph.nodes.length} 节点 · ${cutpointsGraph.edges.length} 边 · 无向图`,
+    ...cutpointsGraph,
+  });
+</script>
