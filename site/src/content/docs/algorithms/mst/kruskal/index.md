@@ -1,50 +1,79 @@
 ---
-title: Kruskal 算法
-description: 基于并查集的最小生成树算法
+title: Kruskal 最小生成树
+description: 通过排序所有边并贪心选择的最小生成树算法
 ---
 
-# 🚧 内容建设中...
+# Kruskal 算法
 
-## Kruskal 算法
+> **核心思想**: 将所有边按权重排序，贪心连接不同连通分量 \
+> **API**: `kruskal(graph)` → `MstResult` \
+> **前置**: [Kruskal & Prim 对比详解](/algorithms/mst/kruskal-prim/)
 
-<div class="callout" data-color="caution">
-  <div class="callout-header">
-    <span class="callout-icon">⚠️</span>
-    <p class="callout-title">正在建设中</p>
-  </div>
-  <div class="callout-content">
-    <p><strong>预计完成时间：</strong>2026 年 7 月上旬</p>
-    <p><strong>内容概要：</strong></p>
-    <ul>
-      <li>并查集（Union-Find）数据结构详解</li>
-      <li>边排序贪心策略</li>
-      <li>MoonBit 完整代码实现</li>
-      <li>复杂度分析：O(E log E)</li>
-    </ul>
-  </div>
-</div>
+---
 
-## 算法简介
-**Kruskal** 算法用于求解无向连通图的**最小生成树（MST）**。
+## 一、算法原理
 
-### 核心思想
-1. 将所有边按权重排序
-2. 按顺序选择边，若不形成环则加入 MST
-3. 使用 **并查集（Union-Find）** 高效判断是否成环
+Kruskal 算法将所有边按权重从小到大排序，依次检查每条边：
 
-### 复杂度
-- **时间**: O(E log E)（主要在排序）
-- **空间**: O(V)
+```
+边集排序：[0-3(1), 0-1(2), 1-3(3), 1-2(4), 2-3(5), 2-4(6), 3-4(7)]
 
-### 与 Prim 对比
+0-3(1):  加入 → {0} {3} {1} {2} {4}     ← 两个不同分量，连接
+0-1(2):  加入 → {0,3} {1} {2} {4}       ← 连接
+1-3(3):  跳过 → {0,1,3} 已连通
+1-2(4):  加入 → {0,1,2,3} {4}           ← 连接
+2-3(5):  跳过 → 已连通
+2-4(6):  加入 → {0,1,2,3,4}             ← 所有节点连通，完成!
+```
+
+总共 4 条边，总权重 1+2+4+6 = 13。
+
+---
+
+## 二、代码示例
+
+```moonbit
+fn main {
+  let mut g = @storage.UndirectedAdjList::new()
+  let nodes = [@core.GraphWritable::add_node(g, 0.0); 5]
+  let _ = @core.GraphWritable::add_edge(g, nodes[0], nodes[1], 2.0)
+  let _ = @core.GraphWritable::add_edge(g, nodes[0], nodes[3], 1.0)
+  let _ = @core.GraphWritable::add_edge(g, nodes[1], nodes[3], 3.0)
+  let _ = @core.GraphWritable::add_edge(g, nodes[1], nodes[2], 4.0)
+  let _ = @core.GraphWritable::add_edge(g, nodes[2], nodes[3], 5.0)
+  let _ = @core.GraphWritable::add_edge(g, nodes[2], nodes[4], 6.0)
+  let _ = @core.GraphWritable::add_edge(g, nodes[3], nodes[4], 7.0)
+
+  let result = @mst.kruskal(g)
+  println("MST 总权重: \(result.total_weight)")
+  for (u, v, w) in result.edges {
+    println("  边 \(u.0)-\(v.0): 权重=\(w)")
+  }
+}
+```
+
+**输出：**
+```
+MST 总权重: 13.0
+  边 0-3: 权重=1.0
+  边 0-1: 权重=2.0
+  边 1-2: 权重=4.0
+  边 2-4: 权重=6.0
+```
+
+---
+
+## 三、对比
+
 | 特性 | Kruskal | Prim |
-|------|---------|------|
-| 策略 | 边排序 + 并查集 | 切分定理 + 优先队列 |
-| 适用 | 稀疏图 | 稠密图 |
-| 时间 | O(E log E) | O((V+E)log V) |
+|:----|:-------:|:----:|
+| 思路 | 边排序贪心 | 节点扩展 |
+| 依赖 | `GraphEdgeIterable` | `GraphReadable` |
+| 适用 | ⭐ **稀疏图** | 稠密图 |
+| 不连通图 | ✅ 返回森林 | ⚠️ 只返回所在分量 |
 
 ---
 
 **相关文档：**
-- [Prim 算法](/algorithms/mst/prim/index/)
-- [并查集数据结构](/core-concepts/data-types/)
+- [Prim 算法](/algorithms/mst/prim/)
+- [Kruskal & Prim 对比详解](/algorithms/mst/kruskal-prim/)

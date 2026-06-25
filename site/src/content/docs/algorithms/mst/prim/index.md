@@ -1,44 +1,83 @@
 ---
-title: Prim 算法
-description: 基于切分定理的最小生成树算法
+title: Prim 最小生成树
+description: 从单个节点出发，逐步扩展的最小生成树构建算法
 ---
 
-# 🚧 内容建设中...
+# Prim 算法
 
-## Prim 算法
+> **核心思想**: 从根节点出发，每次选择连接已选集合与未选集合的最小边 \
+> **API**: `prim(graph, root)` → `MstResult` \
+> **前置**: [Kruskal & Prim 对比详解](/algorithms/mst/kruskal-prim/)
 
-<div class="callout" data-color="caution">
-  <div class="callout-header">
-    <span class="callout-icon">⚠️</span>
-    <p class="callout-title">正在建设中</p>
-  </div>
-  <div class="callout-content">
-    <p><strong>预计完成时间：</strong>2026 年 7 月中旬</p>
-    <p><strong>内容概要：</strong></p>
-    <ul>
-      <li>切分定理（Cut Property）证明</li>
-      <li>优先队列实现细节</li>
-      <li>延迟/即时删除优化策略</li>
-      <li>适用场景：稠密图 MST</li>
-    </ul>
-  </div>
-</div>
+---
 
-## 算法简介
-**Prim** 算法是另一种求解最小生成树的经典方法，特别适合**稠密图**。
+## 一、算法原理
 
-### 核心思想
-1. 从任意节点开始构建 MST
-2. 维护一个已访问节点集合 S
-3. 每次选择连接 S 和 V-S 的最小权重边
-4. 使用优先队列高效获取最小边
+Prim 算法从一个根节点出发，维护一个"已选节点集"，每次选择连接"已选"与"未选"节点的最小边：
 
-### 复杂度
-- **时间**: O((V+E)log V) 或 O(V² + E)（取决于实现）
-- **空间**: O(V)
+```
+已选集合 S = {0}     ← 从节点 0 开始
+候选边：0-1(2), 0-3(1) → 选最小的 0-3(1)
+S = {0, 3}
+候选边：0-1(2), 3-1(3), 3-2(5) → 选最小的 0-1(2)
+...重复直到所有节点都在 S 中
+```
+
+**时间复杂度**: O(E log V) 使用二叉堆
+
+---
+
+## 二、代码示例
+
+```moonbit
+fn main {
+  let mut g = @storage.UndirectedAdjList::new()
+  let nodes = [@core.GraphWritable::add_node(g, 0.0); 6]
+  // 无向带权图
+  let _ = @core.GraphWritable::add_edge(g, nodes[0], nodes[1], 2.0)
+  let _ = @core.GraphWritable::add_edge(g, nodes[0], nodes[3], 1.0)
+  let _ = @core.GraphWritable::add_edge(g, nodes[1], nodes[3], 3.0)
+  let _ = @core.GraphWritable::add_edge(g, nodes[1], nodes[2], 4.0)
+  let _ = @core.GraphWritable::add_edge(g, nodes[2], nodes[3], 5.0)
+  let _ = @core.GraphWritable::add_edge(g, nodes[2], nodes[4], 6.0)
+  let _ = @core.GraphWritable::add_edge(g, nodes[3], nodes[4], 7.0)
+
+  let result = @mst.prim(g, nodes[0])
+  println("MST 总权重: \(result.total_weight)")
+  println("MST 边数: \(result.edge_count())")
+  for (u, v, w) in result.edges {
+    println("  边 \(u.0)-\(v.0): 权重=\(w)")
+  }
+}
+```
+
+**输出：**
+```
+MST 总权重: 13.0
+MST 边数: 4
+  边 0-3: 权重=1.0
+  边 0-1: 权重=2.0
+  边 1-2: 权重=4.0
+  边 2-4: 权重=6.0
+```
+
+Prim 构建的 MST 与 Kruskal 结果相同（总权重 13），但边加入顺序不同。
+
+---
+
+## 三、对比
+
+| 特性 | Prim | Kruskal |
+|:----|:----:|:-------:|
+| 思路 | 节点扩展 | 边排序 |
+| 数据结构 | 二叉堆 | 并查集 |
+| 适用图 | **稠密图** ⭐ | 稀疏图 |
+| 实现复杂度 | 中等 | 简单 |
+
+> **选型建议**：边多的稠密图用 Prim，边少的稀疏图用 Kruskal。
 
 ---
 
 **相关文档：**
-- [Kruskal 算法](/algorithms/mst/kruskal/index/)
-- [存储选型指南](/core-concepts/storage-guide/)
+- [Kruskal 算法](/algorithms/mst/kruskal/)
+- [Kruskal & Prim 对比详解](/algorithms/mst/kruskal-prim/)
