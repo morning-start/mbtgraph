@@ -208,6 +208,14 @@ if !is_root && state.low[vid] >= state.disc[u] {
 
 ## 动画演示 — 桥的检测
 
+<div class="viz-preview-card">
+  <iframe src="/visualizations/cutpoints/" width="100%" height="540" frameborder="0" style="height:540px"></iframe>
+  <a href="/visualizations/cutpoints/" target="_blank" class="viz-fullscreen-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+    全屏演示
+  </a>
+</div>
+
 ### 示例图（无向）
 
 ```
