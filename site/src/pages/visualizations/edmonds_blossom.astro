@@ -1,0 +1,22 @@
+---
+import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">Phase</span><span class="viz-status-value" id="phase">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">匹配数</span><span class="viz-status-value" id="matching">—</span></div>
+`;
+---
+<VizPage algoSlug="edmonds_blossom" direction="一般图" statusPanelHtml={statusPanelHtml} />
+
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import Blossom from '../../lib/algs/edmonds_blossom';
+  import { edmondsBlossomGraph } from '../../lib/graph-data';
+
+  VizApp.init({
+    algoInstance: Blossom,
+    title: "Edmonds 开花算法 (一般图匹配)",
+    subtitle: `${edmondsBlossomGraph.nodes.length} 节点 · ${edmondsBlossomGraph.edges.length} 边 · 一般图`,
+    ...edmondsBlossomGraph,
+  });
+</script>

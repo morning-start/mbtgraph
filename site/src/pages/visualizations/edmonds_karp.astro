@@ -1,0 +1,24 @@
+---
+import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">源点</span><span class="viz-status-value" id="source">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">汇点</span><span class="viz-status-value" id="sink">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">最大流</span><span class="viz-status-value" id="max-flow">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">边(s→t)</span><span class="viz-status-mono" id="edges">-</span></div>
+`;
+---
+<VizPage algoSlug="edmonds_karp" direction="有向带权图" statusPanelHtml={statusPanelHtml} />
+
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import EdmondsKarp from '../../lib/algs/edmonds_karp';
+  import { edmondsKarpGraph } from '../../lib/graph-data';
+
+  VizApp.init({
+    algoInstance: EdmondsKarp,
+    title: "Edmonds-Karp 最大流",
+    subtitle: `${edmondsKarpGraph.nodes.length} 节点 · ${edmondsKarpGraph.edges.length} 边 · 有向带权图`,
+    ...edmondsKarpGraph,
+  });
+</script>

@@ -24,3 +24,7 @@ export { cutpointsGraph } from './cutpoints';
 export { fordFulkersonGraph } from './ford_fulkerson';
 export { dinicGraph } from './dinic';
 export { louvainGraph } from './louvain';
+export { edmondsKarpGraph } from './edmonds_karp';
+export { hopcroftKarpGraph } from './hopcroft_karp';
+export { edmondsBlossomGraph } from './edmonds_blossom';
+export { minCostMaxFlowGraph } from './min_cost_max_flow';

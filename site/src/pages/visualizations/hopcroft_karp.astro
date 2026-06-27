@@ -1,0 +1,22 @@
+---
+import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">Phase</span><span class="viz-status-value" id="phase">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">匹配数</span><span class="viz-status-value" id="matching">—</span></div>
+`;
+---
+<VizPage algoSlug="hopcroft_karp" direction="二分图" statusPanelHtml={statusPanelHtml} />
+
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import HopcroftKarp from '../../lib/algs/hopcroft_karp';
+  import { hopcroftKarpGraph } from '../../lib/graph-data';
+
+  VizApp.init({
+    algoInstance: HopcroftKarp,
+    title: "Hopcroft-Karp 二分图匹配",
+    subtitle: `${hopcroftKarpGraph.nodes.length} 节点 · ${hopcroftKarpGraph.edges.length} 边 · 二分图`,
+    ...hopcroftKarpGraph,
+  });
+</script>
