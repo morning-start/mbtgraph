@@ -234,6 +234,98 @@ pub fn[G : @core.GraphReadable] resource_allocation(graph : G, u : NodeId, v : N
 
 ---
 
+## 十六、哈密顿路径与 TSP (hamiltonian)
+
+```moonbit
+// 哈密顿路径/回路（回溯搜索 + 快速检查）
+pub fn[G : @core.GraphReadable] has_hamiltonian_circuit_quick_check(graph : G) -> Bool
+pub fn[G : @core.GraphReadable] find_hamiltonian_path(graph : G) -> HamiltonianResult
+pub fn[G : @core.GraphReadable] find_hamiltonian_circuit(graph : G) -> HamiltonianResult
+pub fn[G : @core.GraphReadable] find_hamiltonian_path_backtrack(graph : G) -> HamiltonianResult
+pub fn[G : @core.GraphReadable] find_hamiltonian_circuit_backtrack(graph : G) -> HamiltonianResult
+pub fn[G : @core.GraphReadable] can_have_hamiltonian_circuit(graph : G) -> Bool
+
+// TSP（旅行商问题）
+pub fn tsp_nearest_neighbor(weights : Array[Array[Double]]) -> TSPResult
+pub fn tsp_exact_held_karp(weights : Array[Array[Double]]) -> TSPResult
+```
+
+| 函数 | 类型 | 复杂度 | 说明 |
+|------|:----:|:------:|------|
+| `find_hamiltonian_path` | 回溯 | O(n!) | 查找哈密顿路径 |
+| `find_hamiltonian_circuit` | 回溯 | O(n!) | 查找哈密顿回路 |
+| `can_have_hamiltonian_circuit` | 检查 | O(V) | Dirac 必要条件（度 ≥ n/2） |
+| `tsp_nearest_neighbor` | 启发式 | O(V²) | 近似解（无最优保证） |
+| `tsp_exact_held_karp` | 精确 DP | O(V²2^V) | Held-Karp 动态规划（V ≤ 20） |
+
+---
+
+## 十七、图算子 (operators)
+
+对已有图进行结构变换，返回新的图实例，不修改原图。
+
+```moonbit
+// 一元算子
+pub fn[G : @core.GraphReadable] complement(graph : G) -> @storage.UndirectedAdjList
+pub fn[G : @core.GraphReadable] reverse(graph : G) -> @storage.DirectedAdjList
+pub fn[G : @core.GraphReadable] line_graph(graph : G) -> @storage.UndirectedAdjList
+pub fn[G : @core.GraphReadable] contract(graph : G, u : NodeId, v : NodeId) -> @storage.UndirectedAdjList
+pub fn[G : @core.GraphReadable] power_graph(graph : G, k : Int) -> @storage.UndirectedAdjList
+
+// 二元算子
+pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] graph_union(a : G1, b : G2) -> @storage.UndirectedAdjList
+pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] graph_intersection(a : G1, b : G2) -> @storage.UndirectedAdjList
+pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] graph_difference(a : G1, b : G2) -> @storage.UndirectedAdjList
+pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] cartesian_product(a : G1, b : G2) -> @storage.UndirectedAdjList
+pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] tensor_product(a : G1, b : G2) -> @storage.UndirectedAdjList
+pub fn[G1 : @core.GraphReadable, G2 : @core.GraphReadable] lexicographic_product(a : G1, b : G2) -> @storage.UndirectedAdjList
+```
+
+| 算子 | 返回 | 说明 |
+|------|:----:|------|
+| `complement` | `UndirectedAdjList` | 补图（含边 ⇔ 不含边） |
+| `reverse` | `DirectedAdjList` | 有向边全部反向 |
+| `graph_union` | `UndirectedAdjList` | 并图（节点和边的并集） |
+| `graph_intersection` | `UndirectedAdjList` | 交图（边集交集） |
+| `graph_difference` | `UndirectedAdjList` | 差图（在 a 中但不在 b 中的边） |
+| `cartesian_product` | `UndirectedAdjList` | 笛卡尔积 |
+| `tensor_product` | `UndirectedAdjList` | 张量积 (Kronecker 积) |
+| `lexicographic_product` | `UndirectedAdjList` | 字典序积 |
+| `line_graph` | `UndirectedAdjList` | 线图（边 → 节点） |
+| `contract` | `UndirectedAdjList` | 收缩边 (u,v)，合并为超节点 |
+| `power_graph` | `UndirectedAdjList` | k 次幂图（距离 ≤ k 连边） |
+
+---
+
+## 十八、特殊图识别 (recognition)
+
+判断图是否满足某种特殊图性质，统一返回 `Bool`。
+
+```moonbit
+// 图结构判定
+pub fn[G : @core.GraphReadable] is_bipartite(graph : G) -> Bool
+pub fn[G : @core.GraphReadable] is_complete(graph : G) -> Bool
+pub fn[G : @core.GraphReadable] is_regular(graph : G) -> Bool
+pub fn[G : @core.GraphReadable] is_tree(graph : G) -> Bool
+pub fn[G : @core.GraphReadable] is_forest(graph : G) -> Bool
+pub fn[G : @core.GraphReadable] is_chordal(graph : G) -> Bool
+
+// 序列可图化判定（Havel-Hakimi 定理）
+pub fn is_graphic_sequence(seq : Array[Int]) -> Bool
+```
+
+| 函数 | 复杂度 | 说明 |
+|------|:------:|------|
+| `is_bipartite` | O(V+E) | BFS 2-染色判定 |
+| `is_complete` | O(V²) | 检查每对节点是否都有边 |
+| `is_regular` | O(V) | 检查所有节点度数是否相同 |
+| `is_tree` | O(V+E) | 检查是否无环且连通 |
+| `is_forest` | O(V+E) | 检查是否无环（不要求连通） |
+| `is_chordal` | O(V+E) | 弦图判定（最小完美消除序） |
+| `is_graphic_sequence` | O(V²) | Havel-Hakimi 算法 |
+
+---
+
 **相关文档：**
 - [Core 模块接口](/api/core/)
 - [Storage 模块接口](/api/storage/)
