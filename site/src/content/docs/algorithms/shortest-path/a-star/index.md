@@ -134,9 +134,31 @@ A* 从节点 0 开始搜索，利用启发函数朝目标方向搜索：
 
 ---
 
-## 二、算法步骤详解
+## 🔧 MoonBit 完整实现
 
-### 伪代码
+### 核心代码（来自 `lib/algo/shortest_path/a_star.mbt`）
+
+> 💡 **算法步骤伪代码**（帮助理解实现逻辑）:
+>
+> ```
+> A*(start, target, heuristic):
+>   1. openSet = {start}
+>   2. gScore[start] = 0
+>   3. fScore[start] = heuristic(start, target)
+>   
+>   4. while openSet 不为空:
+>   5.   current = openSet 中 fScore 最小的节点
+>   6.   
+>   7.   if current == target:
+>   8.     重建路径并返回
+>   9.   
+>   10.   openSet.remove(current)
+>   11.   closedSet.add(current)
+>   12.   
+>   13.   for each neighbor of current:
+>   14.     if neighbor 在 closedSet 中: continue
+>   15.     tentative_g = gScore[current] + weight(current, neighbor)
+>   16.     
 
 ```
 A*(start, target, heuristic):
@@ -185,7 +207,7 @@ A*(start, target, heuristic):
 
 ---
 
-## 三、启发函数详解
+### 启发函数详解
 
 ### 常见启发函数
 
@@ -219,7 +241,7 @@ h 过高(不可采纳):   ●━→●              更快但不保证最优
 
 ---
 
-## 四、MoonBit 完整实现
+### 代码详解：关键设计决策
 
 ```moonbit
 /// A* 启发式搜索
@@ -300,7 +322,7 @@ pub fn[G : @core.GraphReadable] a_star(
 
 ---
 
-## 五、使用示例
+## 🛠️ 使用示例：3 个实战场景
 
 ### 示例 1：网格地图寻路
 
@@ -373,7 +395,7 @@ let path = @shortest_path.a_star(g, start, target, zero_h)
 
 ---
 
-## 六、复杂度分析
+## 📈 复杂度分析
 
 | 指标 | 最优情况 | 最差情况 |
 |:----|:--------:|:--------:|
@@ -395,7 +417,7 @@ let path = @shortest_path.a_star(g, start, target, zero_h)
 
 ---
 
-## 七、实际应用场景
+## 🎯 实际应用场景
 
 | 场景 | 图模型 | 启发函数 | 说明 |
 |:----|--------|---------|------|
@@ -407,7 +429,7 @@ let path = @shortest_path.a_star(g, start, target, zero_h)
 
 ---
 
-## 八、练习题
+## 🧪 练习题
 
 <details>
 <summary>⭐ 题 1：为什么 A* 的 open 集用优先队列？</summary>
@@ -432,8 +454,67 @@ let path = @shortest_path.a_star(g, start, target, zero_h)
 
 ---
 
-**相关文档：**
-- [Dijkstra 算法](/algorithms/shortest-path/dijkstra/)
-- [Bellman-Ford 算法](/algorithms/shortest-path/bellman-ford/)
-- [Floyd-Warshall 算法](/algorithms/shortest-path/floyd-warshall/)
-- [图遍历算法](/algorithms/traversal/bfs/)
+## 🔗 相关资源
+
+### 在线可视化工具
+
+| 工具 | 链接 | 特色 |
+|------|------|------|
+| **VisuAlgo** | https://visualgo.net/en/dfsbfs | 🏆 业界标杆，支持 A* 可视化 |
+| Algorithm Visualizer | https://algorithm-visualizer.org/pathfinding/astar | 简洁直观，支持自定义启发函数 |
+| Red Blob Games | https://www.redblobgames.com/pathfinding/a-star/introduction | 🌟 交互式教程，强烈推荐！ |
+
+### 理论延伸阅读
+
+- **A* 原始论文**: Hart, Nilsson, Raphael (1968) — "A Formal Basis for the Heuristic Determination of Minimum Cost Paths"
+- **可采纳性条件**: 启发函数 h(n) 必须 ≤ 实际代价，才能保证找到最优路径
+- **一致性条件**: h(n) ≤ cost(n, m) + h(m)，保证 A* 不会重复扩展节点
+
+### mbtgraph API 参考
+
+```moonbit
+// 核心函数
+@shortest_path.a_star(graph, start, target, heuristic)  // A* 搜索 → PathResult
+
+// 常用启发函数
+// 曼哈顿距离（网格）
+fn manhattan(a : NodeId, b : NodeId) -> Double { ... }
+// 欧几里得距离（连续空间）
+fn euclidean(a : NodeId, b : NodeId) -> Double { ... }
+```
+
+---
+
+## 📝 总结清单
+
+完成本节学习后，你应该能够：
+
+- [ ] **解释** A* 的核心思想（f = g + h，启发式搜索）
+- [ ] **手动执行** 小规模图的 A* 过程（写出 f/g/h 值、open/closed 集变化）
+- [ ] **设计** 有效的启发函数（满足可采纳性和一致性）
+- [ ] **区分** A* vs Dijkstra vs Greedy 的适用场景
+- [ ] **分析** A* 的时间/空间复杂度（最坏 O(E log V)）
+- [ ] **应用** A* 到实际问题（游戏寻路、机器人导航、GPS 路线规划）
+
+> 💡 **下一步**: 尝试实现 A* 的**变体**（如 Theta*、HPA*、JPS），或者进入 [Dijkstra 算法](/algorithms/shortest-path/dijkstra/) 对比学习！
+
+---
+
+<div class="callout" data-color="tip">
+  <div class="callout-header">
+    <span class="callout-icon">🎮</span>
+    <p class="callout-title">动手试试!</p>
+  </div>
+  <div class="callout-content">
+    p><strong>立即在本地运行 A*:</strong></p>
+    <pre><code class="language-moonbit">// 复制到你的项目中测试
+fn main() {
+  let g = build_grid_graph()
+  let heuristic = manhattan_distance
+  let result = @shortest_path.a_star(g, start, target, heuristic)
+  println("最短路径: \(result.path)")
+  println("路径长度: \(result.distance)")
+}</code></pre>
+    <p>然后访问 <strong>Red Blob Games</strong> 观看交互式教程：<a href="https://www.redblobgames.com/pathfinding/a-star/introduction" target="_blank">A* 算法详解</a></p>
+  </div>
+</div>

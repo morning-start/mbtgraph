@@ -9,16 +9,6 @@ description: "支持负权边的单源最短路径详解：V-1轮松弛动画、
 >
 > ⏱️ **预计阅读时间**: 30 分钟 | 🎮 **互动演示**: 3 个可运行示例 + 松弛轮次追踪
 
-<div class="viz-preview-card">
-  <iframe src="/visualizations/bellman_ford/" width="100%" height="540" frameborder="0" style="height:540px"></iframe>
-  <a href="/visualizations/bellman_ford/" target="_blank" class="viz-fullscreen-btn">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-    全屏演示
-  </a>
-</div>
-
----
-
 ## 📖 算法简介
 
 **Bellman-Ford 算法**是一种用于在**含负权边的图**中找到单源最短路径的算法。
@@ -80,9 +70,42 @@ Bellman-Ford (动态规划):
 
 ---
 
-## 🎬 动画演示：Bellman-Ford 分步执行过程
+## 🎬 交互式动画：Bellman-Ford 分步执行过程
 
-让我们通过一个具体例子来理解 Bellman-Ford 的执行流程，特别关注**每轮松弛的变化**和**负权边的影响**。
+<div class="viz-preview-card">
+  <iframe src="/visualizations/bellman_ford/" width="100%" height="540" frameborder="0" style="height:540px"></iframe>
+  <a href="/visualizations/bellman_ford/" target="_blank" class="viz-fullscreen-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+    全屏演示
+  </a>
+</div>
+
+### 动画说明
+
+> **配色含义（VisuAlgo 风格）**:
+
+| 颜色 | 含义 |
+|------|------|
+| **深棕色** | 起点 |
+| **橙色** | 当前被松弛的节点 |
+| **黄色** | 距离被更新的节点 |
+| **绿色** | 已完成松弛轮次 |
+| **灰色** | 默认未访问状态 |
+| **红色粗线** | 当前最短路径树中的边 |
+| **灰色虚线** | 已跳过的边 |
+| **紫色色** | 负权边 |
+
+### 预期结果
+
+Bellman-Ford 从节点 0 开始，经过 V-1=4 轮松弛：
+
+```
+最终距离: dist[0]=0, dist[1]=1, dist[2]=4, dist[3]=2, dist[4]=5
+最短路径(0→4): [0, 2, 1, 3, 4] (距离=5)
+负环检测: 无负环
+```
+
+---
 
 ### 示例图: 含负权边的有向图
 

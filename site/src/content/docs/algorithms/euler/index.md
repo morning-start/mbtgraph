@@ -98,7 +98,15 @@ description: "从哥尼斯堡七桥到 Hierholzer 算法：无向图欧拉路径
 
 ---
 
-## 🎬 动画演示一：欧拉路径/回路判定过程
+## 🎬 交互式动画：分步执行过程
+
+<div class="viz-preview-card">
+  <iframe src="/visualizations/euler/" width="100%" height="540" frameborder="0" style="height:540px"></iframe>
+  <a href="/visualizations/euler/" target="_blank" class="viz-fullscreen-btn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+    全屏演示
+  </a>
+</div>
 
 在运行 Hierholzer 算法之前，我们需要先**判断图中是否存在欧拉路径或回路**。这个过程包含两个步骤：**连通性检查**和**度数奇偶性统计**。
 
@@ -279,15 +287,7 @@ Step 2: 检查图的连通性（忽略孤立节点）
 
 ---
 
-## 🎬 动画演示二：Hierholzer 算法执行过程
-
-<div class="viz-preview-card">
-  <iframe src="/visualizations/euler/" width="100%" height="540" frameborder="0" style="height:540px"></iframe>
-  <a href="/visualizations/euler/" target="_blank" class="viz-fullscreen-btn">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-    全屏演示
-  </a>
-</div>
+### Hierholzer 算法执行过程
 
 一旦确认存在欧拉路径/回路，我们使用 **Hierholzer 算法**来找出具体的路径。这是本教程的**核心内容**！
 

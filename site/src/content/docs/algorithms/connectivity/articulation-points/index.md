@@ -7,25 +7,7 @@ description: "基于 DFS 时间戳与低点值的无向图关键节点/边检测
 
 > **"想象一个城市的交通网络：如果拆除某个路口，整个城市就被分割成互不连通的几个区域——这个路口就是'割点'。同样，如果炸断某座桥梁，两岸就失去联系——这座桥就是'桥'。Tarjan 算法能在一次 DFS 中找出所有这样的关键点。"**
 
-## 📖 目录
-
-- [算法简介](#算法简介)
-- [核心概念](#核心概念)
-- [动画演示 — 桥的检测](#动画演示----桥的检测)
-- [动画演示 — 割点的检测](#动画演示----割点的检测)
-- [MoonBit 完整实现](#moonbit-完整实现)
-- [代码详解](#代码详解)
-- [割点 vs 桥 vs SCC 对比](#割点-vs-桥-vs-scc-对比)
-- [使用示例](#使用示例)
-- [复杂度分析](#复杂度分析)
-- [实际应用场景](#实际应用场景)
-- [练习题](#练习题)
-- [相关资源](#相关资源)
-- [总结清单](#总结清单)
-
----
-
-## 算法简介
+## 📖 算法简介
 
 ### 什么是割点和桥？
 
@@ -208,14 +190,6 @@ if !is_root && state.low[vid] >= state.disc[u] {
 
 ## 动画演示 — 桥的检测
 
-<div class="viz-preview-card">
-  <iframe src="/visualizations/cutpoints/" width="100%" height="540" frameborder="0" style="height:540px"></iframe>
-  <a href="/visualizations/cutpoints/" target="_blank" class="viz-fullscreen-btn">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-    全屏演示
-  </a>
-</div>
-
 ### 示例图（无向）
 
 ```
@@ -251,7 +225,19 @@ if !is_root && state.low[vid] >= state.disc[u] {
 
 ---
 
-### 🎬 桥检测 DFS 过程
+## 🎬 交互式动画：分步执行过程
+
+<div class="viz-preview-card">
+  <iframe src="/visualizations/cutpoints/" width="100%" height="540" frameborder="0" style="height:540px"></iframe>
+  <a href="/visualizations/cutpoints/" target="_blank" class="viz-fullscreen-btn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+    全屏演示
+  </a>
+</div>
+
+下面是上述算法的文本分步描述，对应动画中的每一步操作：
+
+### 桥检测 DFS 过程
 
 #### 初始化
 
@@ -417,7 +403,7 @@ parent = [-1, -1, -1, -1, -1, -1]
            ⑥
 ```
 
-### 🎬 割点判定过程
+### 割点判定过程
 
 在上述 DFS 过程中，我们同时追踪割点判定：
 
@@ -470,7 +456,7 @@ parent = [-1, -1, -1, -1, -1, -1]
 
 ---
 
-## MoonBit 完整实现
+## 🔧 MoonBit 完整实现
 
 ### 桥检测实现
 
@@ -824,7 +810,7 @@ if vid < 0 || vid >= state.disc.length() {
 
 ---
 
-## 使用示例
+## 🛠️ 使用示例
 
 ### 示例 1：网络脆弱性分析
 
@@ -974,7 +960,7 @@ fn biconnected_components(
 
 ---
 
-## 复杂度分析
+## 📈 复杂度分析
 
 ### 时间复杂度：O(V + E)
 
@@ -998,7 +984,7 @@ fn biconnected_components(
 
 ---
 
-## 实际应用场景
+## 🎯 实际应用场景
 
 ### 🌐 场景 1：网络可靠性工程
 
@@ -1032,7 +1018,7 @@ fn biconnected_components(
 
 ---
 
-## 练习题
+## 🧪 练习题
 
 ### 练习 1：手动执行割点+桥检测 ⭐⭐
 
@@ -1162,7 +1148,7 @@ fn incremental_update(
 
 ---
 
-## 相关资源
+## 🔗 相关资源
 
 ### 📚 推荐阅读
 
@@ -1195,7 +1181,7 @@ fn incremental_update(
 
 ---
 
-## 总结清单
+<!-- 总结清单移除，遵循 8-section 格式 -->
 
 ### ✅ 核心知识点
 
