@@ -251,6 +251,13 @@ moon check lib/algo/shortest_path  # 单模块编译检查
 
 官方赛事支持: [2026 MoonBit 创新大赛](https://www.gitlink.org.cn/competitions/track1_2026MoonBit) — 本项目为 MoonBit 生态图算法赛道的参赛作品
 
+<p>
+  本项目的 AI API 支持由
+  <a href="https://tokeness.io">
+    Tokeness.io
+  </a>
+  赞助提供。
+</p>
 ---
 
 <div align="center">
