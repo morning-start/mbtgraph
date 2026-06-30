@@ -123,13 +123,13 @@
 
 > 以下为原始详细调研报告（已合并至本文档核心内容）：
 >
-> - [python-NetworkX.md](./python-NetworkX.md) (原始)
-> - [rust-petgraph.md](./rust-petgraph.md) (原始)
-> - [java-JGraphT.md](./java-JGraphT.md) (原始)
-> - [cpp-Lemon.md](./cpp-Lemon.md) (原始)
-> - [go-gonumgraph.md](./go-gonumgraph.md) (原始)
-> - [python-igraph.md](./python-igraph.md) (原始)
-> - [python-pyG.md](./python-pyG.md) (原始)
+> - [python-NetworkX.md](../archive/reference/python-NetworkX.md) (原始)
+> - [rust-petgraph.md](../archive/reference/rust-petgraph.md) (原始)
+> - [java-JGraphT.md](../archive/reference/java-JGraphT.md) (原始)
+> - [cpp-Lemon.md](../archive/reference/cpp-Lemon.md) (原始)
+> - [go-gonumgraph.md](../archive/reference/go-gonumgraph.md) (原始)
+> - [python-igraph.md](../archive/reference/python-igraph.md) (原始)
+> - [python-pyG.md](../archive/reference/python-pyG.md) (原始)
 
 ---
 
