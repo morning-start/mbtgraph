@@ -1,5 +1,6 @@
-# mbtgraph 📊
-
+<h1 align="center">
+  mbtgraph
+</h1>
 <p align="center">
   <strong>MoonBit 图算法库</strong> — 完整的图数据结构与算法实现
 </p>
