@@ -26,6 +26,18 @@ import Tarjan from './algs/tarjan';
 import BellmanFord from './algs/bellman_ford';
 import Kosaraju from './algs/kosaraju';
 import Hungarian from './algs/hungarian';
+import AStar from './algs/a_star';
+import Prim from './algs/prim';
+import Coloring from './algs/coloring';
+import Euler from './algs/euler';
+import Cutpoints from './algs/cutpoints';
+import FordFulkerson from './algs/ford_fulkerson';
+import Dinic from './algs/dinic';
+import Louvain from './algs/louvain';
+import EdmondsKarp from './algs/edmonds_karp';
+import HopcroftKarp from './algs/hopcroft_karp';
+import EdmondsBlossom from './algs/edmonds_blossom';
+import MCMF from './algs/min_cost_max_flow';
 
 // ── 导入图数据 ──
 
@@ -41,6 +53,18 @@ import { tarjanGraph } from './graph-data/tarjan';
 import { bellmanFordGraph } from './graph-data/bellman_ford';
 import { kosarajuGraph } from './graph-data/kosaraju';
 import { hungarianGraph } from './graph-data/hungarian';
+import { aStarGraph } from './graph-data/a_star';
+import { primGraph } from './graph-data/prim';
+import { coloringGraph } from './graph-data/coloring';
+import { eulerGraph } from './graph-data/euler';
+import { cutpointsGraph } from './graph-data/cutpoints';
+import { fordFulkersonGraph } from './graph-data/ford_fulkerson';
+import { dinicGraph } from './graph-data/dinic';
+import { louvainGraph } from './graph-data/louvain';
+import { edmondsKarpGraph } from './graph-data/edmonds_karp';
+import { hopcroftKarpGraph } from './graph-data/hopcroft_karp';
+import { edmondsBlossomGraph } from './graph-data/edmonds_blossom';
+import { minCostMaxFlowGraph } from './graph-data/min_cost_max_flow';
 
 // ── 算法配置类型 ──
 
@@ -154,6 +178,102 @@ export const algorithms: Record<string, AlgorithmConfig> = {
     title: '匈牙利算法（二分图匹配）',
     subtitle: '6 节点 · 9 边 · 完全二分图',
     slug: 'hungarian',
+  },
+  // 第 7 批：A* 启发式搜索
+  a_star: {
+    module: AStar,
+    graph: aStarGraph,
+    title: 'A* 启发式搜索',
+    subtitle: '6 节点 · 9 边 · 带权有向图',
+    slug: 'a_star',
+  },
+  // 第 8 批：Prim 最小生成树
+  prim: {
+    module: Prim,
+    graph: primGraph,
+    title: 'Prim 最小生成树',
+    subtitle: '6 节点 · 9 边 · 无向带权图',
+    slug: 'prim',
+  },
+  // 第 9 批：图着色
+  coloring: {
+    module: Coloring,
+    graph: coloringGraph,
+    title: '图着色 (Greedy)',
+    subtitle: '6 节点 · 10 边 · 无向图 (轮图)',
+    slug: 'coloring',
+  },
+  // 第 10 批：欧拉路径
+  euler: {
+    module: Euler,
+    graph: eulerGraph,
+    title: '欧拉路径 (Hierholzer)',
+    subtitle: '6 节点 · 8 边 · 无向图',
+    slug: 'euler',
+  },
+  // 第 11 批：割点与桥
+  cutpoints: {
+    module: Cutpoints,
+    graph: cutpointsGraph,
+    title: '割点与桥 (Tarjan)',
+    subtitle: '6 节点 · 7 边 · 无向图',
+    slug: 'cutpoints',
+  },
+  // 第 12 批：Ford-Fulkerson 最大流
+  ford_fulkerson: {
+    module: FordFulkerson,
+    graph: fordFulkersonGraph,
+    title: 'Ford-Fulkerson 最大流',
+    subtitle: '6 节点 · 8 边 · 有向图',
+    slug: 'ford_fulkerson',
+  },
+  // 第 13 批：Dinic 最大流
+  dinic: {
+    module: Dinic,
+    graph: dinicGraph,
+    title: 'Dinic 最大流',
+    subtitle: '6 节点 · 8 边 · 有向图',
+    slug: 'dinic',
+  },
+  // 第 14 批：Louvain 社区检测
+  louvain: {
+    module: Louvain,
+    graph: louvainGraph,
+    title: 'Louvain 社区检测',
+    subtitle: '8 节点 · 12 边 · 无向图',
+    slug: 'louvain',
+  },
+  // 第 15 批：Edmonds-Karp 最大流
+  edmonds_karp: {
+    module: EdmondsKarp,
+    graph: edmondsKarpGraph,
+    title: 'Edmonds-Karp 最大流',
+    subtitle: '6 节点 · 8 边 · 有向带权图',
+    slug: 'edmonds_karp',
+  },
+  // 第 16 批：Hopcroft-Karp 二分图匹配
+  hopcroft_karp: {
+    module: HopcroftKarp,
+    graph: hopcroftKarpGraph,
+    title: 'Hopcroft-Karp 二分图匹配',
+    subtitle: '6 节点 · 7 边 · 二分图',
+    slug: 'hopcroft_karp',
+  },
+  // 第 17 批：Edmonds 开花算法（一般图匹配）
+  edmonds_blossom: {
+    module: EdmondsBlossom,
+    graph: edmondsBlossomGraph,
+    title: 'Edmonds 开花算法（一般图匹配）',
+    subtitle: '6 节点 · 7 边 · 一般图',
+    slug: 'edmonds_blossom',
+  },
+  // 第 18 批：最小费用最大流
+  min_cost_max_flow: {
+    module: MCMF,
+    graph: minCostMaxFlowGraph,
+    title: '最小费用最大流',
+    subtitle: '5 节点 · 6 边 · 容量+费用',
+    slug: 'min_cost_max_flow',
   },
 };
 

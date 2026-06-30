@@ -1,0 +1,23 @@
+---
+import VizPage from '../../components/VizPage.astro';
+
+const statusPanelHtml = `
+<div class="viz-status-item"><span class="viz-status-label">最大流</span><span class="viz-status-value" id="max-flow">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">总费用</span><span class="viz-status-value" id="total-cost">—</span></div>
+<div class="viz-status-item"><span class="viz-status-label">边(流/费)</span><span class="viz-status-mono" id="edges">-</span></div>
+`;
+---
+<VizPage algoSlug="min_cost_max_flow" direction="有向带权图 (容量+费用)" statusPanelHtml={statusPanelHtml} />
+
+<script>
+  import { VizApp } from '../../lib/viz-engine';
+  import MCMF from '../../lib/algs/min_cost_max_flow';
+  import { minCostMaxFlowGraph } from '../../lib/graph-data';
+
+  VizApp.init({
+    algoInstance: MCMF,
+    title: "最小费用最大流",
+    subtitle: `${minCostMaxFlowGraph.nodes.length} 节点 · ${minCostMaxFlowGraph.edges.length} 边 · 容量+费用`,
+    ...minCostMaxFlowGraph,
+  });
+</script>
