@@ -1,6 +1,6 @@
 # API 冻结核查报告
 
-> **核查日期**: 2026-06-14 | **核查范围**: docs/API_SURFACE.md + docs/api_review_report.md
+> **核查日期**: 2026-06-14 | **核查范围**: docs/API_SURFACE.md + docs/archive/api/api_review_report.md
 > **目标**: 确认两份文档的一致性、完整性和准确性
 
 ---

@@ -1,6 +1,6 @@
 # mbtgraph — 项目愿景与意义
 
-> **版本**: v1.1.0 | **最后更新**: 2026-06-21 | **当前状态**: v1.1.0 (🎉 正式发布 + CI/CD 上线, 940 tests)
+> **版本**: v1.1.0 | **最后更新**: 2026-06-25 | **当前状态**: v1.1.0 (🎉 正式发布 + CI/CD 上线, 940 tests)
 > **维护者**: @morning-start | **协议**: MIT
 
 ---
@@ -247,10 +247,10 @@ MoonBit 作为新兴的多后端编程语言（支持 native/wasm/js），在 20
 |------|------|
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | 项目架构设计与技术细节 |
 | [ROADMAP.md](./ROADMAP.md) | 详细版本规划与时间线 |
-| [TODO.md](./TODO.md) | 当前任务清单 (v0.10.0) |
-| [AGENTS.md](./AGENTS.md) | Agent 协作配置与编码规范 |
-| [MEMORY.md](./MEMORY.md) | 项目记忆与关键决策记录 |
-| [CHANGELOG.md](./CHANGELOG.md) | 版本历史与变更日志 |
+| [TODO.md](./TODO.md) | 当前任务清单 (v1.2.0) |
+| [AGENTS.md](../AGENTS.md) | Agent 协作配置与编码规范 |
+| [MEMORY.md](../MEMORY.md) | 项目记忆与关键决策记录 |
+| [CHANGELOG.md](../CHANGELOG.md) | 版本历史与变更日志 |
 
 ---
 
@@ -269,6 +269,6 @@ MoonBit 作为新兴的多后端编程语言（支持 native/wasm/js），在 20
 
 **🌟 mbtgraph — 让 MoonBit 拥有世界级的图算法能力**
 
-*愿景文档 v1.0.0 | 最后更新: 2026-05-25 | 下次评审: 2026-06-25*
+*愿景文档 v1.1.0 | 最后更新: 2026-06-25 | 下次评审: 2026-06-26*
 
 </div>

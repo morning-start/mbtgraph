@@ -179,7 +179,7 @@ I/O: DOT/JSON 序列化 + 图统计工具
 
 ### 新增
 - 📊 **Benchmark 框架** (`benchmarks/`): 基于 `@moonbitlang.core.bench` 的 19 行基线数据，覆盖 4 种规模 × 5 算法
-- 📋 **Dispatch 内联分析** (`docs/design/dispatch_analysis.md`): 25 个 trait 方法全量统计，标记 P0 内联候选 3 个
+- 📋 **Dispatch 内联分析** (`docs/archive/reports/dispatch_analysis.md`): 25 个 trait 方法全量统计，标记 P0 内联候选 3 个
 
 ### 统计数据
 - 全量测试保持 **736+**，无功能回归

@@ -1,5 +1,6 @@
-# mbtgraph 📊
-
+<h1 align="center">
+  mbtgraph
+</h1>
 <p align="center">
   <strong>MoonBit 图算法库</strong> — 完整的图数据结构与算法实现
 </p>
@@ -188,7 +189,7 @@ match @traversal.topo_sort_kahn(g) {
 ## 🧪 测试
 
 ```bash
-moon test                          # 全量测试 (736 tests)
+moon test                          # 全量测试 (940 tests)
 moon test lib/algo/flow            # 单模块测试
 moon test lib/io                   # I/O 模块测试
 moon check lib/algo/shortest_path  # 单模块编译检查
@@ -196,7 +197,7 @@ moon check lib/algo/shortest_path  # 单模块编译检查
 
 **测试策略**: Blackbox (`*_test.mbt`) + Whitebox (`*_wbtest.mbt`) 双轨制，含跨存储一致性验证与结果不可变性验证。
 
-详细测试策略: [docs/quality/test_strategy.md](docs/quality/test_strategy.md)
+详细测试策略: [docs/test_strategy.md](docs/test_strategy.md)
 
 ---
 
@@ -209,7 +210,10 @@ moon check lib/algo/shortest_path  # 单模块编译检查
 | v0.10.0 | 社交网络分析套件 (PageRank / 中心性 / 社区检测) | ✅ 完成 |
 | v0.11.0 | I/O 数据交换模块 (DOT / JSON / 图统计) | ✅ 完成 |
 | v0.12.0 | 经典算法增强 (A* / 双向BFS / HK / 费用流 / Edmonds) | ✅ 完成 |
-| v0.13.0 | 接口重构 + P0/P1 算法补齐 (Johnson/SPFA/BCC/双向Dij/Yen's) | ✅ **当前版本** |
+| v0.13.0 | 接口重构 + P0/P1 算法补齐 (Johnson/SPFA/BCC/双向Dij/Yen's) | ✅ 完成 |
+| v1.0.0 | 正式发布，API 冻结 | ✅ 完成 |
+| v1.1.0 | CI/CD 上线，发布流程稳定化 | ✅ **当前版本** |
+| v1.2.0 | 文档与示例完善 | ⬜ 进行中 |
 
 完整变更记录: [CHANGELOG.md](CHANGELOG.md)
 
@@ -248,6 +252,14 @@ moon check lib/algo/shortest_path  # 单模块编译检查
 
 官方赛事支持: [2026 MoonBit 创新大赛](https://www.gitlink.org.cn/competitions/track1_2026MoonBit) — 本项目为 MoonBit 生态图算法赛道的参赛作品
 
+<p>
+  本项目的 AI API 支持由
+  <a href="https://tokeness.io">
+    Tokeness.io
+  </a>
+  赞助提供。
+</p>
+
 ---
 
 <div align="center">
@@ -257,3 +269,4 @@ moon check lib/algo/shortest_path  # 单模块编译检查
 Made with ❤️ using [MoonBit](https://www.moonbitlang.com/)
 
 </div>
+

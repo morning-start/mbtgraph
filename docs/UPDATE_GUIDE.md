@@ -488,7 +488,7 @@ git commit -m "refactor(core): Trait分层从4层扩展至6层"
 这些文件**不影响功能，但完善度更好**：
 1. 💡 **AGENTS.md** - 仅架构变更时低频更新
 2. 💡 **设计文档** (`docs/design/*`) - 技术细节
-3. 💡 **竞品对比** (`docs/reference/*`) - 参考信息
+3. 💡 **竞品对比** (`docs/archive/reference/*`) - 参考信息
 
 ---
 

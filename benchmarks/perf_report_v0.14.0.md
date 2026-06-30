@@ -49,7 +49,7 @@
 
 ## 关键发现 (Dispatch 分析)
 
-来自 [docs/design/dispatch_analysis.md](../docs/design/dispatch_analysis.md)：
+来自 [docs/archive/reports/dispatch_analysis.md](../docs/archive/reports/dispatch_analysis.md)：
 
 1. **`node_count` 是最热方法**（82 次，占 GraphReadable 的 37.8%），内联收益最高
 2. **前 6 个方法**占总调用的 **95.6%**

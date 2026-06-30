@@ -31,7 +31,7 @@ targets:
 
 ### 1.1 已有调研
 
-[graph\_storage\_survey.md](file:///e:/Workplace/APP/MoonBit/mbtgraph/docs/design/graph_storage_survey.md) 系统调研了 8 种图数据存储方式，确定了四种优先实现：
+[graph\_storage\_survey.md](../report/graph_storage_survey.md) 系统调研了 8 种图数据存储方式，确定了四种优先实现：
 
 | 存储方式                   | 定位         |
 | ---------------------- | ---------- |
