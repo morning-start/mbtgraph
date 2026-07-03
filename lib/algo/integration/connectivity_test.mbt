@@ -341,3 +341,60 @@ test "scc_scc_5" {
     }
   }
 }
+
+///|
+test "is_bipartite_bipartite_c4" {
+  // Even Cycle (Bipartite)
+  let g = @storage.new_undirected()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  let n0 = @core.NodeId(0)
+  let n1 = @core.NodeId(1)
+  let n2 = @core.NodeId(2)
+  let n3 = @core.NodeId(3)
+  @core.GraphWritable::add_edge(g, n0, n1, 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, n1, n2, 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, n2, n3, 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, n3, n0, 1.0) |> ignore
+
+  match @conn.is_bipartite(g) {
+    Some(colors) => {
+      assert_eq(colors[0], 0)
+      assert_eq(colors[1], 1)
+      assert_eq(colors[2], 0)
+      assert_eq(colors[3], 1)
+    }
+    None => assert_true(false)
+  }
+}
+
+///|
+test "is_bipartite_not_bipartite_c3" {
+  // Odd Cycle (Not Bipartite)
+  let g = @storage.new_undirected()
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  @core.GraphWritable::add_node(g, 0.0) |> ignore
+  let n0 = @core.NodeId(0)
+  let n1 = @core.NodeId(1)
+  let n2 = @core.NodeId(2)
+  @core.GraphWritable::add_edge(g, n0, n1, 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, n1, n2, 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, n2, n0, 1.0) |> ignore
+
+  match @conn.is_bipartite(g) {
+    Some(_) => assert_true(false)
+    None => assert_true(true)
+  }
+}
+
+///|
+test "is_bipartite_empty" {
+  let g = @storage.new_undirected()
+  match @conn.is_bipartite(g) {
+    Some(colors) => assert_eq(colors.length(), 0)
+    None => assert_true(false)
+  }
+}

@@ -1,0 +1,45 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "morning-start/mbtgraph/lib/algo/connectivity"
+
+import {
+  "morning-start/mbtgraph/lib/core",
+}
+
+// Values
+pub fn[G : @core.GraphReadable] biconnected_components(G) -> BiconnectedComponentsResult
+
+pub fn[G : @core.GraphReadable] connected_components(G) -> ConnectedComponentsResult
+
+pub fn[G : @core.GraphReadable] is_bipartite(G) -> Array[Int]?
+
+pub fn[G : @core.GraphDirected] kosaraju_scc(G) -> StronglyConnectedComponentsResult
+
+pub fn[G : @core.GraphDirected] tarjan_scc(G) -> StronglyConnectedComponentsResult
+
+// Errors
+
+// Types and methods
+pub(all) struct BiconnectedComponentsResult {
+  components : Array[Array[@core.NodeId]]
+  articulation_points : Array[@core.NodeId]
+}
+pub fn BiconnectedComponentsResult::count(Self) -> Int
+pub fn BiconnectedComponentsResult::is_articulation_point(Self, @core.NodeId) -> Bool
+
+pub(all) struct ConnectedComponentsResult {
+  components : Array[Array[@core.NodeId]]
+}
+pub fn ConnectedComponentsResult::component_of(Self, @core.NodeId) -> Int
+pub fn ConnectedComponentsResult::count(Self) -> Int
+pub fn ConnectedComponentsResult::size(Self, Int) -> Int
+
+pub(all) struct StronglyConnectedComponentsResult {
+  components : Array[Array[@core.NodeId]]
+}
+pub fn StronglyConnectedComponentsResult::component_of(Self, @core.NodeId) -> Int
+pub fn StronglyConnectedComponentsResult::count(Self) -> Int
+
+// Type aliases
+
+// Traits
+
