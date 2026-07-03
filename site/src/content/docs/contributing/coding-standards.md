@@ -137,4 +137,4 @@ Commit 4: docs(scope): 文档和设计说明
 **相关文档：**
 - [开发环境搭建](/contributing/setup)
 - [测试规范](/contributing/testing)
-- [完整 AGENTS.md](https://github.com/moonbit/mbtgraph/blob/main/AGENTS.md)
+- [完整 AGENTS.md](https://github.com/morning-start/mbtgraph/blob/main/AGENTS.md)

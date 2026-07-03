@@ -79,7 +79,7 @@ export default defineConfig({
 				{
 					icon: 'github',
 					label: 'GitHub',
-					href: 'https://github.com/moonbit/mbtgraph',
+					href: 'https://github.com/morning-start/mbtgraph',
 				},
 			],
 			sidebar: [
@@ -264,7 +264,7 @@ export default defineConfig({
 			],
 			lastUpdated: true,
 			editLink: {
-				baseUrl: 'https://github.com/moonbit/mbtgraph/edit/main/site/',
+				baseUrl: 'https://github.com/morning-start/mbtgraph/edit/main/site/',
 			},
 			// 仅加载预览卡片最小化样式（不影响 Starlight 文档站其他样式）
 			customCss: ['./src/styles/viz-preview.css'],
