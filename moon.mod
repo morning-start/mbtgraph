@@ -1,6 +1,6 @@
 name = "morning-start/mbtgraph"
 
-version = "1.2.0"
+version = "0.1.1"
 
 import {
   "Luna-Flow/linear-algebra@0.2.11",
@@ -9,7 +9,7 @@ import {
 
 readme = "README.mbt.md"
 
-repository = ""
+repository = "https://github.com/morning-start/mbtgraph"
 
 license = "MIT"
 

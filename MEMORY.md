@@ -5,7 +5,7 @@
 - **模块**: `morning-start/mbtgraph`
 - **语言**: MoonBit (native/wasm/js 三后端)
 - **协议**: MIT
-- **版本**: v1.1.0 🎉 正式发布 + CI/CD 上线 (详见 CHANGELOG.md)
+- **版本**: v0.1.1 (详见 CHANGELOG.md)
 - **架构**: MoonBit 包按目录组织，每个目录含 `moon.pkg` 声明依赖
 - **总测试数**: 940 (运行 `moon test` 获取实时数据)
 - **算法模块**: **19+ 子模块** + **~65 算法** + **I/O 模块** (DOT/JSON/统计)
@@ -108,10 +108,7 @@ lib/
 
 | 日期 | 决策（一句话） | 详情链接 |
 |------|---------------|---------|
-| 2026-06-14 | v1.1.0 CI/CD 上线：GitHub Actions 工作流配置完成 | CHANGELOG.md |
-| 2026-06-14 | v1.0.0 正式发布：首个生产级稳定版本，API 冻结，65+ 算法，940 测试 | CHANGELOG.md |
-| 2026-06-14 | ROADMAP/TODO 重新规划：基于 v0.16.0 API 冻结现状，三阶段发展 | docs/ROADMAP.md, docs/TODO.md |
-| 2026-06-12 | v0.16.0 API 冻结候选完成：5 Trait + 61 结构体 + ~136 函数冻结 | CHANGELOG.md |
+| 2026-07-03 | v0.1.1 发布：mooncakes.io 版本降级，全面清理历史版本号 | CHANGELOG.md |
 | 2026-05-29 | v0.15.0 经典算法扩充：7 新模块, ~41 算法/函数, 182 新测试 | CHANGELOG.md |
 | 2026-05-29 | v0.14.0 性能优化：heap/CSR快排/batch等8任务完成 | CHANGELOG.md |
 
@@ -157,4 +154,4 @@ moon build --target <tgt> # 构建（wasm/js/native）
 > **算法复杂度详情**: 详见 docs/algorithms_catalog.md
 > **任务规划**: 详见 docs/TODO.md
 > **变更日志**: 详见 CHANGELOG.md
-> **当前状态**: v1.1.0 正式发布 + CI/CD 上线，进入文档完善阶段
+> **当前状态**: v0.1.1 已发布，补充算法 + 完善文档 + 调试站点
