@@ -43,15 +43,21 @@ fn[G : @core.GraphReadable] directed_cycle_impl(g : G) -> Bool {
   if nc == 0 {
     return false
   }
-  let max_id = cycle_find_max_id(g)
-  let size = max(max_id + 1, 1)
-  let color = Array::make(size, 0)
+  // 使用 node_count 作为初始估计，避免 O(V) 预扫描
+  let color = Array::make(Int::max(nc, 1), 0)
   for nid in @core.GraphReadable::node_ids(g) {
     let idx = nid.0
+    if idx < 0 {
+      continue
+    }
+    // 动态扩容
+    while idx >= color.length() {
+      color.push(0)
+    }
     if color[idx] != 0 {
       continue
     }
-    if dfs_detect_cycle(g, nid, color, size) {
+    if dfs_detect_cycle(g, nid, color) {
       return true
     }
   }
@@ -63,18 +69,18 @@ fn[G : @core.GraphReadable] dfs_detect_cycle(
   g : G,
   cur : @core.NodeId,
   color : Array[Int],
-  size : Int,
 ) -> Bool {
+  let len = color.length()
   color[cur.0] = 1
   for nid in @core.GraphReadable::neighbors(g, cur) {
     let idx = nid.0
-    if idx < 0 || idx >= size {
+    if idx < 0 || idx >= len {
       continue
     }
     if color[idx] == 1 {
       return true
     }
-    if color[idx] == 0 && dfs_detect_cycle(g, nid, color, size) {
+    if color[idx] == 0 && dfs_detect_cycle(g, nid, color) {
       return true
     }
   }
@@ -92,15 +98,21 @@ fn[G : @core.GraphReadable] undirected_cycle_impl(g : G) -> Bool {
   if nc <= 1 {
     return false
   }
-  let max_id = cycle_find_max_id(g)
-  let size = max(max_id + 1, 1)
-  let visited = Array::make(size, false)
+  // 使用 node_count 作为初始估计
+  let visited = Array::make(Int::max(nc, 1), false)
   for nid in @core.GraphReadable::node_ids(g) {
     let idx = nid.0
+    if idx < 0 {
+      continue
+    }
+    // 动态扩容
+    while idx >= visited.length() {
+      visited.push(false)
+    }
     if visited[idx] {
       continue
     }
-    if dfs_undirected_cycle(g, nid, @core.NodeId(-1), visited, size) {
+    if dfs_undirected_cycle(g, nid, @core.NodeId(-1), visited) {
       return true
     }
   }
@@ -113,16 +125,16 @@ fn[G : @core.GraphReadable] dfs_undirected_cycle(
   cur : @core.NodeId,
   parent : @core.NodeId,
   visited : Array[Bool],
-  size : Int,
 ) -> Bool {
+  let len = visited.length()
   visited[cur.0] = true
   for nid in @core.GraphReadable::neighbors(g, cur) {
     let idx = nid.0
-    if idx < 0 || idx >= size {
+    if idx < 0 || idx >= len {
       continue
     }
     if !visited[idx] {
-      if dfs_undirected_cycle(g, nid, cur, visited, size) {
+      if dfs_undirected_cycle(g, nid, cur, visited) {
         return true
       }
     } else if nid != parent {
@@ -130,15 +142,4 @@ fn[G : @core.GraphReadable] dfs_undirected_cycle(
     }
   }
   false
-}
-
-///|
-fn[G : @core.GraphReadable] cycle_find_max_id(g : G) -> Int {
-  let mut m = -1
-  for nid in @core.GraphReadable::node_ids(g) {
-    if nid.0 > m {
-      m = nid.0
-    }
-  }
-  m
 }

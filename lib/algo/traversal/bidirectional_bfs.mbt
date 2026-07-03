@@ -31,8 +31,9 @@ pub fn[G : @core.GraphReadable] bidirectional_bfs(
   if start == target {
     return [start]
   }
-  let max_id = bfs_find_max_id(g)
-  let size = max(max_id + 1, 1)
+  // 使用 node_count 作为初始估计，避免 O(V) 全节点预扫描
+  let nc = @core.GraphReadable::node_count(g)
+  let size = Int::max(nc, 1)
   let visited_f = Array::make(size, false)
   let visited_b = Array::make(size, false)
   let parent_f : Array[@core.NodeId?] = Array::make(size, None)
@@ -53,14 +54,22 @@ pub fn[G : @core.GraphReadable] bidirectional_bfs(
       let nbrs = @core.GraphReadable::neighbors(g, cur)
       for nid in nbrs {
         let idx = nid.0
-        if idx >= 0 && idx < size {
-          if !visited_f[idx] {
-            visited_f[idx] = true
-            parent_f[idx] = Some(cur)
-            queue_f.push(nid)
-            if visited_b[idx] {
-              return bidir_reconstruct(nid, parent_f, parent_b)
-            }
+        if idx < 0 {
+          continue
+        }
+        // 动态扩容
+        while idx >= visited_f.length() {
+          visited_f.push(false)
+          visited_b.push(false)
+          parent_f.push(None)
+          parent_b.push(None)
+        }
+        if !visited_f[idx] {
+          visited_f[idx] = true
+          parent_f[idx] = Some(cur)
+          queue_f.push(nid)
+          if visited_b[idx] {
+            return bidir_reconstruct(nid, parent_f, parent_b)
           }
         }
       }
@@ -72,14 +81,22 @@ pub fn[G : @core.GraphReadable] bidirectional_bfs(
       let nbrs = @core.GraphReadable::neighbors(g, cur)
       for nid in nbrs {
         let idx = nid.0
-        if idx >= 0 && idx < size {
-          if !visited_b[idx] {
-            visited_b[idx] = true
-            parent_b[idx] = Some(cur)
-            queue_b.push(nid)
-            if visited_f[idx] {
-              return bidir_reconstruct(nid, parent_f, parent_b)
-            }
+        if idx < 0 {
+          continue
+        }
+        // 动态扩容
+        while idx >= visited_f.length() {
+          visited_f.push(false)
+          visited_b.push(false)
+          parent_f.push(None)
+          parent_b.push(None)
+        }
+        if !visited_b[idx] {
+          visited_b[idx] = true
+          parent_b[idx] = Some(cur)
+          queue_b.push(nid)
+          if visited_f[idx] {
+            return bidir_reconstruct(nid, parent_f, parent_b)
           }
         }
       }

@@ -19,15 +19,19 @@ pub fn[G : @core.GraphDirected] topo_sort_kahn(
   if nc == 0 {
     return Ok([])
   }
-  let max_id = topo_find_max_id(g)
-  let size = max(max_id + 1, 1)
-  let in_degree = Array::make(size, 0)
+  // 使用 node_count 作为初始估计，避免 O(V) 预扫描
+  let in_degree = Array::make(Int::max(nc, 1), 0)
   for nid in @core.GraphReadable::node_ids(g) {
     for nbr in @core.GraphReadable::neighbors(g, nid) {
       let idx = nbr.0
-      if idx >= 0 && idx < size {
-        in_degree[idx] = in_degree[idx] + 1
+      if idx < 0 {
+        continue
       }
+      // 动态扩容
+      while idx >= in_degree.length() {
+        in_degree.push(0)
+      }
+      in_degree[idx] = in_degree[idx] + 1
     }
   }
   let queue : Array[@core.NodeId] = []
@@ -46,11 +50,16 @@ pub fn[G : @core.GraphDirected] topo_sort_kahn(
     count = count + 1
     for nid in @core.GraphReadable::neighbors(g, cur) {
       let idx = nid.0
-      if idx >= 0 && idx < size {
-        in_degree[idx] = in_degree[idx] - 1
-        if in_degree[idx] == 0 {
-          queue.push(nid)
-        }
+      if idx < 0 {
+        continue
+      }
+      // 动态扩容
+      while idx >= in_degree.length() {
+        in_degree.push(0)
+      }
+      in_degree[idx] = in_degree[idx] - 1
+      if in_degree[idx] == 0 {
+        queue.push(nid)
       }
     }
   }
@@ -73,17 +82,24 @@ pub fn[G : @core.GraphDirected] topo_sort_dfs(
   if nc == 0 {
     return Ok([])
   }
-  let max_id = topo_find_max_id(g)
-  let size = max(max_id + 1, 1)
-  let visited = Array::make(size, false)
-  let on_stack = Array::make(size, false)
+  // 使用 node_count 作为初始估计
+  let visited = Array::make(Int::max(nc, 1), false)
+  let on_stack = Array::make(Int::max(nc, 1), false)
   let result : Array[@core.NodeId] = []
   for nid in @core.GraphReadable::node_ids(g) {
     let idx = nid.0
+    if idx < 0 {
+      continue
+    }
+    // 动态扩容
+    while idx >= visited.length() {
+      visited.push(false)
+      on_stack.push(false)
+    }
     if visited[idx] {
       continue
     }
-    match topo_dfs_visit(g, nid, visited, on_stack, result, size) {
+    match topo_dfs_visit(g, nid, visited, on_stack, result) {
       Ok(r) => {
         let _ = r
       }
@@ -106,21 +122,21 @@ fn[G : @core.GraphDirected] topo_dfs_visit(
   visited : Array[Bool],
   on_stack : Array[Bool],
   acc : Array[@core.NodeId],
-  size : Int,
 ) -> Result[Array[@core.NodeId], String] {
+  let len = visited.length()
   visited[cur.0] = true
   on_stack[cur.0] = true
   let result = acc
   for nid in @core.GraphReadable::neighbors(g, cur) {
     let idx = nid.0
-    if idx < 0 || idx >= size {
+    if idx < 0 || idx >= len {
       continue
     }
     if on_stack[idx] {
       return Err("graph contains a cycle")
     }
     if !visited[idx] {
-      match topo_dfs_visit(g, nid, visited, on_stack, result, size) {
+      match topo_dfs_visit(g, nid, visited, on_stack, result) {
         Ok(r) => {
           let _ = r
         }
@@ -131,15 +147,4 @@ fn[G : @core.GraphDirected] topo_dfs_visit(
   on_stack[cur.0] = false
   result.push(cur)
   Ok(result)
-}
-
-///|
-fn[G : @core.GraphReadable] topo_find_max_id(g : G) -> Int {
-  let mut m = -1
-  for nid in @core.GraphReadable::node_ids(g) {
-    if nid.0 > m {
-      m = nid.0
-    }
-  }
-  m
 }

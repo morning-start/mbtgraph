@@ -33,7 +33,17 @@ pub(open) trait GraphReadable {
   /// 获取邻居节点及边权重（优化用，避免 get_edge 二次查找）
   fn neighbors_with_weight(Self, NodeId) -> Iter[(NodeId, Double)]
 
+  ///|
   /// 节点度（无向图）或出度（有向图）
+  ///
+  /// # 语义说明
+  ///
+  /// - **有向图**: 返回节点的**出度**（从该节点出发的边数）
+  /// - **无向图**: 返回节点的**度**（连接该节点的总边数）
+  ///
+  /// ⚠️ **注意**: 在有向图中，`degree` 等价于 `out_degree`（来自 `GraphDirected`），
+  /// 不等于 `in_degree + out_degree`。如需同时计算入度和出度，
+  /// 请分别调用 `in_degree` 和 `out_degree` 并求和。
   fn degree(Self, NodeId) -> Int
 
   /// 是否为有向图

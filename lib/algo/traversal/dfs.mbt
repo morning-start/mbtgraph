@@ -27,8 +27,8 @@ pub fn[G : @core.GraphReadable] dfs(
       exit_time: empty_x,
     }
   }
-  let max_id = dfs_find_max_id(graph)
-  let size = max(max_id + 1, 1)
+  // 使用 node_count 作为初始估计，避免 O(V) 全节点预扫描
+  let size = Int::max(nc, 1)
   let visited = Array::make(size, false)
   let order : Array[@core.NodeId] = []
   let parents : Array[@core.NodeId?] = Array::make(size, None)
@@ -45,7 +45,17 @@ pub fn[G : @core.GraphReadable] dfs(
     let mut found = false
     for nid in @core.GraphReadable::neighbors(graph, cur) {
       let idx = nid.0
-      if idx >= 0 && idx < size && !visited[idx] {
+      if idx < 0 {
+        continue
+      }
+      // 动态扩容
+      while idx >= visited.length() {
+        visited.push(false)
+        parents.push(None)
+        entry.push(-1)
+        exit.push(-1)
+      }
+      if !visited[idx] {
         visited[idx] = true
         parents[idx] = Some(cur)
         entry[idx] = time
@@ -90,8 +100,8 @@ pub fn[G : @core.GraphReadable] dfs_all(graph : G) -> DfsResult {
       exit_time: empty_x,
     }
   }
-  let max_id = dfs_find_max_id(graph)
-  let size = max(max_id + 1, 1)
+  // 使用 node_count 作为初始估计
+  let size = Int::max(nc, 1)
   let visited = Array::make(size, false)
   let order : Array[@core.NodeId] = []
   let parents : Array[@core.NodeId?] = Array::make(size, None)
@@ -99,12 +109,23 @@ pub fn[G : @core.GraphReadable] dfs_all(graph : G) -> DfsResult {
   let exit = Array::make(size, -1)
   let mut time = 0
   for start in @core.GraphReadable::node_ids(graph) {
-    if visited[start.0] {
+    let sidx = start.0
+    if sidx < 0 {
+      continue
+    }
+    // 动态扩容
+    while sidx >= visited.length() {
+      visited.push(false)
+      parents.push(None)
+      entry.push(-1)
+      exit.push(-1)
+    }
+    if visited[sidx] {
       continue
     }
     let stack : Array[@core.NodeId] = [start]
-    visited[start.0] = true
-    entry[start.0] = time
+    visited[sidx] = true
+    entry[sidx] = time
     time = time + 1
     let mut stack_len = 1
     while stack_len > 0 {
@@ -112,7 +133,16 @@ pub fn[G : @core.GraphReadable] dfs_all(graph : G) -> DfsResult {
       let mut found = false
       for nid in @core.GraphReadable::neighbors(graph, cur) {
         let idx = nid.0
-        if idx >= 0 && idx < size && !visited[idx] {
+        if idx < 0 {
+          continue
+        }
+        while idx >= visited.length() {
+          visited.push(false)
+          parents.push(None)
+          entry.push(-1)
+          exit.push(-1)
+        }
+        if !visited[idx] {
           visited[idx] = true
           parents[idx] = Some(cur)
           entry[idx] = time
@@ -136,15 +166,4 @@ pub fn[G : @core.GraphReadable] dfs_all(graph : G) -> DfsResult {
     entry_time: entry,
     exit_time: exit,
   }
-}
-
-///|
-fn[G : @core.GraphReadable] dfs_find_max_id(g : G) -> Int {
-  let mut m = -1
-  for nid in @core.GraphReadable::node_ids(g) {
-    if nid.0 > m {
-      m = nid.0
-    }
-  }
-  m
 }

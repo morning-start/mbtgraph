@@ -167,6 +167,8 @@ match @core.GraphWritable::add_edge(g, from, to, weight) {
     @core.GraphError::NodeNotFound(id) => println("节点 ${id} 不存在")
     @core.GraphError::EdgeAlreadyExists(f, t) => println("边 ${f}→${t} 已存在")
     @core.GraphError::InvalidNodeId => println("无效的 ID")
+    @core.GraphError::NodeAlreadyExists(id) => println("节点 ${id} 已存在")
+    @core.GraphError::NodeIdOutOfBounds(idx) => println("节点 ID ${idx} 越界")
   }
 }
 ```

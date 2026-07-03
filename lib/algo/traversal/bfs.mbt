@@ -25,8 +25,8 @@ pub fn[G : @core.GraphReadable] bfs(
       levels: empty_levels,
     }
   }
-  let max_id = bfs_find_max_id(graph)
-  let size = max(max_id + 1, 1)
+  // 使用 node_count 作为初始估计，节省一次全节点 O(V) 预扫描
+  let size = Int::max(nc, 1)
   let visited = Array::make(size, false)
   let order : Array[@core.NodeId] = []
   let parents : Array[@core.NodeId?] = Array::make(size, None)
@@ -43,7 +43,16 @@ pub fn[G : @core.GraphReadable] bfs(
     order.push(cur)
     for nid in @core.GraphReadable::neighbors(graph, cur) {
       let idx = nid.0
-      if idx >= 0 && idx < size && !visited[idx] {
+      if idx < 0 {
+        continue
+      }
+      // 动态扩容：处理稀疏/不连续 ID 场景
+      while idx >= visited.length() {
+        visited.push(false)
+        parents.push(None)
+        levels.push(-1)
+      }
+      if !visited[idx] {
         visited[idx] = true
         parents[idx] = Some(cur)
         levels[idx] = levels[cur.0] + 1
@@ -72,20 +81,30 @@ pub fn[G : @core.GraphReadable] bfs_all(graph : G) -> BfsResult {
       levels: empty_levels,
     }
   }
-  let max_id = bfs_find_max_id(graph)
-  let size = max(max_id + 1, 1)
+  // 使用 node_count 作为初始估计
+  let size = Int::max(nc, 1)
   let visited = Array::make(size, false)
   let order : Array[@core.NodeId] = []
   let parents : Array[@core.NodeId?] = Array::make(size, None)
   let levels = Array::make(size, -1)
   for start in @core.GraphReadable::node_ids(graph) {
-    if visited[start.0] {
+    let sidx = start.0
+    if sidx < 0 {
+      continue
+    }
+    // 动态扩容
+    while sidx >= visited.length() {
+      visited.push(false)
+      parents.push(None)
+      levels.push(-1)
+    }
+    if visited[sidx] {
       continue
     }
     let queue : Array[@core.NodeId] = []
-    visited[start.0] = true
-    levels[start.0] = 0
-    parents[start.0] = None
+    visited[sidx] = true
+    levels[sidx] = 0
+    parents[sidx] = None
     queue.push(start)
     let mut head = 0
     while head < queue.length() {
@@ -94,7 +113,16 @@ pub fn[G : @core.GraphReadable] bfs_all(graph : G) -> BfsResult {
       order.push(cur)
       for nid in @core.GraphReadable::neighbors(graph, cur) {
         let idx = nid.0
-        if idx >= 0 && idx < size && !visited[idx] {
+        if idx < 0 {
+          continue
+        }
+        // 动态扩容
+        while idx >= visited.length() {
+          visited.push(false)
+          parents.push(None)
+          levels.push(-1)
+        }
+        if !visited[idx] {
           visited[idx] = true
           parents[idx] = Some(cur)
           levels[idx] = levels[cur.0] + 1
@@ -132,24 +160,4 @@ pub fn[G : @core.GraphReadable] bfs_shortest_path(
   }
   let result = bfs(graph, start)
   result.base.path_to(target)
-}
-
-///|
-fn max(a : Int, b : Int) -> Int {
-  if a > b {
-    a
-  } else {
-    b
-  }
-}
-
-///|
-fn[G : @core.GraphReadable] bfs_find_max_id(g : G) -> Int {
-  let mut m = -1
-  for nid in @core.GraphReadable::node_ids(g) {
-    if nid.0 > m {
-      m = nid.0
-    }
-  }
-  m
 }

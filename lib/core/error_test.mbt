@@ -20,8 +20,7 @@ test "GraphError NodeNotFound: constructs with NodeId and matches correctly" {
       match id {
         @core.NodeId(v) => assert_eq(v, 5)
       }
-    GraphError::EdgeAlreadyExists(_, _) => assert_true(false)
-    GraphError::InvalidNodeId => assert_true(false)
+    _ => assert_true(false)
   }
 }
 
@@ -62,7 +61,7 @@ test "GraphError EdgeAlreadyExists: constructs with two NodeIds" {
         @core.NodeId(tv) => assert_eq(tv, 1)
       }
     }
-    GraphError::InvalidNodeId => assert_true(false)
+    _ => assert_true(false)
   }
 }
 
@@ -104,9 +103,8 @@ test "GraphError EdgeAlreadyExists with zero NodeIds" {
 test "GraphError InvalidNodeId: unit variant matches correctly" {
   let err = GraphError::InvalidNodeId
   match err {
-    GraphError::NodeNotFound(_) => assert_true(false)
-    GraphError::EdgeAlreadyExists(_, _) => assert_true(false)
     GraphError::InvalidNodeId => assert_true(true)
+    _ => assert_true(false)
   }
 }
 
@@ -222,8 +220,7 @@ test "GraphError in Result: Err branch carries NodeNotFound" {
           match id {
             @core.NodeId(v) => assert_eq(v, 7)
           }
-        GraphError::EdgeAlreadyExists(_, _) => assert_true(false)
-        GraphError::InvalidNodeId => assert_true(false)
+        _ => assert_true(false)
       }
   }
 }
@@ -247,7 +244,7 @@ test "GraphError in Result: Err branch carries EdgeAlreadyExists" {
             @core.NodeId(tv) => assert_eq(tv, 20)
           }
         }
-        GraphError::InvalidNodeId => assert_true(false)
+        _ => assert_true(false)
       }
   }
 }
@@ -262,9 +259,8 @@ test "GraphError in Result: Err branch carries InvalidNodeId" {
     Ok(_) => assert_true(false)
     Err(e) =>
       match e {
-        GraphError::NodeNotFound(_) => assert_true(false)
-        GraphError::EdgeAlreadyExists(_, _) => assert_true(false)
         GraphError::InvalidNodeId => assert_true(true)
+        _ => assert_true(false)
       }
   }
 }
@@ -305,6 +301,86 @@ test "GraphError in Result: nested function returning different errors" {
   match validate_edge(-1, 0) {
     Ok(_) => assert_true(false)
     Err(GraphError::InvalidNodeId) => ()
+    Err(_) => assert_true(false)
+  }
+}
+
+// ============================================================================
+// 新增变体测试 (v1.1.0+)
+// ============================================================================
+
+///|
+test "GraphError NodeAlreadyExists: constructs with NodeId and matches" {
+  let err = GraphError::NodeAlreadyExists(@core.NodeId(3))
+  match err {
+    GraphError::NodeAlreadyExists(id) =>
+      match id {
+        @core.NodeId(v) => assert_eq(v, 3)
+      }
+    _ => assert_true(false)
+  }
+}
+
+///|
+test "GraphError NodeIdOutOfBounds: constructs with Int and matches" {
+  let err = GraphError::NodeIdOutOfBounds(999)
+  match err {
+    GraphError::NodeIdOutOfBounds(v) => assert_eq(v, 999)
+    _ => assert_true(false)
+  }
+}
+
+///|
+test "GraphError Eq: NodeAlreadyExists identical are equal" {
+  let a = GraphError::NodeAlreadyExists(@core.NodeId(0))
+  let b = GraphError::NodeAlreadyExists(@core.NodeId(0))
+  assert_true(a == b)
+}
+
+///|
+test "GraphError Eq: NodeIdOutOfBounds identical are equal" {
+  let a = GraphError::NodeIdOutOfBounds(5)
+  let b = GraphError::NodeIdOutOfBounds(5)
+  assert_true(a == b)
+}
+
+///|
+test "GraphError Eq: new variants differ from old variants" {
+  let a = GraphError::NodeAlreadyExists(@core.NodeId(0))
+  let b = GraphError::NodeNotFound(@core.NodeId(0))
+  assert_true(!(a == b))
+}
+
+///|
+test "GraphError Eq: NodeIdOutOfBounds different payloads differ" {
+  let a = GraphError::NodeIdOutOfBounds(0)
+  let b = GraphError::NodeIdOutOfBounds(99)
+  assert_true(!(a == b))
+}
+
+///|
+test "GraphError in Result: Err branch carries NodeAlreadyExists" {
+  fn make_err() -> Result[Unit, GraphError] {
+    Err(GraphError::NodeAlreadyExists(@core.NodeId(7)))
+  }
+  match make_err() {
+    Ok(_) => assert_true(false)
+    Err(GraphError::NodeAlreadyExists(id)) =>
+      match id {
+        @core.NodeId(v) => assert_eq(v, 7)
+      }
+    Err(_) => assert_true(false)
+  }
+}
+
+///|
+test "GraphError in Result: Err branch carries NodeIdOutOfBounds" {
+  fn make_err() -> Result[Unit, GraphError] {
+    Err(GraphError::NodeIdOutOfBounds(42))
+  }
+  match make_err() {
+    Ok(_) => assert_true(false)
+    Err(GraphError::NodeIdOutOfBounds(v)) => assert_eq(v, 42)
     Err(_) => assert_true(false)
   }
 }
