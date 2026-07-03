@@ -6,7 +6,8 @@ import astroExpressiveCode from 'astro-expressive-code';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://mbtgraph.moonbit.dev',
+	site: 'https://morning-start.github.io/mbtgraph',
+	base: '/mbtgraph',
 	prefetch: {
 		prefetchAll: true,
 		defaultStrategy: 'viewport',
