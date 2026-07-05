@@ -126,8 +126,8 @@ let result = dinic(net, 0, 3)
 | 错误类型 | `lib/core/error.mbt` |
 | AdjList 实现 | `lib/storage/directed_adj_list.mbt` |
 | 流网络示例 | `lib/algo/flow/` |
-| 算法目录 | [文档站点](https://morning-start.github.io/mbtgraph/algorithms/catalog/) |
-| API 参考 | [文档站点](https://morning-start.github.io/mbtgraph/api/core/) |
+| 算法目录 | `site/src/content/docs/algorithms/catalog.md` |
+| API 参考 | `site/src/content/docs/api/core.md` |
 
 ---
 
