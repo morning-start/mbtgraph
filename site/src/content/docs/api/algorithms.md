@@ -5,7 +5,7 @@ description: 所有算法函数的签名、参数、返回类型和模块索引
 
 # 各算法模块 API
 
-> 模块路径: `lib/algo/` · 16 个子模块 · 65+ 算法
+> 模块路径: `lib/algo/` · 19 个子模块 · 65+ 算法
 
 ---
 
@@ -54,7 +54,7 @@ pub fn[G : @core.GraphReadable] a_star(graph : G, start : NodeId, target : NodeI
 ## 三、最小生成树 (mst)
 
 ```moonbit
-// Kruskal: 需要 GraphEdgeIterable
+// Kruskal: 需要 GraphReadable
 pub fn[G : @core.GraphReadable] kruskal(graph : G) -> MstResult
 
 // Prim: 需要 GraphReadable

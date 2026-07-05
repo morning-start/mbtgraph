@@ -93,7 +93,6 @@ pub trait GraphWritable : GraphReadable {
 | GraphDirected | Readable | +6 (入边查询) | 有向图 |
 | GraphFull | Writable + Directed | - | 便捷别名 |
 | GraphBatchReadable | Readable | +2 (批量操作) | CSR/CSC |
-| GraphEdgeIterable | Readable | +1 (边排序) | Kruskal |
 
 ## 存储结构一览
 

@@ -1,6 +1,6 @@
 ---
 title: Trait 动态调度分析
-description: mbtgraph 中 6 层 Trait 方法的调用频率统计与优化建议
+description: mbtgraph 中 5 层 Trait 方法的调用频率统计与优化建议
 ---
 
 > **分析范围**: `lib/algo/` 下所有 `*.mbt` 文件

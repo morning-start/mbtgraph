@@ -1,6 +1,6 @@
 ---
 title: Trait 架构设计
-description: 6 层 Trait 架构的设计决策、分层原则与实现策略
+description: 5 层 Trait 架构的设计决策、分层原则与实现策略
 ---
 
 > **核心文件**: `lib/core/traits.mbt` | **状态**: ✅ 已冻结
@@ -50,11 +50,8 @@ Layer 0: GraphReadable (基础只读)
     │               └── Layer 3: GraphFull (便捷别名)
     │                   = GraphWritable + GraphDirected
     │
-    ├── Layer 1B: GraphBatchReadable (批量优化)
-    │   └── +2 方法，CSR/CSC 专属
-    │
-    └── Layer 1C: GraphEdgeIterable (边排序)
-        └── +1 方法，Kruskal 算法友好
+    └── Layer 1B: GraphBatchReadable (批量优化)
+        └── +2 方法，CSR/CSC 专属
 ```
 
 ---
@@ -117,6 +114,5 @@ pub(open) trait GraphFull: GraphWritable + GraphDirected {
 │
 └─ 否 → 只读即可
        ├─ 大规模 (>10万)？→ 是 → GraphBatchReadable (CSR/CSC)
-       ├─ 需要排序边？→ 是 → GraphEdgeIterable (EdgeList)
        └─ 一般用途 → GraphReadable (任意存储)
 ```

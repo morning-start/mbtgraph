@@ -297,6 +297,6 @@ let bfs_result = @traversal.bfs(graph, start)
 
 **相关文档：**
 - [节点与边的表示](/core-concepts/data-types/)
-- [6 层 Trait 详解](/core-concepts/traits/)
+- [5 层 Trait 详解](/core-concepts/traits/)
 - [API 参考 - Core 模块](/api/core/)
 - [图的读写操作](/core-concepts/graph-operations/)

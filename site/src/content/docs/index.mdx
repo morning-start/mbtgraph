@@ -28,8 +28,8 @@ import Table from '../../components/Table.astro';
 	<Card title="8 种存储结构" icon="library">
 		邻接表、矩阵、边集、CSR/CSC 等 8 种实现，覆盖所有使用场景
 	</Card>
-	<Card title="6 层 Trait 分层" icon="layers">
-		GraphReadable → Writable → Directed → Full → BatchReadable → EdgeIterable，渐进式复杂度
+	<Card title="5 层 Trait 分层" icon="layers">
+	 GraphReadable → Writable → Directed → Full → BatchReadable，渐进式复杂度
 	</Card>
 	<Card title="~49 个算法" icon="code">
 		遍历、最短路径、MST、连通性、网络流、匹配、着色、社区检测等全覆盖
@@ -58,7 +58,7 @@ mbtgraph 采用**三层架构设计**，通过 Trait 机制实现算法与存储
 │   8 种实现 × Trait 接口                       │
 ├─────────────────────────────────────────────┤
 │              核心层 (core/)                   │
-│   类型定义 + 6 层 Trait + 错误处理            │
+│   类型定义 + 5 层 Trait + 错误处理            │
 └─────────────────────────────────────────────┘
 ```
 
@@ -98,7 +98,6 @@ let result = bfs(my_adj_list_graph, start_node)
     ['<code>GraphDirected</code>', '+6', '有向图，入边查询'],
     ['<code>GraphFull</code>', '=W+D', '便捷别名'],
     ['<code>GraphBatchReadable</code>', '+2', 'CSR/CSC 批量操作'],
-    ['<code>GraphEdgeIterable</code>', '+1', '边排序需求'],
   ]}
 />
 
@@ -150,7 +149,7 @@ let result = dijkstra(g, source)  // g 保持不变
   headers={['维度', '数据', '说明']}
   align={['left', 'center', 'left']}
   rows={[
-    ['<strong>Trait 分层</strong>', '6 层', 'GraphReadable → Writable → Directed → Full → BatchReadable → EdgeIterable'],
+    ['<strong>Trait 分层</strong>', '5 层', 'GraphReadable → Writable → Directed → Full → BatchReadable'],
     ['<strong>存储实现</strong>', '8 种', '邻接表/矩阵/边集/CSR/CSC（各有有向/无向变体）'],
     ['<strong>算法覆盖</strong>', '~49 个', '遍历/最短路径/MST/连通性/流网络/匹配/着色/社区检测等'],
     ['<strong>测试体系</strong>', '双轨制', 'Blackbox（功能测试）+ Whitebox（内部逻辑验证）'],

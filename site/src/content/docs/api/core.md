@@ -1,6 +1,6 @@
 ---
 title: Core 模块接口
-description: NodeId、Node、Edge 类型定义，6 层 Trait 接口签名，GraphError 错误枚举
+description: NodeId、Node、Edge 类型定义，5 层 Trait 接口签名，GraphError 错误枚举
 ---
 
 # Core 模块接口
@@ -143,16 +143,6 @@ pub(open) trait GraphBatchReadable: GraphReadable {
 }
 ```
 
-### GraphEdgeIterable — +1 方法（继承 GraphReadable）
-
-```moonbit
-pub(open) trait GraphEdgeIterable: GraphReadable {
-  fn sorted_edges(Self) -> Iter[(NodeId, NodeId, Double)]
-}
-```
-
-边排序接口（Kruskal 算法所需）。
-
 ---
 
 ## 三、错误枚举 (error.mbt)
@@ -181,8 +171,7 @@ GraphReadable (12 方法, 所有存储)
 │   └── GraphFull    = Writable + Directed (便捷别名)
 ├── GraphDirected     (+6, 有向图)
 │   └── GraphFull    (同上)
-├── GraphBatchReadable (+2, CSR/CSC)
-└── GraphEdgeIterable  (+1, 边排序)
+└── GraphBatchReadable (+2, CSR/CSC)
 ```
 
 ---
@@ -191,4 +180,4 @@ GraphReadable (12 方法, 所有存储)
 - [Storage 模块接口](/api/storage/)
 - [各算法模块 API](/api/algorithms/)
 - [IO 模块接口](/api/io/)
-- [6 层 Trait 详解](/core-concepts/traits/)
+- [5 层 Trait 详解](/core-concepts/traits/)

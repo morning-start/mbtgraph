@@ -27,7 +27,7 @@ description: 主流图算法库 (NetworkX, petgraph, JGraphT, LEMON) 与 mbtgrap
 | **petgraph** | Trait | **3 层** | IntoEdges, IntoNodeIdentifiers, Data |
 | **JGraphT** | Interface | **4 层** | 类型安全，工厂模式 |
 | **LEMON** | C++ Template | **2 层** | ListGraph/SmartGraph 分离 |
-| **mbtgraph** | Trait | **6 层** | ⭐ 最细粒度，LSP 原则 |
+| **mbtgraph** | Trait | **5 层** | ⭐ 最细粒度，LSP 原则 |
 
 ### 存储结构支持
 
@@ -70,9 +70,9 @@ description: 主流图算法库 (NetworkX, petgraph, JGraphT, LEMON) 与 mbtgrap
 
 | 优势 | 说明 |
 |------|------|
-| **Trait 层数最多** | 6 层（petgraph 3 层 / JGraphT 4 层）|
+| **Trait 层数最多** | 5 层（petgraph 3 层 / JGraphT 4 层）|
 | **存储种类最多** | 8 种（petgraph 5 种 / JGraphT 6 种）|
 | **wasm 体积最小** | < 1MB（Python 无法 wasm / JGraphT >50MB）|
 | **三后端支持** | native + wasm + js（竞品多为单后端）|
 | **纯函数语义** | 深拷贝保证无副作用（竞品多可变）|
-| **双轨测试** | 黑盒 + 白盒 940 tests |
+| **双轨测试** | 黑盒 + 白盒 768 tests |

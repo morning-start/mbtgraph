@@ -25,8 +25,7 @@ GraphReadable (12 methods, 根 trait)
 ├── GraphWritable     (5 methods, 动态存储)
 ├── GraphDirected     (6 methods, 有向扩展)
 │   └── GraphFull    = Writable + Directed (组合别名)
-├── GraphBatchReadable (2 methods, CSR/CSC 专属)
-└── GraphEdgeIterable (1 method, 边排序)
+└── GraphBatchReadable (2 methods, CSR/CSC 专属)
 ```
 
 ---

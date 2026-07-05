@@ -215,7 +215,7 @@ pub(all) struct EdgeList {
 | **边排序** | **O(E log E)** 内置支持 |
 | **邻居查询** | O(E) 需扫描所有边 |
 | **添加边** | O(1) 追加到数组末尾 |
-| **实现的 Trait** | GraphWritable + GraphEdgeIterable |
+| **实现的 Trait** | GraphWritable + GraphDirected |
 
 #### 适用场景
 
@@ -243,8 +243,8 @@ let n3 = @core.GraphWritable::add_node(g, 0.0)
 @core.GraphWritable::add_edge(g, n1, n2, 15.0) |> ignore
 @core.GraphWritable::add_edge(g, n2, n3, 4.0) |> ignore
 
-// 使用 GraphEdgeIterable 获取排序后的边（Kruskal 需要）
-// @core.GraphEdgeIterable::sorted_edges(g)  // O(E log E) 已预排序
+// 使用 GraphReadable 获取边总数
+// @core.GraphReadable::edge_count(g)
 println("边总数: ${@core.GraphReadable::edge_count(g)}")
 ```
 
@@ -446,7 +446,7 @@ pub(all) struct UndirectedAdjList {
 |------|------|
 | **空间复杂度** | **O(V + E)** （比有向版省 ~50%）|
 | **邻居查询** | O(k) |
-| **实现的 Trait** | GraphWritable + GraphEdgeIterable |
+| **实现的 Trait** | GraphWritable + GraphDirected |
 
 #### 适用场景
 
@@ -507,7 +507,6 @@ EdgeList 的无向版本，用于**无向 Kruskal**。
 #### 特性
 
 - 空间: O(V + E/2)
-- 支持 `GraphEdgeIterable`
 - 专用于无向 MST 场景
 
 ---

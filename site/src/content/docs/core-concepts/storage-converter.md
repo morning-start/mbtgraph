@@ -107,7 +107,7 @@ let mst = @mst.kruskal(el)
 println("MST 总权重: \(mst.total_weight)")
 ```
 
-`EdgeList` 实现了 `GraphEdgeIterable` trait，提供 `sorted_edges()` 方法，这是 Kruskal 算法所需的。
+`EdgeList` 实现了 `GraphWritable` trait，适合 Kruskal 等需要全边扫描的场景。
 
 ### 场景 3：有向 → 无向（语义转换）
 

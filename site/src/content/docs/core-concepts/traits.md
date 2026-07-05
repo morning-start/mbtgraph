@@ -1,11 +1,11 @@
 ---
-title: 6 层 Trait 详解
+title: 5 层 Trait 详解
 description: 深入理解 mbtgraph 的 Trait 分层架构设计与使用方法
 ---
 
-# 6 层 Trait 详解
+# 5 层 Trait 详解
 
-Trait 系统是 mbtgraph 的**架构核心**，它通过 6 层分层设计实现了**算法与存储的完全解耦**。理解这一设计是高效使用本库的关键。
+Trait 系统是 mbtgraph 的**架构核心**，它通过 5 层分层设计实现了**算法与存储的完全解耦**。理解这一设计是高效使用本库的关键。
 
 ## 设计哲学
 
@@ -67,8 +67,8 @@ Layer 0: GraphReadable (基础只读)
     ├── Layer 1B: GraphBatchReadable (批量优化)
     │   └── +2 方法，CSR/CSC 专属
     │
-    └── Layer 1C: GraphEdgeIterable (边排序)
-        └── +1 方法，Kruskal 算法友好
+    └── Layer 2: GraphPartial / GraphFull (可选组合)
+        └── 便捷别名，无需额外方法
 ```
 
 ---
@@ -648,46 +648,6 @@ pub fn[G : @core.GraphBatchReadable] bfs_batch_optimized(
 
 ---
 
-## Layer 1C: GraphEdgeIterable - 边排序支持
-
-> **注意**: 此 Trait 在当前版本中较少使用，主要为未来 Kruskal 等算法预留。
-
-### 定义
-
-```moonbit
-/// 边排序接口
-///
-/// 提供 O(E log E) 的排序边迭代能力，
-/// 为 Kruskal 最小生成树等算法优化。
-pub(open) trait GraphEdgeIterable: GraphReadable {
-  /// 返回按权重排序的所有边
-  sorted_edges(Self) -> Iter[(NodeId, NodeId, Double)]
-}
-```
-
-### 使用场景
-
-```moonbit
-/// Kruskal MST 算法需要按权重排序的边
-pub fn[G : @core.GraphEdgeIterable] kruskal_mst(graph : G) -> Array[(NodeId, NodeId)] {
-  let mut mst_edges = Array::new()
-  let uf = UnionFind::new(@core.GraphReadable::node_count(graph))
-
-  // 使用排序后的边
-  @core.GraphEdgeIterable::sorted_edges(graph)
-    |> iter::each(fn((from, to, weight)) {
-      if (not uf.connected(from, to)) {
-        uf.union(from, to)
-        mst_edges.push((from, to))
-      }
-    })
-
-  mst_edges
-}
-```
-
----
-
 ## Trait 组合策略
 
 ### 如何选择合适的 Trait 约束？
@@ -753,7 +713,6 @@ pub fn demo[G : @core.GraphWritable](graph : G) -> Unit {
 │
 └─ 否 → 只读即可
        ├─ 大规模 (>10万节点)？→ 是 → 使用 GraphBatchReadable (CSR/CSC)
-       ├─ 需要排序边？→ 是 → 使用 GraphEdgeIterable (EdgeList)
        └─ 一般用途 → 使用 GraphReadable (任意存储)
 ```
 
@@ -764,7 +723,6 @@ pub fn demo[G : @core.GraphWritable](graph : G) -> Unit {
 | 交互式编辑 | AdjList | GraphFull | O(1) 增删 |
 | 批量分析 | CSR | GraphBatchReadable | 缓存友好 |
 | 算法竞赛 | Matrix | GraphReadable | O(1) 随机访问 |
-| 内存受限 | EdgeList | GraphEdgeIterable | 紧凑存储 |
 
 ---
 

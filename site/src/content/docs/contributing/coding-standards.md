@@ -43,15 +43,14 @@ description: mbtgraph 项目的 MoonBit 编码约定、Trait 使用规范和 Git
 
 ## Trait 使用规范
 
-mbtgraph 的 6 层 Trait 体系：
+mbtgraph 的 5 层 Trait 体系：
 
 ```
 GraphReadable (只读基础)
 ├── GraphWritable     (可写)
 ├── GraphDirected     (有向)
 │   └── GraphFull    = Writable + Directed
-├── GraphBatchReadable (批量读取，CSR/CSC)
-└── GraphEdgeIterable  (边排序，Kruskal)
+└── GraphBatchReadable (批量读取，CSR/CSC)
 ```
 
 算法实现应使用最通用的 Trait 约束：

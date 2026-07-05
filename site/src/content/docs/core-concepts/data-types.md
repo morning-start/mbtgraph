@@ -389,7 +389,7 @@ let exists : Bool = @core.GraphReadable::contains_node(g, id)
 
 理解了基本数据类型后，接下来学习：
 
-- **[6 层 Trait 详解](/core-concepts/traits/)** - 了解如何通过 Trait 抽象访问这些类型
+- **[5 层 Trait 详解](/core-concepts/traits/)** - 了解如何通过 Trait 抽象访问这些类型
 - **[存储选型指南](/core-concepts/storage-guide/)** - 根据需求选择合适的底层存储
 - **[创建第一个图](/getting-started/first-graph/)** - 动手实践完整示例
 

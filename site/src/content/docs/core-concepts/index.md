@@ -15,7 +15,7 @@ description: mbtgraph 核心概念与使用方法详解
 
 学习图的基本组成元素：
 - [节点与边的表示](/core-concepts/data-types/) - 理解 NodeId、Node、Edge 等核心类型
-- [6 层 Trait 详解](/core-concepts/traits/) - 掌握 Trait 分层架构的设计思想
+- [5 层 Trait 详解](/core-concepts/traits/) - 掌握 Trait 分层架构的设计思想
 - [错误处理机制](/core-concepts/error-handling/) - 学会正确处理图操作中的异常情况
 
 ### 2. 存储结构选型指南
@@ -80,8 +80,7 @@ pub fn[G : @core.GraphReadable] bfs(graph : G, start : NodeId) -> BfsResult { ..
 GraphReadable (只读)
 ├── GraphWritable (可写)
 │   └── GraphFull = Writable + Directed (完全功能)
-├── GraphBatchReadable (批量优化)
-└── GraphEdgeIterable (边排序)
+└── GraphBatchReadable (批量优化)
 ```
 
 **优势**：
