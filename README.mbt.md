@@ -107,7 +107,7 @@ match @traversal.topo_sort_kahn(g) {
 | **I/O 序列化** | DOT 格式 · JSON 格式 · 图统计 | `lib/io` |
 | **图生成器** | 经典图/随机图/网格/二分图 (16 个生成函数) | `algo/generators` |
 
-> 详细 API 文档请查看各模块源码及 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+> 详细 API 文档请查看各模块源码及 [文档站点 → 架构总览](https://morning-start.github.io/mbtgraph/core-concepts/architecture/)
 
 ---
 
@@ -134,7 +134,7 @@ match @traversal.topo_sort_kahn(g) {
           └─────────────────┘
 ```
 
-完整架构设计文档: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+完整架构设计文档: [文档站点 → 架构总览](https://morning-start.github.io/mbtgraph/core-concepts/architecture/)
 
 ---
 
@@ -197,7 +197,7 @@ moon check lib/algo/shortest_path  # 单模块编译检查
 
 **测试策略**: Blackbox (`*_test.mbt`) + Whitebox (`*_wbtest.mbt`) 双轨制，含跨存储一致性验证与结果不可变性验证。
 
-详细测试策略: [docs/test_strategy.md](docs/test_strategy.md)
+详细测试策略: [文档站点 → 测试规范](https://morning-start.github.io/mbtgraph/contributing/testing/)
 
 ---
 

@@ -788,7 +788,7 @@ pub fn demo[G : @core.GraphWritable](graph : G) -> Unit {
     <ul>
       <li>Trait 定义：<a href="https://github.com/your-repo/mbtgraph/blob/main/lib/core/traits.mbt" target="_blank">lib/core/traits.mbt</a></li>
       <li>实现示例：<code>lib/storage/directed_adj_list.mbt</code></li>
-      <li>设计文档：<a href="/docs/design/graph_trait_and_module_architecture/">Trait 设计决策记录</a></li>
+      <li>设计文档：<a href="/mbtgraph/reference/design/graph-trait-architecture/">Trait 设计决策记录</a></li>
     </ul>
   </div>
 </div>

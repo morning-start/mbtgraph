@@ -296,9 +296,9 @@ moon test lib/algo/shortest_path   # 仅最短路径模块
 | 文档 | 路径 | 说明 |
 |------|------|------|
 | README | `README.mbt.md` | 项目入口文档 |
-| 架构设计 | `docs/ARCHITECTURE.md` | 架构总览、Trait 分层 |
+| 架构设计 | [文档站点 → 架构总览](https://morning-start.github.io/mbtgraph/core-concepts/architecture/) | 架构总览、Trait 分层 |
 | 开发规范 | `AGENTS.md` | 编码规范 + Top 10 陷阱 |
-| 路线图 | `docs/ROADMAP.md` | 发展路线图 |
+| 路线图 | [文档站点 → 路线图](https://morning-start.github.io/mbtgraph/about/roadmap/) | 发展路线图 |
 | 变更日志 | `CHANGELOG.md` | 版本变更记录 |
 
 ---
@@ -309,8 +309,8 @@ moon test lib/algo/shortest_path   # 仅最短路径模块
 |------|------|
 | [`AGENTS.md`](AGENTS.md) | 开发规范速查 |
 | [`README.mbt.md`](README.mbt.md) | 库使用文档 |
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | 架构权威文档 |
-| [`docs/ROADMAP.md`](docs/ROADMAP.md) | 路线图 |
+| [`docs/ARCHITECTURE.md`](https://morning-start.github.io/mbtgraph/core-concepts/architecture/) | 架构权威文档 |
+| [`docs/ROADMAP.md`](https://morning-start.github.io/mbtgraph/about/roadmap/) | 路线图 |
 
 ---
 
