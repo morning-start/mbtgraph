@@ -87,7 +87,7 @@ MoonBit 生态系统 (2026)
 |------|:--------:|:--------:|:--------:|:-------:|
 | **语言** | MoonBit ⭐ | Python | Rust | Java |
 | **多后端** | native+wasm+js ⭐ | Python only | Native | JVM only |
-| **wasm 体积** | < 1MB ⭐ | N/A | ~2MB | >50MB |
+| **wasm 体积** | 53 KB（gzip 23 KB）⭐ | N/A | ~2MB | >50MB |
 | **Trait 层数** | 5 层 ⭐ | 3 层 | 3 层 | 4 层 |
 | **存储种类** | 8 种 ⭐ | 4 种 | 5 种 | 6 种 |
 | **纯函数** | ✅ 天然支持 ⭐ | ❌ | 部分 | ❌ |

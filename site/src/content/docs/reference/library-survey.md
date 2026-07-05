@@ -14,7 +14,7 @@ description: 主流图算法库 (NetworkX, petgraph, JGraphT, LEMON) 与 mbtgrap
 | **定位** | 通用图分析 | Rust 标准图库 | 工业级图计算 | 高性能模板库 | MoonBit 生态图算法库 |
 | **性能** | 🟡 中等 | 🟢 高 | 🟡 中等 | 🟢🟢 极高 | 🟢 高 (native/wasm) |
 | **易用性** | 🟢🟢 极高 | 🟡 中等 | 🟡 中等 | 🔴 复杂 | 🟢 高 |
-| **体积** | 大 | ~2MB | 大 (JVM) | 编译时 | **< 1MB** (wasm) |
+| **体积** | 大 | ~2MB | 大 (JVM) | 编译时 | **53 KB** (wasm) |
 
 ---
 
@@ -72,7 +72,7 @@ description: 主流图算法库 (NetworkX, petgraph, JGraphT, LEMON) 与 mbtgrap
 |------|------|
 | **Trait 层数最多** | 5 层（petgraph 3 层 / JGraphT 4 层）|
 | **存储种类最多** | 8 种（petgraph 5 种 / JGraphT 6 种）|
-| **wasm 体积最小** | < 1MB（Python 无法 wasm / JGraphT >50MB）|
+| **wasm 体积最小** | 53 KB（gzip 23 KB）（Python 无法 wasm / JGraphT >50MB）|
 | **三后端支持** | native + wasm + js（竞品多为单后端）|
 | **纯函数语义** | 深拷贝保证无副作用（竞品多可变）|
 | **双轨测试** | 黑盒 + 白盒 768 tests |

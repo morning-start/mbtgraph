@@ -15,7 +15,7 @@ description: mbtgraph 的版本规划、发展路线图和里程碑
   - ✅ 业界领先的 **5 层 Trait 设计**（对标 petgraph 的 3 层）
   - ✅ **8 种存储结构**（比 petgraph 多 2 种）
   - ✅ 原生多后端支持（wasm/js/native）
-  - ✅ 超小体积（wasm < 1MB）
+  - ✅ 超小体积（wasm 53 KB，gzip 后仅 23 KB）
 
 ---
 
