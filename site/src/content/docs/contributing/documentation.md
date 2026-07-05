@@ -55,8 +55,8 @@ description: 简短描述（用于 SEO 和搜索）
 [仅适用于适合动画的算法]
 
 <div class="viz-preview-card">
-  <iframe src="/visualizations/{slug}/" width="100%" height="540" frameborder="0" style="height:540px"></iframe>
-  <a href="/visualizations/{slug}/" target="_blank" class="viz-fullscreen-btn">全屏演示</a>
+  <iframe src="/mbtgraph/visualizations/{slug}/" width="100%" height="540" frameborder="0" style="height:540px"></iframe>
+  <a href="/mbtgraph/visualizations/{slug}/" target="_blank" class="viz-fullscreen-btn">全屏演示</a>
 </div>
 
 ## MoonBit 实现

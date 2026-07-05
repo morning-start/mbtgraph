@@ -16,8 +16,8 @@ description: DFS 增广路搜索，O(VE) 时间复杂度，二分图匹配的经
 ## 动画演示
 
 <div class="viz-preview-card">
-  <iframe src="/visualizations/hungarian/" width="100%" height="540" frameborder="0" style="height:540px"></iframe>
-  <a href="/visualizations/hungarian/" target="_blank" class="viz-fullscreen-btn">
+  <iframe src="/mbtgraph/visualizations/hungarian/" width="100%" height="540" frameborder="0" style="height:540px"></iframe>
+  <a href="/mbtgraph/visualizations/hungarian/" target="_blank" class="viz-fullscreen-btn">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
     全屏演示
   </a>
