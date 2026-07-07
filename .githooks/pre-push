@@ -15,6 +15,13 @@ set -o pipefail
 REMOTE="${1:-origin}"
 URL="${2:-}"
 
+# Skip checks for tag pushes
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if printf '%s' "$local_ref" | grep -q '^refs/tags/'; then
+    exit 0
+  fi
+done
+
 # Check that at least one .mbt/.mbti file exists in the repo (skip for empty repos)
 if ! git ls-files -- '*.mbt' '*.mbti' | grep -q .; then
   exit 0
