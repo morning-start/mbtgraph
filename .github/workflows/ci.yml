@@ -26,6 +26,9 @@ jobs:
       - name: Check formatting
         run: moon fmt --check
 
+      - name: Format and diff check
+        run: moon fmt && git diff --exit-code
+
       - name: Type check (no warnings)
         run: moon check 2>&1 | tee /tmp/moon-check.log && (! grep -iE "Warning.*deprecated|Bench::new" /tmp/moon-check.log || exit 1)
 
