@@ -6,9 +6,9 @@ Enforces security, formatting, compile-time correctness, and commit conventions.
 
 | Hook       | Trigger     | What it checks                                          | Time   |
 |------------|-------------|---------------------------------------------------------|--------|
-| `pre-commit` | `git commit`  | Security scan · `moon fmt` · `moon info` · `moon check` (deprecations) | ~5s   |
+| `pre-commit` | `git commit`  | Security scan · `moon fmt` · `moon info` · `moon check` | ~5s   |
 | `commit-msg` | `git commit`  | Conventional Commits format                             | instant |
-| `pre-push`   | `git push`    | `moon check` · `moon test` (full suite, ~30s)           | ~35s   |
+| `pre-push`   | `git push`    | `moon check` · `moon test` (tag pushes skipped)         | ~35s   |
 
 ## Setup
 
