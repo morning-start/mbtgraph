@@ -19,6 +19,12 @@
       "skillPath": "moonbit-skills/SKILL.md",
       "computedHash": "cca42be0e53955d63dcf45ce9712c2744852ef9cdc2da4371810db947f93a1e3"
     },
+    "osc2026-guide": {
+      "source": "Milky2018/osc2026-guide",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "0a18ecf99f6467f1ebf94cdf42d29f1dd65e36db299b37fa72aaee30d1afbb65"
+    },
     "software-design": {
       "source": "morning-start/agent-skills",
       "sourceType": "github",
