@@ -1,9 +1,6 @@
 // 匹配算法示例
 // 演示匈牙利算法、Hopcroft-Karp 算法和 Edmonds Blossom 算法的使用
 
-import "morning-start/mbtgraph/lib/core" as @core
-import "morning-start/mbtgraph/lib/storage" as @storage
-import "morning-start/mbtgraph/lib/algo/matching" as @matching
 
 /// 创建示例图：二部图匹配（任务分配）
 ///
@@ -20,7 +17,7 @@ import "morning-start/mbtgraph/lib/algo/matching" as @matching
 ///     |   /
 ///     3 --- 5
 ///
-fn create_bipartite_graph() -> UndirectedAdjList {
+fn create_bipartite_graph() -> @storage.UndirectedAdjList {
   let g = @storage.new_undirected()
 
   // 添加 8 个节点
@@ -48,7 +45,7 @@ fn create_bipartite_graph() -> UndirectedAdjList {
 }
 
 /// 示例 1: Hopcroft-Karp 二部图匹配
-fn hopcroft_karp_example() {
+fn hopcroft_karp_example() -> Unit {
   println("=== Hopcroft-Karp 二部图匹配 ===\n")
 
   let g = create_bipartite_graph()
@@ -87,7 +84,7 @@ fn hopcroft_karp_example() {
 }
 
 /// 示例 2: 加权二部图匹配（Hungarian/KM）
-fn hungarian_example() {
+fn hungarian_example() -> Unit {
   println("\n=== Hungarian (Kuhn-Munkres) 加权匹配 ===\n")
 
   println("权重矩阵（工人-任务效率）:")
@@ -119,7 +116,7 @@ fn hungarian_example() {
 }
 
 /// 示例 3: 一般图最大匹配（Edmonds Blossom）
-fn edmonds_example() {
+fn edmonds_example() -> Unit {
   println("\n=== Edmonds Blossom 一般图最大匹配 ===\n")
 
   // 创建一般图（非二部图）
@@ -154,7 +151,7 @@ fn edmonds_example() {
 }
 
 /// 示例 4: 比较匹配算法
-fn compare_matching_algorithms() {
+fn compare_matching_algorithms() -> Unit {
   println("\n=== 比较匹配算法 ===\n")
 
   let g = create_bipartite_graph()
@@ -181,7 +178,7 @@ fn compare_matching_algorithms() {
 }
 
 /// 主函数
-fn main {
+fn test_matching() -> Unit {
   hopcroft_karp_example()
   hungarian_example()
   edmonds_example()

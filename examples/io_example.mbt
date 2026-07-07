@@ -1,12 +1,9 @@
 // I/O 示例
 // 演示 DOT 和 JSON 格式的序列化/反序列化
 
-import "morning-start/mbtgraph/lib/core" as @core
-import "morning-start/mbtgraph/lib/storage" as @storage
-import "morning-start/mbtgraph/lib/io" as @io
 
 /// 创建示例图：简单有向图
-fn create_sample_graph() -> DirectedAdjList {
+fn create_sample_graph() -> @storage.DirectedAdjList {
   let g = @storage.new_directed()
 
   // 添加节点
@@ -30,7 +27,7 @@ fn create_sample_graph() -> DirectedAdjList {
 }
 
 /// 示例 1: 导出为 DOT 格式
-fn export_dot_example() {
+fn export_dot_example() -> Unit {
   println("=== 导出 DOT 格式 ===\n")
 
   let g = create_sample_graph()
@@ -43,7 +40,7 @@ fn export_dot_example() {
 }
 
 /// 示例 2: 导出为 JSON 格式
-fn export_json_example() {
+fn export_json_example() -> Unit {
   println("\n=== 导出 JSON 格式 ===\n")
 
   let g = create_sample_graph()
@@ -56,7 +53,7 @@ fn export_json_example() {
 }
 
 /// 示例 3: 图统计信息
-fn graph_stats_example() {
+fn graph_stats_example() -> Unit {
   println("\n=== 图统计信息 ===\n")
 
   let g = create_sample_graph()
@@ -110,7 +107,7 @@ fn graph_stats_example() {
 }
 
 /// 示例 4: 解析 DOT 格式
-fn parse_dot_example() {
+fn parse_dot_example() -> Unit {
   println("\n=== 解析 DOT 格式 ===\n")
 
   // DOT 格式字符串
@@ -152,7 +149,7 @@ fn parse_dot_example() {
 }
 
 /// 示例 5: 解析 JSON 格式
-fn parse_json_example() {
+fn parse_json_example() -> Unit {
   println("\n=== 解析 JSON 格式 ===\n")
 
   // JSON 格式字符串
@@ -190,7 +187,7 @@ fn parse_json_example() {
 }
 
 /// 主函数
-fn main {
+fn test_io_example() -> Unit {
   export_dot_example()
   export_json_example()
   graph_stats_example()

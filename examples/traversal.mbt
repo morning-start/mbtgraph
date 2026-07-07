@@ -1,10 +1,7 @@
 // 图遍历示例
 // 演示 BFS 和 DFS 算法的使用
 
-import "morning-start/mbtgraph/lib/core" as @core
-import "morning-start/mbtgraph/lib/storage" as @storage
-import "morning-start/mbtgraph/lib/algo/traversal" as @traversal
-
+///|
 /// 创建示例图：社交网络
 ///
 ///       (0)
@@ -13,7 +10,7 @@ import "morning-start/mbtgraph/lib/algo/traversal" as @traversal
 ///    / \   |   \
 ///  (4) (5) (6) (7)
 ///
-fn create_social_network() -> DirectedAdjList {
+fn create_social_network() -> @storage.DirectedAdjList {
   let g = @storage.new_directed()
 
   // 添加节点
@@ -42,8 +39,9 @@ fn create_social_network() -> DirectedAdjList {
   g
 }
 
+///|
 /// 创建带环的图
-fn create_graph_with_cycle() -> DirectedAdjList {
+fn create_graph_with_cycle() -> @storage.DirectedAdjList {
   let g = @storage.new_directed()
 
   // 添加节点
@@ -62,13 +60,14 @@ fn create_graph_with_cycle() -> DirectedAdjList {
   let _ = @core.GraphWritable::add_edge(g, n1, n2, 1.0)
   let _ = @core.GraphWritable::add_edge(g, n2, n3, 1.0)
   let _ = @core.GraphWritable::add_edge(g, n3, n4, 1.0)
-  let _ = @core.GraphWritable::add_edge(g, n4, n1, 1.0)  // 环: 1->2->3->4->1
+  let _ = @core.GraphWritable::add_edge(g, n4, n1, 1.0) // 环: 1->2->3->4->1
 
   g
 }
 
+///|
 /// 示例 1: BFS 广度优先搜索
-fn bfs_example() {
+fn bfs_example() -> Unit {
   println("=== BFS 广度优先搜索 ===\n")
 
   let g = create_social_network()
@@ -94,8 +93,9 @@ fn bfs_example() {
   println("\n到节点 7 的路径: \{path}")
 }
 
+///|
 /// 示例 2: BFS 最短路径
-fn bfs_shortest_path_example() {
+fn bfs_shortest_path_example() -> Unit {
   println("\n=== BFS 最短路径（无权图） ===\n")
 
   let g = create_social_network()
@@ -114,8 +114,9 @@ fn bfs_shortest_path_example() {
   }
 }
 
+///|
 /// 示例 3: DFS 深度优先搜索
-fn dfs_example() {
+fn dfs_example() -> Unit {
   println("\n=== DFS 深度优先搜索 ===\n")
 
   let g = create_social_network()
@@ -132,13 +133,16 @@ fn dfs_example() {
   for i in 0..<8 {
     let node = @core.NodeId(i)
     if result.base.is_visited(node) {
-      println("  节点 \{i}: 进入=\{result.entry_time[i]}, 退出=\{result.exit_time[i]}")
+      println(
+        "  节点 \{i}: 进入=\{result.entry_time[i]}, 退出=\{result.exit_time[i]}",
+      )
     }
   }
 }
 
+///|
 /// 示例 4: 环检测
-fn cycle_detection_example() {
+fn cycle_detection_example() -> Unit {
   println("\n=== 环检测 ===\n")
 
   // 无环图
@@ -156,8 +160,9 @@ fn cycle_detection_example() {
   println("有向图有环? \{has_directed_cycle}")
 }
 
+///|
 /// 示例 5: 拓扑排序
-fn topological_sort_example() {
+fn topological_sort_example() -> Unit {
   println("\n=== 拓扑排序 ===\n")
 
   // 创建 DAG（有向无环图）
@@ -174,10 +179,10 @@ fn topological_sort_example() {
   let n2 = @core.NodeId(2)
   let n3 = @core.NodeId(3)
 
-  let _ = @core.GraphWritable::add_edge(g, n0, n1, 1.0)  // 0 -> 1
-  let _ = @core.GraphWritable::add_edge(g, n0, n2, 1.0)  // 0 -> 2
-  let _ = @core.GraphWritable::add_edge(g, n1, n3, 1.0)  // 1 -> 3
-  let _ = @core.GraphWritable::add_edge(g, n2, n3, 1.0)  // 2 -> 3
+  let _ = @core.GraphWritable::add_edge(g, n0, n1, 1.0) // 0 -> 1
+  let _ = @core.GraphWritable::add_edge(g, n0, n2, 1.0) // 0 -> 2
+  let _ = @core.GraphWritable::add_edge(g, n1, n3, 1.0) // 1 -> 3
+  let _ = @core.GraphWritable::add_edge(g, n2, n3, 1.0) // 2 -> 3
 
   // Kahn 算法
   match @traversal.topo_sort_kahn(g) {
@@ -190,13 +195,12 @@ fn topological_sort_example() {
 
   // DFS 算法
   match @traversal.topo_sort_dfs(g) {
-    Ok(order) => {
-      println("DFS 拓扑排序结果: \{order}")
-    }
+    Ok(order) => println("DFS 拓扑排序结果: \{order}")
     Err(msg) => println("图有环: \{msg}")
   }
 }
 
+///|
 /// 主函数
 fn main {
   bfs_example()

@@ -1,9 +1,6 @@
 // 最小生成树示例
 // 演示 Kruskal 和 Prim 算法的使用
 
-import "morning-start/mbtgraph/lib/core" as @core
-import "morning-start/mbtgraph/lib/storage" as @storage
-import "morning-start/mbtgraph/lib/algo/mst" as @mst
 
 /// 创建示例图：电网连接
 ///
@@ -14,7 +11,7 @@ import "morning-start/mbtgraph/lib/algo/mst" as @mst
 ///     (3)---5---(4)---1---(5)
 ///
 /// 边权重表示建设成本（万元）
-fn create_power_grid() -> UndirectedAdjList {
+fn create_power_grid() -> @storage.UndirectedAdjList {
   let g = @storage.new_undirected()
 
   // 添加节点 (0-5)
@@ -45,7 +42,7 @@ fn create_power_grid() -> UndirectedAdjList {
 }
 
 /// 示例 1: Kruskal 最小生成树
-fn kruskal_example() {
+fn kruskal_example() -> Unit {
   println("=== Kruskal 最小生成树 ===\n")
 
   let g = create_power_grid()
@@ -66,7 +63,7 @@ fn kruskal_example() {
 }
 
 /// 示例 2: Prim 最小生成树
-fn prim_example() {
+fn prim_example() -> Unit {
   println("\n=== Prim 最小生成树 ===\n")
 
   let g = create_power_grid()
@@ -87,7 +84,7 @@ fn prim_example() {
 }
 
 /// 示例 3: 检查边是否在 MST 中
-fn mst_membership_example() {
+fn mst_membership_example() -> Unit {
   println("\n=== MST 边成员检查 ===\n")
 
   let g = create_power_grid()
@@ -106,7 +103,7 @@ fn mst_membership_example() {
 }
 
 /// 主函数
-fn main {
+fn test_mst() -> Unit {
   kruskal_example()
   prim_example()
   mst_membership_example()

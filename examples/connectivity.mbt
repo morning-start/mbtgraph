@@ -1,17 +1,14 @@
 // 连通性示例
 // 演示连通分量和强连通分量算法的使用
 
-import "morning-start/mbtgraph/lib/core" as @core
-import "morning-start/mbtgraph/lib/storage" as @storage
-import "morning-start/mbtgraph/lib/algo/connectivity" as @connectivity
-
+///|
 /// 创建示例图：无向图（多个连通分量）
 ///
 ///   (0)---(1)     (2)---(3)
 ///    |     |       |
 ///   (4)   (5)     (6)
 ///
-fn create_undirected_graph() -> UndirectedAdjList {
+fn create_undirected_graph() -> @storage.UndirectedAdjList {
   let g = @storage.new_undirected()
 
   // 添加节点
@@ -40,6 +37,7 @@ fn create_undirected_graph() -> UndirectedAdjList {
   g
 }
 
+///|
 /// 创建示例图：有向图（强连通分量）
 ///
 ///   (0) → (1) → (2)
@@ -48,7 +46,7 @@ fn create_undirected_graph() -> UndirectedAdjList {
 ///
 ///   (6) → (7)
 ///
-fn create_directed_graph() -> DirectedAdjList {
+fn create_directed_graph() -> @storage.DirectedAdjList {
   let g = @storage.new_directed()
 
   // 添加节点
@@ -81,8 +79,9 @@ fn create_directed_graph() -> DirectedAdjList {
   g
 }
 
+///|
 /// 示例 1: 无向图连通分量
-fn connected_components_example() {
+fn connected_components_example() -> Unit {
   println("=== 无向图连通分量 ===\n")
 
   let g = create_undirected_graph()
@@ -105,8 +104,9 @@ fn connected_components_example() {
   }
 }
 
+///|
 /// 示例 2: Tarjan 强连通分量
-fn tarjan_scc_example() {
+fn tarjan_scc_example() -> Unit {
   println("\n=== Tarjan 强连通分量 ===\n")
 
   let g = create_directed_graph()
@@ -118,7 +118,11 @@ fn tarjan_scc_example() {
   println("\n各强连通分量:")
   for i in 0..<result.count() {
     let component = result.components[i]
-    println("  SCC \{i}: \{component}")
+    let mut ids = ""
+    for j in 0..<component.length() {
+      ids = ids + component[j].0.to_string() + " "
+    }
+    println("  SCC \{i}: [\{ids}]")
   }
 
   println("\n节点所属 SCC:")
@@ -129,8 +133,9 @@ fn tarjan_scc_example() {
   }
 }
 
+///|
 /// 示例 3: Kosaraju 强连通分量
-fn kosaraju_scc_example() {
+fn kosaraju_scc_example() -> Unit {
   println("\n=== Kosaraju 强连通分量 ===\n")
 
   let g = create_directed_graph()
@@ -139,15 +144,19 @@ fn kosaraju_scc_example() {
   let result = @connectivity.kosaraju_scc(g)
 
   println("强连通分量数量: \{result.count()}")
-  println("\n各强连通分量:")
   for i in 0..<result.count() {
     let component = result.components[i]
-    println("  SCC \{i}: \{component}")
+    let mut ids = ""
+    for j in 0..<component.length() {
+      ids = ids + component[j].0.to_string() + " "
+    }
+    println("  SCC \{i}: [\{ids}]")
   }
 }
 
+///|
 /// 主函数
-fn main {
+fn test_connectivity() -> Unit {
   connected_components_example()
   tarjan_scc_example()
   kosaraju_scc_example()

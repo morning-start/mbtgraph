@@ -1,10 +1,7 @@
 // 图着色示例
 // 演示贪心着色、DSATUR 和精确色数算法的使用
 
-import "morning-start/mbtgraph/lib/core" as @core
-import "morning-start/mbtgraph/lib/storage" as @storage
-import "morning-start/mbtgraph/lib/algo/coloring" as @coloring
-
+///|
 /// 创建示例图：地图着色（澳大利亚）
 ///
 ///     WA --- NT --- SA --- Q --- NSW
@@ -19,7 +16,7 @@ import "morning-start/mbtgraph/lib/algo/coloring" as @coloring
 ///
 /// WA: 西澳大利亚, NT: 北领地, SA: 南澳大利亚
 /// Q: 昆士兰, NSW: 新南威尔士, VIC: 维多利亚
-fn create_australia_map() -> UndirectedAdjList {
+fn create_australia_map() -> @storage.UndirectedAdjList {
   let g = @storage.new_undirected()
 
   // 添加 6 个节点（州）
@@ -29,29 +26,75 @@ fn create_australia_map() -> UndirectedAdjList {
 
   // 添加边界（边）
   // WA-NT, WA-SA
-  let _ = @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
-  let _ = @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(2), 1.0)
+  let _ = @core.GraphWritable::add_edge(
+    g,
+    @core.NodeId(0),
+    @core.NodeId(1),
+    1.0,
+  )
+  let _ = @core.GraphWritable::add_edge(
+    g,
+    @core.NodeId(0),
+    @core.NodeId(2),
+    1.0,
+  )
 
   // NT-SA, NT-Q
-  let _ = @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
-  let _ = @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(3), 1.0)
+  let _ = @core.GraphWritable::add_edge(
+    g,
+    @core.NodeId(1),
+    @core.NodeId(2),
+    1.0,
+  )
+  let _ = @core.GraphWritable::add_edge(
+    g,
+    @core.NodeId(1),
+    @core.NodeId(3),
+    1.0,
+  )
 
   // SA-Q, SA-NSW, SA-VIC
-  let _ = @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
-  let _ = @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(4), 1.0)
-  let _ = @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(5), 1.0)
+  let _ = @core.GraphWritable::add_edge(
+    g,
+    @core.NodeId(2),
+    @core.NodeId(3),
+    1.0,
+  )
+  let _ = @core.GraphWritable::add_edge(
+    g,
+    @core.NodeId(2),
+    @core.NodeId(4),
+    1.0,
+  )
+  let _ = @core.GraphWritable::add_edge(
+    g,
+    @core.NodeId(2),
+    @core.NodeId(5),
+    1.0,
+  )
 
   // Q-NSW
-  let _ = @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(4), 1.0)
+  let _ = @core.GraphWritable::add_edge(
+    g,
+    @core.NodeId(3),
+    @core.NodeId(4),
+    1.0,
+  )
 
   // NSW-VIC
-  let _ = @core.GraphWritable::add_edge(g, @core.NodeId(4), @core.NodeId(5), 1.0)
+  let _ = @core.GraphWritable::add_edge(
+    g,
+    @core.NodeId(4),
+    @core.NodeId(5),
+    1.0,
+  )
 
   g
 }
 
+///|
 /// 创建示例图：奇环（需要 3 种颜色）
-fn create_odd_cycle() -> UndirectedAdjList {
+fn create_odd_cycle() -> @storage.UndirectedAdjList {
   let g = @storage.new_undirected()
 
   // 添加 5 个节点（五边形）
@@ -60,17 +103,46 @@ fn create_odd_cycle() -> UndirectedAdjList {
   }
 
   // 添加环边
-  let _ = @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
-  let _ = @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(2), 1.0)
-  let _ = @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(3), 1.0)
-  let _ = @core.GraphWritable::add_edge(g, @core.NodeId(3), @core.NodeId(4), 1.0)
-  let _ = @core.GraphWritable::add_edge(g, @core.NodeId(4), @core.NodeId(0), 1.0)
+  let _ = @core.GraphWritable::add_edge(
+    g,
+    @core.NodeId(0),
+    @core.NodeId(1),
+    1.0,
+  )
+  let _ = @core.GraphWritable::add_edge(
+    g,
+    @core.NodeId(1),
+    @core.NodeId(2),
+    1.0,
+  )
+  let _ = @core.GraphWritable::add_edge(
+    g,
+    @core.NodeId(2),
+    @core.NodeId(3),
+    1.0,
+  )
+  let _ = @core.GraphWritable::add_edge(
+    g,
+    @core.NodeId(3),
+    @core.NodeId(4),
+    1.0,
+  )
+  let _ = @core.GraphWritable::add_edge(
+    g,
+    @core.NodeId(4),
+    @core.NodeId(0),
+    1.0,
+  )
 
   g
 }
 
+///|
 /// 打印着色结果
-fn print_coloring_result(name: String, result: ColoringResult) {
+fn print_coloring_result(
+  name : String,
+  result : @coloring.ColoringResult,
+) -> Unit {
   println("\{name}:")
   println("  使用颜色数: \{result.num_colors}")
   println("  着色有效: \{result.is_valid}")
@@ -86,8 +158,9 @@ fn print_coloring_result(name: String, result: ColoringResult) {
   }
 }
 
+///|
 /// 示例 1: 贪心着色
-fn greedy_coloring_example() {
+fn greedy_coloring_example() -> Unit {
   println("=== 贪心着色算法 ===\n")
 
   let g = create_australia_map()
@@ -98,8 +171,9 @@ fn greedy_coloring_example() {
   print_coloring_result("贪心着色", result)
 }
 
+///|
 /// 示例 2: Welsh-Powell 着色
-fn welsh_powell_example() {
+fn welsh_powell_example() -> Unit {
   println("\n=== Welsh-Powell 着色算法 ===\n")
 
   let g = create_australia_map()
@@ -110,8 +184,9 @@ fn welsh_powell_example() {
   print_coloring_result("Welsh-Powell 着色", result)
 }
 
+///|
 /// 示例 3: DSATUR 着色
-fn dsatur_example() {
+fn dsatur_example() -> Unit {
   println("\n=== DSATUR 着色算法 ===\n")
 
   let g = create_australia_map()
@@ -122,8 +197,9 @@ fn dsatur_example() {
   print_coloring_result("DSATUR 着色", result)
 }
 
+///|
 /// 示例 4: 精确色数
-fn exact_chromatic_example() {
+fn exact_chromatic_example() -> Unit {
   println("\n=== 精确色数算法 ===\n")
 
   // 使用五边形（需要 3 种颜色）
@@ -141,15 +217,14 @@ fn exact_chromatic_example() {
   println("  是否精确: \{result.exact}")
 
   match result.optimal_coloring {
-    Some(colors) => {
-      println("  最优着色: \{colors}")
-    }
+    Some(colors) => println("  最优着色: \{colors}")
     None => println("  未找到最优着色")
   }
 }
 
+///|
 /// 示例 5: 边着色
-fn edge_coloring_example() {
+fn edge_coloring_example() -> Unit {
   println("\n=== 边着色算法 ===\n")
 
   // 创建完全图 K4
@@ -161,8 +236,13 @@ fn edge_coloring_example() {
 
   // K4 的所有边
   for i in 0..<4 {
-    for j in i + 1..<4 {
-      let _ = @core.GraphWritable::add_edge(g, @core.NodeId(i), @core.NodeId(j), 1.0)
+    for j in (i + 1)..<4 {
+      let _ = @core.GraphWritable::add_edge(
+        g,
+        @core.NodeId(i),
+        @core.NodeId(j),
+        1.0,
+      )
     }
   }
 
@@ -178,15 +258,16 @@ fn edge_coloring_example() {
 
   println("\n各边颜色:")
   for i in 0..<4 {
-    for j in i + 1..<4 {
+    for j in (i + 1)..<4 {
       let color = result.edge_color(@core.NodeId(i), @core.NodeId(j))
       println("  (\{i}, \{j}): 颜色 \{color}")
     }
   }
 }
 
+///|
 /// 示例 6: 比较着色算法
-fn compare_coloring_algorithms() {
+fn compare_coloring_algorithms() -> Unit {
   println("\n=== 比较着色算法 ===\n")
 
   let g = create_australia_map()
@@ -211,8 +292,9 @@ fn compare_coloring_algorithms() {
   }
 }
 
+///|
 /// 主函数
-fn main {
+fn test_coloring() -> Unit {
   greedy_coloring_example()
   welsh_powell_example()
   dsatur_example()
