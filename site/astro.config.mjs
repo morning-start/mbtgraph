@@ -101,7 +101,7 @@ export default defineConfig({
 							label: '图的数据结构',
 							items: [
 								{ label: '节点与边的表示', link: '/core-concepts/data-types' },
-								{ label: '6 层 Trait 详解', link: '/core-concepts/traits' },
+								{ label: '5 层 Trait 详解', link: '/core-concepts/traits' },
 								{ label: '错误处理机制', link: '/core-concepts/error-handling' },
 							],
 						},

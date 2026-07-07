@@ -1,6 +1,6 @@
 # core — 核心类型与 Trait
 
-> **定位**: 基础类型定义 (`NodeId`, `Node`, `Edge`) + 6 层 Trait 分层
+> **定位**: 基础类型定义 (`NodeId`, `Node`, `Edge`) + 5 层 Trait 分层
 
 ---
 

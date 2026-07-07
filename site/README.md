@@ -144,7 +144,7 @@ GraphReadable::node_count(graph)
 | 文件 | 内容 | 最低行数 |
 |------|------|---------|
 | `data-types.md` | NodeId/Node/Edge/Weight | ≥400 |
-| `traits.md` | 6 层 Trait 设计原理 | ≥700 |
+| `traits.md` | 5 层 Trait 设计原理 | ≥700 |
 | `storage-guide.md` | 8 种存储选型 | ≥600 |
 | `building-graphs.md` | 图构建方法与最佳实践 | ≥700 |
 | `graph-operations.md` | CRUD 操作完整参考 | ≥900 |

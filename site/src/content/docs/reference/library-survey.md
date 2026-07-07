@@ -75,4 +75,4 @@ description: 主流图算法库 (NetworkX, petgraph, JGraphT, LEMON) 与 mbtgrap
 | **wasm 体积最小** | 53 KB（gzip 23 KB）（Python 无法 wasm / JGraphT >50MB）|
 | **三后端支持** | native + wasm + js（竞品多为单后端）|
 | **纯函数语义** | 深拷贝保证无副作用（竞品多可变）|
-| **双轨测试** | 黑盒 + 白盒 768 tests |
+| **双轨测试** | 黑盒 + 白盒 772 tests |
