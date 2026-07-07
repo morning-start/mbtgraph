@@ -36,9 +36,11 @@ jobs:
         uses: ./.github/actions/moonbit
 
       - name: Write credentials
+        env:
+          MOONCAKES_CREDS: ${{ secrets.MOONCAKES_CREDS }}
         run: |
           mkdir -p ~/.moon
-          echo "${{ secrets.MOONCAKES_CREDS }}" > ~/.moon/credentials.json
+          printf '%s' "$MOONCAKES_CREDS" > ~/.moon/credentials.json
 
       - name: Publish
         run: moon publish
