@@ -3,6 +3,13 @@
 pub(all) struct NodeId(Int) derive(Debug, Eq)
 
 ///|
+/// 转换为字符串（直接数字表示）
+pub fn NodeId::to_string(self : NodeId) -> String {
+  let NodeId(val) = self
+  val.to_string()
+}
+
+///|
 /// 带数据的节点
 ///
 /// MVP 阶段数据固定为 `Double`，后续可泛型化为 `Node[T]`

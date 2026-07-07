@@ -32,6 +32,20 @@
 moon add morning-start/mbtgraph
 ```
 
+安装后，还需要在使用这些 API 的目标包 `moon.pkg` 中（而非 `.mbt` 源文件中）添加依赖：
+
+```moonbit
+// 在 moon.pkg 中添加以下依赖：
+import {
+  "morning-start/mbtgraph/lib/core",
+  "morning-start/mbtgraph/lib/storage",
+  "morning-start/mbtgraph/lib/algo/traversal",
+  "morning-start/mbtgraph/lib/algo/shortest_path",
+}
+```
+
+然后在 `.mbt` 源文件中直接使用 `@core`、`@storage` 等别名，无需 `import` 语句：
+
 ```moonbit
 // 1. 创建图 → 2. 跑算法 → 3. 拿结果
 let g = @storage.new_directed()
@@ -49,7 +63,7 @@ let bfs_result = @traversal.bfs(g, n0)
 bfs_result.distance(n3)              // => 2
 
 // Dijkstra 最短路径
-let sp_result = @sp.dijkstra(g, n0)
+let sp_result = @shortest_path.dijkstra(g, n0)
 sp_result.distance_to(n3)           // => 4.0
 ```
 
