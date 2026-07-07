@@ -20,7 +20,7 @@ jobs:
       - name: Write credentials
         run: |
           mkdir -p ~/.moon
-          echo '${{ secrets.MOONCAKES_TOKEN }}' > ~/.moon/credentials.json
+          echo '${{ secrets.MOONCAKES_CREDS }}' > ~/.moon/credentials.json
 
       - name: Check formatting
         run: moon fmt --check
