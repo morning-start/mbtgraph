@@ -79,10 +79,10 @@ tags: ["contributing", "guide", "development"]
 git clone https://github.com/YOUR_USERNAME/mbtgraph.git
 cd mbtgraph
 
-# 2. 验证环境（736 tests 全通过）
+# 2. 验证环境（772 tests 全通过）
 moon test
 
-# 3. 配置 Git Hooks（pre-commit 含 fmt+info+check+test）
+# 3. 配置 Git Hooks（pre-commit: fmt+info+check, pre-push: check+test）
 git config core.hooksPath .githooks
 
 # 4. 安装 Python 测试生成依赖（可选，用于扩展测试）
@@ -97,7 +97,7 @@ cd tests && uv sync && cd ..
 lib/
 ├── core/                      # 核心抽象层
 │   ├── types.mbt             # NodeId / Node / Edge 基础类型
-│   ├── traits.mbt            # 6 层 Trait 分层体系
+│   ├── traits.mbt            # 5 层 Trait 分层体系
 │   └── error.mbt             # GraphError 错误类型
 │
 ├── storage/                   # 存储实现层 (8 种)
@@ -188,13 +188,22 @@ feature/* (特性分支)
 
 **本地 pre-commit（每次提交自动运行）：**
 1. Security scan — 检测密钥/凭证
-2. `moon fmt` — 格式化
-3. `moon info` — 更新 .mbti 接口
-4. `moon check` — 编译检查
-5. `moon test` — 运行所有测试
+2. `moon fmt` — 格式化 + 自动重新 stage
+3. `moon info` — 更新 .mbti 接口文件 + 自动重新 stage
+4. `moon check` — 编译检查（含弃用警告拦截）
+
+**本地 pre-push（每次推送自动运行）：**
+5. `moon check` — 编译检查（含弃用警告拦截）
+6. `moon test` — 运行全量 772 测试
+
+**本地 commit-msg（每次提交自动检查）：**
+7. Conventional Commits 格式校验
 
 **GitHub CI（PR 合并前必须通过）：**
-- `moon fmt --check` + `moon check` + `moon test`
+- `moon fmt --check`
+- `moon fmt && git diff --exit-code`（格式一致性门禁）
+- `moon check`（编译 + 弃用警告拦截）
+- `moon test`（全量测试 + 弃用警告拦截）
 - Bun 构建 site
 
 **分支保护（master）：**
@@ -284,7 +293,7 @@ uv run python gen/gen_tests.py     # 生成 MoonBit 测试文件
 ### 运行测试
 
 ```bash
-moon test                          # 全量测试 (736 tests)
+moon test                          # 全量测试 (772 tests)
 moon test lib/algo/integration     # 仅随机图集成测试
 moon test lib/algo/shortest_path   # 仅最短路径模块
 ```
@@ -314,4 +323,4 @@ moon test lib/algo/shortest_path   # 仅最短路径模块
 
 ---
 
-**最后更新**: 2026-07-03 | **适用版本**: v0.1.1+ | **测试基线**: 940 tests passed
+**最后更新**: 2026-07-07 | **适用版本**: v0.1.1+ | **测试基线**: 772 tests passed

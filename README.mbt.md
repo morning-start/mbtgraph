@@ -7,7 +7,7 @@
 <p align="center">
   <a href="https://github.com/morning-start/mbtgraph/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/morning-start/mbtgraph/ci.yml?branch=master&label=build" alt="build status"></a>
   <a href="https://github.com/morning-start/mbtgraph/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="license"></a>
-  <img src="https://img.shields.io/badge/tests-768-green" alt="tests">
+  <img src="https://img.shields.io/badge/tests-772-green" alt="tests">
   <img src="https://img.shields.io/badge/algorithms-65%2B-brightgreen" alt="algorithms">
   <img src="https://img.shields.io/badge/MoonBit-0.1.20260608-purple" alt="moonbit">
 </p>
@@ -68,7 +68,7 @@ sp_result.distance_to(n3)           // => 4.0
 | 网络流 → 最大流量         | `dinic(net, s, t)`          | 手写 Dinic 150+ 行         |
 | 图可视化 → 导出 DOT       | `write_dot(g, "graph.dot")` | 手写 DOT 序列化 40+ 行     |
 
-**覆盖 19 个模块 · 65+ 算法 · 8 种存储结构 —— 所有主流图算法开箱即用。**
+**覆盖 18 个模块 · 65+ 算法 · 8 种存储结构 —— 所有主流图算法开箱即用。**
 
 ---
 
@@ -77,11 +77,11 @@ sp_result.distance_to(n3)           // => 4.0
 | 维度           | 自己从零写                 | 用 mbtgraph                                       |
 | -------------- | -------------------------- | ------------------------------------------------- |
 | **时间成本**   | 每个算法 30-200 行 + debug | **一行函数调用**                                  |
-| **测试覆盖**   | 你自己写几个 case          | **768 个测试**（黑盒 + 白盒 + NetworkX 交叉验证） |
+| **测试覆盖**   | 你自己写几个 case          | **772 个测试**（黑盒 + 白盒 + NetworkX 交叉验证） |
 | **存储选型**   | 写死一种结构，换场景重写   | **8 种存储**切换，只需改一行构造函数              |
 | **跨存储兼容** | 不存在，换存储要重写算法   | **5 层 Trait 隔离**，算法与存储完全解耦           |
 | **性能保证**   | 可能 O(n²) 而不自知        | 经过基准测试的工业实现                            |
-| **bug 风险**   | 你的算法只有你知道         | 768 测试 + CI 门禁                                |
+| **bug 风险**   | 你的算法只有你知道         | 772 测试 + CI 门禁                                |
 
 ---
 
@@ -95,7 +95,7 @@ sp_result.distance_to(n3)           // => 4.0
 | 算法数     |    2     |       0        |    **65+**     |
 | 存储种类   |    0     |       1        |     **8**      |
 | Trait 层数 |    1     |       0        |     **5**      |
-| 测试       |   ~10    | fixture parity |    **768**     |
+| 测试       |   ~10    | fixture parity |    **772**     |
 
 ### 跨语言对比
 
@@ -127,7 +127,7 @@ sp_result.distance_to(n3)           // => 4.0
 ## 🧪 测试说了算
 
 ```bash
-moon test              # 全量 768 测试，秒级通过
+moon test              # 全量 772 测试，秒级通过
 moon test lib/algo/flow  # 只跑网络流模块
 ```
 
@@ -142,7 +142,7 @@ moon test lib/algo/flow  # 只跑网络流模块
 | 版本              | 重点                       |   状态    |
 | ----------------- | -------------------------- | :-------: |
 | **v0.1.0**        | 65+ 核心算法完成           |    ✅     |
-| **v0.1.1** ← 当前 | 19 模块补齐 + 文档站点上线 |    ✅     |
+| **v0.1.1** ← 当前 | 18 个模块补齐 + 文档站点上线 |    ✅     |
 | **v0.2.0**        | 高级图算法 + 大规模优化    | ⬜ 规划中 |
 
 完整变更记录 → [CHANGELOG.md](CHANGELOG.md)
