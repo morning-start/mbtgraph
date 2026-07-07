@@ -17,7 +17,7 @@ fn make_path_graph(nodes : Int) -> @storage.DirectedAdjList {
 
 ///|
 test "TASK-G: benchmark (5000 nodes)" {
-  let b = @bench.Bench::new()
+  let b = @bench.Bench()
   let g5k = make_path_graph(5000)
   let src = @core.NodeId(0)
   let _ = @sp.dijkstra(g5k, src)
@@ -57,7 +57,7 @@ test "TASK-G: benchmark (5000 nodes)" {
 
 ///|
 test "TASK-G: benchmark (10000 nodes)" {
-  let b = @bench.Bench::new()
+  let b = @bench.Bench()
   let g10k = make_path_graph(10000)
   let src = @core.NodeId(0)
   let _ = @sp.dijkstra(g10k, src)

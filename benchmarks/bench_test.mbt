@@ -63,7 +63,7 @@ fn make_flow_graph(nodes : Int) -> @flow.FlowNetwork {
 
 ///|
 test "TASK-G: benchmark (100 nodes)" {
-  let b = @bench.Bench::new()
+  let b = @bench.Bench()
 
   let g100 = make_chain_graph(100, 5)
   let src = @core.NodeId(0)
@@ -133,7 +133,7 @@ test "TASK-G: benchmark (100 nodes)" {
 
 ///|
 test "TASK-G: benchmark (1000 nodes)" {
-  let b = @bench.Bench::new()
+  let b = @bench.Bench()
 
   let g1k = make_chain_graph(1000, 10)
   let src = @core.NodeId(0)
