@@ -23,7 +23,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Setup MoonBit
-        uses: ./.github/actions/setup-moonbit
+        uses: ./.github/actions/moonbit
 
       - name: Check formatting
         run: moon fmt --check
