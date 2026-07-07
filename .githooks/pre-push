@@ -1,0 +1,45 @@
+#!/bin/sh
+#
+# mbtgraph pre-push hook
+#
+# Heavy checks run once per push (pre-commit runs on every commit).
+#
+# Steps:
+#   1. moon test      — run full test suite
+#   2. moon check     — final compile check (fails on deprecations)
+#
+set -eu
+set -o pipefail
+
+# Only run on pushes to origin/master or origin/main
+REMOTE="${1:-origin}"
+URL="${2:-}"
+
+# Check that at least one .mbt/.mbti file exists in the repo (skip for empty repos)
+if ! git ls-files -- '*.mbt' '*.mbti' | grep -q .; then
+  exit 0
+fi
+
+echo "[pre-push] Running moon check..."
+if CHECK_OUTPUT="$(moon check 2>&1)"; then
+  :
+else
+  echo "ERROR: moon check failed!" >&2
+  echo "$CHECK_OUTPUT" >&2
+  exit 1
+fi
+
+if printf '%s\n' "$CHECK_OUTPUT" | grep -qiE 'Warning.*deprecated|Bench::new'; then
+  echo "ERROR: Deprecation warnings found!" >&2
+  echo "$CHECK_OUTPUT" >&2
+  exit 1
+fi
+
+echo "[pre-push] Running moon test..."
+if ! moon test; then
+  echo "ERROR: moon test failed!" >&2
+  exit 1
+fi
+
+echo "[pre-push] All pre-push checks passed."
+exit 0

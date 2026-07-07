@@ -1,0 +1,45 @@
+#!/bin/sh
+#
+# mbtgraph commit-msg hook
+#
+# Enforces Conventional Commits format for readable history.
+#
+# Pattern: type(scope): subject
+# Examples:
+#   feat(core): add Dijkstra algorithm
+#   fix(storage): handle empty graph edge case
+#   docs(readme): update installation instructions
+#   ci: add deprecation warning gate
+#   chore(githooks): optimize pre-commit hook
+#
+# Allowed types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
+#
+COMMIT_MSG="$(cat "$1")"
+
+# Skip merge commits (no enforcement needed)
+case "$COMMIT_MSG" in
+  Merge*) exit 0 ;;
+esac
+
+# Pattern: type(scope): subject  or  type: subject
+# Optional footer (BREAKING CHANGE, etc.) is allowed.
+TYPE_PATTERN="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)"
+PATTERN="${TYPE_PATTERN}(\(.+\))?!?: .+"
+
+if ! printf '%s\n' "$COMMIT_MSG" | head -1 | grep -qE "$PATTERN"; then
+  echo "" >&2
+  echo "ERROR: Commit message does not follow Conventional Commits format." >&2
+  echo "" >&2
+  echo "  Expected: type(scope): subject" >&2
+  echo "  Example:  feat(core): add Dijkstra algorithm" >&2
+  echo "            fix: handle empty graph edge case" >&2
+  echo "" >&2
+  echo "  Allowed types:" >&2
+  echo "  feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert" >&2
+  echo "" >&2
+  echo "  Your message: $(printf '%s\n' "$COMMIT_MSG" | head -1)" >&2
+  echo "" >&2
+  exit 1
+fi
+
+exit 0

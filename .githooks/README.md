@@ -1,21 +1,42 @@
 # Git Hooks
 
-## Pre-commit Hook
+Enforces security, formatting, compile-time correctness, and commit conventions.
 
-This pre-commit hook performs automatic checks before finalizing your commit.
+## Hooks
 
-### Usage Instructions
+| Hook       | Trigger     | What it checks                                          | Time   |
+|------------|-------------|---------------------------------------------------------|--------|
+| `pre-commit` | `git commit`  | Security scan · `moon fmt` · `moon info` · `moon check` (deprecations) | ~5s   |
+| `commit-msg` | `git commit`  | Conventional Commits format                             | instant |
+| `pre-push`   | `git push`    | `moon check` · `moon test` (full suite, ~30s)           | ~35s   |
 
-To use this pre-commit hook:
+## Setup
 
-1. Make the hook executable if it isn't already:
-   ```bash
-   chmod +x .githooks/pre-commit
-   ```
+```bash
+git config core.hooksPath .githooks
+```
 
-2. Configure Git to use the hooks in the .githooks directory:
-   ```bash
-   git config core.hooksPath .githooks
-   ```
+## Why `pre-push` instead of `pre-commit` for `moon test`?
 
-3. The hook will automatically run when you execute `git commit`
+`moon test` runs 772 tests in ~30s. Running it on every `git commit` makes iteration unbearably slow. Pre-push guarantees no broken code leaves the local repo without having been tested, while keeping the commit cycle snappy.
+
+## Conventional Commits
+
+```
+feat(core): add Dijkstra algorithm
+fix(storage): handle empty graph edge case
+docs(readme): update installation instructions
+ci: add deprecation warning gate
+chore(githooks): optimize pre-commit hook
+```
+
+Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
+
+Merge commits (`Merge branch ...`) are exempt.
+
+## Bypassing hooks
+
+```bash
+git commit --no-verify   # skip pre-commit and commit-msg
+git push --no-verify    # skip pre-push
+```

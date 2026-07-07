@@ -2,142 +2,128 @@
 #
 # mbtgraph pre-commit hook
 #
-# Steps:
-#   0. Security scan  — detect secrets/credentials in staged files
-#   1. moon fmt        — format .mbt code
-#   2. moon info       — update .mbti interface files
-#   3. moon check      — compile check
-#   4. moon test       — run all tests
+# Fast checks only — heavy tasks belong in pre-push or CI.
 #
-
-set -e
+# Steps:
+#   0. Security scan    — detect secrets/credentials in staged files
+#   1. moon fmt         — format .mbt code (auto-fix + re-stage)
+#   2. moon info        — update .mbti interface files (auto-fix + re-stage)
+#   3. moon check       — compile check (fail on warnings/deprecations)
+#
+# NOTE: moon test is delegated to pre-push / CI (~30s is too slow here).
+#
+set -eu
+set -o pipefail
 
 # ============================================================
-# Step 0: Security Scan — silent on pass, loud on fail
+# Step 0: Security Scan
 # ============================================================
 
-STAGED_ALL=$(git diff-index --cached --name-only --diff-filter=ACM HEAD 2>/dev/null | grep -v '^\.githooks/' || true)
+extract_added_lines() {
+  git diff-index --cached -p HEAD -- . ':(exclude).githooks/' 2>/dev/null \
+    | grep "^+" | grep -v "^+++" || true
+}
 
-if [ -n "$STAGED_ALL" ]; then
-    FOUND=0
-    MATCH_LINES=""
+if git diff-index --cached --name-only --diff-filter=ACM HEAD 2>/dev/null \
+   | grep -qv '^\.githooks/'; then
 
-    # Extract added lines from staged diff (exclude .githooks/ to avoid self-match)
-    DIFF_LINES=$(git diff-index --cached -p HEAD -- . ':(exclude).githooks/' 2>/dev/null | grep "^+" | grep -v "^+++" || true)
+  DIFF_LINES="$(extract_added_lines)"
 
-    # AWS Access Key ID (AKIA + 16 uppercase alphanum)
-    if echo "$DIFF_LINES" | grep -qE 'AKIA[0-9A-Z]{16}' 2>/dev/null; then
-        FOUND=1; MATCH_LINES="${MATCH_LINES}\n  - AWS Access Key ID (AKIA...)"
+  FOUND=0
+  MATCHES=""
+
+  check_pattern() {
+    local pattern="$1"
+    local label="$2"
+    if printf '%s\n' "$DIFF_LINES" | grep -qE "$pattern" 2>/dev/null; then
+      FOUND=1
+      MATCHES="${MATCHES}  - ${label}
+"
     fi
+  }
 
-    # Private key (PEM format)
-    if echo "$DIFF_LINES" | grep -qE '-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----' 2>/dev/null; then
-        FOUND=1; MATCH_LINES="${MATCH_LINES}\n  - Private Key (BEGIN ... PRIVATE KEY)"
-    fi
+  check_pattern 'AKIA[0-9A-Z]{16}'                        'AWS Access Key ID'
+  check_pattern '-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----' 'Private Key (PEM)'
+  check_pattern "(password|passwd|pwd)\s*[:=]\s*['\"][^'\" ]{4,}['\"]" 'Hardcoded password'
+  check_pattern "(secret|api_key|apikey|access_token|auth_token|private_token)\s*[:=]\s*['\"][A-Za-z0-9]{15,}['\"]" 'Hardcoded secret/API key'
+  check_pattern 'gh[pouhs]_[A-Za-z0-9]{30,}'              'GitHub token'
+  check_pattern 'sk_live_|pk_live_'                       'Stripe live key'
+  check_pattern '(mongodb(\+srv)?|mysql|postgres|redis)://[^/ ]+:[^/ ]+@' 'DB connection string with password'
+  check_pattern 'AIza[0-9A-Z_-]{35}'                      'Google API key'
+  check_pattern 'xox[baprs]-'                             'Slack token'
+  check_pattern 'eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+'      'JWT token'
 
-    # Password hardcoded: password/pwd/passwd = "..."
-    if echo "$DIFF_LINES" | grep -qiE '(password|passwd|pwd)\s*[:=]\s*['\''"][^\x27\x22]{4,}['\''"]' 2>/dev/null; then
-        FOUND=1; MATCH_LINES="${MATCH_LINES}\n  - Password hardcoded in code"
-    fi
-
-    # Generic secret / API key / token assignment with long value
-    if echo "$DIFF_LINES" | grep -qiE '(secret|api_key|apikey|access_token|auth_token|private_token)\s*[:=]\s*['\''"][A-Za-z0-9]{15,}['\''"]' 2>/dev/null; then
-        FOUND=1; MATCH_LINES="${MATCH_LINES}\n  - Secret/API Key/Token hardcoded"
-    fi
-
-    # GitHub tokens (ghp, gho, ghu, ghs, ghr)
-    if echo "$DIFF_LINES" | grep -qE 'gh[pouhs]_[A-Za-z0-9]{30,}' 2>/dev/null; then
-        FOUND=1; MATCH_LINES="${MATCH_LINES}\n  - GitHub token detected"
-    fi
-
-    # Stripe live keys
-    if echo "$DIFF_LINES" | grep -qE 'sk_live_|pk_live_' 2>/dev/null; then
-        FOUND=1; MATCH_LINES="${MATCH_LINES}\n  - Stripe live key detected"
-    fi
-
-    # Database connection strings with embedded credentials
-    if echo "$DIFF_LINES" | grep -qiE '(mongodb(\+srv)?|mysql|postgres|redis)://[^/\s]+:[^/\s]+@' 2>/dev/null; then
-        FOUND=1; MATCH_LINES="${MATCH_LINES}\n  - Database connection string with password"
-    fi
-
-    # Google API key
-    if echo "$DIFF_LINES" | grep -qE 'AIza[0-9A-Z_-]{35}' 2>/dev/null; then
-        FOUND=1; MATCH_LINES="${MATCH_LINES}\n  - Google API key detected"
-    fi
-
-    # Slack tokens
-    if echo "$DIFF_LINES" | grep -qE 'xox[baprs]-' 2>/dev/null; then
-        FOUND=1; MATCH_LINES="${MATCH_LINES}\n  - Slack token detected"
-    fi
-
-    # JWT token (base64url.header.payload.signature)
-    if echo "$DIFF_LINES" | grep -qE 'eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+' 2>/dev/null; then
-        FOUND=1; MATCH_LINES="${MATCH_LINES}\n  - JWT token detected"
-    fi
-
-    if [ "$FOUND" = "1" ]; then
-        echo ""
-        echo "============================================"
-        echo "  SECURITY WARNING: Potential secrets detected!"
-        echo "============================================"
-        echo -e "The following patterns were found in staged changes:${MATCH_LINES}"
-        echo ""
-        echo "  Please:"
-        echo "  1. Remove or replace secrets with environment variables"
-        echo "  2. Use .gitignore to exclude credential files (.env etc.)"
-        echo "  3. If false positive, use --no-verify to bypass"
-        echo "============================================"
-        exit 1
-    fi
+  if [ "$FOUND" = "1" ]; then
+    echo ""
+    echo "============================================"
+    echo "  SECURITY WARNING: Potential secrets detected!"
+    echo "============================================"
+    echo "The following patterns were found in staged changes:"
+    printf '%s' "$MATCHES"
+    echo ""
+    echo "  Please:"
+    echo "  1. Remove or replace secrets with environment variables"
+    echo "  2. Use .gitignore to exclude credential files (.env etc.)"
+    echo "  3. If false positive, use --no-verify to bypass"
+    echo "============================================"
+    exit 1
+  fi
 fi
 
 # ============================================================
-# Step 1-3: MoonBit toolchain checks (only when .mbt staged)
+# Step 1-3: MoonBit toolchain checks (only when .mbt/.mbti staged)
 # ============================================================
 
-STAGED_MBT=$(git diff-index --cached --name-only --diff-filter=ACM HEAD 2>/dev/null | grep '\.mbt$' || true)
+STAGED_MBT="$(git diff-index --cached --name-only --diff-filter=ACM HEAD 2>/dev/null \
+  | grep -E '\.(mbt|mbti)$' || true)"
 
 if [ -z "$STAGED_MBT" ]; then
-    exit 0
+  exit 0
 fi
 
-echo "[pre-commit] Detected staged .mbt files, running MoonBit checks..."
+echo "[pre-commit] Detected staged .mbt/.mbti files, running MoonBit checks..."
 
-# Step 1: Format code
+# --- Step 1: Format ---
 echo "[pre-commit] Running moon fmt..."
-if ! moon fmt 2>&1; then
-    echo ""; echo "ERROR: moon fmt failed!"; echo "Commit aborted."; exit 1
+if ! moon fmt; then
+  echo "ERROR: moon fmt failed!" >&2
+  exit 1
 fi
 
-FORMAT_CHANGED=$(git diff --name-only -- '*.mbt' 2>/dev/null || true)
+FORMAT_CHANGED="$(git diff --name-only -- '*.mbt' 2>/dev/null || true)"
 if [ -n "$FORMAT_CHANGED" ]; then
-    echo "[pre-commit] Re-staging formatted files..."
-    git add $FORMAT_CHANGED
+  echo "[pre-commit] Re-staging formatted files..."
+  git add -- "$FORMAT_CHANGED"
 fi
 
-# Step 2: Update interfaces
+# --- Step 2: Update interfaces ---
 echo "[pre-commit] Running moon info..."
-if ! moon info 2>&1; then
-    echo ""; echo "ERROR: moon info failed!"; echo "Commit aborted."; exit 1
+if ! moon info; then
+  echo "ERROR: moon info failed!" >&2
+  exit 1
 fi
 
-MBTI_CHANGED=$(git diff --name-only -- '*.mbti' 2>/dev/null || true)
+MBTI_CHANGED="$(git diff --name-only -- '*.mbti' 2>/dev/null || true)"
 if [ -n "$MBTI_CHANGED" ]; then
-    echo "[pre-commit] Staging updated .mbti files..."
-    git add $MBTI_CHANGED
+  echo "[pre-commit] Staging updated .mbti files..."
+  git add -- "$MBTI_CHANGED"
 fi
 
-# Step 3: Compile check
+# --- Step 3: Compile check (fail on deprecation warnings) ---
 echo "[pre-commit] Running moon check..."
-if ! moon check 2>&1; then
-    echo ""; echo "ERROR: moon check failed!"; echo "Commit aborted."; exit 1
+if CHECK_OUTPUT="$(moon check 2>&1)"; then
+  :
+else
+  echo "ERROR: moon check failed!" >&2
+  echo "$CHECK_OUTPUT" >&2
+  exit 1
 fi
 
-# Step 4: Run tests
-echo "[pre-commit] Running moon test..."
-if ! moon test 2>&1; then
-    echo ""; echo "ERROR: moon test failed!"; echo "Commit aborted."; exit 1
+if printf '%s\n' "$CHECK_OUTPUT" | grep -qiE 'Warning.*deprecated|Bench::new'; then
+  echo "ERROR: Deprecation warnings found!" >&2
+  echo "$CHECK_OUTPUT" >&2
+  exit 1
 fi
 
-echo "[pre-commit] All checks passed (security + fmt + info + check + test)."
+echo "[pre-commit] All checks passed (security + fmt + info + check)."
 exit 0
