@@ -5,6 +5,16 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 本项目遵循 [语义化版本](https://semver.org/spec/v2.0.0.html)规范。
 
+## [v0.1.2] - 2026-07-07
+
+### 改进
+
+- 📝 **README import 示例澄清**: 明确 `import { ... }` 应写在 `moon.pkg` 中而非 `.mbt` 源文件，并添加注释说明 `@core`、`@storage` 等别名可直接使用
+- 🎯 **NodeId 添加 `to_string()`**: 支持字符串插值和直接打印，无需手动解构 `let NodeId(val) = id`
+- 🔄 **版本升级**: v0.1.1 → v0.1.2
+
+---
+
 ## [v0.1.1] - 2026-07-03
 
 ### 新增
