@@ -14,7 +14,7 @@ jobs:
 
       - name: Setup MoonBit
         run: |
-          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- --version 0.1.20260608
           echo "$HOME/.moon/bin" >> $GITHUB_PATH
 
       - name: Update registry
@@ -23,7 +23,7 @@ jobs:
       - name: Write credentials
         run: |
           mkdir -p ~/.moon
-          echo '${{ secrets.MOONCAKES_CREDS }}' > ~/.moon/credentials.json
+          echo "${{ secrets.MOONCAKES_CREDS }}" > ~/.moon/credentials.json
 
       - name: Check formatting
         run: moon fmt --check
