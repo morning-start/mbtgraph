@@ -1,0 +1,57 @@
+name: MoonBit Test
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+  pull_request_target:
+    branches: [master, main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-lib:
+    name: Test MoonBit Library
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Setup MoonBit
+        uses: ./.github/actions/moonbit
+
+      - name: Check formatting
+        run: moon fmt --check
+
+      - name: Type check
+        run: moon check
+
+      - name: Run tests
+        run: moon test
+
+  test-site:
+    name: Build Site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        working-directory: ./site
+        run: bun install --frozen-lockfile
+
+      - name: Build site
+        working-directory: ./site
+        run: bun run build
