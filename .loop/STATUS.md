@@ -3,9 +3,10 @@
 ## Meta
 
 - 开始时间: 2026-07-07 21:40
-- 当前迭代: 第 2 轮
+- 最后运行: 2026-07-07 22:17
+- 当前迭代: 第 3 轮（复查）
 - 整体进度: ████████████ 100%
-- 当前阶段: 全部完成
+- 当前阶段: 全部完成，稳定无新增问题
 
 ## 文件清单
 
@@ -26,7 +27,7 @@
 | 13 | `site/src/content/docs/core-concepts/architecture.md` | ✅ | ✅ | ✅ | 第 2 轮 f7088a5 |
 | 14 | `site/src/content/docs/reference/library-survey.md` | ✅ | ✅ | ✅ | 第 2 轮 f7088a5 |
 
-## 第 1 轮修正
+## 第 1 轮修正（060924c）
 
 | 文件 | 旧值 | 新值 |
 |------|------|------|
@@ -34,7 +35,7 @@
 | CHANGELOG.md (v0.1.1 + v0.1.0) | 940 tests / 19+ 模块 | 772 tests / 18 个模块 |
 | CONTRIBUTING.md | 736 tests / 6 层 Trait / 缺 pre-push | 772 tests / 5 层 Trait / pre-commit+pre-push+commit-msg |
 
-## 第 2 轮修正
+## 第 2 轮修正（f7088a5）
 
 | 文件 | 旧值 | 新值 |
 |------|------|------|
@@ -48,6 +49,13 @@
 | core-concepts/architecture.md | 19+ / 768 | 18 / 772 |
 | reference/library-survey.md | 768 | 772 |
 
+## 第 3 轮复查（本次）
+
+- 扫描：940/768/736/702 test/测试/tests 关键词 → 仅 STATUS.md 历史记录命中
+- 扫描：19+/19 模块 关键词 → 仅 STATUS.md 历史记录命中
+- 扫描：6 层 Trait/6 层 关键词 → 仅 STATUS.md 历史记录命中
+- 所有 14 个源文件无新增陈旧内容 ✅
+
 ## 验证结果
 
 | 检查 | 状态 |
@@ -55,10 +63,13 @@
 | `moon check` | ✅ 零警告 |
 | `moon info` | ✅ 零问题 |
 | `git diff --exit-code` | ✅ 零差异 |
+| 陈旧数字扫描 | ✅ 零残留（仅 STATUS.md 历史记录） |
 
 ## 数据验证来源
 
-- 实际测试数: `moon test` → Total tests: 772, passed: 772
-- 实际算法模块: `ls lib/algo/*/` → 18 个 (excl integration)
-- 实际 Trait 数: `grep "^pub(open) trait" lib/core/traits.mbt` → 5 个
-- 实际 Git hooks: `.githops/` → 3 个 (pre-commit, commit-msg, pre-push)
+| 数据 | 实际值 | 来源 |
+|------|--------|------|
+| 测试数 | **772** | `moon test` |
+| 算法模块 | **18 个** | `ls lib/algo/*/` (excl integration) |
+| Trait 数 | **5 个** | `grep "^pub(open) trait" lib/core/traits.mbt` |
+| Git hooks | **3 个** | `ls .githooks/` |
