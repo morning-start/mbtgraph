@@ -15,14 +15,8 @@ jobs:
       - name: Setup MoonBit
         uses: ./.github/actions/moonbit
 
-      - name: Check formatting
-        run: moon fmt --check
-
-      - name: Type check
-        run: moon check
-
       - name: Run tests
-        run: moon test
+        uses: ./.github/actions/moonbit-test
 
   publish:
     name: Publish Module
