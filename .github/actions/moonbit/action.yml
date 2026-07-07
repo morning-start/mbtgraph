@@ -1,13 +1,29 @@
 name: 'Setup MoonBit'
-description: 'Set up MoonBit CLI'
+description: 'Set up MoonBit CLI with cache'
 runs:
   using: 'composite'
   steps:
+    - name: Cache MoonBit
+      id: cache-moonbit
+      uses: actions/cache@v4
+      with:
+        path: ~/.moon
+        key: moonbit-${{ runner.os }}
+        restore-keys: moonbit-${{ runner.os }}
+
     - name: Install MoonBit
+      if: steps.cache-moonbit.outputs.cache-hit != 'true'
       shell: bash
       run: |
         curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
         echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+    - name: Add MoonBit to PATH
+      if: steps.cache-moonbit.outputs.cache-hit == 'true'
+      shell: bash
+      run: |
+        echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
     - name: Update registry
       shell: bash
       run: moon update
