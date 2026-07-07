@@ -5,29 +5,28 @@ on:
     branches: [master, main]
   pull_request:
     branches: [master, main]
+  pull_request_target:
+    branches: [master, main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  # MoonBit 库测试
   test-lib:
     name: Test MoonBit Library
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Setup MoonBit
-        run: |
-          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
-          echo "$HOME/.moon/bin" >> $GITHUB_PATH
-
-      - name: Update registry
-        run: moon update
+        uses: ./.github/actions/setup-moonbit
 
       - name: Check formatting
         run: moon fmt --check
-
-      - name: Format and diff check
-        run: moon fmt && git diff --exit-code
 
       - name: Type check (no warnings)
         run: moon check 2>&1 | tee /tmp/moon-check.log && (! grep -iE "Warning.*deprecated|Bench::new" /tmp/moon-check.log || exit 1)
@@ -35,13 +34,14 @@ jobs:
       - name: Run tests (no deprecation warnings)
         run: moon test 2>&1 | tee /tmp/moon-test.log && (! grep -iE "Warning.*deprecated|Bench::new" /tmp/moon-test.log || exit 1)
 
-  # Site 构建测试
   test-site:
     name: Build Site
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
