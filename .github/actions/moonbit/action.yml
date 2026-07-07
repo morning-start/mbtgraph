@@ -11,7 +11,7 @@ runs:
     - name: Install MoonBit
       shell: bash
       run: |
-        curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+        curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- --version ${{ inputs.version }}
         echo "$HOME/.moon/bin" >> $GITHUB_PATH
     - name: Update registry
       shell: bash
