@@ -1,41 +1,11 @@
 {
   "version": 1,
   "skills": {
-    "agents-writer": {
-      "source": "morning-start/book-skills",
-      "sourceType": "github",
-      "skillPath": "agents-writer/SKILL.md",
-      "computedHash": "6c7cf028232b0afef17ee8246a52ecddd1d59f76ed7c9f714a188ae382c6bf62"
-    },
-    "hermes-agent-config": {
-      "source": "morning-start/book-skills",
-      "sourceType": "github",
-      "skillPath": "agent-skill/SKILL.md",
-      "computedHash": "579834fe368ff8a5bf0f7ec508ed9dd0a09ee6b8da85fe5c1a195923a14fc176"
-    },
-    "moonbit-skills": {
-      "source": "morning-start/book-skills",
-      "sourceType": "github",
-      "skillPath": "moonbit-skills/SKILL.md",
-      "computedHash": "cca42be0e53955d63dcf45ce9712c2744852ef9cdc2da4371810db947f93a1e3"
-    },
     "osc2026-guide": {
       "source": "Milky2018/osc2026-guide",
       "sourceType": "github",
       "skillPath": "SKILL.md",
       "computedHash": "0a18ecf99f6467f1ebf94cdf42d29f1dd65e36db299b37fa72aaee30d1afbb65"
-    },
-    "software-design": {
-      "source": "morning-start/agent-skills",
-      "sourceType": "github",
-      "skillPath": "process/software-design-skill/SKILL.md",
-      "computedHash": "6b491fba8f462bd8506ea030723ead19cd6e50951b7bbbe2a75804c467495f66"
-    },
-    "tutorial-writer": {
-      "source": "morning-start/agent-skills",
-      "sourceType": "github",
-      "skillPath": "process/tutorial-writer-skill/SKILL.md",
-      "computedHash": "35c0bb77b5f0baefc0fb64d1e1be7ed7bbf426f85bd05cf3d8f75792a738e296"
     }
   }
 }
