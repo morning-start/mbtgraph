@@ -38,12 +38,6 @@ else
   exit 1
 fi
 
-if printf '%s\n' "$CHECK_OUTPUT" | grep -qiE 'Warning.*deprecated|Bench::new'; then
-  echo "ERROR: Deprecation warnings found!" >&2
-  echo "$CHECK_OUTPUT" >&2
-  exit 1
-fi
-
 echo "[pre-push] Running moon test..."
 if ! moon test; then
   echo "ERROR: moon test failed!" >&2

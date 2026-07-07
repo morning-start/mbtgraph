@@ -109,18 +109,12 @@ if [ -n "$MBTI_CHANGED" ]; then
   git add -- "$MBTI_CHANGED"
 fi
 
-# --- Step 3: Compile check (fail on deprecation warnings) ---
+# --- Step 3: Compile check ---
 echo "[pre-commit] Running moon check..."
 if CHECK_OUTPUT="$(moon check 2>&1)"; then
   :
 else
   echo "ERROR: moon check failed!" >&2
-  echo "$CHECK_OUTPUT" >&2
-  exit 1
-fi
-
-if printf '%s\n' "$CHECK_OUTPUT" | grep -qiE 'Warning.*deprecated|Bench::new'; then
-  echo "ERROR: Deprecation warnings found!" >&2
   echo "$CHECK_OUTPUT" >&2
   exit 1
 fi

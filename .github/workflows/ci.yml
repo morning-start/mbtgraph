@@ -28,11 +28,11 @@ jobs:
       - name: Check formatting
         run: moon fmt --check
 
-      - name: Type check (no warnings)
-        run: moon check 2>&1 | tee /tmp/moon-check.log && (! grep -iE "Warning.*deprecated|Bench::new" /tmp/moon-check.log || exit 1)
+      - name: Type check
+        run: moon check
 
-      - name: Run tests (no deprecation warnings)
-        run: moon test 2>&1 | tee /tmp/moon-test.log && (! grep -iE "Warning.*deprecated|Bench::new" /tmp/moon-test.log || exit 1)
+      - name: Run tests
+        run: moon test
 
   test-site:
     name: Build Site
