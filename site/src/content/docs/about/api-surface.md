@@ -1,9 +1,9 @@
 ---
 title: API 面概览
-description: mbtgraph v0.1.2 公开 API 面：Trait、存储、算法、I/O 的签名、命名约定和冻结状态
+description: mbtgraph v0.1.3 公开 API 面：Trait、存储、算法、I/O 的签名、命名约定和冻结状态
 ---
 
-> **冻结日期**: 2026-07-03 | **版本**: v0.1.2
+> **冻结日期**: 2026-07-03 | **版本**: v0.1.3
 > **原则**: 所有 pub API 在 v1.x 中保持兼容，破坏性变更需 major 版本
 
 ---

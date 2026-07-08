@@ -5,6 +5,14 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 本项目遵循 [语义化版本](https://semver.org/spec/v2.0.0.html)规范。
 
+## [v0.1.3] - 2026-07-08
+
+### 改进
+
+- 📊 **性能基线更新**: 重新采集 v0.1.3 性能基线数据（benchmarks + benchmarks_large）
+
+---
+
 ## [v0.1.2] - 2026-07-07
 
 ### 改进
