@@ -77,10 +77,11 @@ pub fn[G : @core.GraphReadable] bfs(graph : G, start : NodeId) -> BfsResult { ..
 从简单到复杂的 Trait 层级：
 
 ```
-GraphReadable (只读)
-├── GraphWritable (可写)
-│   └── GraphFull = Writable + Directed (完全功能)
-└── GraphBatchReadable (批量优化)
+GraphReadable (基础)
+├── GraphWritable: GraphReadable (可写)
+├── GraphDirected: GraphReadable (有向)
+├── GraphBatchReadable: GraphReadable (批量)
+└── GraphFull: GraphWritable + GraphDirected (完全)
 ```
 
 **优势**：
@@ -88,28 +89,26 @@ GraphReadable (只读)
 - 接口清晰，易于理解和测试
 - 支持不同性能需求的场景
 
-### 3. 纯函数语义
+### 3. 就地修改语义
 
-所有操作返回新实例，不修改原始数据：
+所有写操作就地修改图，不创建新实例：
 
 ```moonbit
 let g = @storage.new_directed()
-let g = @core.GraphWritable::add_node(g, "A")  // 返回新实例
-let result = bfs(g, start)  // g 保持不变
+let n0 = @core.GraphWritable::add_node(g, 0.0)  // g 就地修改，返回 NodeId
 ```
 
 **优势**：
-- 无副作用，便于推理
-- 天然支持撤销/回滚
-- 易于并行化和测试
+- 性能优秀，无不必要的拷贝
+- 接口简单直观
+- 适合构建大型图
 
 ## 与其他图库的区别
 
 | 特性 | mbtgraph | NetworkX (Python) | Boost Graph (C++) |
 |------|---------|-------------------|-------------------|
 | 语言 | MoonBit | Python | C++ |
-| 类型安全 | 强类型编译时检查 | 弱类型运行时检查 | 强类型模板 |
-| 函数式语义 | 纯函数，不可变 | 可变对象 | 可变对象 |
+| 函数式语义 | 就地修改，高性能 | 可变对象 | 可变对象 |
 | 存储抽象 | Trait 泛型 | 统一接口 | 模板参数化 |
 | 后端支持 | native/wasm/js | 仅 Python | 仅 C++ |
 | 学习曲线 | 中等 | 低 | 高 |

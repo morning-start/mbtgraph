@@ -149,6 +149,6 @@ let result = @traversal.bfs(g, start)
     <p class="callout-title">恭喜！</p>
   </div>
   <div class="callout-content">
-    <p>你已经成功创建了第一个 mbtgraph 程序！这只是冰山一角，mbtgraph 还提供了 49+ 个强大的图算法等待你去探索。</p>
+    <p>你已经成功创建了第一个 mbtgraph 程序！这只是冰山一角，mbtgraph 还提供了 90+ 个已实现图算法，覆盖 32 个算法类别，等待你去探索。</p>
   </div>
 </div>

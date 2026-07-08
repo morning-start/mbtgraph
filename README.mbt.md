@@ -53,7 +53,7 @@ fn main {
 
   // Dijkstra 最短路径
   let sp_result = @shortest_path.dijkstra(g, n0)
-  println("Dijkstra 0 → 3 最短距离(带权): \{sp_result.distance_to(n3)}")  // => 4.0
+  println("Dijkstra 0 → 3 最短距离(带权): \{sp_result.distance_to(n3)}")  // => 3.0
 }
 ```
 
