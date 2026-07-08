@@ -113,9 +113,9 @@ fn kosaraju_scc_demo() -> Unit {
   let g = build_sample_directed_graph()
   let result = @connectivity.kosaraju_scc(g)
 
-  println("SCC 数量: ${result.count}")
+  println("SCC 数量: \{result.count\}")
   for (i, scc) in result.scc_list.indexed() {
-    println("SCC #${i}: ${scc}")
+    println("SCC #\{i\}: \{scc\}")
   }
 }
 ```

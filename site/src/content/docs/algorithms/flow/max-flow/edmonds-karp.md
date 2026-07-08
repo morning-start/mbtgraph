@@ -123,8 +123,8 @@ fn edmonds_karp_demo() -> Unit {
   let net = net.add_edge(2, 3, 9.0)
 
   let result = @flow.edmonds_karp(net, 0, 3)
-  println("最大流量: ${result.max_flow}")
-  println("迭代次数: ${result.iteration_count}")
+  println("最大流量: \{result.max_flow\}")
+  println("迭代次数: \{result.iteration_count\}")
 }
 ```
 

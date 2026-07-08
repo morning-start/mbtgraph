@@ -110,7 +110,7 @@ fn a_star_demo() -> Unit {
 
   let g = build_grid_graph()
   let path = @shortest_path.a_star(g, @core.NodeId(0), @core.NodeId(24), manhattan)
-  println("找到路径，长度: ${path.length()}")
+  println("找到路径，长度: \{path.length()\}")
 }
 ```
 

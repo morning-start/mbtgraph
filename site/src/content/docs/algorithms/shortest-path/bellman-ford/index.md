@@ -123,10 +123,10 @@ fn bellman_ford_demo() -> Unit {
   match @shortest_path.bellman_ford(g, @core.NodeId(0)) {
     Ok(result) => {
       let target = @core.NodeId(4)
-      println("0 → 4 最短距离: ${result.distance_to(target)}")
-      println("路径: ${result.path_to(target)}")
+      println("0 → 4 最短距离: \{result.distance_to(target)\}")
+      println("路径: \{result.path_to(target)\}")
     }
-    Err(msg) => println("检测到负环: ${msg}")
+    Err(msg) => println("检测到负环: \{msg\}")
   }
 }
 ```

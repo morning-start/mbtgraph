@@ -145,7 +145,7 @@ fn hopcroft_karp_demo() -> Unit {
   let right = [@core.NodeId(3), @core.NodeId(4), @core.NodeId(5)]
 
   let result = @matching.hopcroft_karp(g, left, right)
-  println("最大匹配数: ${result.cardinality}")
+  println("最大匹配数: \{result.cardinality\}")
 }
 ```
 

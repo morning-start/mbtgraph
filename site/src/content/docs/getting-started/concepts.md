@@ -89,7 +89,7 @@ pub trait GraphWritable : GraphReadable {
 | Trait | 继承自 | 新增方法 | 适用场景 |
 |-------|--------|---------|---------|
 | GraphDirected | Readable | +6 (入边查询) | 有向图 |
-| GraphFull | Writable + Directed | - | 便捷别名 |
+| GraphFull | GraphWritable + GraphDirected | - | 便捷别名 |
 | GraphBatchReadable | Readable | +2 (批量操作) | CSR/CSC |
 
 ## 存储结构一览

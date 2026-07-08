@@ -114,11 +114,11 @@ fn dfs_demo() -> Unit {
   let result = @traversal.dfs(g, @core.NodeId(0))
 
   println("=== DFS 遍历结果 ===")
-  println("完成顺序 (post-order): ${result.base.order}")
+  println("完成顺序 (post-order): \{result.base.order\}")
 
   // 拓扑排序：将 order 反转
   let topo = result.base.order.reverse()
-  println("拓扑排序: ${topo}")
+  println("拓扑排序: \{topo\}")
 }
 ```
 

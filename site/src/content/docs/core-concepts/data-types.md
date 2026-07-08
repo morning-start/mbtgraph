@@ -48,7 +48,7 @@ let id = @core.GraphWritable::add_node(g, 100.0)  // 返回 NodeId
 
 // 方式 3: 从迭代器获取
 @core.GraphReadable::node_ids(g) |> iter::each(fn(id) {
-  println("节点 ID: ${id}")
+  println("节点 ID: \{id\}")
 })
 ```
 
@@ -63,7 +63,7 @@ let id : NodeId = @core.NodeId(0)
 
 // ✅ 正确: 解构获取内部值（如需）
 match id {
-  NodeId(n) => println("内部值: ${n}")
+  NodeId(n) => println("内部值: \{n\}")
 }
 ```
 
@@ -134,14 +134,14 @@ let node_data = @core.GraphReadable::get_node(g, @core.NodeId(0))
 
 // 处理 Option 返回值
 match node_data {
-  Some(data) => println("节点 0 的数据: ${data}")
+  Some(data) => println("节点 0 的数据: \{data\}")
   None => println("节点不存在！")
 }
 
 // 遍历所有节点
 @core.GraphReadable::node_ids(g) |> iter::each(fn(id) {
   match @core.GraphReadable::get_node(g, id) {
-    Some(data) => println("节点 ${id}: ${data}")
+    Some(data) => println("节点 \{id\}: \{data\}")
     None => ()  // 正常情况下不会发生
   }
 })
@@ -215,8 +215,8 @@ match result {
   Ok(_) => println("边添加成功")
   Err(e) =>
     match e {
-      NodeNotFound(id) => println("节点 ${id} 不存在")
-      EdgeAlreadyExists(f, t) => println("边 (${f}, ${t}) 已存在")
+      NodeNotFound(id) => println("节点 \{id\} 不存在")
+      EdgeAlreadyExists(f, t) => println("边 (\{f\}, \{t\}) 已存在")
       InvalidNodeId => println("无效的节点 ID")
     }
 }
@@ -225,7 +225,7 @@ match result {
 if (@core.GraphReadable::contains_edge(g, @core.NodeId(0), @core.NodeId(1))) {
   let weight = @core.GraphReadable::get_edge(g, @core.NodeId(0), @core.NodeId(1))
   match weight {
-    Some(w) => println("边权重: ${w}")
+    Some(w) => println("边权重: \{w\}")
     None => println("边不存在")  // 理论上不会执行
   }
 }
@@ -238,14 +238,14 @@ if (@core.GraphReadable::contains_edge(g, @core.NodeId(0), @core.NodeId(1))) {
 println("节点 0 的邻居:")
 @core.GraphReadable::neighbors(g, @core.NodeId(0))
   |> iter::each(fn(neighbor) {
-    println("  -> ${neighbor}")
+    println("  -> \{neighbor\}")
   })
 
 // 获取带权重的邻居（避免二次查询）
 println("节点 0 的加权邻居:")
 @core.GraphReadable::neighbors_with_weight(g, @core.NodeId(0))
   |> iter::each(fn((neighbor, weight)) {
-    println("  -> ${neighbor} (权重: ${weight})")
+    println("  -> \{neighbor\} (权重: \{weight\})")
   })
 ```
 
@@ -282,14 +282,14 @@ fn main() {
   let network = build_social_network()
 
   // 统计信息
-  println("用户数量: ${@core.GraphReadable::node_count(network)}")
-  println("关注关系数: ${@core.GraphReadable::edge_count(network)}")
+  println("用户数量: \{@core.GraphReadable::node_count(network)\}")
+  println("关注关系数: \{@core.GraphReadable::edge_count(network)\}")
 
   // 查看 Alice 的关注列表
   println("\nAlice 关注的用户:")
   @core.GraphReadable::neighbors_with_weight(network, @core.NodeId(0))
     |> iter::each(fn((user_id, weight)) {
-      println("  -> 用户 ${user_id}")
+      println("  -> 用户 \{user_id\}")
     })
 }
 ```

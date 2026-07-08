@@ -49,13 +49,13 @@ fn check_node_example() -> Unit {
 
   // 方式 1: Bool 返回值
   if (@core.GraphReadable::contains_node(g, id)) {
-    println("✅ 节点 ${id} 存在")
+    println("✅ 节点 \{id\} 存在")
   }
 
   // 方式 2: 用于条件逻辑
   let target_id = @core.NodeId(99)  // 不存在的 ID
   if (not @core.GraphReadable::contains_node(g, target_id)) {
-    println("⚠️ 节点 ${target_id} 不存在，需要先创建")
+    println("⚠️ 节点 \{target_id\} 不存在，需要先创建")
   }
 }
 ```
@@ -65,15 +65,15 @@ fn check_node_example() -> Unit {
 ```moonbit
 fn check_edge_example(g : DirectedAdjList, from : NodeId, to : NodeId) -> Unit {
   if (@core.GraphReadable::contains_edge(g, from, to)) {
-    println("✅ 边 ${from}→${to} 存在")
+    println("✅ 边 \{from\}→\{to\} 存在")
 
     // 获取边的权重
     match @core.GraphReadable::get_edge(g, from, to) {
-      Some(weight) => println("  权重: ${weight}")
+      Some(weight) => println("  权重: \{weight\}")
       None => println("  ⚠️ 边存在但权重为空（异常情况）")
     }
   } else {
-    println("❌ 边 ${from}→${to} 不存在")
+    println("❌ 边 \{from\}→\{to\} 不存在")
   }
 }
 ```
@@ -93,7 +93,7 @@ fn get_node_safe[G : @core.GraphReadable](graph : G, id : NodeId, default : Doub
   match @core.GraphReadable::get_node(graph, id) {
     Some(data) => data,
     None => {
-      println("⚠️ 节点 ${id} 不存在，返回默认值 ${default}")
+      println("⚠️ 节点 \{id\} 不存在，返回默认值 \{default\}")
       default
     }
   }
@@ -127,11 +127,11 @@ fn get_edge_or_infinity[G : @core.GraphReadable](
 ```moonbit
 /// 打印节点的所有邻居
 fn print_neighbors[G : @core.GraphReadable](graph : G, node_id : NodeId) -> Unit {
-  println("节点 ${node_id} 的邻居:")
+  println("节点 \{node_id\} 的邻居:")
 
   @core.GraphReadable::neighbors(graph, node_id)
     |> iter::each(fn(neighbor_id) {
-      println("  → ${neighbor_id}")
+      println("  → \{neighbor_id\}")
     })
 
   // 注意: 这种方式需要二次查询才能获取权重
@@ -150,11 +150,11 @@ print_neighbors(g, @core.NodeId(0))
 ```moonbit
 /// 打印邻居及其边权重（避免二次查询）
 fn print_weighted_neighbors[G : @core.GraphReadable](graph : G, node_id : NodeId) -> Unit {
-  println("节点 ${node_id} 的加权邻居:")
+  println("节点 \{node_id\} 的加权邻居:")
 
   @core.GraphReadable::neighbors_with_weight(graph, node_id)
     |> iter::each(fn((neighbor_id, weight)) {
-      println("  → ${node_id} --[${weight}]--> ${neighbor_id}")
+      println("  → \{node_id\} --[\{weight\}]--> \{neighbor_id\}")
     })
 }
 
@@ -191,11 +191,11 @@ fn analyze_degree_distribution[G : @core.GraphReadable](graph : G) -> Unit {
   let avg_deg = if (n > 0) { total_deg.to_double() / n.to_double() } else { 0.0 }
 
   println("=== 度数统计 ===")
-  println("节点数: ${n}")
-  println("最大度数: ${max_deg} (枢纽节点)")
-  println("最小度数: ${min_deg} (孤立或边缘节点)")
-  println("平均度数: ${avg_deg:.2f}")
-  println("总边数推断: ${total_deg / 2}")  // 无向图每条边被计算两次
+  println("节点数: \{n\}")
+  println("最大度数: \{max_deg\} (枢纽节点)")
+  println("最小度数: \{min_deg\} (孤立或边缘节点)")
+  println("平均度数: \{avg_deg:.2f\}")
+  println("总边数推断: \{total_deg / 2\}")  // 无向图每条边被计算两次
 }
 ```
 
@@ -207,9 +207,9 @@ fn analyze_directed_connectivity[G : @core.GraphDirected](graph : G, id : NodeId
   let out_deg = @core.GraphDirected::out_degree(graph, id)
   let in_deg = @core.GraphDirected::in_degree(graph, id)
 
-  println("=== 节点 ${id} 连接分析 ===")
-  println("出度 (out-degree): ${out_deg}")
-  println("入度 (in-degree):  ${in_deg}")
+  println("=== 节点 \{id\} 连接分析 ===")
+  println("出度 (out-degree): \{out_deg\}")
+  println("入度 (in-degree):  \{in_deg\}")
 
   // 分类判断
   if (out_deg == 0 && in_deg > 0) {
@@ -225,9 +225,9 @@ fn analyze_directed_connectivity[G : @core.GraphDirected](graph : G, id : NodeId
     if (in_deg > 0) {
       let ratio = out_deg.to_double() / in_deg.to_double()
       if (ratio > 2.0) {
-        println("  📢 该节点更偏向「广播者」(ratio=${ratio:.1f})")
+        println("  📢 该节点更偏向「广播者」(ratio=\{ratio:.1f\})")
       } else if (ratio < 0.5) {
-        println("  🎧 该节点更偏向「接收者」(ratio=${ratio:.1f})")
+        println("  🎧 该节点更偏向「接收者」(ratio=\{ratio:.1f\})")
       }
     }
   }
@@ -237,14 +237,14 @@ fn analyze_directed_connectivity[G : @core.GraphDirected](graph : G, id : NodeId
   @core.GraphDirected::predecessors(graph, id)
     |> iter::take(5)  // 最多显示 5 个
     |> iter::each(fn((src, w)) {
-      println("  ← ${src} (权重: ${w})")
+      println("  ← \{src\} (权重: \{w\})")
     })
 
   println("\n后继 (我指向谁):")
   @core.GraphDirected::successors(graph, id)
     |> iter::take(5)
     |> iter::each(fn((dst, w)) {
-      println("  → ${dst} (权重: ${w})")
+      println("  → \{dst\} (权重: \{w\})")
     })
 }
 ```
@@ -260,7 +260,7 @@ fn iterate_all_nodes[G : @core.GraphReadable](graph : G) -> Unit {
   @core.GraphReadable::node_ids(graph)
     |> iter::each(fn(id) {
       match @core.GraphReadable::get_node(graph, id) {
-        Some(data) => println("  ${id}: data=${data}")
+        Some(data) => println("  \{id\}: data=\{data\}")
         None => ()  // 正常情况下不会发生
       }
     })
@@ -272,7 +272,7 @@ fn iterate_nodes_by_index(g : DirectedAdjList) -> Unit {
   for i in 0..n {
     let id = @core.NodeId(i)
     match @core.GraphReadable::get_node(g, id) {
-      Some(data) => println("节点 ${id}: ${data}")
+      Some(data) => println("节点 \{id\}: \{data\}")
       None => ()  // 可能已被删除
     }
   }
@@ -285,11 +285,11 @@ fn iterate_nodes_by_index(g : DirectedAdjList) -> Unit {
 /// 打印图的所有边（用于调试或导出）
 fn print_all_edges[G : @core.GraphReadable](graph : G) -> Unit {
   let m = @core.GraphReadable::edge_count(graph)
-  println("=== 所有边 (共 ${m} 条) ===")
+  println("=== 所有边 (共 \{m\} 条) ===")
 
   @core.GraphReadable::edges(graph)
     |> iter::each(fn((from, to, weight)) {
-      println("${from} --[${weight}]--> ${to}")
+      println("\{from\} --[\{weight\}]--> \{to\}")
     })
 }
 
@@ -314,11 +314,11 @@ fn analyze_weight_distribution[G : @core.GraphReadable](graph : G) -> Unit {
 
   if (count > 0) {
     let avg = sum_weight / count.to_double()
-    println("=== 权重分布 (${count} 条边) ===")
-    println("最小权重: ${min_weight}")
-    println("最大权重: ${max_weight}")
-    println("平均权重: ${avg:.2f}")
-    println("总权重和: ${sum_weight:.2f}")
+    println("=== 权重分布 (\{count\} 条边) ===")
+    println("最小权重: \{min_weight\}")
+    println("最大权重: \{max_weight\}")
+    println("平均权重: \{avg:.2f\}")
+    println("总权重和: \{sum_weight:.2f\}")
   }
 }
 ```
@@ -353,9 +353,9 @@ fn find_common_neighbors[G : @core.GraphReadable](
 
 // 使用示例
 let common_friends = find_common_neighbors(social_graph, alice_id, bob_id)
-println("Alice 和 Bob 的共同好友: ${common_friends.length} 人")
+println("Alice 和 Bob 的共同好友: \{common_friends.length\} 人")
 for friend in common_friends {
-  println("  👤 ${friend}")
+  println("  👤 \{friend\}")
 }
 ```
 
@@ -380,7 +380,7 @@ fn find_strongest_edge[G : @core.GraphReadable](graph : G) -> Option[(NodeId, No
 // 使用示例
 match find_strongest_edge(network) {
   Some((from, to, weight)) =>
-    println("💪 最强连接: ${from} ↔ ${to} (强度: ${weight})")
+    println("💪 最强连接: \{from\} ↔ \{to\} (强度: \{weight\})")
   None => println("图中没有边")
 }
 ```
@@ -640,16 +640,16 @@ fn remove_node_demo() -> Unit {
   }
 
   println("删除前:")
-  println("  节点数: ${@core.GraphReadable::node_count(g)}")  // 5
-  println("  边数: ${@core.GraphReadable::edge_count(g)}")    // 4
+  println("  节点数: \{@core.GraphReadable::node_count(g)\}")  // 5
+  println("  边数: \{@core.GraphReadable::edge_count(g)\}")    // 4
 
   // 删除节点 2（会级联删除边 1→2 和 2→3）
   let removed = @core.GraphWritable::remove_node(g, @core.NodeId(2))
 
   println("\n删除节点 2 后:")
-  println("  删除成功? ${removed}")
-  println("  节点数: ${@core.GraphReadable::node_count(g)}")  // 4
-  println("  边数: ${@core.GraphReadable::edge_count(g)}")    // 2 (只剩下 0→1 和 3→4)
+  println("  删除成功? \{removed\}")
+  println("  节点数: \{@core.GraphReadable::node_count(g)\}")  // 4
+  println("  边数: \{@core.GraphReadable::edge_count(g)\}")    // 2 (只剩下 0→1 和 3→4)
 
   // 验证关联边已被删除
   assert(not @core.GraphReadable::contains_edge(g, @core.NodeId(1), @core.NodeId(2)))
@@ -665,13 +665,13 @@ fn remove_node_demo() -> Unit {
 fn clear_graph_demo() -> Unit {
   let mut g = build_complex_graph()  // 假设有 1000 节点，5000 边
 
-  println("清空前: ${@core.GraphReadable::node_count(g)} 节点")
+  println("清空前: \{@core.GraphReadable::node_count(g)\} 节点")
 
   // 一键清空
   @core.GraphWritable::clear(g)
 
-  println("清空后: ${@core.GraphReadable::node_count(g)} 节点")  // 0
-  println("图是否为空: ${@core.GraphReadable::is_empty(g)}")       // true
+  println("清空后: \{@core.GraphReadable::node_count(g)\} 节点")  // 0
+  println("图是否为空: \{@core.GraphReadable::is_empty(g)\}")       // true
 }
 ```
 
@@ -710,7 +710,7 @@ fn remove_weak_edges(
 
 // 使用示例: 移除所有权重 < 1.0 的弱连接
 let (cleaned_g, count) = remove_weak_edges(network, 1.0)
-println("移除了 ${count} 条弱连接")
+println("移除了 \{count\} 条弱连接")
 ```
 
 ---
@@ -786,7 +786,7 @@ let data = @core.GraphReadable::get_node(g, id).unwrap()  // 如果不存在则�
 
 // 安全: 总是处理 None
 match @core.GraphReadable::get_node(g, id) {
-  Some(data) => println("数据: ${data}")
+  Some(data) => println("数据: \{data\}")
   None => println("节点不存在，跳过")
 }
 ```
@@ -853,7 +853,7 @@ fn social_network_crud_demo() -> Unit {
     let influence = Random::double(0.5, 1.0)  // 随机影响力分数
     let id = @core.GraphWritable::add_node(network, influence)
     users.insert(name, id)
-    println("  创建用户: ${name} (ID: ${id}, 影响力: ${influence:.2f})")
+    println("  创建用户: \{name\} (ID: \{id\}, 影响力: \{influence:.2f\})")
   }
 
   // ========== CREATE (添加关注关系) ==========
@@ -867,7 +867,7 @@ fn social_network_crud_demo() -> Unit {
     let from = users.get(follower).unwrap()
     let to = users.get(followee).unwrap()
     @core.GraphWritable::add_edge(network, from, to, 1.0) |> ignore
-    println("  ${follower} → 关注 → ${followee}")
+    println("  \{follower\} → 关注 → \{followee\}")
   }
 
   // ========== READ (查询) ==========
@@ -875,12 +875,12 @@ fn social_network_crud_demo() -> Unit {
   let alice_id = users.get("Alice").unwrap()
   let out_deg = @core.GraphDirected::out_degree(network, alice_id)
   let in_deg = @core.GraphDirected::in_degree(network, alice_id)
-  println("Alice: 关注了 ${out_deg} 人, 被 ${in_deg} 人关注")
+  println("Alice: 关注了 \{out_deg\} 人, 被 \{in_deg\} 人关注")
 
   println("\n=== Alice 关注的人 ===")
   @core.GraphDirected::successors(network, alice_id)
     |> iter::each(fn((user_id, _)) => {
-      println("  → ${user_id}")
+      println("  → \{user_id\}")
     })
 
   // ========== UPDATE (模拟更新影响力) ==========
@@ -900,12 +900,12 @@ fn social_network_crud_demo() -> Unit {
 
   // ========== READ (验证删除结果) ==========
   println("\n=== 最终状态 ===")
-  println("总用户: ${@core.GraphReadable::node_count(network)}")
-  println("总关注关系: ${@core.GraphReadable::edge_count(network)}")
+  println("总用户: \{@core.GraphReadable::node_count(network)\}")
+  println("总关注关系: \{@core.GraphReadable::edge_count(network)\}")
   println("\n=== 所有关注关系 ===")
   @core.GraphReadable::edges(network)
     |> iter::each(fn((from, to, w)) => {
-      println("${from} → ${to}")
+      println("\{from\} → \{to\}")
     })
 }
 

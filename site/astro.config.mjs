@@ -16,7 +16,7 @@ export default defineConfig({
 		astroExpressiveCode(), // 必须在 mdx 之前（代码高亮）
 		starlight({
 			title: 'mbtgraph - MoonBit 图算法库',
-			description: '生产级图算法库：8种存储 · 49个算法 · 6层Trait。为 MoonBit 生态系统提供专业级的图数据结构与算法解决方案。',
+			description: '生产级图算法库：8种存储 · 90+个算法 · 5层Trait。为 MoonBit 生态系统提供专业级的图数据结构与算法解决方案。',
 			// 暂时移除 logo 图片配置（避免 favicon 路径问题）
 			// 后续可恢复: logo: { src: '/favicon.svg', replacesTitle: false },
 			// 注意：Starlight 已内置 GFM 支持，无需额外配置 remark-gfm
@@ -58,7 +58,7 @@ export default defineConfig({
 						'@context': 'https://schema.org',
 						'@type': 'WebSite',
 						name: 'mbtgraph - MoonBit 图算法库',
-						description: '生产级图算法库：8种存储 · 49个算法 · 6层Trait',
+						description: '生产级图算法库：8种存储 · 90+个算法 · 5层Trait',
 						url: 'https://mbtgraph.moonbit.dev',
 						potentialAction: {
 							'@type': 'SearchAction',

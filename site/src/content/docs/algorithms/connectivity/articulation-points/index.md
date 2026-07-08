@@ -133,14 +133,14 @@ fn cutpoint_demo() -> Unit {
   let g = build_sample_graph()
   let result = @cutpoints.find_articulation_points_and_bridges(g)
 
-  println("割点数量: ${result.count_ap}")
+  println("割点数量: \{result.count_ap\}")
   for ap in result.articulation_points {
-    println("  割点: NodeId(${ap.0})")
+    println("  割点: NodeId(\{ap.0\})")
   }
 
-  println("桥数量: ${result.count_bridges}")
+  println("桥数量: \{result.count_bridges\}")
   for (u, v) in result.bridges {
-    println("  桥: NodeId(${u.0}) — NodeId(${v.0})")
+    println("  桥: NodeId(\{u.0\}) — NodeId(\{v.0\})")
   }
 }
 ```

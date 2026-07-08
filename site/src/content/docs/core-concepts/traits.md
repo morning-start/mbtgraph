@@ -147,12 +147,12 @@ if (@core.GraphReadable::contains_edge(graph, from, to)) { ... }
 ```moonbit
 // 返回 Option，必须处理 None 情况
 match @core.GraphReadable::get_node(graph, id) {
-  Some(data) => println("节点数据: ${data}")
+  Some(data) => println("节点数据: \{data\}")
   None => println("节点不存在")
 }
 
 match @core.GraphReadable::get_edge(graph, from, to) {
-  Some(weight) => println("边权重: ${weight}")
+  Some(weight) => println("边权重: \{weight\}")
   None => println("边不存在")
 }
 ```
@@ -167,7 +167,7 @@ match @core.GraphReadable::get_edge(graph, from, to) {
 // 方式 2: 获取带权重的邻居（推荐，避免二次查询）
 @core.GraphReadable::neighbors_with_weight(graph, id)
   |> iter::each(fn((neighbor_id, weight)) {
-    println("${id} -> ${neighbor_id} (${weight})")
+    println("\{id\} -> \{neighbor_id\} (\{weight\})")
   })
 
 // 方式 3: 获取度数
@@ -225,10 +225,10 @@ pub fn[G : @core.GraphReadable] print_info(graph : G) -> Unit {
   let avg_deg = average_degree(graph)
 
   println("=== 图统计信息 ===")
-  println("节点数: ${n}")
-  println("边数: ${m}")
-  println("平均度数: ${avg_deg:.2f}")
-  println("是否有向: ${@core.GraphReadable::is_directed(graph)}")
+  println("节点数: \{n\}")
+  println("边数: \{m\}")
+  println("平均度数: \{avg_deg:.2f\}")
+  println("是否有向: \{@core.GraphReadable::is_directed(graph)\}")
 }
 
 // 使用示例
@@ -302,10 +302,10 @@ match @core.GraphWritable::add_edge(g, id0, id1, 5.0) {
 fn handle_error(e : GraphError) -> Unit {
   match e {
     NodeNotFound(id) =>
-      println("❌ 错误: 节点 ${id} 不存在，请先添加节点")
+      println("❌ 错误: 节点 \{id\} 不存在，请先添加节点")
 
     EdgeAlreadyExists(from, to) =>
-      println("⚠️ 警告: 边 (${from}, ${to}) 已存在")
+      println("⚠️ 警告: 边 (\{from\}, \{to\}) 已存在")
 
     InvalidNodeId =>
       println("❌ 错误: 无效的节点 ID")
@@ -337,7 +337,7 @@ if (@core.GraphWritable::remove_edge(g, from, to)) {
 
 ```moonbit
 @core.GraphWritable::clear(g)  // 移除所有节点和边
-println("图已清空，当前节点数: ${@core.GraphReadable::node_count(g)}")  // 0
+println("图已清空，当前节点数: \{@core.GraphReadable::node_count(g)\}")  // 0
 ```
 
 ### 适用范围
@@ -425,9 +425,9 @@ pub fn[G : @core.GraphDirected] analyze_connectivity(graph : G, id : NodeId) -> 
   let in_deg = @core.GraphDirected::in_degree(graph, id)
   let out_deg = @core.GraphDirected::out_degree(graph, id)
 
-  println("=== 节点 ${id} 连接分析 ===")
-  println("入度 (被多少人关注): ${in_deg}")
-  println("出度 (关注了多少人): ${out_deg}")
+  println("=== 节点 \{id\} 连接分析 ===")
+  println("入度 (被多少人关注): \{in_deg\}")
+  println("出度 (关注了多少人): \{out_deg\}")
 
   if (in_deg > out_deg * 2) {
     println("⭐ 该节点是影响力节点（被高度关注）")
@@ -439,7 +439,7 @@ pub fn[G : @core.GraphDirected] analyze_connectivity(graph : G, id : NodeId) -> 
   println("\n粉丝列表:")
   @core.GraphDirected::predecessors(graph, id)
     |> iter::each(fn((fan_id, _)) {
-      println("  ← 来自节点 ${fan_id}")
+      println("  ← 来自节点 \{fan_id\}")
     })
 }
 
@@ -522,14 +522,14 @@ pub fn[G : @core.GraphFull] dynamic_analysis_demo(graph : G) -> Unit {
   let out_deg = @core.GraphDirected::out_degree(graph, new_id)
 
   // 3. 基础查询（继承自 GraphReadable）
-  println("新节点: 入度=${in_deg}, 出度=${out_deg}")
+  println("新节点: 入度=\{in_deg\}, 出度=\{out_deg\}")
 
   // 4. 复合操作
   @core.GraphDirected::predecessors(graph, new_id)
     |> iter::each(fn((pred, w)) {
       // 可以安全地调用任何三层方法
       if (@core.GraphReadable::contains_edge(graph, pred, new_id)) {
-        println("确认边存在: ${pred} -> ${new_id}")
+        println("确认边存在: \{pred\} -> \{new_id\}")
       }
     })
 }

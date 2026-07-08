@@ -96,12 +96,12 @@ fn cc_demo() -> Unit {
   let g = build_sample_undirected_graph()
   let result = @connectivity.connected_components(g)
 
-  println("连通分量数量: ${result.count}")
-  println("是否全连通: ${result.is_connected}")
-  println("最大分量大小: ${result.largest_component_size}")
+  println("连通分量数量: \{result.count\}")
+  println("是否全连通: \{result.is_connected\}")
+  println("最大分量大小: \{result.largest_component_size\}")
 
   for (i, comp) in result.components.indexed() {
-    println("分量 #${i}: ${comp}")
+    println("分量 #\{i\}: \{comp\}")
   }
 }
 ```

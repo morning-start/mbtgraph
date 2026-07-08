@@ -105,7 +105,7 @@ let _ = @core.GraphWritable::add_edge(g, n0, n1, 1.0)
 GraphReadable (12方法, 所有存储)
 ├── GraphWritable      (+5, 动态存储)
 ├── GraphDirected      (+6, 入边查询)
-│   └── GraphFull      = Writable + Directed
+│   └── GraphFull      = GraphWritable + GraphDirected
 └── GraphBatchReadable (+2, CSR/CSC 专属)
 ```
 

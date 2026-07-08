@@ -83,7 +83,7 @@ let charlie = @core.GraphWritable::add_node(g, 0.88)  // Charlie
 // 查询入度/出度（O(1)）
 let out_deg = @core.GraphDirected::out_degree(g, alice)
 let in_deg = @core.GraphDirected::in_degree(g, alice)
-println("Alice: 出度=${out_deg}, 入度=${in_deg}")
+println("Alice: 出度=\{out_deg\}, 入度=\{in_deg\}")
 
 // 批量建图优化（跳过重复检查）
 let edges : Array[(@core.NodeId, @core.NodeId, Double)] = [
@@ -91,8 +91,8 @@ let edges : Array[(@core.NodeId, @core.NodeId, Double)] = [
   (bob, charlie, 3.0),
 ]
 match g.add_edges_batch(edges) {
-  Ok(count) => println("批量添加 ${count} 条边成功")
-  Err(e) => println("错误: ${e}")
+  Ok(count) => println("批量添加 \{count\} 条边成功")
+  Err(e) => println("错误: \{e\}")
 }
 ```
 
@@ -171,7 +171,7 @@ let id3 = @core.NodeId(3)
 if (@core.GraphReadable::contains_edge(g, id0, id3)) {
   let weight = @core.GraphReadable::get_edge(g, id0, id3)
   match weight {
-    Some(w) => println("边 (0→3) 权重: ${w}")
+    Some(w) => println("边 (0→3) 权重: \{w\}")
     None => ()
   }
 }
@@ -245,7 +245,7 @@ let n3 = @core.GraphWritable::add_node(g, 0.0)
 
 // 使用 GraphReadable 获取边总数
 // @core.GraphReadable::edge_count(g)
-println("边总数: ${@core.GraphReadable::edge_count(g)}")
+println("边总数: \{@core.GraphReadable::edge_count(g)\}")
 ```
 
 #### 优势与限制
@@ -337,16 +337,16 @@ builder = builder.add_edge(@core.NodeId(1), @core.NodeId(2), 3.0)
 match builder.build() {
   Ok(csr_graph) => {
     println("CSR 构建成功!")
-    println("节点数: ${@core.GraphReadable::node_count(csr_graph)}")
+    println("节点数: \{@core.GraphReadable::node_count(csr_graph)\}")
 
     // 使用批量接口加速查询
     let ids = [@core.NodeId(0), @core.NodeId(1)]
     let batches = @core.GraphBatchReadable::batch_neighbors(csr_graph, ids)
     for (i, neighbors) in batches.indexed() {
-      println("节点 ${ids[i]} 的邻居: ${neighbors}")
+      println("节点 \{ids[i]\} 的邻居: \{neighbors\}")
     }
   }
-  Err(e) => println("构建失败: ${e}")
+  Err(e) => println("构建失败: \{e\}")
 }
 ```
 
@@ -410,10 +410,10 @@ match csc_builder.build() {
     let preds = @core.GraphDirected::predecessors(csc, @core.NodeId(1))
     println("指向节点 1 的前驱:")
     preds |> iter::each(fn((src, w)) {
-      println("  ← 节点 ${src} (权重: ${w})")
+      println("  ← 节点 \{src\} (权重: \{w\})")
     })
   }
-  Err(e) => println("错误: ${e}")
+  Err(e) => println("错误: \{e\}")
 }
 ```
 
@@ -474,7 +474,7 @@ let c = @core.GraphWritable::add_node(g, 0.0)
 println("A 的邻居:")
 @core.GraphReadable::neighbors_with_weight(g, a)
   |> iter::each(fn((nbr, w)) {
-    println("  ↔ ${nbr} (${w})")
+    println("  ↔ \{nbr\} (\{w\})")
   })
 ```
 

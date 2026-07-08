@@ -147,8 +147,8 @@ fn dinic_demo() -> Unit {
   let net = net.add_edge(2, 3, 9.0)
 
   let result = @flow.dinic(net, 0, 3)
-  println("Dinic 最大流量: ${result.max_flow}")
-  println("Phase 数: ${result.iteration_count}")
+  println("Dinic 最大流量: \{result.max_flow\}")
+  println("Phase 数: \{result.iteration_count\}")
 }
 ```
 

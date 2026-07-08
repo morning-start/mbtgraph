@@ -111,9 +111,9 @@ fn hungarian_demo() -> Unit {
     (0, 0), (0, 1), (1, 1), (1, 2), (2, 0), (2, 2)
   ]
   let result = @matching.bipartite_matching(3, 3, edges)
-  println("最大匹配数: ${result.cardinality}")
+  println("最大匹配数: \{result.cardinality\}")
   for (u, v) in result.matching_edges {
-    println("  NodeId(${u.0}) ↔ NodeId(${v.0})")
+    println("  NodeId(\{u.0\}) ↔ NodeId(\{v.0\})")
   }
 }
 ```

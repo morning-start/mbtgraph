@@ -151,10 +151,10 @@ fn floyd_warshall_demo() -> Unit {
       let from = @core.NodeId(0); let to = @core.NodeId(3)
       let dist = result.distance_between(from, to)
       let path = result.path_from_to(from, to)
-      println("0 → 3 最短距离: ${dist}")
-      println("路径: ${path}")
+      println("0 → 3 最短距离: \{dist\}")
+      println("路径: \{path\}")
     }
-    Err(msg) => println("检测到负环: ${msg}")
+    Err(msg) => println("检测到负环: \{msg\}")
   }
 }
 ```
