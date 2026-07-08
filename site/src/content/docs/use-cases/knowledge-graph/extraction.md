@@ -68,7 +68,7 @@ let TYPE_MOVIE  = 2.0   // 电影
 ### 建图
 
 ```moonbit
-let mut kg = @storage.DirectedAdjList::new()
+let mut kg = @storage.new_directed()
 
 // ── 添加人物实体 ──
 let nolan   = @core.GraphWritable::add_node(kg, TYPE_PERSON)  // 0
@@ -305,7 +305,7 @@ println(json_str)
 
 ```moonbit
 fn main {
-  let mut kg = @storage.DirectedAdjList::new()
+  let mut kg = @storage.new_directed()
 
   // 实体
   let nolan    = @core.GraphWritable::add_node(kg, 1.0)

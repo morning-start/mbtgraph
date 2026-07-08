@@ -231,7 +231,7 @@ kg → write_dot() ────────→  │ Cytoscape.js  │
 ```moonbit
 // MoonBit: 构建知识图谱 + 导出 JSON
 fn export_kg() -> String {
-  let mut kg = @storage.DirectedAdjList::new()
+  let mut kg = @storage.new_directed()
   // ... 添加节点和边 ...
   @io.graph_to_json(kg, true)
 }
@@ -257,7 +257,7 @@ fetch('/api/kg.json')
 
 ```moonbit
 fn main {
-  let mut kg = @storage.DirectedAdjList::new()
+  let mut kg = @storage.new_directed()
 
   // 实体
   let nolan    = @core.GraphWritable::add_node(kg, 1.0)

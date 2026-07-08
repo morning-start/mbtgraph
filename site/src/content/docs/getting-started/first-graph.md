@@ -30,37 +30,40 @@ cd social_network
 
 fn main {
   // 1️⃣ 创建有向邻接表（存储结构）
-  let mut g = @storage.DirectedAdjList::new()
+  let g = @storage.new_directed()
 
-  // 2️⃣ 添加节点（用户）
-  g = @core.GraphWritable::add_node(g, "Alice") |> ignore
-  g = @core.GraphWritable::add_node(g, "Bob") |> ignore
-  g = @core.GraphWritable::add_node(g, "Charlie") |> ignore
-  g = @core.GraphWritable::add_node(g, "Diana") |> ignore
-  g = @core.GraphWritable::add_node(g, "Eve") |> ignore
+  // 2️⃣ 添加节点（用户），返回 NodeId
+  let n0 = @core.GraphWritable::add_node(g, 0.0)
+  let n1 = @core.GraphWritable::add_node(g, 1.0)
+  let n2 = @core.GraphWritable::add_node(g, 2.0)
+  let n3 = @core.GraphWritable::add_node(g, 3.0)
+  let n4 = @core.GraphWritable::add_node(g, 4.0)
 
   // 3️⃣ 添加边（关注关系）
-  // Alice -> Bob, Charlie
-  g = @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0) |> ignore
-  g = @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(2), 1.0) |> ignore
+  // 0 -> 1, 2
+  @core.GraphWritable::add_edge(g, n0, n1, 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, n0, n2, 1.0) |> ignore
 
-  // Bob -> Diana
-  g = @core.GraphWritable::add_edge(g, @core.NodeId(1), @core.NodeId(3), 1.0) |> ignore
+  // 1 -> 3
+  @core.GraphWritable::add_edge(g, n1, n3, 1.0) |> ignore
 
-  // Charlie -> Eve
-  g = @core.GraphWritable::add_edge(g, @core.NodeId(2), @core.NodeId(4), 1.0) |> ignore
+  // 2 -> 4
+  @core.GraphWritable::add_edge(g, n2, n4, 1.0) |> ignore
 
-  // 4️⃣ 执行 BFS 遍历（从 Alice 出发）
-  let result = @traversal.bfs(g, @core.NodeId(0))
+  // 4️⃣ 执行 BFS 遍历（从节点 0 出发）
+  let result = @traversal.bfs(g, n0)
 
   // 5️⃣ 输出结果
   println("=== 社交网络分析 ===")
-  println("总用户数: \(g.node_count())")
-  println("总关注关系: \(g.edge_count())")
+  println("总用户数: \{g.node_count()}")
+  println("总关注关系: \{g.edge_count()}")
   println("")
-  println("从 Alice 出发的 BFS 层级:")
-  for level in result.levels {
-    println("  层级 \(level.depth): \(level.nodes)")
+  println("从节点 0 出发的 BFS 层级:")
+  for i in 0..<g.node_count() {
+    let level = result.levels[i]
+    if level >= 0 {
+      println("  节点 \{i}: 层级 \{level}")
+    }
   }
 }
 ```
@@ -78,10 +81,12 @@ moon run src/main/main.mbt
 总用户数: 5
 总关注关系: 4
 
-从 Alice 出发的 BFS 层级:
-  层级 0: [Alice]
-  层级 1: [Bob, Charlie]
-  层级 2: [Diana, Eve]
+从节点 0 出发的 BFS 层级:
+  节点 0: 层级 0
+  节点 1: 层级 1
+  节点 2: 层级 1
+  节点 3: 层级 2
+  节点 4: 层级 2
 ```
 
 ## 代码解析
@@ -94,19 +99,20 @@ moon run src/main/main.mbt
 - ✅ 高效的邻居查询 O(k)，k 为邻居数
 - ✅ 适合大多数场景
 
-### 链式赋值模式
+### 可变图 API
 
-注意每次调用 `@core.GraphWritable::add_node/add_edge` 后都重新赋值给 `g`：
+mbtgraph 的存储结构采用**就地修改（mutable）** 设计：
 
 ```moonbit
-let mut g = @storage.DirectedAdjList::new()
-g = @core.GraphWritable::add_node(g, "Alice")  // 返回新的图实例
+let g = @storage.new_directed()
+let n0 = @core.GraphWritable::add_node(g, 0.0)  // g 就地修改，返回 NodeId
 ```
 
-这是 mbtgraph 的**纯函数语义**设计：
-- 每次修改返回新的不可变实例
-- 原始数据不会被修改
-- 便于推理、调试和并行化
+- `add_node` 直接在原图上添加节点，返回新节点的 `NodeId`
+- `add_edge` 直接在原图上添加边，返回 `Result[Unit, GraphError]`
+- 所有修改操作都通过 `GraphWritable` trait 完成
+
+这种设计简单直观，适合多数场景。
 
 ### 泛型函数调用
 

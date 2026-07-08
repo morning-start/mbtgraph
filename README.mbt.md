@@ -32,39 +32,29 @@
 moon add morning-start/mbtgraph
 ```
 
-安装后，还需要在使用这些 API 的目标包 `moon.pkg` 中（而非 `.mbt` 源文件中）添加依赖：
-
-```moonbit
-// 在 moon.pkg 中添加以下依赖：
-import {
-  "morning-start/mbtgraph/lib/core",
-  "morning-start/mbtgraph/lib/storage",
-  "morning-start/mbtgraph/lib/algo/traversal",
-  "morning-start/mbtgraph/lib/algo/shortest_path",
-}
-```
-
-然后在 `.mbt` 源文件中直接使用 `@core`、`@storage` 等别名，无需 `import` 语句：
+`moon add` 会自动配置好依赖。然后在 `.mbt` 源文件中直接使用 `@core`、`@storage` 等别名：
 
 ```moonbit
 // 1. 创建图 → 2. 跑算法 → 3. 拿结果
-let g = @storage.new_directed()
-let n0 = @core.GraphWritable::add_node(g, 0.0)
-let n1 = @core.GraphWritable::add_node(g, 1.0)
-let n2 = @core.GraphWritable::add_node(g, 2.0)
-let n3 = @core.GraphWritable::add_node(g, 3.0)
-@core.GraphWritable::add_edge(g, n0, n1, 1.0) |> ignore
-@core.GraphWritable::add_edge(g, n1, n2, 2.0) |> ignore
-@core.GraphWritable::add_edge(g, n0, n2, 4.0) |> ignore
-@core.GraphWritable::add_edge(g, n2, n3, 1.0) |> ignore
+fn main {
+  let g = @storage.new_directed()
+  let n0 = @core.GraphWritable::add_node(g, 0.0)
+  let n1 = @core.GraphWritable::add_node(g, 1.0)
+  let n2 = @core.GraphWritable::add_node(g, 2.0)
+  let n3 = @core.GraphWritable::add_node(g, 3.0)
+  @core.GraphWritable::add_edge(g, n0, n1, 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, n1, n2, 2.0) |> ignore
+  @core.GraphWritable::add_edge(g, n0, n2, 4.0) |> ignore
+  @core.GraphWritable::add_edge(g, n2, n3, 1.0) |> ignore
 
-// BFS 遍历
-let bfs_result = @traversal.bfs(g, n0)
-bfs_result.distance(n3)              // => 2
+  // BFS 遍历
+  let bfs_result = @traversal.bfs(g, n0)
+  println("BFS 0 → 3 最短跳数: \{bfs_result.distance(n3)}")   // => 2
 
-// Dijkstra 最短路径
-let sp_result = @shortest_path.dijkstra(g, n0)
-sp_result.distance_to(n3)           // => 4.0
+  // Dijkstra 最短路径
+  let sp_result = @shortest_path.dijkstra(g, n0)
+  println("Dijkstra 0 → 3 最短距离(带权): \{sp_result.distance_to(n3)}")  // => 4.0
+}
 ```
 
 > 更多完整示例见 [`*_test.mbt`](lib/algo/traversal/)或[文档站点 → 教程](https://morning-start.github.io/mbtgraph/getting-started/first-graph/)。

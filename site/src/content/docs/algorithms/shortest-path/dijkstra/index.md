@@ -115,14 +115,30 @@ pub fn[G : @core.GraphReadable] dijkstra(
 
 ```moonbit
 fn dijkstra_demo() -> Unit {
-  let g = build_sample_weighted_graph()
+  // 构建一个示例加权有向图
+  let g = @storage.new_directed()
+  let n0 = @core.GraphWritable::add_node(g, 0.0)
+  let n1 = @core.GraphWritable::add_node(g, 1.0)
+  let n2 = @core.GraphWritable::add_node(g, 2.0)
+  let n3 = @core.GraphWritable::add_node(g, 3.0)
+  let n4 = @core.GraphWritable::add_node(g, 4.0)
+  let n5 = @core.GraphWritable::add_node(g, 5.0)
+  @core.GraphWritable::add_edge(g, n0, n1, 4.0) |> ignore
+  @core.GraphWritable::add_edge(g, n0, n2, 2.0) |> ignore
+  @core.GraphWritable::add_edge(g, n1, n3, 5.0) |> ignore
+  @core.GraphWritable::add_edge(g, n2, n1, 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, n2, n3, 8.0) |> ignore
+  @core.GraphWritable::add_edge(g, n2, n4, 3.0) |> ignore
+  @core.GraphWritable::add_edge(g, n3, n5, 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, n4, n5, 2.0) |> ignore
+
   let result = @shortest_path.dijkstra(g, @core.NodeId(0))
 
   let target = @core.NodeId(5)
   let dist = result.distance_to(target)
   let path = result.path_to(target)
-  println("0 → 5 的最短距离: ${dist}")
-  println("路径: ${path.map(fn(id) { id.to_string() }).join(" → ")}")
+  println("0 → 5 的最短距离: \{dist}")
+  println("路径: \{path}")
 }
 ```
 

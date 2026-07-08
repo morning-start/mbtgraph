@@ -57,18 +57,16 @@ let unweighted = None
 
 ```moonbit
 pub trait GraphReadable {
-  node_count(self) -> Int          // 节点数
-  edge_count(self) -> Int          // 边数
-  has_node(self, NodeId) -> Bool   // 节点是否存在
-  has_edge(self, NodeId, NodeId) -> Bool  // 边是否存在
-  neighbors(self, NodeId) -> Array[NodeId]  // 邻居列表
-  degree(self, NodeId) -> Int       // 度数
-  nodes(self) -> Array[Node]        // 所有节点
-  edges(self) -> Array[Edge]        // 所有边
-  get_node(self, NodeId) -> Node?   // 获取节点数据
-  get_edge(self, NodeId, NodeId) -> Edge?  // 获取边数据
-  in_degree(self, NodeId) -> Int     // 入度（有向图）
-  out_degree(self, NodeId) -> Int    // 出度（有向图）
+  node_count(self) -> Int               // 节点数
+  edge_count(self) -> Int               // 边数
+  contains_node(self, NodeId) -> Bool   // 节点是否存在
+  contains_edge(self, NodeId, NodeId) -> Bool  // 边是否存在
+  neighbors(self, NodeId) -> Iter[NodeId]      // 邻居列表
+  degree(self, NodeId) -> Int            // 度数
+  node_ids(self) -> Iter[NodeId]         // 所有节点 ID
+  edges(self) -> Iter[(NodeId, NodeId, Double)]  // 所有边 (from, to, weight)
+  get_node(self, NodeId) -> Double?      // 获取节点数据
+  get_edge(self, NodeId, NodeId) -> Double?  // 获取边数据
 }
 ```
 
@@ -78,11 +76,11 @@ pub trait GraphReadable {
 
 ```moonbit
 pub trait GraphWritable : GraphReadable {
-  add_node(self, data) -> Result[...]     // 添加节点
-  remove_node(self, NodeId) -> Result[...] // 删除节点
-  add_edge(self, s, t, w) -> Result[...]  // 添加边
-  remove_edge(self, s, t) -> Result[...]  // 删除边
-  update_weight(self, s, t, w) -> Result[...]  // 更新权重
+  add_node(Self, Double) -> NodeId               // 添加节点，返回 NodeId
+  remove_node(Self, NodeId) -> Bool               // 删除节点
+  add_edge(Self, NodeId, NodeId, Double) -> Result[Unit, GraphError]  // 添加边
+  remove_edge(Self, NodeId, NodeId) -> Bool       // 删除边
+  clear(Self) -> Unit                             // 清空图
 }
 ```
 
@@ -152,13 +150,13 @@ mbtgraph 使用 `Result[T, E]` 类型处理错误：
 
 ```moonbit
 match @core.GraphWritable::add_edge(g, invalid_source, target, 1.0) {
-  Ok(new_g) => {
-    // 成功：使用 new_g
+  Ok(_) => {
+    // 成功
   }
   Err(e) => {
     // 错误：处理错误情况
     match e {
-      @core.GraphError::NodeNotFound(id) => println("节点 \(id) 不存在")
+      @core.GraphError::NodeNotFound(id) => println("节点 \{id} 不存在")
       @core.GraphError::DuplicateEdge => println("边已存在")
       _ => println("未知错误")
     }

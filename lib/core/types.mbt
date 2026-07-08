@@ -10,6 +10,12 @@ pub fn NodeId::to_string(self : NodeId) -> String {
 }
 
 ///|
+impl Show for NodeId with fn output(self : NodeId, logger : &Logger) -> Unit {
+  let NodeId(val) = self
+  logger.write_string(val.to_string())
+}
+
+///|
 /// 带数据的节点
 ///
 /// MVP 阶段数据固定为 `Double`，后续可泛型化为 `Node[T]`

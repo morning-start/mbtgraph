@@ -41,7 +41,7 @@ description: 基于二分图邻居的协同过滤推荐，使用共同邻居、J
 沿用[上一节](/use-cases/recommendation-system/bipartite)的用户-物品二分图：
 
 ```moonbit
-let mut graph = @storage.UndirectedAdjList::new()
+let mut graph = @storage.new_undirected()
 
 let users = [
   @core.GraphWritable::add_node(graph, 0.0),  // 0: 小明
@@ -337,7 +337,7 @@ for other_item in items {
 ```moonbit
 fn main {
   // 建图（同上）
-  let mut graph = @storage.UndirectedAdjList::new()
+  let mut graph = @storage.new_undirected()
   let users = [| 0 => 小明 ... |]    // 省略重复代码，参见完整示例
   let items = [| 5 => 手机 ... |]
 

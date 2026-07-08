@@ -118,7 +118,7 @@ pub fn[G : @core.GraphReadable] louvain(
 
 ```moonbit
 fn louvain_demo() -> Unit {
-  let mut g = @storage.UndirectedAdjList::new()
+  let mut g = @storage.new_undirected()
   let n = [@core.GraphWritable::add_node(g, 0.0); 10]
 
   // 3 个三角形 + 弱连接

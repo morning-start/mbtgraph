@@ -72,7 +72,7 @@ let dot = @io.write_dot(g, "my_graph")
 println(dot)
 
 // DOT 反序列化
-let result = @io.parse_dot_into(dot_string)
+let result = @io.parse_dot_into(graph, dot_string)
 match result {
   Ok(g) => // 使用图
   Err(e) => println("Parse error: \{e}")

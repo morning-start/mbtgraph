@@ -41,7 +41,11 @@ digraph G {
 
 ```json
 {
-  "nodes": [{"id": 0, "data": "A"}, {"id": 1, "data": "B"}],
+  "mbtgraph": "1.0",
+  "directed": true,
+  "node_count": 2,
+  "edge_count": 1,
+  "nodes": [0, 1],
   "edges": [
     {"source": 0, "target": 1, "weight": 1.0}
   ]

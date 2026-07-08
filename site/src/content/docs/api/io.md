@@ -35,7 +35,7 @@ let dot = @io.write_dot(my_graph, "my_graph")
 // 导入
 match @io.parse_dot_into(graph, dot) {
   Ok(_) => println("导入成功")
-  Err(e) => println("导入失败: \(e)")
+  Err(e) => println("导入失败: \{e}")
 }
 ```
 
@@ -129,7 +129,7 @@ pub(all) enum IOError {
 
 ```moonbit
 fn main {
-  let mut g = @storage.DirectedAdjList::new()
+  let g = @storage.new_directed()
   let n1 = @core.GraphWritable::add_node(g, 1.0)
   let n2 = @core.GraphWritable::add_node(g, 2.0)
   let _ = @core.GraphWritable::add_edge(g, n1, n2, 5.0)
@@ -142,7 +142,7 @@ fn main {
 
   // 图统计
   let s = @io.basic_stats(g)
-  println("节点:\(s.node_count) 边:\(s.edge_count) 密度:\(s.density)")
+  println("节点:\{s.node_count} 边:\{s.edge_count} 密度:\{s.density}")
 }
 ```
 

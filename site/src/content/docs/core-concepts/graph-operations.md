@@ -11,7 +11,7 @@ description: 查询和修改图数据的完整 CRUD 指南：Read/Create/Update/
 
 ```moonbit
 // === CREATE (创建) ===
-let mut g = @storage.DirectedAdjList::new()
+let mut g = @storage.new_directed()
 let id_a = @core.GraphWritable::add_node(g, 1.0)
 let id_b = @core.GraphWritable::add_node(g, 2.0)
 @core.GraphWritable::add_edge(g, id_a, id_b, 10.0) |> ignore
@@ -44,7 +44,7 @@ let g = update_node_data(g, id_a, 99.0)  // 自定义更新函数
 
 ```moonbit
 fn check_node_example() -> Unit {
-  let mut g = @storage.DirectedAdjList::new()
+  let mut g = @storage.new_directed()
   let id = @core.GraphWritable::add_node(g, 42.0)
 
   // 方式 1: Bool 返回值
@@ -393,7 +393,7 @@ fn extract_subgraph(
   original : DirectedAdjList,
   nodes_to_keep : Set[NodeId]
 ) -> DirectedAdjList {
-  let mut sub_g = @storage.DirectedAdjList::new()
+  let mut sub_g = @storage.new_directed()
 
   // 创建旧 ID 到新 ID 的映射
   let mut old_to_new : Map[NodeId, NodeId] = Map::new()
@@ -602,7 +602,7 @@ fn update_via_edgelist(g : DirectedAdjList) -> EdgeList {
 
 ```moonbit
 fn remove_edge_example() -> Unit {
-  let mut g = @storage.DirectedAdjList::new()
+  let mut g = @storage.new_directed()
   let a = @core.GraphWritable::add_node(g, 0.0)
   let b = @core.GraphWritable::add_node(g, 0.0)
   @core.GraphWritable::add_edge(g, a, b, 10.0) |> ignore
@@ -827,11 +827,11 @@ let nbrs3 = @core.GraphDirected::out_neighbors(g, id)
 
 ```moonbit
 // 错误: 期望 add_node 会修改原始图
-let mut g = @storage.DirectedAdjList::new()
+let mut g = @storage.new_directed()
 @core.GraphWritable::add_node(g, 1.0)  // ⚠️ 返回值被忽略! g 未改变!
 
 // 正确: 接收新的图实例
-let g = @storage.DirectedAdjList::new()
+let g = @storage.new_directed()
 let g = @core.GraphWritable::add_node(g, 1.0)  // g 现在包含新节点
 ```
 
@@ -844,7 +844,7 @@ let g = @core.GraphWritable::add_node(g, 1.0)  // g 现在包含新节点
 ```moonbit
 /// 模拟一个简单的社交网络管理系统的 CRUD 操作
 fn social_network_crud_demo() -> Unit {
-  let mut network = @storage.DirectedAdjList::new()
+  let mut network = @storage.new_directed()
 
   // ========== CREATE ==========
   println("=== 创建用户 ===")

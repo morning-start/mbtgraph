@@ -43,7 +43,7 @@ let node0 = @core.NodeId(0)
 let node1 = @core.NodeId(1)
 
 // 方式 2: 从 add_node 返回值获取（推荐）
-let g = @storage.DirectedAdjList::new()
+let g = @storage.new_directed()
 let id = @core.GraphWritable::add_node(g, 100.0)  // 返回 NodeId
 
 // 方式 3: 从迭代器获取
@@ -200,7 +200,7 @@ let edge_ba = @core.Edge {
 
 ```moonbit
 // 添加边到图
-let g = @storage.DirectedAdjList::new()
+let g = @storage.new_directed()
 let g = @core.GraphWritable::add_node(g, 0.0)  // 节点 0
 let g = @core.GraphWritable::add_node(g, 0.0)  // 节点 1
 let result = @core.GraphWritable::add_edge(
@@ -256,7 +256,7 @@ println("节点 0 的加权邻居:")
 ```moonbit
 fn build_social_network() -> DirectedAdjList {
   // 创建空的有向邻接表
-  let mut g = @storage.DirectedAdjList::new()
+  let mut g = @storage.new_directed()
 
   // 添加用户节点
   let alice_id = @core.GraphWritable::add_node(g, 0.95)   // Alice
@@ -327,7 +327,7 @@ match @core.GraphWritable::add_edge(g, from, to, weight) {
 
 ```moonbit
 // ✅ 正确: 先添加所有节点，再添加边
-let mut g = @storage.DirectedAdjList::new()
+let mut g = @storage.new_directed()
 let ids = Array::map(
   Array::range(0, 100),
   fn(i) { @core.GraphWritable::add_node(g, 0.0) }
@@ -341,7 +341,7 @@ let ids = Array::map(
 
 ```moonbit
 // MoonBit 的纯函数语义要求消费返回值
-let g = @storage.DirectedAdjList::new()
+let g = @storage.new_directed()
 let g = @core.GraphWritable::add_node(g, 1.0)     // 必须接收新实例
 let g = @core.GraphWritable::add_node(g, 2.0)
 let g = @core.GraphWritable::add_edge(g, id0, id1, 3.0) |> ignore  // 或显式 ignore

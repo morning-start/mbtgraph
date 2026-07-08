@@ -276,7 +276,7 @@ for (i, vec) in adj_vecs {
 ```moonbit
 fn main {
   // 建图（省略重复代码，参见前面章节）
-  let mut graph = @storage.UndirectedAdjList::new()
+  let mut graph = @storage.new_undirected()
   let users = [...]   // 5 个用户节点
   let items = [...]   // 6 个商品节点
   // 添加交互...

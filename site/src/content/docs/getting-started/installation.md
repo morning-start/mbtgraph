@@ -58,7 +58,7 @@ moon add mbtgraph
 ```moonbit
 // 测试 mbtgraph 是否正确导入
 fn main {
-  let g = @storage.DirectedAdjList::new()
+  let g = @storage.new_directed()
   println("mbtgraph 安装成功！")
 }
 ```

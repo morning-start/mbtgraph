@@ -99,16 +99,27 @@ pub fn[G : @core.GraphReadable] bfs(
 
 ```moonbit
 fn bfs_demo() -> Unit {
-  let g = build_sample_undirected_graph()
+  // 构建一个示例无向图
+  let g = @storage.new_undirected()
+  let n0 = @core.GraphWritable::add_node(g, 0.0)
+  let n1 = @core.GraphWritable::add_node(g, 1.0)
+  let n2 = @core.GraphWritable::add_node(g, 2.0)
+  let n3 = @core.GraphWritable::add_node(g, 3.0)
+  let n4 = @core.GraphWritable::add_node(g, 4.0)
+  @core.GraphWritable::add_edge(g, n0, n1, 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, n0, n2, 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, n1, n3, 1.0) |> ignore
+  @core.GraphWritable::add_edge(g, n2, n4, 1.0) |> ignore
+
   let result = @traversal.bfs(g, @core.NodeId(0))
 
   println("=== BFS 遍历结果 ===")
-  println("访问顺序: ${result.base.order}")
-  println("可达节点数: ${result.base.reachable_count()}")
+  println("访问顺序: \{result.base.order}")
+  println("可达节点数: \{result.base.reachable_count()}")
 
   // 查询最短路径
   let path = result.base.path_to(@core.NodeId(3))
-  println("0 → 3 的最短路径: ${path}")
+  println("0 → 3 的最短路径: \{path}")
 }
 ```
 

@@ -107,7 +107,7 @@ let result = bfs(my_adj_list_graph, start_node)
 
 ```moonbit
 // 链式赋值，每次返回新的图实例
-let g = @storage.DirectedAdjList::new()
+let g = @storage.new_directed()
 let g = @core.GraphWritable::add_node(g, "A")
 let g = @core.GraphWritable::add_edge(g, @core.NodeId(0), @core.NodeId(1), 1.0)
 

@@ -34,7 +34,7 @@ Edmonds 在 1965 年提出此算法，时间复杂度 O(V²E)。
 
 ```moonbit
 fn main {
-  let mut g = @storage.UndirectedAdjList::new()
+  let mut g = @storage.new_undirected()
   let nodes = [@core.GraphWritable::add_node(g, 0.0); 6]
   // 6 个节点的一般图
   let _ = @core.GraphWritable::add_edge(g, nodes[0], nodes[1], 1.0)

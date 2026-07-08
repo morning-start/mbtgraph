@@ -277,7 +277,7 @@ pub(open) trait GraphWritable: GraphReadable {
 添加新节点并返回自动分配的 ID：
 
 ```moonbit
-let g = @storage.DirectedAdjList::new()
+let g = @storage.new_directed()
 let id0 = @core.GraphWritable::add_node(g, 100.0)  // 返回 NodeId(0)
 let id1 = @core.GraphWritable::add_node(g, 200.0)  // 返回 NodeId(1)
 
@@ -360,7 +360,7 @@ println("图已清空，当前节点数: ${@core.GraphReadable::node_count(g)}")
 ```moonbit
 /// 构建一个社交网络图
 fn build_social_network() -> DirectedAdjList {
-  let mut g = @storage.DirectedAdjList::new()
+  let mut g = @storage.new_directed()
 
   // 批量添加用户
   let alice = @core.GraphWritable::add_node(g, 0.95)

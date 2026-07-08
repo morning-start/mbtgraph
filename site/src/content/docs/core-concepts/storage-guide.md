@@ -68,7 +68,7 @@ pub(all) struct DirectedAdjList {
 
 ```moonbit
 // 创建有向邻接表
-let mut g = @storage.DirectedAdjList::new()
+let g = @storage.new_directed()
 
 // 添加节点（返回 NodeId）
 let alice = @core.GraphWritable::add_node(g, 0.95)    // Alice
@@ -228,7 +228,7 @@ pub(all) struct EdgeList {
 
 ```moonbit
 // 构建边集（适合 Kruskal）
-let mut g = @storage.EdgeList::new()
+let mut g = @storage.new_edge_list()
 
 // 添加节点
 let n0 = @core.GraphWritable::add_node(g, 0.0)
@@ -458,7 +458,7 @@ pub(all) struct UndirectedAdjList {
 #### 代码示例
 
 ```moonbit
-let mut g = @storage.UndirectedAdjList::new()
+let mut g = @storage.new_undirected()
 
 // 添加节点
 let a = @core.GraphWritable::add_node(g, 0.0)
@@ -597,7 +597,7 @@ EdgeList 的无向版本，用于**无向 Kruskal**。
 
 ```moonbit
 // ✅ 推荐：先用 AdjList 开发原型
-let g = @storage.DirectedAdjList::new()
+let g = @storage.new_directed()
 // ... 开发算法 ...
 
 // 性能 profiling 后再决定是否迁移到 CSR
@@ -641,11 +641,11 @@ let ranks = pagerank::compute(csr, iterations=100)
 
 ```moonbit
 // ✅ 正确: 无向图用无向存储
-let undirected_g = @storage.UndirectedAdjList::new()
+let undirected_g = @storage.new_undirected()
 // 空间减半！
 
 // ❌ 错误: 无向图用有向存储（浪费 2 倍空间）
-let directed_g = @storage.DirectedAdjList::new()
+let directed_g = @storage.new_directed()
 // 每条边存两次...
 ```
 

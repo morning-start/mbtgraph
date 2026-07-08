@@ -79,7 +79,7 @@ pub fn[G : @core.GraphReadable] greedy_coloring(graph : G) -> ColoringResult {
 
 ```moonbit
 fn coloring_demo() -> Unit {
-  let mut g = @storage.UndirectedAdjList::new()
+  let mut g = @storage.new_undirected()
   let nodes = [@core.GraphWritable::add_node(g, 0.0); 5]
   let _ = @core.GraphWritable::add_edge(g, nodes[0], nodes[1], 1.0)
   let _ = @core.GraphWritable::add_edge(g, nodes[0], nodes[2], 1.0)

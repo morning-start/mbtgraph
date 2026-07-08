@@ -91,7 +91,7 @@ pub fn[G : @core.GraphReadable] find_eulerian_path(
 
 ```moonbit
 fn euler_demo() -> Unit {
-  let mut g = @storage.UndirectedAdjList::new()
+  let mut g = @storage.new_undirected()
   let nodes = [@core.GraphWritable::add_node(g, 0.0); 3]
   let _ = @core.GraphWritable::add_edge(g, nodes[0], nodes[1], 1.0)
   let _ = @core.GraphWritable::add_edge(g, nodes[1], nodes[2], 1.0)

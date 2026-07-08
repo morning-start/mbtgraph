@@ -116,7 +116,7 @@ println("成功: \(success_count), 失败: \(error_count)")
 ### 场景 1：重复添加边
 
 ```moonbit
-let mut graph = @storage.DirectedAdjList::new()
+let mut graph = @storage.new_directed()
 let a = @core.GraphWritable::add_node(graph, 0.0)
 let b = @core.GraphWritable::add_node(graph, 0.0)
 
@@ -149,7 +149,7 @@ let _ = graph.add_edge_unchecked(a, b, 5.0)  // 无查重，更快
 ### 场景 2：节点不存在
 
 ```moonbit
-let mut graph = @storage.DirectedAdjList::new()
+let mut graph = @storage.new_directed()
 let a = @core.GraphWritable::add_node(graph, 0.0)
 
 // 节点 b 未添加，直接使用无效的 NodeId

@@ -93,7 +93,7 @@ GraphReadable (只读)
 所有操作返回新实例，不修改原始数据：
 
 ```moonbit
-let g = @storage.DirectedAdjList::new()
+let g = @storage.new_directed()
 let g = @core.GraphWritable::add_node(g, "A")  // 返回新实例
 let result = bfs(g, start)  // g 保持不变
 ```

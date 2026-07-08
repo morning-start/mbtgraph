@@ -80,7 +80,7 @@ let umat = @converter.to_undirected_matrix(my_undirected_graph, 500)
 
 ```moonbit
 // 阶段 1: 用邻接表动态建图
-let mut g = @storage.DirectedAdjList::new()
+let mut g = @storage.new_directed()
 let a = @core.GraphWritable::add_node(g, 1.0)
 let b = @core.GraphWritable::add_node(g, 2.0)
 let c = @core.GraphWritable::add_node(g, 3.0)
@@ -115,7 +115,7 @@ println("MST 总权重: \(mst.total_weight)")
 
 ```moonbit
 // 关注图是有向的
-let mut follow_graph = @storage.DirectedAdjList::new()
+let mut follow_graph = @storage.new_directed()
 // ... 添加关注关系 ...
 
 // 社群检测需要无向图 → 使用 as_undirected 显式转换
@@ -158,7 +158,7 @@ if exists { println("边存在") }
 ```moonbit
 fn main {
   // 1. 构建：邻接表
-  let mut g = @storage.DirectedAdjList::new()
+  let mut g = @storage.new_directed()
   let nodes = [@core.GraphWritable::add_node(g, 0.0); 1000]
   for i in 0..<5000 {
     let from = nodes[i % 1000]
