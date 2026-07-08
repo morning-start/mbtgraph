@@ -5,11 +5,10 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/morning-start/mbtgraph/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/morning-start/mbtgraph/ci.yml?branch=master&label=build" alt="build status"></a>
   <a href="https://github.com/morning-start/mbtgraph/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="license"></a>
   <img src="https://img.shields.io/badge/tests-772-green" alt="tests">
   <img src="https://img.shields.io/badge/algorithms-65%2B-brightgreen" alt="algorithms">
-  <img src="https://img.shields.io/badge/MoonBit-0.1.20260608-purple" alt="moonbit">
+  <img src="https://img.shields.io/badge/MoonBit-0.10.0-purple" alt="moonbit">
 </p>
 
 <p align="center">
