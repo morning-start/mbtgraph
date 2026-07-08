@@ -99,7 +99,7 @@ fn euler_demo() -> Unit {
 
   let result = @euler.find_eulerian_path(g)
   if result.has_eulerian_path {
-    println("欧拉回路: ${result.path}")
+    println("欧拉回路: \{result.path}")
   }
 }
 ```

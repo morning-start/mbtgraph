@@ -96,7 +96,7 @@ fn get_user_items(graph, user : @core.NodeId) -> Array[@core.NodeId] {
 
 let xiaoming_items = get_user_items(graph, users[0])
 let names = xiaoming_items.map(fn(n) { item_names[n.0 - 5] })
-println("小明已购: [\(names)]")
+println("小明已购: [\{names}]")
 ```
 
 **输出：**
@@ -138,7 +138,7 @@ fn find_similar_users(graph, target_user : @core.NodeId) -> Array[(Int, Int)] {
 let similar = find_similar_users(graph, users[0])  // 小明
 println("\n=== 与小明的相似用户 ===")
 for (uid, common) in similar {
-  println("  \(user_names[uid]): 共同购买 \(common) 种商品")
+  println("  \{user_names[uid]}: 共同购买 \{common} 种商品")
 }
 ```
 
@@ -199,7 +199,7 @@ while i < users.length() {
 }
 results.sort(fn(a, b) { b.1.compare(a.1) })
 for (uid, sim) in results {
-  println("  Jaccard(小明, \(user_names[uid])) = \(String::format("%.2f", sim))")
+  println("  Jaccard(小明, \{user_names[uid]}) = \{String::format("%.2f", sim)}")
 }
 ```
 
@@ -278,7 +278,7 @@ fn recommend_items(
 let recommendations = recommend_items(graph, users[0], 3)
 println("\n=== 为小明推荐商品 ===")
 for (idx, name, score) in recommendations {
-  println("  ★ \(name)  (推荐分数: \(String::format("%.2f", score)))")
+  println("  ★ \{name}  (推荐分数: \{String::format("%.2f", score)})")
 }
 ```
 
@@ -315,7 +315,7 @@ for other_item in items {
   if other_item == earphone { continue }
   let sim = jaccard_similarity(graph, earphone, other_item)
   if sim > 0.0 {
-    println("  耳机 ↔ \(item_names[other_item.0 - 5]): Jaccard=\(String::format("%.2f", sim))")
+    println("  耳机 ↔ \{item_names[other_item.0 - 5]}: Jaccard=\{String::format("%.2f", sim)}")
   }
 }
 ```
@@ -348,7 +348,7 @@ fn main {
   let recs = recommend_items(graph, users[0], 3)
   println("为小明推荐商品:")
   for (_, name, score) in recs {
-    println("  推荐: \(name)  (分数: \(String::format("%.2f", score)))")
+    println("  推荐: \{name}  (分数: \{String::format("%.2f", score)})")
   }
 }
 ```

@@ -44,7 +44,7 @@ for info in path.visit_order {
     5 => "泰坦尼克号", 6 => "猫鼠游戏"
     _ => "?"
   }
-  println("  \(name)  (距离: \(dist))")
+  println("  \{name}  (距离: \{dist})")
 }
 ```
 
@@ -99,7 +99,7 @@ for person in all_persons {
       Some(3.0) => "合作"
       _ => "?"
     }
-    println("  \(pname) ─\(role)→ 《盗梦空间》")
+    println("  \{pname} ─\{role}→ 《盗梦空间》")
   }
 }
 ```
@@ -120,11 +120,11 @@ for person in all_persons {
 let stats = @io.basic_stats(kg)
 
 println("=== 知识图谱统计指标 ===")
-println("节点数: \(stats.node_count)")
-println("边数: \(stats.edge_count)")
-println("是否有向: \(stats.directed)")
-println("平均度: \(stats.avg_degree)")
-println("密度: \(stats.density)")
+println("节点数: \{stats.node_count}")
+println("边数: \{stats.edge_count}")
+println("是否有向: \{stats.directed}")
+println("平均度: \{stats.avg_degree}")
+println("密度: \{stats.density}")
 ```
 
 **输出：**
@@ -146,8 +146,8 @@ println("密度: \(stats.density)")
 ```moonbit
 let degree_dist = @io.degree_distribution(kg)
 println("\n=== 度分布 ===")
-println("最小度: \(degree_dist.min_degree)")
-println("最大度: \(degree_dist.max_degree)")
+println("最小度: \{degree_dist.min_degree}")
+println("最大度: \{degree_dist.max_degree}")
 // 查看各节点的度
 println("\n各节点出度:")
 for nid in @core.GraphReadable::node_ids(kg) {
@@ -159,7 +159,7 @@ for nid in @core.GraphReadable::node_ids(kg) {
     _ => "?"
   }
   let in_deg = @core.GraphReadable::in_degree(kg, nid)
-  println("  \(name): 出度=\(deg)  入度=\(in_deg)")
+  println("  \{name}: 出度=\{deg}  入度=\{in_deg}")
 }
 ```
 
@@ -189,9 +189,9 @@ for nid in @core.GraphReadable::node_ids(kg) {
 ```moonbit
 let conn_stats = @io.connectivity_stats(kg)
 println("\n=== 连通性 ===")
-println("连通分量数: \(conn_stats.component_count)")
-println("最大分量大小: \(conn_stats.largest_component_size)")
-println("图是否连通: \(conn_stats.component_count == 1)")
+println("连通分量数: \{conn_stats.component_count}")
+println("最大分量大小: \{conn_stats.largest_component_size}")
+println("图是否连通: \{conn_stats.component_count == 1}")
 ```
 
 **输出：**
@@ -224,7 +224,7 @@ for neighbor in @core.GraphReadable::neighbors(kg, nolan) {
     Some(1.0) => "导演"; Some(3.0) => "合作"
     _ => "?"
   }
-  println("  诺兰 ─\(rel)→ \(nname)")
+  println("  诺兰 ─\{rel}→ \{nname}")
 }
 ```
 
@@ -264,7 +264,7 @@ for e in @core.GraphReadable::edges(kg) {
     1.0 => "导演"; 2.0 => "主演"; 3.0 => "合作"
     _ => "?"
   }
-  println("  (\(s), \(p), \(o))")
+  println("  (\{s}, \{p}, \{o})")
 }
 ```
 
@@ -312,11 +312,11 @@ fn main {
 
   // 1. 图统计
   let s = @io.basic_stats(kg)
-  println("节点: \(s.node_count), 边: \(s.edge_count), 密度: \(s.density)")
+  println("节点: \{s.node_count}, 边: \{s.edge_count}, 密度: \{s.density}")
 
   // 2. 连通分量
   let c = @io.connectivity_stats(kg)
-  println("连通分量: \(c.component_count)")
+  println("连通分量: \{c.component_count}")
 
   // 3. 全量三元组
   println("\n三元组清单:")

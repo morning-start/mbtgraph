@@ -119,7 +119,7 @@ let item_names = ["手机", "耳机", "键盘", "鼠标", "充电宝", "音箱"]
 println("=== 二分图统计 ===")
 println("用户数: 5")
 println("商品数: 6")
-println("交互数: \(@core.GraphReadable::edge_count(graph))")
+println("交互数: \{@core.GraphReadable::edge_count(graph)}")
 ```
 
 **输出：**
@@ -139,7 +139,7 @@ println("\n=== 用户活跃度 ===")
 let mut i = 0
 while i < users.length() {
   let deg = @core.GraphReadable::degree(graph, users[i])
-  println("  \(user_names[i]): 购买了 \(deg) 种商品")
+  println("  \{user_names[i]}: 购买了 \{deg} 种商品")
   i = i + 1
 }
 ```
@@ -170,7 +170,7 @@ while j < items.length() {
 // 按热度降序
 item_pop = item_pop.sort(fn(a, b) { b.1.compare(a.1) })
 for (idx, cnt) in item_pop {
-  println("  \(item_names[idx]): \(cnt) 个用户购买过")
+  println("  \{item_names[idx]}: \{cnt} 个用户购买过")
 }
 ```
 
@@ -202,7 +202,7 @@ for item_node in items {
   }
   if buyers.length() >= 2 {
     let names = buyers.map(fn(id) { user_names[id] })
-    println("  \(item_names[item_node.0 - 5]): [\(names)] 都购买过")
+    println("  \{item_names[item_node.0 - 5]}: [\{names}] 都购买过")
   }
 }
 ```
@@ -256,14 +256,14 @@ fn main {
   let item_names = ["手机", "耳机", "键盘", "鼠标", "充电宝", "音箱"]
 
   // 统计
-  println("交互总数: \(@core.GraphReadable::edge_count(graph))")
+  println("交互总数: \{@core.GraphReadable::edge_count(graph)}")
 
   // 商品热度
   println("\n商品热度:")
   let mut j = 0
   while j < items.length() {
     let deg = @core.GraphReadable::degree(graph, items[j])
-    println("  \(item_names[j]): \(deg) 人")
+    println("  \{item_names[j]}: \{deg} 人")
     j = j + 1
   }
 }

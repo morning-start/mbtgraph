@@ -82,7 +82,7 @@ while i < nodes.length() {
     Some(s) => s
     None => 0.0
   }
-  println("  #\(i) \(name_of(i)):  \(score)")
+  println("  #\{i} \{name_of(i)}:  \{score}")
   i = i + 1
 }
 ```
@@ -121,9 +121,9 @@ let pr = @pagerank.pagerank(graph, 0.85, 100)
 println("\n=== PageRank 排名 ===")
 let top3 = pr.top_nodes(nodes.length())
 for (node, score) in top3 {
-  println("  \(name_of(node.0)):  \(score)")
+  println("  \{name_of(node.0)}:  \{score}")
 }
-println("\n总 PageRank 值: \(pr.total_rank())")
+println("\n总 PageRank 值: \{pr.total_rank()}")
 ```
 
 **输出：**
@@ -178,7 +178,7 @@ while i < nodes.length() {
 // 按分数降序打印
 sorted = sorted.sort(fn(a, b) { b.1.compare(a.1) })
 for (id, score) in sorted {
-  println("  \(name_of(id)):  \(score)")
+  println("  \{name_of(id)}:  \{score}")
 }
 ```
 
@@ -264,7 +264,7 @@ fn main {
   let dc = @centrality.degree_centrality(graph, @centrality.DegreeMode::In)
   match dc.max_node() {
     Some((node, score)) =>
-      println("  🥇 \(name_of(node.0)): \(score)")
+      println("  🥇 \{name_of(node.0)}: \{score}")
     None => println("  (空)")
   }
 
@@ -273,7 +273,7 @@ fn main {
   let pr = @pagerank.pagerank(graph, 0.85, 100)
   let top3 = pr.top_nodes(3)
   for (node, score) in top3 {
-    println("  \(name_of(node.0)): \(score)")
+    println("  \{name_of(node.0)}: \{score}")
   }
 
   // 3. 介数中心性
@@ -281,7 +281,7 @@ fn main {
   let bc = @centrality.betweenness_centrality(graph, true)
   match bc.max_node() {
     Some((node, score)) =>
-      println("  🥇 \(name_of(node.0)): \(score)")
+      println("  🥇 \{name_of(node.0)}: \{score}")
     None => println("  (空)")
   }
 }

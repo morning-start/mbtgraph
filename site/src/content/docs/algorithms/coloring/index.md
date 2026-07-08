@@ -89,8 +89,8 @@ fn coloring_demo() -> Unit {
 
   let greedy_result = @coloring.greedy_coloring(g)
   let dsatur_result = @coloring.dsatur_coloring(g)
-  println("贪心着色: ${greedy_result.num_colors} 色")
-  println("DSATUR:   ${dsatur_result.num_colors} 色")
+  println("贪心着色: \{greedy_result.num_colors} 色")
+  println("DSATUR:   \{dsatur_result.num_colors} 色")
 }
 ```
 

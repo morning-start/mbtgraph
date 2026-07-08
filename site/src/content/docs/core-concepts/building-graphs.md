@@ -23,12 +23,12 @@ let result = @core.GraphWritable::add_edge(g, node_a, node_b, 10.0)
 // Step 4: 验证结果
 match result {
   Ok(_) => println("✅ 图构建成功!")
-  Err(e) => println("❌ 错误: ${e}")
+  Err(e) => println("❌ 错误: \{e}")
 }
 
 // Step 5: 使用图
-println("节点数: ${@core.GraphReadable::node_count(g)}")
-println("边数: ${@core.GraphReadable::edge_count(g)}")
+println("节点数: \{@core.GraphReadable::node_count(g)}")
+println("边数: \{@core.GraphReadable::edge_count(g)}")
 ```
 
 ---
@@ -77,7 +77,7 @@ builder = builder.add_edge(@core.NodeId(0), @core.NodeId(1), 2.5)
 // 最终构建（一次性优化排序+去重）
 match builder.build() {
   Ok(csr_graph) => { /* 使用 csr_graph */ }
-  Err(e) => println("构建失败: ${e}")
+  Err(e) => println("构建失败: \{e}")
 }
 ```
 
@@ -116,7 +116,7 @@ let id1 = @core.GraphWritable::add_node(g, 200.0)   // 返回 NodeId(1)
 let id2 = @core.GraphWritable::add_node(g, 300.0)   // 返回 NodeId(2)
 
 // 节点 ID 自动递增（从 0 开始）
-println("新节点 ID: ${id0}, ${id1}, ${id2}")  // 输出: 0, 1, 2
+println("新节点 ID: \{id0}, \{id1}, \{id2}")  // 输出: 0, 1, 2
 ```
 
 **`data` 参数的含义**取决于你的应用场景：
@@ -202,8 +202,8 @@ let id_c = @core.GraphWritable::add_node(g, 3.0)  // NodeId(2)
 let id_d = @core.GraphWritable::add_node(g, 4.0)  // NodeId(3)，不是 1！
 
 // 当前节点数 vs 最大 ID
-println("当前节点数: ${@core.GraphReadable::node_count(g)}")     // 3 (A, C, D)
-println("最大 NodeId: ${id_d}")                                   // 3
+println("当前节点数: \{@core.GraphReadable::node_count(g)}")     // 3 (A, C, D)
+println("最大 NodeId: \{id_d}")                                   // 3
 ```
 
 > ⚠️ **重要**: 删除节点后其 ID 不会回收复用，这是为了保证历史引用的有效性。
@@ -224,8 +224,8 @@ match @core.GraphWritable::add_edge(g, a, b, 10.5) {
   Ok(_) => println("✅ 边 A→B 添加成功")
   Err(e) =>
     match e {
-      NodeNotFound(id) => println("❌ 节点 ${id} 不存在")
-      EdgeAlreadyExists(from, to) => println("⚠️ 边 (${from}→${to}) 已存在")
+      NodeNotFound(id) => println("❌ 节点 \{id} 不存在")
+      EdgeAlreadyExists(from, to) => println("⚠️ 边 (\{from}→\{to}) 已存在")
       InvalidNodeId => println("❌ 无效的 NodeId")
     }
 }
@@ -245,7 +245,7 @@ let y = @core.GraphWritable::add_node(g, 0.0)
 
 // 验证：x 和 y 互为邻居
 @core.GraphReadable::neighbors(g, x) |> iter::each(fn(nbr) {
-  println("X 的邻居: ${nbr}")  // 输出: Y
+  println("X 的邻居: \{nbr}")  // 输出: Y
 })
 ```
 
@@ -313,8 +313,8 @@ let edges : Array[(@core.NodeId, @core.NodeId, Double)] = [
 ]
 
 match g.add_edges_batch(edges) {
-  Ok(count) => println("✅ 成功添加 ${count} 条边")
-  Err(e) => println("❌ 批量添加失败: ${e}")
+  Ok(count) => println("✅ 成功添加 \{count} 条边")
+  Err(e) => println("❌ 批量添加失败: \{e}")
 }
 ```
 
@@ -349,11 +349,11 @@ let start_time = Time::now()
 match builder.build() {
   Ok(csr) => {
     let elapsed = Time::now() - start_time
-    println("✅ CSR 构建完成! 耗时: ${elapsed}ms")
-    println("节点: ${@core.GraphReadable::node_count(csr)}")
-    println("边数: ${@core.GraphReadable::edge_count(csr)}")
+    println("✅ CSR 构建完成! 耗时: \{elapsed}ms")
+    println("节点: \{@core.GraphReadable::node_count(csr)}")
+    println("边数: \{@core.GraphReadable::edge_count(csr)}")
   }
-  Err(e) => println("❌ 构建失败: ${e}")
+  Err(e) => println("❌ 构建失败: \{e}")
 }
 ```
 
@@ -411,17 +411,17 @@ fn main() {
   let twitter = build_twitter_graph()
 
   println("=== Twitter 社交网络统计 ===")
-  println("用户数量: ${@core.GraphReadable::node_count(twitter)}")
-  println("关注关系数: ${@core.GraphReadable::edge_count(twitter)}")
+  println("用户数量: \{@core.GraphReadable::node_count(twitter)}")
+  println("关注关系数: \{@core.GraphReadable::edge_count(twitter)}")
 
   // 分析每个用户的连接特征
   @core.GraphReadable::node_ids(twitter) |> iter::each(fn(user_id) {
     let out_deg = @core.GraphDirected::out_degree(twitter, user_id)
     let in_deg = @core.GraphDirected::in_degree(twitter, user_id)
 
-    println("\n用户 ${user_id}:")
-    println("  关注了 ${out_deg} 人")
-    println("  被 ${in_deg} 人关注")
+    println("\n用户 \{user_id}:")
+    println("  关注了 \{out_deg} 人")
+    println("  被 \{in_deg} 人关注")
 
     if (in_deg > out_deg * 2) {
       println("  🌟 该用户是影响力节点")
@@ -434,22 +434,7 @@ fn main() {
 
 **输出**:
 ```
-=== Twitter 社交网络统计 ===
-用户数量: 5
-关注关系数: 8
-
-用户 0:
-  关注了 2 人
-  被 1 人关注
-  📢 该用户是活跃用户
-
-用户 1:
-  关注了 2 人
-  被 1 人关注
-  📢 该用户是活跃用户
-
-...
-```
+undefined```
 
 ### 示例 2: 构建道路网络（无向加权图）
 
@@ -498,7 +483,7 @@ fn build_road_network() -> UndirectedAdjList {
 // 查询两个城市的最短路径
 fn find_shortest_path(network : UndirectedAdjList, from_city : String, to_city : String) {
   // 这里可以调用 Dijkstra 算法...
-  println("查找 ${from_city} → ${to_city} 的最短路径...")
+  println("查找 \{from_city} → \{to_city} 的最短路径...")
 }
 ```
 
@@ -554,7 +539,7 @@ let graph_data = "
 "
 
 let road_graph = parse_adjacency_list(graph_data)
-println("从文本构建的图: ${@core.GraphReadable::node_count(road_graph)} 节点")
+println("从文本构建的图: \{@core.GraphReadable::node_count(road_graph)} 节点")
 ```
 
 ---
@@ -777,3 +762,4 @@ if (node_count > 100000 && is_static) {
     </ol>
   </div>
 </div>
+

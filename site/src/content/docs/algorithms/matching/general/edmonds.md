@@ -45,15 +45,15 @@ fn main {
   let _ = @core.GraphWritable::add_edge(g, nodes[4], nodes[5], 1.0)
 
   let result = @matching.edmonds_maximum_matching(g)
-  println("最大匹配数: \(result.cardinality)")
+  println("最大匹配数: \{result.cardinality}")
   for (u, v) in result.matching_edges {
-    println("  匹配: \(u.0) ↔ \(v.0)")
+    println("  匹配: \{u.0} ↔ \{v.0}")
   }
 
   // 检查特定节点
-  println("节点 0 匹配: \(result.is_matched(nodes[0]))")
+  println("节点 0 匹配: \{result.is_matched(nodes[0])}")
   match result.get_partner(nodes[0]) {
-    Some(p) => println("节点 0 的匹配对象: \(p.0)")
+    Some(p) => println("节点 0 的匹配对象: \{p.0}")
     None => println("节点 0 未匹配")
   }
 }

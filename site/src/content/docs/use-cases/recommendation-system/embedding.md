@@ -129,7 +129,7 @@ let user_feat = build_user_features(graph, users, community_result)
 
 println("=== 用户特征向量 ===")
 for (i, feat) in user_feat {
-  println("  \(user_names[i]):  [度=\(feat[0]) 加权度=\(feat[1]) 社区=\(feat[2]) PageRank=\(String::format("%.3f", feat[3]))]")
+  println("  \{user_names[i]}:  [度=\{feat[0]} 加权度=\{feat[1]} 社区=\{feat[2]} PageRank=\{String::format("%.3f", feat[3])}]")
 }
 ```
 
@@ -177,7 +177,7 @@ let xiaoming_feat = user_feat[0]
 let mut i = 1
 while i < user_feat.length() {
   let sim = cosine_similarity(xiaoming_feat, user_feat[i])
-  println("  sim(小明, \(user_names[i])) = \(String::format("%.3f", sim))")
+  println("  sim(小明, \{user_names[i]}) = \{String::format("%.3f", sim)}")
   i = i + 1
 }
 ```
@@ -253,7 +253,7 @@ let adj_vecs = build_adjacency_vectors(graph, users, items)
 println("\n=== 用户-商品邻接矩阵 ===")
 for (i, vec) in adj_vecs {
   let parts = vec.map(fn(v) { String::format("%.0f", v) })
-  println("  \(user_names[i]): [\(parts)]")
+  println("  \{user_names[i]}: [\{parts}]")
 }
 ```
 
@@ -290,7 +290,7 @@ fn main {
 
   println("=== 用户特征向量 ===")
   for (i, feat) in user_feat {
-    println("  \(user_names[i]): \(feat)")
+    println("  \{user_names[i]}: \{feat}")
   }
 
   // 2. 邻接向量
@@ -298,7 +298,7 @@ fn main {
   println("\n=== 邻接矩阵 ===")
   for (i, vec) in adj_vecs {
     let parts = vec.map(fn(v) { String::format("%.0f", v) })
-    println("  \(user_names[i]): \(parts)")
+    println("  \{user_names[i]}: \{parts}")
   }
 
   // 3. 计算特征向量相似度
@@ -307,7 +307,7 @@ fn main {
   let mut i = 1
   while i < user_feat.length() {
     let sim = cosine_similarity(xm_feat, user_feat[i])
-    println("  sim(小明, \(user_names[i])) = \(String::format("%.3f", sim))")
+    println("  sim(小明, \{user_names[i]}) = \{String::format("%.3f", sim)}")
     i = i + 1
   }
 }

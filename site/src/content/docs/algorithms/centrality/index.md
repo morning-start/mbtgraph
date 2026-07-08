@@ -65,7 +65,7 @@ for i in 0..<6 {
   let score = match dc.get_score(nodes[i]) {
     Some(s) => s; None => 0.0
   }
-  println("  \(name_of[i]): 度=\(@core.GraphReadable::degree(g, nodes[i]))  归一化=\(String::format("%.3f", score))")
+  println("  \{name_of[i]}: 度=\{@core.GraphReadable::degree(g, nodes[i])}  归一化=\{String::format("%.3f", score)}")
 }
 ```
 
@@ -101,7 +101,7 @@ for i in 0..<6 {
 }
 ranking.sort(fn(a, b) { b.1.compare(a.1) })
 for (i, score) in ranking {
-  println("  \(name_of[i]): \(String::format("%.3f", score))")
+  println("  \{name_of[i]}: \{String::format("%.3f", score)}")
 }
 ```
 
@@ -135,7 +135,7 @@ for i in 0..<6 {
   let score = match cc.get_score(nodes[i]) {
     Some(s) => s; None => 0.0
   }
-  println("  \(name_of[i]): \(String::format("%.3f", score))")
+  println("  \{name_of[i]}: \{String::format("%.3f", score)}")
 }
 ```
 
@@ -166,7 +166,7 @@ for i in 0..<6 {
   let score = match ev.get_score(nodes[i]) {
     Some(s) => s; None => 0.0
   }
-  println("  \(name_of[i]): \(String::format("%.3f", score))")
+  println("  \{name_of[i]}: \{String::format("%.3f", score)}")
 }
 ```
 
@@ -218,7 +218,7 @@ fn main {
     let bs = match bc.get_score(n[i]) { Some(s) => s; None => 0.0 }
     let cs = match cc.get_score(n[i]) { Some(s) => s; None => 0.0 }
     let es = match ev.get_score(n[i]) { Some(s) => s; None => 0.0 }
-    println("\(name_of[i]): 度=\(String::format("%.2f", ds)) 介=\(String::format("%.2f", bs)) 接=\(String::format("%.2f", cs)) 特=\(String::format("%.2f", es))")
+    println("\{name_of[i]}: 度=\{String::format("%.2f", ds)} 介=\{String::format("%.2f", bs)} 接=\{String::format("%.2f", cs)} 特=\{String::format("%.2f", es)}")
   }
 }
 ```

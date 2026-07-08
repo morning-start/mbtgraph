@@ -107,8 +107,8 @@ let _ = @core.GraphWritable::add_edge(kg, watanabe, dicaprio, REL_COLLAB)
 
 ```moonbit
 println("=== 知识图谱统计 ===")
-println("实体数: \(@core.GraphReadable::node_count(kg))")
-println("关系数: \(@core.GraphReadable::edge_count(kg))")
+println("实体数: \{@core.GraphReadable::node_count(kg)}")
+println("关系数: \{@core.GraphReadable::edge_count(kg)}")
 
 // 人物和电影分别计数
 let mut persons = 0
@@ -120,7 +120,7 @@ for nid in @core.GraphReadable::node_ids(kg) {
     None => ()
   }
 }
-println("人物: \(persons), 电影: \(movies)")
+println("人物: \{persons}, 电影: \{movies}")
 ```
 
 **输出：**
@@ -142,7 +142,7 @@ for neighbor in @core.GraphReadable::neighbors(kg, nolan) {
         3 => "《盗梦空间》"; 4 => "《星际穿越》"
         _ => "未知"
       }
-      println("  \(movie_name)")
+      println("  \{movie_name}")
     }
     _ => ()
   }
@@ -167,7 +167,7 @@ for neighbor in @core.GraphReadable::neighbors(kg, dicaprio) {
         3 => "《盗梦空间》"; 5 => "《泰坦尼克号》"; 6 => "《猫鼠游戏》"
         _ => "未知"
       }
-      println("  \(movie_name)")
+      println("  \{movie_name}")
     }
     _ => ()
   }
@@ -205,7 +205,7 @@ for person in [nolan, dicaprio, watanabe] {
       let role = if rel == REL_DIRECTED { "导演" }
                  else if rel == REL_ACTED_IN { "主演" }
                  else { "合作" }
-      println("  \(person_name)  (\(role))")
+      println("  \{person_name}  (\{role})")
     }
   }
 }
@@ -225,12 +225,12 @@ for person in [nolan, dicaprio, watanabe] {
 println("\n=== 诺兰 ↔ 小李合作记录 ===")
 let edge_weight = @core.GraphReadable::get_edge(kg, nolan, dicaprio)
 match edge_weight {
-  Some(w) => println("  诺兰 → 小李: 关系类型=\(w) (合作)")
+  Some(w) => println("  诺兰 → 小李: 关系类型=\{w} (合作)")
   None => println("  无直接关系")
 }
 let rev_weight = @core.GraphReadable::get_edge(kg, dicaprio, nolan)
 match rev_weight {
-  Some(w) => println("  小李 → 诺兰: 关系类型=\(w) (合作)")
+  Some(w) => println("  小李 → 诺兰: 关系类型=\{w} (合作)")
   None => println("  无反向关系")
 }
 ```
@@ -328,8 +328,8 @@ fn main {
   let _ = @core.GraphWritable::add_edge(kg, dicaprio, watanabe, 3.0)
   let _ = @core.GraphWritable::add_edge(kg, watanabe, dicaprio, 3.0)
 
-  println("实体数: \(@core.GraphReadable::node_count(kg))")
-  println("关系数: \(@core.GraphReadable::edge_count(kg))")
+  println("实体数: \{@core.GraphReadable::node_count(kg)}")
+  println("关系数: \{@core.GraphReadable::edge_count(kg)}")
 
   // 导出
   println("\n--- DOT ---")

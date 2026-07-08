@@ -130,11 +130,11 @@ fn louvain_demo() -> Unit {
   let _ = @core.GraphWritable::add_edge(g, n[5], n[7], 0.5)
 
   let result = @community.louvain(g, 1.0)
-  println("社区数量: ${result.num_communities}")
-  println("模块度: ${result.modularity}")
+  println("社区数量: \{result.num_communities}")
+  println("模块度: \{result.modularity}")
 
   for (node, com) in result.community_labels.indexed() {
-    println("  节点 ${node} → 社区 #${com}")
+    println("  节点 \{node} → 社区 #\{com}")
   }
 }
 ```
