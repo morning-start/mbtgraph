@@ -186,6 +186,35 @@ moon test benchmarks_large    # 大规模
 
 ---
 
+## 🔗 Git Hooks
+
+项目内置了三个 Git Hooks 来保证代码质量和提交规范：
+
+| Hook | 触发时机 | 检查内容 | 耗时 |
+|:----|:--------|:--------|:---:|
+| `pre-commit` | `git commit` | 安全扫描 · `moon fmt` · `moon info` · `moon check` | ~5s |
+| `commit-msg` | `git commit` | Conventional Commits 格式校验 | 瞬间 |
+| `pre-push` | `git push` | `moon check` · `moon test`（772 测试） | ~35s |
+
+启用方式：
+
+```bash
+git config core.hooksPath .githooks
+```
+
+> 为什么 `moon test` 放在 `pre-push` 而非 `pre-commit`？772 个测试约需 30s，每次提交都跑会拖慢开发节奏。推到远端前一次性验证既保证质量又不妨碍迭代。
+
+跳過 hook：
+
+```bash
+git commit --no-verify   # 跳过 pre-commit 和 commit-msg
+git push --no-verify    # 跳过 pre-push
+```
+
+详见 [`.githooks/README.md`](.githooks/README.md)。
+
+---
+
 ## 📄 许可证
 
 [MIT](LICENSE)
