@@ -140,6 +140,26 @@ moon test lib/algo/flow  # 只跑网络流模块
 
 ---
 
+## 📊 性能基准
+
+覆盖 **33 个算法 × 4 种图规模 = 93 项性能基线数据**，全部实测采集：
+
+| 包 | 图规模 | 算法数 | 报告 |
+|:---|:------:|:-----:|:----|
+| `benchmarks/` | 100 / 1000 节点 | **33** | [`benchmarks/README.md`](benchmarks/README.md) |
+| `benchmarks_large/` | 5000 / 10000 节点 | **17** | [`benchmarks_large/README.md`](benchmarks_large/README.md) |
+
+**覆盖类别**: 最短路径 · 遍历 · MST · 连通性 · 社区检测 · 中心性 · 着色 · 密集子图 · 流网络 · 存储转换
+
+```bash
+moon test benchmarks          # 小/中规模
+moon test benchmarks_large    # 大规模
+```
+
+完整性能数据见 [baseline_v0.1.3.csv](benchmarks/baseline_v0.1.3.csv)（93 行）。
+
+---
+
 ## 🔧 版本 & 路线图
 
 | 版本              | 重点                       |   状态    |
