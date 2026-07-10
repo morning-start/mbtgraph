@@ -10,7 +10,6 @@ description: 快速安装 mbtgraph 并配置开发环境
 在开始使用 mbtgraph 之前，请确保你的系统已安装以下工具：
 
 - **MoonBit 工具链** (>= 0.1.80)
-- **Bun** (>= 1.0.0) 或 **npm** (>= 9.0.0)
 - **Git**
 
 ## 安装步骤
@@ -36,7 +35,7 @@ cd my_graph_project
 
 ```bash
 # 在项目根目录下
-moon add mbtgraph
+moon add morning-start/mbtgraph
 ```
 
 或者手动在 `moon.mod.json` 中添加：
@@ -46,44 +45,45 @@ moon add mbtgraph
   "name": "my-graph-project",
   "version": "0.1.0",
   "deps": {
-    "mbtgraph": "*"
+    "morning-start/mbtgraph": "*"
   }
 }
 ```
 
 ## 验证安装
 
-创建一个简单的测试文件 `src/lib/test.mbt`：
+创建一个简单的测试文件 `src/main/main.mbt`：
 
 ```moonbit
 // 测试 mbtgraph 是否正确导入
 fn main {
   let g = @storage.new_directed()
-  println("mbtgraph 安装成功！")
+  let n0 = @core.GraphWritable::add_node(g, 0.0)
+  let n1 = @core.GraphWritable::add_node(g, 1.0)
+  @core.GraphWritable::add_edge(g, n0, n1, 1.0) |> ignore
+  let result = @traversal.bfs(g, n0)
+  println("从节点 0 出发可到达 \{result.distance(@core.NodeId(1))} 步外的节点 1")
 }
 ```
 
 运行测试：
 
 ```bash
-moon run src/lib/test.mbt
+moon run
 ```
 
-如果看到输出 `mbtgraph 安装成功！`，说明环境配置完成。
+如果看到输出 `从节点 0 出发可到达 1 步外的节点 1`，说明环境配置完成。
 
 ## 项目结构说明
 
 ```
 my-graph-project/
-├── moon.mod.json          # 项目配置文件
+├── moon.mod.json            # 项目配置文件
 ├── src/
-│   ├── lib/               # 库代码目录
-│   │   └── your_code.mbt # 你的代码
-│   └── main/              # 可执行程序入口
-└── target/                # 编译输出目录
-    ├── native/            # 本地二进制
-    ├── wasm/              # WebAssembly 输出
-    └── js/                # JavaScript 输出
+│   └── main/
+│       └── main.mbt         # 你的代码
+├── moon.pkg                 # 包配置（moon new 自动生成）
+└── target/                  # 编译输出目录
 ```
 
 ## 开发工具推荐

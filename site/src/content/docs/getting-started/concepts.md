@@ -128,20 +128,26 @@ pub fn[G : @core.GraphReadable] dfs(graph : G, start : NodeId) -> DfsResult
 
 ```moonbit
 // Dijkstra（非负权）
-pub fn[G : @core.GraphReadable] dijkstra(graph : G, source : NodeId) -> ShortestPathResult
+pub fn[G : @core.GraphReadable] dijkstra(
+  graph : G, source : NodeId,
+) -> ShortestPathResult
 
-// Bellman-Ford（允许负权）
-pub fn bellman_ford(graph : FlowNetwork, source : Int) -> BellmanFordResult
+// Bellman-Ford（允许负权，检测负环）
+pub fn[G : @core.GraphReadable] bellman_ford(
+  graph : G, source : NodeId,
+) -> Result[ShortestPathResult, String]
 ```
 
 ### 最小生成树
 
 ```moonbit
-// Kruskal（需要 EdgeIterable）
-pub fn kruskal(graph : G) -> MstResult
+// Kruskal（基于边排序 + Union-Find）
+pub fn[G : @core.GraphReadable] kruskal(graph : G) -> MstResult
 
-// Prim
-pub fn prim(graph : G, start : NodeId) -> MstResult
+// Prim（从 root 出发的贪心生长）
+pub fn[G : @core.GraphReadable] prim(
+  graph : G, root : NodeId,
+) -> MstResult
 ```
 
 ## 错误处理

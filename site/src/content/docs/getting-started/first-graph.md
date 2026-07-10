@@ -18,6 +18,7 @@ description: 5 分钟上手 mbtgraph，构建并操作你的第一个图
 ```bash
 moon new social_network
 cd social_network
+moon add morning-start/mbtgraph
 ```
 
 ## 步骤 2：编写代码
@@ -55,11 +56,13 @@ fn main {
 
   // 5️⃣ 输出结果
   println("=== 社交网络分析 ===")
-  println("总用户数: \{g.node_count()}")
-  println("总关注关系: \{g.edge_count()}")
+  let nc = @core.GraphReadable::node_count(g)
+  let ec = @core.GraphReadable::edge_count(g)
+  println("总用户数: \{nc}")
+  println("总关注关系: \{ec}")
   println("")
   println("从节点 0 出发的 BFS 层级:")
-  for i in 0..<g.node_count() {
+  for i in 0..<nc {
     let level = result.levels[i]
     if level >= 0 {
       println("  节点 \{i}: 层级 \{level}")
@@ -71,7 +74,7 @@ fn main {
 ## 步骤 3：运行程序
 
 ```bash
-moon run src/main/main.mbt
+moon run
 ```
 
 ## 预期输出
@@ -99,20 +102,31 @@ moon run src/main/main.mbt
 - ✅ 高效的邻居查询 O(k)，k 为邻居数
 - ✅ 适合大多数场景
 
-### 可变图 API
+### 全限定名调用
 
-mbtgraph 的存储结构采用**就地修改（mutable）** 设计：
+mbtgraph 要求使用 **全限定名（Fully Qualified Name）** 调用 trait 方法，而非实例方法：
 
 ```moonbit
-let g = @storage.new_directed()
-let n0 = @core.GraphWritable::add_node(g, 0.0)  // g 就地修改，返回 NodeId
+// ✅ 正确 — 全限定名
+@core.GraphReadable::node_count(g)
+
+// ❌ 错误 — 不能写成 g.node_count()
 ```
 
-- `add_node` 直接在原图上添加节点，返回新节点的 `NodeId`
-- `add_edge` 直接在原图上添加边，返回 `Result[Unit, GraphError]`
-- 所有修改操作都通过 `GraphWritable` trait 完成
+这与 Rust 的 `trait.method(self)` 不同。MoonBit 要求显式写出 trait 名以消除歧义，
+这在多 trait 场景下更清晰明确。
 
-这种设计简单直观，适合多数场景。
+### 返回值不可忽略
+
+`add_edge` 返回 `Result[Unit, GraphError]`，必须消费：
+
+```moonbit
+// ✅ 正确
+@core.GraphWritable::add_edge(g, n0, n1, 1.0) |> ignore
+
+// ❌ 错误 — 编译警告 E4139
+@core.GraphWritable::add_edge(g, n0, n1, 1.0)
+```
 
 ### 泛型函数调用
 
@@ -129,9 +143,9 @@ let result = @traversal.bfs(g, start)
 
 现在你已经掌握了基本用法，接下来可以：
 
-1. [学习核心概念](/core-concepts/index/) - 深入理解 Trait 系统
-2. [探索存储选型](/core-concepts/storage-guide/) - 选择最适合你场景的存储
-3. [学习 BFS 教程](/algorithms/traversal/bfs/index/) - 完整的算法原理讲解
+1. [学习核心概念](/core-concepts/index/) — 深入理解 Trait 系统
+2. [探索存储选型](/core-concepts/storage-guide/) — 选择最适合你场景的存储
+3. [学习 BFS 教程](/algorithms/traversal/bfs/index/) — 完整的算法原理讲解
 
 ## 练习
 
@@ -149,6 +163,6 @@ let result = @traversal.bfs(g, start)
     <p class="callout-title">恭喜！</p>
   </div>
   <div class="callout-content">
-    <p>你已经成功创建了第一个 mbtgraph 程序！这只是冰山一角，mbtgraph 还提供了 90+ 个已实现图算法，覆盖 32 个算法类别，等待你去探索。</p>
+    <p>你已经成功创建了第一个 mbtgraph 程序！这只是冰山一角，mbtgraph 还提供了 65+ 个图算法，覆盖 18 个模块，等待你去探索。</p>
   </div>
 </div>
