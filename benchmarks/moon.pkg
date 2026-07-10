@@ -6,6 +6,12 @@ import {
   "morning-start/mbtgraph/lib/algo/shortest_path" @sp,
   "morning-start/mbtgraph/lib/algo/flow",
   "morning-start/mbtgraph/lib/algo/community",
+  "morning-start/mbtgraph/lib/algo/pagerank",
+  "morning-start/mbtgraph/lib/algo/connectivity",
+  "morning-start/mbtgraph/lib/algo/mst",
+  "morning-start/mbtgraph/lib/algo/dense_subgraph",
+  "morning-start/mbtgraph/lib/algo/coloring",
+  "morning-start/mbtgraph/lib/algo/centrality",
   "morning-start/mbtgraph/lib/utils/generators" @gen,
 }
 
