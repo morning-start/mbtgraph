@@ -30,7 +30,7 @@ pub fn[G : @core.GraphReadable] bidirectional_dijkstra(
 
   if source == target {
     let max_id = sp_find_max_id(graph)
-    let size = max_int(max_id + 1, 1)
+    let size = Int::max(max_id + 1, 1)
     let distances : Array[Double?] = Array::make(size, None)
     let parents : Array[@core.NodeId?] = Array::make(size, None)
     distances[source.0] = Some(0.0)
@@ -38,7 +38,7 @@ pub fn[G : @core.GraphReadable] bidirectional_dijkstra(
   }
 
   let max_id = sp_find_max_id(graph)
-  let size = max_int(max_id + 1, 1)
+  let size = Int::max(max_id + 1, 1)
   let inf = 1000000000000000000.0
 
   let forward_dist : Array[Double?] = Array::make(size, None)

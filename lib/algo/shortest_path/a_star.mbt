@@ -61,7 +61,7 @@ pub fn[G : @core.GraphReadable] a_star(
     return []
   }
   let max_id = sp_find_max_id(graph)
-  let size = max_int(max_id + 1, 1)
+  let size = Int::max(max_id + 1, 1)
   let g_scores : Array[Double?] = Array::make(size, None)
   let parents : Array[@core.NodeId?] = Array::make(size, None)
   g_scores[start.0] = Some(0.0)

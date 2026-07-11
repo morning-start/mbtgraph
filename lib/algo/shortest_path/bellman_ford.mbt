@@ -21,7 +21,7 @@ pub fn[G : @core.GraphReadable] bellman_ford(
     return Err("source node not found")
   }
   let max_id = sp_find_max_id(graph)
-  let size = max_int(max_id + 1, 1)
+  let size = Int::max(max_id + 1, 1)
   let inf = 1000000000000000000.0
   let distances : Array[Double?] = Array::make(size, None)
   let parents : Array[@core.NodeId?] = Array::make(size, None)

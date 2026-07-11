@@ -760,3 +760,139 @@ test "metrics_triad_k4" {
   assert_true(t.closed_triads >= 1)
   assert_true(t.global_clustering > 0.0)
 }
+
+// ============================================================================
+// DOT 格式: 负向解析测试 (5)
+// ============================================================================
+
+///|
+test "dot_parse_error_unclosed_block_comment" {
+  let dot = "digraph G { /* unclosed comment 0 -> 1; }"
+  let g = @storage.new_directed()
+  let result = parse_dot_into(g, dot)
+  match result {
+    Ok(_) => assert_true(false)
+    Err(_) => ()
+  }
+}
+
+///|
+test "dot_parse_error_missing_brace" {
+  let dot = "digraph G { 0 -> 1; "
+  let g = @storage.new_directed()
+  let result = parse_dot_into(g, dot)
+  match result {
+    Ok(_) => assert_true(false)
+    Err(_) => ()
+  }
+}
+
+///|
+test "dot_parse_error_missing_target" {
+  let dot = "digraph G { 0 -> ; }"
+  let g = @storage.new_directed()
+  let result = parse_dot_into(g, dot)
+  match result {
+    Ok(_) => assert_true(false)
+    Err(_) => ()
+  }
+}
+
+///|
+test "dot_parse_error_empty_input" {
+  let dot = ""
+  let g = @storage.new_directed()
+  let result = parse_dot_into(g, dot)
+  match result {
+    Ok(_) => assert_true(false)
+    Err(_) => ()
+  }
+}
+
+///|
+test "dot_parse_error_malformed_keyword" {
+  let dot = "notdigraph G { 0 -> 1; }"
+  let g = @storage.new_directed()
+  let result = parse_dot_into(g, dot)
+  match result {
+    Ok(_) => assert_true(false)
+    Err(_) => ()
+  }
+}
+
+// ============================================================================
+// JSON 格式: 负向解析测试 (5)
+// ============================================================================
+
+///|
+test "json_parse_error_not_object" {
+  let json = "[1, 2, 3]"
+  let g = @storage.new_directed()
+  let result = parse_json_into(g, json)
+  match result {
+    Ok(_) => assert_true(false)
+    Err(_) => ()
+  }
+}
+
+///|
+test "json_parse_error_missing_closing_brace" {
+  // Parser is lenient: it stops arrays/objects at EOF.
+  let json = "{\"mbtgraph\":\"1.0\",\"directed\":true,\"nodes\":[0],\"edges\":["
+  let g = @storage.new_directed()
+  let result = parse_json_into(g, json)
+  match result {
+    Ok(_) => {
+      assert_eq(@core.GraphReadable::node_count(g), 1)
+      assert_eq(@core.GraphReadable::edge_count(g), 0)
+    }
+    Err(_) => assert_true(false)
+  }
+}
+
+///|
+test "json_parse_error_missing_source_field" {
+  // Parser now rejects edges with missing source/target.
+  let json = "{\"mbtgraph\":\"1.0\",\"directed\":true,\"nodes\":[],\"edges\":[{}]}"
+  let g = @storage.new_directed()
+  let result = parse_json_into(g, json)
+  match result {
+    Ok(_) => assert_true(false)
+    Err(_) => ()
+  }
+}
+
+///|
+test "json_parse_error_malformed_weight" {
+  // Parser falls back to default weight=1.0 when weight token is non-numeric.
+  let json = "{\"mbtgraph\":\"1.0\",\"directed\":true,\"nodes\":[0,1],\"edges\":[{\"source\":0,\"target\":1,\"weight\":\"bad\"}]}"
+  let g = @storage.new_directed()
+  let result = parse_json_into(g, json)
+  match result {
+    Ok(_) => {
+      assert_eq(@core.GraphReadable::node_count(g), 2)
+      assert_eq(@core.GraphReadable::edge_count(g), 1)
+      let ew = @core.GraphReadable::get_edge(
+        g,
+        @core.NodeId(0),
+        @core.NodeId(1),
+      )
+      match ew {
+        Some(w) => assert_true(w >= 0.0)
+        None => assert_true(false)
+      }
+    }
+    Err(_) => assert_true(false)
+  }
+}
+
+///|
+test "json_parse_error_negative_node_id" {
+  let json = "{\"mbtgraph\":\"1.0\",\"directed\":true,\"nodes\":[],\"edges\":[{\"source\":-1,\"target\":1,\"weight\":1}]}"
+  let g = @storage.new_directed()
+  let result = parse_json_into(g, json)
+  match result {
+    Ok(_) => assert_true(false)
+    Err(_) => ()
+  }
+}

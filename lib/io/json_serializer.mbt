@@ -215,11 +215,16 @@ pub fn[G : @core.GraphWritable] parse_json_into(
 
         // Parse node ID
         let mut nval = 0
+        let mut has_digits = false
         while pos < len &&
               json_string[pos].to_int() >= 0x30 &&
               json_string[pos].to_int() <= 0x39 {
+          has_digits = true
           nval = nval * 10 + (json_string[pos].to_int() - 48)
           pos = pos + 1
+        }
+        if !has_digits {
+          return Err(ParseError("Invalid node id"))
         }
 
         let nid = @core.NodeId(nval)
@@ -291,11 +296,16 @@ pub fn[G : @core.GraphWritable] parse_json_into(
 
           if ekey == "source" || ekey == "target" {
             let mut v = 0
+            let mut has_digits = false
             while pos < len &&
                   json_string[pos].to_int() >= 0x30 &&
                   json_string[pos].to_int() <= 0x39 {
+              has_digits = true
               v = v * 10 + (json_string[pos].to_int() - 48)
               pos = pos + 1
+            }
+            if !has_digits {
+              return Err(ParseError("Invalid edge id"))
             }
             if ekey == "source" {
               source_id = v
@@ -349,6 +359,9 @@ pub fn[G : @core.GraphWritable] parse_json_into(
           if pos < len && json_string[pos].to_int() == 0x2C {
             pos = pos + 1
           }
+        }
+        if source_id < 0 || target_id < 0 {
+          return Err(ParseError("Edge missing source or target"))
         }
 
         if source_id >= 0 && target_id >= 0 {

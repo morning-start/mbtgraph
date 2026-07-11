@@ -127,16 +127,20 @@ fn skip_comment(s : DotParserState) -> DotParserState {
     }
   } else if c0 == 0x2F && c1 == 0x2A {
     st = advance(st, 2)
+    let mut closed = false
     while st.pos + 1 < st.len {
       let a = st.input[st.pos].to_int()
       let b = st.input[st.pos + 1].to_int()
       if a == 0x2A && b == 0x2F {
+        closed = true
         break
       }
       st = advance(st, 1)
     }
-    if st.pos + 1 < st.len {
+    if closed {
       st = advance(st, 2)
+    } else {
+      st = DotParserState::{ input: s.input, pos: s.len, len: s.len }
     }
   }
   st
@@ -276,7 +280,7 @@ pub fn[G : @core.GraphWritable] parse_dot_into(
     let (st_next, tok) = next_token_and_state(current_state)
     let matched = match tok {
       RBrace => true
-      Eof => true
+      Eof => return Err(ParseError("Unexpected end of input: missing '}'"))
       _ => false
     }
     if matched {

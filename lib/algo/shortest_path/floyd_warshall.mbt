@@ -17,7 +17,7 @@ pub fn[G : @core.GraphReadable] floyd_warshall(
     return Ok(FloydWarshallResult::{ distances: [], next: [] })
   }
   let max_id = sp_find_max_id(graph)
-  let size = max_int(max_id + 1, 1)
+  let size = Int::max(max_id + 1, 1)
   let inf = 1000000000000000000.0
   let dist : Array[Array[Double?]] = []
   let nxt : Array[Array[@core.NodeId?]] = []

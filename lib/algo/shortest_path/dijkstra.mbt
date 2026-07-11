@@ -10,15 +10,6 @@ fn[G : @core.GraphReadable] sp_find_max_id(g : G) -> Int {
 }
 
 ///|
-fn max_int(a : Int, b : Int) -> Int {
-  if a > b {
-    a
-  } else {
-    b
-  }
-}
-
-///|
 /// Dijkstra 最短路径算法
 ///
 /// 非负权图的单源最短路径算法，时间复杂度 O((V+E)log V)。
@@ -38,7 +29,7 @@ pub fn[G : @core.GraphReadable] dijkstra(
     return ShortestPathResult::{ distances: [], parents: [] }
   }
   let max_id = sp_find_max_id(graph)
-  let size = max_int(max_id + 1, 1)
+  let size = Int::max(max_id + 1, 1)
   let inf = 1000000000000000000.0
   let distances : Array[Double?] = Array::make(size, None)
   let parents : Array[@core.NodeId?] = Array::make(size, None)
