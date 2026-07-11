@@ -3,6 +3,7 @@ import {
   "morning-start/mbtgraph/lib/storage",
 }
 
+// 编译器误报 W0029: @alias. 引用实际使用了这些 import，见 AGENTS.md
 warnings = "-unused_value-unused_package"
 
 options(
