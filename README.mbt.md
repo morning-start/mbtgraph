@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/morning-start/mbtgraph/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="license"></a>
-  <img src="https://img.shields.io/badge/tests-772-green" alt="tests">
+  <img src="https://img.shields.io/badge/tests-772%20passed-green" alt="tests">
   <img src="https://img.shields.io/badge/algorithms-65%2B-brightgreen" alt="algorithms">
   <img src="https://img.shields.io/badge/MoonBit-0.10.0-purple" alt="moonbit">
 </p>
@@ -130,13 +130,20 @@ fn main {
 ## 🧪 测试说了算
 
 ```bash
-moon test              # 全量 772 测试，秒级通过
+moon test              # 全量 772 测试，秒级通过 ✅
 moon test lib/algo/flow  # 只跑网络流模块
 ```
 
-- **双轨制**: Blackbox（公开 API）+ Whitebox（内部实现）
-- **跨存储一致性**: 同一算法在不同存储上结果相同
-- **NetworkX 交叉验证**: 55 个算法、295 个随机图、Python ground truth 对照
+**2026-07-11 最新测试结果**: 772 tests, 772 passed, 0 failed.
+
+| 模块 | 测试覆盖 |
+|:-----|:--------:|
+| 核心类型与 Trait (`core/`) | 白盒 + 黑盒 |
+| 8 种存储结构 (`storage/`) | 全接口覆盖 |
+| 18 个算法模块 | 单元测试 + 集成测试 |
+| 跨存储一致性 | 同一算法在不同存储上结果相同 |
+| NetworkX 交叉验证 | 55 算法 × 295 随机图 × Python ground truth |
+| 基准测试 (33 算法 × 4 规模) | 93 项性能基线 |
 
 ---
 

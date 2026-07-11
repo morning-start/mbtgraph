@@ -134,7 +134,7 @@ GraphReadable (12方法, 所有存储)
 | `E4139` ignore | 返回值未消费 | `let _ = ...` 或 `... \|> ignore` |
 | 数组副作用 | 直接修改入参数组 | 算法前 `deep_copy_matrix()` |
 | `var` 废弃 | 用了 `var` | 改为 `let mut` |
-| `loop {}` 废弃 | 用了 `loop` | 改为 `while true {}` |
+| `W0029` unused_package | 编译器误报：`@alias.` 引用实际使用了 import | 保留 `warnings = "-unused_value-unused_package"` 忽略 |
 
 **最高频 3 个陷阱**: `mut self` > for 元组解构 > `>>` 嵌套泛型。
 
